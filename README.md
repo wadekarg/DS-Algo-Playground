@@ -230,6 +230,24 @@ DS-Algo-Playground/
 
 ---
 
+## 🤝 Contributing
+
+This project is built **purely for educational purposes** — to help students, self-learners, and developers understand data structures and algorithms through interactive visualizations.
+
+Contributions are welcome and encouraged! Whether it's:
+- Adding a new topic or algorithm
+- Improving an existing visualization
+- Fixing bugs or typos
+- Enhancing mobile responsiveness
+- Translating content
+
+Feel free to open an issue or submit a pull request. If you have ideas, suggestions, or just want to say hello — reach out!
+
+**Contact:** [wadekargajanan@gmail.com](mailto:wadekargajanan@gmail.com)
+**GitHub:** [@wadekarg](https://github.com/wadekarg)
+
+---
+
 ## 📄 License
 
 MIT
