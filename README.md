@@ -1,95 +1,241 @@
-# DS-Algo Playground
+<h1 align="center">
+  <br>
+  <img src="assets/favicon.svg" alt="DS-Algo Playground" width="80">
+  <br>
+  DS-Algo Playground
+  <br>
+</h1>
 
-Interactive educational website for learning Data Structures and Algorithms through visualizations, multi-language code examples, and quizzes.
+<p align="center">
+  <strong>Interactive visualizations for data structures and algorithms</strong><br>
+  Step through algorithms at your own pace. See how the code executes. Build real intuition.
+</p>
 
-## Features
+<p align="center">
+  <a href="https://wadekarg.github.io/DS-Algo-Playground/">
+    <img src="https://img.shields.io/badge/Live_Demo-Visit_Site-blue?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
 
-- **Interactive Visualizations** — Canvas-based animations with play/pause, step-through, speed control, and reset
-- **Multi-Language Code** — Python, Java, and C++ implementations with syntax highlighting and copy button
-- **Knowledge Quizzes** — Multiple-choice questions with explanations and score tracking
-- **Progress Tracking** — localStorage-based progress saved across sessions
-- **Dark/Light Themes** — Auto-detects OS preference, manual toggle with persistence
-- **Keyboard Shortcuts** — Press `?` to see all shortcuts
-- **Complexity Cheat Sheet** — Searchable, sortable reference table
-- **Responsive Design** — Works on desktop, tablet, and mobile
-- **Print Friendly** — Clean output when printing topic pages
+<p align="center">
+  <a href="#-topics">Topics</a> &bull;
+  <a href="#-features">Features</a> &bull;
+  <a href="#-getting-started">Get Started</a> &bull;
+  <a href="#-project-structure">Structure</a> &bull;
+  <a href="#-tech-stack">Tech Stack</a>
+</p>
 
-## Topics (V1)
+---
 
-| Topic | Category | Visualization |
-|-------|----------|---------------|
-| Arrays | Data Structure | Cell insert/delete/search with shifting animation |
-| Linked Lists | Data Structure | Node-pointer traversal with arrow animations |
-| Bubble Sort | Sorting | Bar chart with compare/swap step-through |
-| Binary Search | Searching | Sorted array with low/mid/high pointer arrows |
+## What is this?
 
-## Getting Started
+DS-Algo Playground is a **zero-dependency**, pure HTML/CSS/JavaScript web app that helps you **understand** data structures and algorithms through interactive, step-by-step canvas visualizations.
 
-### Local Development
+No frameworks. No build tools. No installs. Just open and learn.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/DS-Algo-Playground.git
-   cd DS-Algo-Playground
-   ```
+Every topic includes:
+- A clear explanation of how the algorithm works
+- An **interactive canvas visualization** — play, pause, step through, adjust speed
+- Code implementations in **Python, Java, and C++**
+- **Complexity analysis** with time & space breakdowns
+- A **quiz** to test your understanding
 
-2. Start a local server (required for `fetch()` calls to load JSON data):
-   ```bash
-   # Python 3
-   python3 -m http.server 8000
+---
 
-   # Node.js
-   npx serve .
-   ```
+## 📚 Topics
 
-3. Open `http://localhost:8000` in your browser.
+### Data Structures
 
-### GitHub Pages Deployment
+| Topic | Description |
+|:------|:------------|
+| [**Arrays**](https://wadekarg.github.io/DS-Algo-Playground/topics/arrays.html) | Access, insert, delete, and search operations with shifting animation |
+| [**Linked Lists**](https://wadekarg.github.io/DS-Algo-Playground/topics/linked-lists.html) | Singly linked list traversal and pointer manipulation |
+| [**Stack**](https://wadekarg.github.io/DS-Algo-Playground/topics/stack.html) | Push, pop, and peek with vertical column visualization |
+| [**Queue**](https://wadekarg.github.io/DS-Algo-Playground/topics/queue.html) | Enqueue, dequeue with front/rear pointer tracking |
+| [**Hash Table**](https://wadekarg.github.io/DS-Algo-Playground/topics/hash-table.html) | Hash function visualization, collision resolution with chaining |
+| [**Binary Search Tree**](https://wadekarg.github.io/DS-Algo-Playground/topics/bst.html) | Insert, search, delete, and inorder/preorder/postorder traversals |
+| [**Heap**](https://wadekarg.github.io/DS-Algo-Playground/topics/heap.html) | Max-heap with synchronized tree + array dual view |
 
-1. Push to a GitHub repository
-2. Go to **Settings > Pages**
-3. Set source to **Deploy from a branch**, select `main` branch and `/ (root)` folder
-4. The `.nojekyll` file is included to skip Jekyll processing
+### Sorting Algorithms
 
-## Tech Stack
+| Topic | Description |
+|:------|:------------|
+| [**Bubble Sort**](https://wadekarg.github.io/DS-Algo-Playground/topics/bubble-sort.html) | Adjacent-swap sorting with early-termination optimization |
+| [**Selection Sort**](https://wadekarg.github.io/DS-Algo-Playground/topics/selection-sort.html) | Scan for minimum, swap into sorted position |
+| [**Insertion Sort**](https://wadekarg.github.io/DS-Algo-Playground/topics/insertion-sort.html) | Key-lift, shift-right, and drop-in-place insertion |
+| [**Merge Sort**](https://wadekarg.github.io/DS-Algo-Playground/topics/merge-sort.html) | Recursive divide phase and merge phase visualization |
+| [**Quick Sort**](https://wadekarg.github.io/DS-Algo-Playground/topics/quick-sort.html) | Pivot partitioning with left/right pointer scanning |
 
-- Vanilla HTML, CSS, JavaScript — no frameworks or build tools
-- Canvas API for all visualizations
-- CSS Custom Properties for theming
-- localStorage for progress persistence
-- Regex-based syntax highlighting
+### Searching
 
-## Project Structure
+| Topic | Description |
+|:------|:------------|
+| [**Binary Search**](https://wadekarg.github.io/DS-Algo-Playground/topics/binary-search.html) | Divide-and-conquer search with low/mid/high pointers |
+| [**BFS**](https://wadekarg.github.io/DS-Algo-Playground/topics/bfs.html) | Breadth-first graph traversal with queue visualization |
+| [**DFS**](https://wadekarg.github.io/DS-Algo-Playground/topics/dfs.html) | Depth-first graph traversal with stack and backtracking |
+
+### Algorithm Techniques
+
+| Topic | Description |
+|:------|:------------|
+| [**Two Pointers**](https://wadekarg.github.io/DS-Algo-Playground/topics/two-pointers.html) | Converging pointers for pair-sum in sorted arrays |
+| [**Sliding Window**](https://wadekarg.github.io/DS-Algo-Playground/topics/sliding-window.html) | Fixed-size window for maximum subarray sum |
+| [**Dynamic Programming**](https://wadekarg.github.io/DS-Algo-Playground/topics/dynamic-programming.html) | Tabulation-based Fibonacci with DP table filling |
+| [**Recursion**](https://wadekarg.github.io/DS-Algo-Playground/topics/recursion.html) | Fibonacci call tree with recursive DFS traversal |
+
+---
+
+## ✨ Features
+
+### Step-Through Visualizations
+Every algorithm is rendered on an **HTML5 Canvas** with full playback controls — play, pause, step forward/back, reset, and adjustable speed. Each step includes a plain-English explanation of what's happening and why.
+
+### Algorithm Comparison
+Pick any **two sorting algorithms** and run them **side-by-side** on the same input array. Compare their approaches, step counts, and behavior visually.
+
+### Algorithm Race
+Watch **5 sorting algorithms race** on the same array simultaneously. Progress bars and a winner announcement show you which algorithm finishes first.
+
+### Complexity Visualizer
+Interactive plot of **O(1), O(log n), O(n), O(n log n), O(n^2), and O(2^n)** growth curves. Adjust n with a slider and toggle individual curves on/off.
+
+### Code in 3 Languages
+Every topic shows implementations in **Python, Java, and C++** with syntax highlighting, tabbed navigation, and a one-click copy button.
+
+### Dark / Light Theme
+Toggle between dark and light modes with `t`. Your preference is saved across sessions. Auto-detects OS preference on first visit.
+
+### Keyboard Shortcuts
+Press `?` on any page to see all shortcuts:
+
+| Key | Action |
+|:---:|:-------|
+| `t` | Toggle theme |
+| `/` | Focus search |
+| `Space` | Play / Pause visualization |
+| `←` `→` | Step backward / forward |
+| `?` | Show shortcuts modal |
+| `Esc` | Close modal / search |
+
+### Progress Tracking
+Completed topics are tracked with visual badges on the sidebar. Progress persists across sessions via localStorage.
+
+### Responsive Design
+Works on desktop, tablet, and mobile. Canvas visualizations resize to fit the viewport.
+
+---
+
+## 🚀 Getting Started
+
+No build step. No dependencies. Just serve the files:
+
+```bash
+# Clone the repo
+git clone https://github.com/wadekarg/DS-Algo-Playground.git
+cd DS-Algo-Playground
+
+# Serve locally (Python 3)
+python3 -m http.server 8080
+
+# Open in your browser
+open http://localhost:8080
+```
+
+Or just visit the **[live site](https://wadekarg.github.io/DS-Algo-Playground/)** — no setup needed.
+
+---
+
+## 📁 Project Structure
 
 ```
 DS-Algo-Playground/
-├── index.html              # Home page
-├── complexity.html         # Cheat sheet
-├── about.html              # About page
-├── topics/                 # Topic pages
+├── index.html                  # Home page with topic grid
+├── compare.html                # Side-by-side algorithm comparison
+├── race.html                   # Algorithm race (5 sorting algos)
+├── complexity.html             # Big-O growth rate visualizer
+├── about.html                  # About page
+│
+├── topics/                     # 19 topic pages
 │   ├── arrays.html
 │   ├── linked-lists.html
+│   ├── stack.html
+│   ├── queue.html
+│   ├── hash-table.html
+│   ├── bst.html
+│   ├── heap.html
 │   ├── bubble-sort.html
-│   └── binary-search.html
-├── css/                    # Stylesheets
-├── js/                     # JavaScript modules
-│   └── topics/             # Topic-specific visualizations
-├── data/                   # JSON data files
-└── assets/                 # Favicon
+│   ├── selection-sort.html
+│   ├── insertion-sort.html
+│   ├── merge-sort.html
+│   ├── quick-sort.html
+│   ├── binary-search.html
+│   ├── bfs.html
+│   ├── dfs.html
+│   ├── two-pointers.html
+│   ├── sliding-window.html
+│   ├── dynamic-programming.html
+│   └── recursion.html
+│
+├── js/
+│   ├── visualization-core.js   # Playback engine (play/pause/step/speed)
+│   ├── viz-utils.js            # Shared drawing primitives
+│   ├── sidebar-nav.js          # Dynamic sidebar from topics.json
+│   ├── code-trace.js           # Code line highlighting + variable watch
+│   ├── challenge.js            # Challenge mode infrastructure
+│   ├── main.js                 # App entry point and init router
+│   ├── progress.js             # Progress tracking with badges
+│   ├── search.js               # Fuzzy topic search
+│   ├── theme.js                # Dark/light theme toggle
+│   ├── keyboard.js             # Global keyboard shortcuts
+│   ├── quiz.js                 # Quiz scoring engine
+│   ├── code-block.js           # Syntax highlighting + copy
+│   ├── sidebar.js              # Sidebar open/close behavior
+│   └── topics/                 # 19 visualization modules
+│       ├── arrays-viz.js
+│       ├── linked-lists-viz.js
+│       ├── bubble-sort-viz.js
+│       └── ... (one per topic)
+│
+├── css/
+│   ├── main.css                # CSS imports
+│   ├── variables.css           # Theme color tokens
+│   ├── visualization.css       # Canvas + controls + challenge styles
+│   ├── code-trace.css          # Code highlighting styles
+│   ├── code.css                # Code block styles
+│   ├── components.css          # Buttons, cards, badges
+│   ├── layout.css              # Grid and sidebar layout
+│   ├── topic.css               # Topic page layout
+│   └── reset.css               # CSS reset
+│
+├── data/
+│   ├── topics.json             # Topic registry (drives sidebar + progress)
+│   └── complexity-data.json    # Big-O reference data
+│
+└── .github/workflows/
+    └── deploy.yml              # GitHub Pages deployment
 ```
 
-## Keyboard Shortcuts
+---
 
-| Key | Action |
-|-----|--------|
-| `t` | Toggle dark/light theme |
-| `/` | Focus search |
-| `Space` | Play/Pause visualization |
-| `←` | Step backward |
-| `→` | Step forward |
-| `?` | Show shortcuts modal |
-| `Esc` | Close modal/search |
+## 🛠 Tech Stack
 
-## License
+| Layer | Technology |
+|:------|:-----------|
+| **Rendering** | HTML5 Canvas 2D API |
+| **Language** | Vanilla JavaScript (ES5, IIFE modules) |
+| **Styling** | CSS Custom Properties for dark/light theming |
+| **Storage** | localStorage for progress + theme persistence |
+| **Hosting** | GitHub Pages via GitHub Actions |
+| **Dependencies** | **None** — zero external libraries |
+
+---
+
+## 📄 License
 
 MIT
+
+---
+
+<p align="center">
+  Built for learning. Open source forever.
+</p>
