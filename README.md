@@ -255,5 +255,6 @@ MIT
 ---
 
 <p align="center">
-  Built for learning. Open source forever.
+  Built with the help of AI (Claude) — prompted, guided, and curated by a human.<br>
+  Vibe-coded with <a href="https://claude.ai">Claude</a> &times; <a href="https://github.com/wadekarg">@wadekarg</a>
 </p>
