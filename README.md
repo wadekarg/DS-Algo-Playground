@@ -127,21 +127,9 @@ Works on desktop, tablet, and mobile. Canvas visualizations resize to fit the vi
 
 ## 🚀 Getting Started
 
-No build step. No dependencies. Just serve the files:
+Visit the **[live site](https://wadekarg.github.io/DS-Algo-Playground/)** — no setup, no install, just open and learn.
 
-```bash
-# Clone the repo
-git clone https://github.com/wadekarg/DS-Algo-Playground.git
-cd DS-Algo-Playground
-
-# Serve locally (Python 3)
-python3 -m http.server 8080
-
-# Open in your browser
-open http://localhost:8080
-```
-
-Or just visit the **[live site](https://wadekarg.github.io/DS-Algo-Playground/)** — no setup needed.
+If you'd like to contribute or run locally, see [Contributing](#-contributing).
 
 ---
 
@@ -241,10 +229,7 @@ Contributions are welcome and encouraged! Whether it's:
 - Enhancing mobile responsiveness
 - Translating content
 
-Feel free to open an issue or submit a pull request. If you have ideas, suggestions, or just want to say hello — reach out!
-
-**Contact:** [wadekargajanan@gmail.com](mailto:wadekargajanan@gmail.com)
-**GitHub:** [@wadekarg](https://github.com/wadekarg)
+Feel free to open an issue or submit a pull request.
 
 ---
 
@@ -255,6 +240,5 @@ MIT
 ---
 
 <p align="center">
-  Built with the help of AI (Claude) — prompted, guided, and curated by a human.<br>
-  Vibe-coded with <a href="https://claude.ai">Claude</a> &times; <a href="https://github.com/wadekarg">@wadekarg</a>
+  Built with the help of AI (Claude) — prompted, guided, and curated by a human.
 </p>
