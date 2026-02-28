@@ -15,6 +15,9 @@
   <a href="https://wadekarg.github.io/DS-Algo-Playground/">
     <img src="https://img.shields.io/badge/Live_Demo-Visit_Site-blue?style=for-the-badge" alt="Live Demo">
   </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License: MIT">
+  </a>
 </p>
 
 <p align="center">
@@ -233,9 +236,9 @@ Feel free to open an issue or submit a pull request.
 
 ---
 
-## 📄 License
+## License
 
-MIT
+MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
