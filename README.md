@@ -18,6 +18,9 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License: MIT">
   </a>
+  <a href="https://hits.sh/github.com/wadekarg/DS-Algo-Playground/">
+    <img src="https://hits.sh/github.com/wadekarg/DS-Algo-Playground.svg?style=for-the-badge&label=Hits&color=4f46e5&labelColor=1e293b" alt="Hits">
+  </a>
 </p>
 
 <p align="center">
