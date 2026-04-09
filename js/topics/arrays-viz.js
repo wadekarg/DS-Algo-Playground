@@ -65,9 +65,13 @@ var DSA = window.DSA || {};
     ctx.fill();
   }
 
+  /* ── Tween helpers ──────────────────────────────────────────────── */
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
   /* ── Render function (called by vizCore for every step) ── */
 
-  function render(ctx, step, meta) {
+  function render(ctx, step, meta, fromStep, tweenT) {
     var w = meta.width;
     var h = meta.height;
 
@@ -77,7 +81,7 @@ var DSA = window.DSA || {};
 
     if (!step) {
       // Initial state – draw current array
-      drawArrayState(ctx, arr, w, {});
+      drawArrayState(ctx, arr, w, {}, undefined, undefined, null, 1);
       drawLabel(ctx, w, 'Array with ' + arr.length + ' elements');
       return;
     }
@@ -88,22 +92,91 @@ var DSA = window.DSA || {};
     var fadingOut = step.fadingOut; // index (for delete fade)
     var dropping = step.dropping;   // {index, value}
 
-    drawArrayState(ctx, cells, w, highlights, fadingOut, dropping);
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+    var t = (isTweening) ? tweenT : 1;
+
+    drawArrayState(ctx, cells, w, highlights, fadingOut, dropping, fromStep, t);
 
     if (typeof pointer === 'number') {
-      var px = cellX(pointer, cells.length, w);
-      drawPointerArrow(ctx, px, TOP_PAD);
+      // Lerp pointer arrow position if it moved
+      var pointerIdx = pointer;
+      if (isTweening && fromStep && typeof fromStep.pointer === 'number' && fromStep.pointer !== pointer) {
+        var fromCX = cellX(fromStep.pointer, cells.length, w) + CELL_W / 2;
+        var toCX   = cellX(pointer,           cells.length, w) + CELL_W / 2;
+        var interpCX = lerp(fromCX, toCX, t);
+        // Draw arrow at interpolated x
+        var tipY = TOP_PAD - 6;
+        var baseY = tipY - 16;
+        ctx.fillStyle = colorActive();
+        ctx.beginPath();
+        ctx.moveTo(interpCX, tipY);
+        ctx.lineTo(interpCX - 7, baseY);
+        ctx.lineTo(interpCX + 7, baseY);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        var px = cellX(pointerIdx, cells.length, w);
+        drawPointerArrow(ctx, px, TOP_PAD);
+      }
     }
 
     drawLabel(ctx, w, step.label || '');
   }
 
-  function drawArrayState(ctx, cells, canvasW, highlights, fadingOut, dropping) {
+  function drawArrayState(ctx, cells, canvasW, highlights, fadingOut, dropping, fromStep, tweenT) {
     var len = cells.length;
-    for (var i = 0; i < len; i++) {
-      var x = cellX(i, len, canvasW);
-      var y = TOP_PAD;
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
 
+    // Compute the "from" cell count to detect insertions/deletions
+    var fromLen = (fromStep && fromStep.cells) ? fromStep.cells.length : len;
+
+    for (var i = 0; i < len; i++) {
+      var toX = cellX(i, len, canvasW);
+      var drawX = toX;
+      var alpha = 1;
+
+      if (isTweening && fromStep && fromStep.cells) {
+        // Detect insertion: cells grew by one — cells shift right of insert point
+        if (len === fromLen + 1) {
+          // Find insert index: first position where fromStep and step diverge
+          var insertIdx = len - 1;
+          for (var fi = 0; fi < fromLen; fi++) {
+            if (String(cells[fi]) !== String(fromStep.cells[fi])) {
+              insertIdx = fi;
+              break;
+            }
+          }
+          if (i === insertIdx) {
+            // New cell: slide in from the right, fade in
+            var offscreenX = cellX(len, len, canvasW) + CELL_W;
+            drawX = lerp(offscreenX, toX, tweenT);
+            alpha = tweenT;
+          } else if (i > insertIdx) {
+            // Shifted right: animate from previous slot
+            var prevX = cellX(i - 1, len, canvasW);
+            drawX = lerp(prevX, toX, tweenT);
+          }
+        }
+
+        // Detect deletion: cells shrank by one — remaining cells slide left
+        if (len === fromLen - 1) {
+          // Find delete index
+          var deleteIdx = fromLen - 1;
+          for (var di = 0; di < len; di++) {
+            if (String(cells[di]) !== String(fromStep.cells[di])) {
+              deleteIdx = di;
+              break;
+            }
+          }
+          if (i >= deleteIdx) {
+            // Animate from the slot one to the right
+            var prevSlotX = cellX(i + 1, fromLen, canvasW);
+            drawX = lerp(prevSlotX, toX, tweenT);
+          }
+        }
+      }
+
+      var y = TOP_PAD;
       var bg = colorCellBg();
       var txt = colorCellText();
       if (highlights && highlights[i]) {
@@ -111,23 +184,27 @@ var DSA = window.DSA || {};
         txt = '#ffffff';
       }
 
+      // Fading out cell: lerp alpha 1 → 0.3 during tween, then hold 0.3
       if (fadingOut === i) {
-        ctx.globalAlpha = 0.3;
+        alpha = isTweening ? lerp(1, 0.3, tweenT) : 0.3;
       }
 
-      drawCell(ctx, x, y, cells[i], bg, txt);
-      drawIndex(ctx, x, y, i);
-
-      if (fadingOut === i) {
-        ctx.globalAlpha = 1.0;
-      }
+      ctx.globalAlpha = alpha;
+      drawCell(ctx, drawX, y, cells[i], bg, txt);
+      drawIndex(ctx, drawX, y, i);
+      ctx.globalAlpha = 1.0;
     }
 
-    // Dropping cell drawn above its slot
+    // Dropping cell: slide down from above and fade in
     if (dropping) {
       var dx = cellX(dropping.index, len, canvasW);
-      var dy = TOP_PAD - 12;
+      var dropAlpha = isTweening ? tweenT : 1;
+      var fromDY = TOP_PAD - 40;
+      var toDY   = TOP_PAD - 12;
+      var dy = isTweening ? lerp(fromDY, toDY, tweenT) : toDY;
+      ctx.globalAlpha = dropAlpha;
       drawCell(ctx, dx, dy, dropping.value, colorFound(), '#ffffff');
+      ctx.globalAlpha = 1.0;
     }
   }
 

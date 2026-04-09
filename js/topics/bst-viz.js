@@ -6,18 +6,16 @@ var DSA = window.DSA || {};
   var viz = null;
   var root = null;
   var explanationEl = null;
+  var svgWrap = null;
+  var svgEl = null;
+  var NODE_R = 22;
+  var LEVEL_H = 80;
 
   // ── BST Node constructor ──────────────────────────────────────────
   function BSTNode(val) {
     this.val = val;
     this.left = null;
     this.right = null;
-  }
-
-  // ── CSS colour helper ─────────────────────────────────────────────
-  function css(prop, fallback) {
-    var val = getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
-    return val || fallback || '';
   }
 
   // ── Deep-clone the tree ───────────────────────────────────────────
@@ -29,84 +27,6 @@ var DSA = window.DSA || {};
     return copy;
   }
 
-  // ── Compute positions via inorder traversal ───────────────────────
-  // Each node gets an (x, y) based on its inorder index and depth.
-  // Returns an array of { val, x, y, left, right } for rendering.
-  function computePositions(root, canvasW) {
-    if (!root) return [];
-
-    var RADIUS = 20;
-    var LEVEL_H = 70;
-    var TOP_PAD = 60;
-    var MIN_H_SPACING = 50; // minimum horizontal gap between consecutive inorder nodes
-
-    // First, collect inorder list to know the count
-    var inorderList = [];
-    function inorder(node) {
-      if (!node) return;
-      inorder(node.left);
-      inorderList.push(node);
-      inorder(node.right);
-    }
-    inorder(root);
-
-    var count = inorderList.length;
-    // Compute horizontal spacing: distribute evenly across canvas
-    var totalNeeded = count * MIN_H_SPACING;
-    var hSpacing = Math.max(MIN_H_SPACING, (canvasW - 2 * RADIUS - 40) / Math.max(count - 1, 1));
-
-    // If spacing is too wide, cap it
-    if (hSpacing > 100) hSpacing = 100;
-
-    var totalW = (count - 1) * hSpacing;
-    var startX = Math.max(RADIUS + 10, (canvasW - totalW) / 2);
-
-    // Assign inorder index to each node
-    var indexMap = {};
-    for (var i = 0; i < inorderList.length; i++) {
-      indexMap[inorderList[i].val + '_' + i] = i;
-    }
-
-    // Build positions by traversal with inorder counter and depth
-    var positions = [];
-    var inorderIdx = 0;
-
-    function assignPositions(node, depth) {
-      if (!node) return;
-      assignPositions(node.left, depth + 1);
-
-      var x = startX + inorderIdx * hSpacing;
-      var y = TOP_PAD + depth * LEVEL_H;
-
-      positions.push({
-        val: node.val,
-        x: x,
-        y: y,
-        left: node.left ? node.left.val : null,
-        right: node.right ? node.right.val : null,
-        leftNode: node.left,
-        rightNode: node.right
-      });
-
-      inorderIdx++;
-      assignPositions(node.right, depth + 1);
-    }
-
-    assignPositions(root, 0);
-    return positions;
-  }
-
-  // ── Build a lookup from val to position ───────────────────────────
-  // Since duplicate vals can exist in theory, we use the positions array directly.
-  // For our purposes, tree is built from unique values.
-  function positionLookup(positions) {
-    var map = {};
-    for (var i = 0; i < positions.length; i++) {
-      map[positions[i].val] = positions[i];
-    }
-    return map;
-  }
-
   // ── BST insert (mutates tree) ─────────────────────────────────────
   function bstInsert(root, val) {
     if (!root) return new BSTNode(val);
@@ -115,7 +35,6 @@ var DSA = window.DSA || {};
     } else if (val > root.val) {
       root.right = bstInsert(root.right, val);
     }
-    // Duplicate: ignore
     return root;
   }
 
@@ -133,18 +52,13 @@ var DSA = window.DSA || {};
     } else if (val > root.val) {
       root.right = bstDelete(root.right, val);
     } else {
-      // Found the node to delete
       if (!root.left && !root.right) {
-        // Leaf node
         return null;
       } else if (!root.left) {
-        // One child (right)
         return root.right;
       } else if (!root.right) {
-        // One child (left)
         return root.left;
       } else {
-        // Two children: replace with inorder successor
         var successor = findMin(root.right);
         root.val = successor.val;
         root.right = bstDelete(root.right, successor.val);
@@ -184,7 +98,6 @@ var DSA = window.DSA || {};
       description: 'Insert ' + val + ': starting at the root.'
     });
 
-    // Walk down the tree to find insertion point
     var node = root;
     var path = [];
 
@@ -209,7 +122,6 @@ var DSA = window.DSA || {};
       }
     }
 
-    // Perform actual insertion
     root = bstInsert(root, val);
 
     steps.push({
@@ -342,7 +254,6 @@ var DSA = window.DSA || {};
       description: 'Delete ' + val + ': searching for the node.'
     });
 
-    // Walk down to find the node
     var node = root;
     var path = [];
 
@@ -350,7 +261,6 @@ var DSA = window.DSA || {};
       path.push(node.val);
 
       if (node.val === val) {
-        // Determine deletion case
         var caseDesc;
         if (!node.left && !node.right) {
           caseDesc = 'Node ' + val + ' is a leaf. Simply remove it.';
@@ -386,7 +296,6 @@ var DSA = window.DSA || {};
       }
     }
 
-    // Perform actual deletion
     root = bstDelete(root, val);
 
     steps.push({
@@ -404,58 +313,25 @@ var DSA = window.DSA || {};
     var steps = [];
 
     if (!root) {
-      steps.push({
-        tree: null,
-        highlighted: [],
-        found: null,
-        description: 'Tree is empty. Nothing to traverse.'
-      });
+      steps.push({ tree: null, highlighted: [], found: null, description: 'Tree is empty. Nothing to traverse.' });
       return steps;
     }
 
-    steps.push({
-      tree: cloneTree(root),
-      highlighted: [],
-      found: null,
-      description: 'Inorder traversal: visit Left subtree, then Node, then Right subtree.'
-    });
+    steps.push({ tree: cloneTree(root), highlighted: [], found: null, description: 'Inorder traversal: visit Left subtree, then Node, then Right subtree.' });
 
     var visited = [];
 
     function inorder(node) {
       if (!node) return;
-
-      // Visiting this node (going into it)
-      steps.push({
-        tree: cloneTree(root),
-        highlighted: visited.concat([node.val]),
-        found: null,
-        description: 'Visiting node ' + node.val + '. First, go to its left subtree.'
-      });
-
+      steps.push({ tree: cloneTree(root), highlighted: visited.concat([node.val]), found: null, description: 'Visiting node ' + node.val + '. First, go to its left subtree.' });
       inorder(node.left);
-
-      // Process this node
       visited.push(node.val);
-      steps.push({
-        tree: cloneTree(root),
-        highlighted: visited.slice(),
-        found: node.val,
-        description: 'Process node ' + node.val + '. Inorder so far: [' + visited.join(', ') + ']. Now go to its right subtree.'
-      });
-
+      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, description: 'Process node ' + node.val + '. Inorder so far: [' + visited.join(', ') + ']. Now go to its right subtree.' });
       inorder(node.right);
     }
 
     inorder(root);
-
-    steps.push({
-      tree: cloneTree(root),
-      highlighted: visited.slice(),
-      found: null,
-      description: 'Inorder traversal complete: [' + visited.join(', ') + '].'
-    });
-
+    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Inorder traversal complete: [' + visited.join(', ') + '].' });
     return steps;
   }
 
@@ -464,193 +340,169 @@ var DSA = window.DSA || {};
     var steps = [];
 
     if (!root) {
-      steps.push({
-        tree: null,
-        highlighted: [],
-        found: null,
-        description: 'Tree is empty. Nothing to traverse.'
-      });
+      steps.push({ tree: null, highlighted: [], found: null, description: 'Tree is empty. Nothing to traverse.' });
       return steps;
     }
 
-    steps.push({
-      tree: cloneTree(root),
-      highlighted: [],
-      found: null,
-      description: 'Preorder traversal: visit Node first, then Left subtree, then Right subtree.'
-    });
+    steps.push({ tree: cloneTree(root), highlighted: [], found: null, description: 'Preorder traversal: visit Node first, then Left subtree, then Right subtree.' });
 
     var visited = [];
 
     function preorder(node) {
       if (!node) return;
-
-      // Process this node first
       visited.push(node.val);
-      steps.push({
-        tree: cloneTree(root),
-        highlighted: visited.slice(),
-        found: node.val,
-        description: 'Process node ' + node.val + '. Preorder so far: [' + visited.join(', ') + ']. Now go to its left subtree.'
-      });
-
+      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, description: 'Process node ' + node.val + '. Preorder so far: [' + visited.join(', ') + ']. Now go to its left subtree.' });
       preorder(node.left);
-
-      // After left subtree, note going right
       if (node.right) {
-        steps.push({
-          tree: cloneTree(root),
-          highlighted: visited.slice(),
-          found: null,
-          description: 'Left subtree of ' + node.val + ' done. Now go to its right subtree.'
-        });
+        steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Left subtree of ' + node.val + ' done. Now go to its right subtree.' });
       }
-
       preorder(node.right);
     }
 
     preorder(root);
-
-    steps.push({
-      tree: cloneTree(root),
-      highlighted: visited.slice(),
-      found: null,
-      description: 'Preorder traversal complete: [' + visited.join(', ') + '].'
-    });
-
+    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Preorder traversal complete: [' + visited.join(', ') + '].' });
     return steps;
   }
 
-  // ── Canvas rendering ──────────────────────────────────────────────
-  function renderStep(ctx, step, data) {
-    var w = data.width;
-    var h = data.height;
-    var RADIUS = 20;
+  // ── SVG helpers ───────────────────────────────────────────────────
+  function svgEl_make(tag) {
+    return document.createElementNS('http://www.w3.org/2000/svg', tag);
+  }
 
-    if (!step || !step.tree) {
-      ctx.fillStyle = css('--viz-cell-text', '#1e293b');
-      ctx.font = '16px ' + css('--font-sans', 'sans-serif');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Empty tree', w / 2, h / 2);
+  function buildSVG(wrap) {
+    var svg = svgEl_make('svg');
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    wrap.innerHTML = '';
+    wrap.appendChild(svg);
+    return svg;
+  }
+
+  // ── Compute positions via inorder traversal ───────────────────────
+  // Returns array of {val, x, y, parentVal, inorderIdx, depth}
+  function computeLayout(treeRoot, svgW) {
+    if (!treeRoot) return [];
+
+    var nodes = [];
+    var inorderIdx = 0;
+    var RADIUS = NODE_R;
+    var PAD_X = RADIUS + 10;
+    // First pass: collect in inorder, record depth and parentVal
+    function traverse(node, depth, parentVal) {
+      if (!node) return;
+      traverse(node.left, depth + 1, node.val);
+      nodes.push({
+        val: node.val,
+        depth: depth,
+        parentVal: parentVal,
+        inorderIdx: inorderIdx,
+        x: 0,
+        y: 0,
+        leftChildVal: node.left ? node.left.val : null,
+        rightChildVal: node.right ? node.right.val : null
+      });
+      inorderIdx++;
+      traverse(node.right, depth + 1, node.val);
+    }
+    traverse(treeRoot, 0, null);
+
+    var count = nodes.length;
+    var usableW = svgW - PAD_X * 2;
+
+    nodes.forEach(function(n) {
+      n.x = PAD_X + (count > 1 ? (n.inorderIdx / (count - 1)) * usableW : svgW / 2);
+      n.y = 40 + n.depth * LEVEL_H;
+    });
+
+    return nodes;
+  }
+
+  // ── Render a step to SVG ──────────────────────────────────────────
+  function renderStep(step) {
+    if (!svgEl || !svgWrap) return;
+
+    var w = svgWrap.offsetWidth || 600;
+    var h = svgWrap.offsetHeight || 400;
+    svgEl.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    svgEl.setAttribute('width', w);
+    svgEl.setAttribute('height', h);
+
+    var tree = step ? step.tree : root;
+
+    if (!tree) {
+      svgEl.innerHTML = '';
+      var msg = svgEl_make('text');
+      msg.setAttribute('x', w / 2);
+      msg.setAttribute('y', h / 2);
+      msg.setAttribute('text-anchor', 'middle');
+      msg.setAttribute('dominant-baseline', 'central');
+      msg.setAttribute('fill', 'var(--text-secondary)');
+      msg.setAttribute('font-size', '16');
+      msg.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      msg.textContent = 'Empty tree';
+      svgEl.appendChild(msg);
       return;
     }
 
-    var positions = computePositions(step.tree, w);
-    if (positions.length === 0) return;
+    var layout = computeLayout(tree, w);
 
-    var lookup = positionLookup(positions);
+    // Build lookup by val for edge drawing
+    var byVal = {};
+    layout.forEach(function(n) { byVal[n.val] = n; });
+
+    // Build highlighted/found sets from step
     var highlightedSet = {};
-    var highlightedArr = step.highlighted || [];
+    var highlightedArr = (step && step.highlighted) ? step.highlighted : [];
     for (var hi = 0; hi < highlightedArr.length; hi++) {
       highlightedSet[highlightedArr[hi]] = true;
     }
+    var foundVal = step ? step.found : null;
 
-    // ── Draw edges first ──────────────────────────────────────────
-    for (var e = 0; e < positions.length; e++) {
-      var pos = positions[e];
+    svgEl.innerHTML = '';
 
-      if (pos.leftNode && lookup[pos.leftNode.val] !== undefined) {
-        var childPos = lookup[pos.leftNode.val];
-        var edgeColor = css('--viz-arrow', '#64748b');
-        // Compute line from parent circle edge to child circle edge
-        var dx = childPos.x - pos.x;
-        var dy = childPos.y - pos.y;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 0) {
-          var sx = pos.x + (dx / dist) * RADIUS;
-          var sy = pos.y + (dy / dist) * RADIUS;
-          var ex = childPos.x - (dx / dist) * RADIUS;
-          var ey = childPos.y - (dy / dist) * RADIUS;
-          ctx.strokeStyle = edgeColor;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(sx, sy);
-          ctx.lineTo(ex, ey);
-          ctx.stroke();
-        }
+    // Draw edges first (behind nodes)
+    var edgeGroup = svgEl_make('g');
+    edgeGroup.setAttribute('class', 'svg-edges');
+    layout.forEach(function(n) {
+      if (n.parentVal === null) return;
+      var parent = byVal[n.parentVal];
+      if (!parent) return;
+      var line = svgEl_make('line');
+      line.setAttribute('x1', parent.x);
+      line.setAttribute('y1', parent.y);
+      line.setAttribute('x2', n.x);
+      line.setAttribute('y2', n.y);
+      line.setAttribute('class', 'svg-edge svg-edge--default');
+      edgeGroup.appendChild(line);
+    });
+    svgEl.appendChild(edgeGroup);
+
+    // Draw nodes on top
+    layout.forEach(function(n) {
+      var g = svgEl_make('g');
+      g.setAttribute('transform', 'translate(' + n.x + ',' + n.y + ')');
+
+      // Determine state: found > highlighted > default
+      var state = 'default';
+      if (foundVal !== null && foundVal === n.val) {
+        state = 'found';
+      } else if (highlightedSet[n.val]) {
+        state = 'highlighted';
       }
 
-      if (pos.rightNode && lookup[pos.rightNode.val] !== undefined) {
-        var childPosR = lookup[pos.rightNode.val];
-        var edgeColorR = css('--viz-arrow', '#64748b');
-        var dxR = childPosR.x - pos.x;
-        var dyR = childPosR.y - pos.y;
-        var distR = Math.sqrt(dxR * dxR + dyR * dyR);
-        if (distR > 0) {
-          var sxR = pos.x + (dxR / distR) * RADIUS;
-          var syR = pos.y + (dyR / distR) * RADIUS;
-          var exR = childPosR.x - (dxR / distR) * RADIUS;
-          var eyR = childPosR.y - (dyR / distR) * RADIUS;
-          ctx.strokeStyle = edgeColorR;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(sxR, syR);
-          ctx.lineTo(exR, eyR);
-          ctx.stroke();
-        }
-      }
-    }
+      g.setAttribute('class', 'svg-node svg-node--' + state);
 
-    // ── Draw nodes on top ─────────────────────────────────────────
-    for (var n = 0; n < positions.length; n++) {
-      var p = positions[n];
-      var isHighlighted = highlightedSet[p.val] === true;
-      var isFound = step.found === p.val;
+      var circle = svgEl_make('circle');
+      circle.setAttribute('r', NODE_R);
+      g.appendChild(circle);
 
-      var fillColor, borderColor, textColor;
+      var text = svgEl_make('text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'central');
+      text.textContent = String(n.val);
+      g.appendChild(text);
 
-      if (isFound) {
-        fillColor = css('--viz-found', '#22c55e');
-        borderColor = css('--viz-found', '#22c55e');
-        textColor = '#ffffff';
-      } else if (isHighlighted) {
-        fillColor = css('--viz-active', '#ef4444');
-        borderColor = css('--viz-active', '#ef4444');
-        textColor = '#ffffff';
-      } else {
-        fillColor = css('--viz-cell-bg', '#e2e8f0');
-        borderColor = css('--viz-default', '#3b82f6');
-        textColor = css('--viz-cell-text', '#1e293b');
-      }
-
-      // Glow for found nodes
-      if (isFound) {
-        ctx.save();
-        ctx.shadowColor = css('--viz-found', '#22c55e');
-        ctx.shadowBlur = 16;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, RADIUS, 0, Math.PI * 2);
-        ctx.fillStyle = fillColor;
-        ctx.fill();
-        ctx.restore();
-      }
-
-      // Circle
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = fillColor;
-      ctx.fill();
-      ctx.strokeStyle = borderColor;
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // Value text
-      ctx.fillStyle = textColor;
-      ctx.font = 'bold 14px ' + css('--font-sans', 'sans-serif');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(String(p.val), p.x, p.y);
-    }
-  }
-
-  // ── Step change callback ──────────────────────────────────────────
-  function onStepChange(step, data) {
-    if (explanationEl && step && step.description) {
-      explanationEl.textContent = step.description;
-    } else if (explanationEl) {
-      explanationEl.textContent = 'Use the controls below to perform BST operations.';
-    }
+      svgEl.appendChild(g);
+    });
   }
 
   // ── Run operation helper ──────────────────────────────────────────
@@ -672,22 +524,42 @@ var DSA = window.DSA || {};
 
   // ── Init ──────────────────────────────────────────────────────────
   function init() {
-    var canvas = document.getElementById('bst-canvas');
-    if (!canvas) return;
+    svgWrap = document.getElementById('bst-svg-wrap');
+    if (!svgWrap) return;
 
+    svgEl = buildSVG(svgWrap);
     explanationEl = document.querySelector('.viz-explanation');
 
     buildInitialTree();
 
+    // vizCore needs a real canvas element with getContext('2d') and canvas.closest('.viz-container')
+    // We create a hidden off-screen canvas inside the viz-container for control binding only
+    var fakeCanvas = document.createElement('canvas');
+    fakeCanvas.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;';
+    var container = svgWrap.closest('.viz-container');
+    if (container) container.appendChild(fakeCanvas);
+
     var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
 
     viz = DSA.vizCore.create('bst', {
-      canvas: canvas,
-      onRender: renderStep,
-      onStepChange: function(step, data) {
+      canvas: fakeCanvas,
+      tweenDuration: 0, // disable tweening — SVG CSS transitions handle animation
+      onRender: function(_ctx, step) {
+        renderStep(step);
+      },
+      onStepChange: function(step) {
         if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
-        onStepChange(step, data);
+        if (explanationEl && step && step.description) {
+          explanationEl.textContent = step.description;
+        } else if (explanationEl) {
+          explanationEl.textContent = 'Use the controls below to perform BST operations.';
+        }
       }
+    });
+
+    // Respond to SVG wrap resize
+    window.addEventListener('resize', function() {
+      if (viz) viz.render();
     });
 
     // Show initial state

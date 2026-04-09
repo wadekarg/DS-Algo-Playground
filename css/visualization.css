@@ -195,3 +195,81 @@
     height: 280px;
   }
 }
+
+/* SVG-based visualizations */
+.svg-viz-wrap {
+  width: 100%;
+  min-height: 320px;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.svg-viz-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Node circles */
+.svg-node circle {
+  transition: fill 0.35s ease, stroke 0.35s ease, r 0.35s ease;
+  stroke-width: 2.5;
+}
+
+.svg-node text {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Edge lines */
+.svg-edge {
+  transition: stroke 0.35s ease, stroke-width 0.35s ease, opacity 0.35s ease, stroke-dashoffset 0.5s ease;
+  stroke-width: 2;
+}
+
+/* Node state colors */
+.svg-node--default  circle { fill: var(--bg-card); stroke: var(--viz-default); }
+.svg-node--default  text   { fill: var(--text-primary); }
+.svg-node--active   circle { fill: var(--viz-active); stroke: var(--viz-active); }
+.svg-node--active   text   { fill: #fff; }
+.svg-node--visited  circle { fill: var(--viz-default); stroke: var(--viz-default); }
+.svg-node--visited  text   { fill: #fff; }
+.svg-node--found    circle { fill: var(--viz-found); stroke: var(--viz-found); }
+.svg-node--found    text   { fill: #fff; }
+.svg-node--compare  circle { fill: var(--viz-compare); stroke: var(--viz-compare); }
+.svg-node--compare  text   { fill: #fff; }
+.svg-node--queued   circle { fill: var(--viz-swap); stroke: var(--viz-swap); }
+.svg-node--queued   text   { fill: #fff; }
+.svg-node--stacked  circle { fill: var(--viz-swap); stroke: var(--viz-swap); }
+.svg-node--stacked  text   { fill: #fff; }
+.svg-node--new      circle { fill: var(--accent-success); stroke: var(--accent-success); }
+.svg-node--new      text   { fill: #fff; }
+.svg-node--highlighted circle { fill: var(--viz-active); stroke: var(--viz-active); }
+.svg-node--highlighted text   { fill: #fff; }
+.svg-node--completed circle { fill: var(--accent-success); stroke: var(--accent-success); }
+.svg-node--completed text   { fill: #fff; }
+.svg-node--swapping  circle { fill: var(--viz-active); stroke: var(--viz-active); }
+.svg-node--swapping  text   { fill: #fff; }
+.svg-node--current  circle { fill: var(--viz-active); stroke: var(--viz-active); }
+.svg-node--current  text   { fill: #fff; }
+
+/* Edge state */
+.svg-edge--default   { stroke: var(--border-color-strong, #64748b); }
+.svg-edge--active    { stroke: var(--viz-active); stroke-width: 3; }
+.svg-edge--traversed { stroke: var(--viz-default); stroke-width: 3; }
+
+/* Fade-in animation for new nodes */
+@keyframes svgNodeAppear {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.svg-node--appear {
+  animation: svgNodeAppear 0.4s ease forwards;
+  transform-origin: center;
+  transform-box: fill-box;
+}

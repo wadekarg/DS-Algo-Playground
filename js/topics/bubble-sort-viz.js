@@ -134,10 +134,41 @@ var DSA = window.DSA || {};
     return steps;
   }
 
+  // ── Tween helpers ───────────────────────────────────────────────────
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function hexToRgb(hex) {
+    var m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = hex.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    return [100, 100, 100];
+  }
+
+  function lerpColor(a, b, t) {
+    var ca = hexToRgb(a), cb = hexToRgb(b);
+    var r  = Math.round(lerp(ca[0], cb[0], t));
+    var g  = Math.round(lerp(ca[1], cb[1], t));
+    var bl = Math.round(lerp(ca[2], cb[2], t));
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+
+  // Return the two indices that differ between two same-length arrays, or null.
+  function findSwappedPair(fromArr, toArr) {
+    if (!fromArr || !toArr || fromArr.length !== toArr.length) return null;
+    var diff = [];
+    for (var i = 0; i < fromArr.length; i++) {
+      if (fromArr[i] !== toArr[i]) diff.push(i);
+      if (diff.length > 2) return null;
+    }
+    return diff.length === 2 ? diff : null;
+  }
+
   /**
    * Render the bar chart on canvas.
    */
-  function renderBars(ctx, step, data) {
+  function renderBars(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
     var colorDefault = getColor('--viz-default', '#3b82f6');
@@ -145,13 +176,14 @@ var DSA = window.DSA || {};
     var colorSwap = getColor('--viz-swap', '#f97316');
     var colorSorted = getColor('--viz-sorted', '#22c55e');
     var textColor = getColor('--text-primary', '#1e293b');
+    var fontSans = getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim();
 
     ctx.clearRect(0, 0, w, h);
 
     if (!step) {
       // No step data, draw placeholder
       ctx.fillStyle = textColor;
-      ctx.font = '16px ' + getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim();
+      ctx.font = '16px ' + fontSans;
       ctx.textAlign = 'center';
       ctx.fillText('Click "Randomize" or "Play" to begin', w / 2, h / 2);
       return;
@@ -167,16 +199,34 @@ var DSA = window.DSA || {};
 
     var padding = 40;
     var barAreaWidth = w - padding * 2;
-    var barAreaHeight = h - padding * 2 - 20; // extra space for labels at bottom
+    var barAreaHeight = h - padding * 2 - 20;
     var gap = Math.max(4, barAreaWidth * 0.03);
     var barWidth = (barAreaWidth - gap * (n - 1)) / n;
 
+    // Determine if we are mid-tween and a swap happened
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+    var swappedPair = (isTweening && step.swapped) ? findSwappedPair(fromStep.array, step.array) : null;
+
     for (var j = 0; j < n; j++) {
       var barHeight = (arr[j] / maxVal) * barAreaHeight;
-      var x = padding + j * (barWidth + gap);
-      var y = h - padding - barHeight;
 
-      // Determine bar color
+      // Compute interpolated x position
+      var toX = padding + j * (barWidth + gap);
+      var drawX = toX;
+      var arcOffsetY = 0;
+
+      if (swappedPair && (j === swappedPair[0] || j === swappedPair[1])) {
+        // Find where this bar came from in the previous step
+        var fromIndex = (j === swappedPair[0]) ? swappedPair[1] : swappedPair[0];
+        var fromX = padding + fromIndex * (barWidth + gap);
+        drawX = lerp(fromX, toX, tweenT);
+        // Arc upward as bars cross
+        arcOffsetY = -30 * Math.sin(Math.PI * tweenT);
+      }
+
+      var y = h - padding - barHeight + arcOffsetY;
+
+      // Determine bar color, lerping when tweening
       var color = colorDefault;
       if (step.sorted && step.sorted.indexOf(j) !== -1) {
         color = colorSorted;
@@ -185,16 +235,27 @@ var DSA = window.DSA || {};
         color = step.swapped ? colorSwap : colorCompare;
       }
 
+      if (isTweening && fromStep) {
+        var fromColor = colorDefault;
+        if (fromStep.sorted && fromStep.sorted.indexOf(j) !== -1) {
+          fromColor = colorSorted;
+        }
+        if (fromStep.comparing && fromStep.comparing.indexOf(j) !== -1) {
+          fromColor = fromStep.swapped ? colorSwap : colorCompare;
+        }
+        color = lerpColor(fromColor, color, tweenT);
+      }
+
       // Draw bar with rounded top
       var radius = Math.min(barWidth / 4, 6);
       ctx.beginPath();
-      ctx.moveTo(x, y + radius);
-      ctx.lineTo(x, h - padding);
-      ctx.lineTo(x + barWidth, h - padding);
-      ctx.lineTo(x + barWidth, y + radius);
-      ctx.quadraticCurveTo(x + barWidth, y, x + barWidth - radius, y);
-      ctx.lineTo(x + radius, y);
-      ctx.quadraticCurveTo(x, y, x, y + radius);
+      ctx.moveTo(drawX, y + radius);
+      ctx.lineTo(drawX, h - padding);
+      ctx.lineTo(drawX + barWidth, h - padding);
+      ctx.lineTo(drawX + barWidth, y + radius);
+      ctx.quadraticCurveTo(drawX + barWidth, y, drawX + barWidth - radius, y);
+      ctx.lineTo(drawX + radius, y);
+      ctx.quadraticCurveTo(drawX, y, drawX, y + radius);
       ctx.closePath();
 
       ctx.fillStyle = color;
@@ -202,26 +263,28 @@ var DSA = window.DSA || {};
 
       // Draw value label above bar
       ctx.fillStyle = textColor;
-      ctx.font = 'bold 13px ' + getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim();
+      ctx.font = 'bold 13px ' + fontSans;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(String(arr[j]), x + barWidth / 2, y - 4);
+      ctx.fillText(String(arr[j]), drawX + barWidth / 2, y - 4);
 
-      // Draw index label below bar
+      // Draw index label below bar (always at canonical position, no arc)
       ctx.fillStyle = getColor('--text-tertiary', '#94a3b8');
-      ctx.font = '11px ' + getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim();
+      ctx.font = '11px ' + fontSans;
       ctx.textBaseline = 'top';
-      ctx.fillText(String(j), x + barWidth / 2, h - padding + 4);
+      ctx.fillText(String(j), toX + barWidth / 2, h - padding + 4);
     }
 
-    // Draw comparing indicator arrows
-    if (step.comparing && step.comparing.length === 2) {
+    // Draw comparing indicator arrows (only when not mid-swap-tween)
+    if (step.comparing && step.comparing.length === 2 && !swappedPair) {
       var idx0 = step.comparing[0];
       var idx1 = step.comparing[1];
       var cx0 = padding + idx0 * (barWidth + gap) + barWidth / 2;
       var cx1 = padding + idx1 * (barWidth + gap) + barWidth / 2;
       var arrowY = h - padding + 18;
+      var arrowAlpha = isTweening ? tweenT : 1;
 
+      ctx.globalAlpha = arrowAlpha;
       ctx.strokeStyle = step.swapped ? colorSwap : colorCompare;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -229,23 +292,21 @@ var DSA = window.DSA || {};
       ctx.lineTo(cx1, arrowY);
       ctx.stroke();
 
-      // Small triangles at each end
       var triSize = 5;
       ctx.fillStyle = step.swapped ? colorSwap : colorCompare;
-      // Left triangle
       ctx.beginPath();
       ctx.moveTo(cx0, arrowY - triSize);
       ctx.lineTo(cx0, arrowY + triSize);
       ctx.lineTo(cx0 + triSize, arrowY);
       ctx.closePath();
       ctx.fill();
-      // Right triangle
       ctx.beginPath();
       ctx.moveTo(cx1, arrowY - triSize);
       ctx.lineTo(cx1, arrowY + triSize);
       ctx.lineTo(cx1 - triSize, arrowY);
       ctx.closePath();
       ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 

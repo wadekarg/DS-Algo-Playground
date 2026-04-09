@@ -124,8 +124,11 @@ var DSA = window.DSA || {};
     return steps;
   }
 
+  // ── Tween helper ────────────────────────────────────────────────────
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
   // ── Canvas rendering ────────────────────────────────────────────────
-  function renderStep(ctx, step, data) {
+  function renderStep(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
 
@@ -144,6 +147,8 @@ var DSA = window.DSA || {};
       totalW = arr.length * (cellW + gap) - gap;
       startX = 20;
     }
+
+    var isTweening = fromStep && typeof tweenT === 'number' && tweenT < 1;
 
     var fontSize = Math.min(16, Math.max(11, cellW * 0.3));
 
@@ -173,10 +178,20 @@ var DSA = window.DSA || {};
       }
     }
 
-    // Draw window highlight rectangle behind cells
+    // Draw window highlight rectangle behind cells (lerp x and width when tweening)
     if (step && step.windowStart >= 0 && step.windowEnd >= 0) {
-      var wxStart = startX + step.windowStart * (cellW + gap) - 4;
-      var wxEnd = startX + step.windowEnd * (cellW + gap) + cellW + 4;
+      var toWxStart = startX + step.windowStart * (cellW + gap) - 4;
+      var toWxEnd   = startX + step.windowEnd   * (cellW + gap) + cellW + 4;
+      var wxStart, wxEnd;
+      if (isTweening && fromStep && fromStep.windowStart >= 0 && fromStep.windowEnd >= 0) {
+        var fromWxStart = startX + fromStep.windowStart * (cellW + gap) - 4;
+        var fromWxEnd   = startX + fromStep.windowEnd   * (cellW + gap) + cellW + 4;
+        wxStart = lerp(fromWxStart, toWxStart, tweenT);
+        wxEnd   = lerp(fromWxEnd,   toWxEnd,   tweenT);
+      } else {
+        wxStart = toWxStart;
+        wxEnd   = toWxEnd;
+      }
       var wxWidth = wxEnd - wxStart;
       var wyStart = startY - 4;
       var wyHeight = cellH + 8;

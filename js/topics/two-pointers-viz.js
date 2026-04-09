@@ -123,8 +123,11 @@ var DSA = window.DSA || {};
     return steps;
   }
 
+  // ── Tween helpers ────────────────────────────────────────────────────
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
   // ── Canvas rendering ────────────────────────────────────────────────
-  function renderStep(ctx, step, data) {
+  function renderStep(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
 
@@ -143,6 +146,9 @@ var DSA = window.DSA || {};
       totalW = arr.length * (cellW + gap) - gap;
       startX = 20;
     }
+
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+    var t = isTweening ? tweenT : 1;
 
     var fontSize = Math.min(16, Math.max(11, cellW * 0.3));
 
@@ -237,21 +243,17 @@ var DSA = window.DSA || {};
     var arrowY = startY + cellH + 20;
     var arrowLen = 18;
 
-    function drawArrow(idx, color, label) {
-      if (idx < 0 || idx >= arr.length) return;
-      var ax = startX + idx * (cellW + gap) + cellW / 2;
-
+    // Draw arrow at an interpolated x position
+    function drawArrowAt(ax, color, label) {
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       ctx.lineWidth = 2.5;
 
-      // Arrow line pointing up
       ctx.beginPath();
       ctx.moveTo(ax, arrowY + arrowLen);
       ctx.lineTo(ax, arrowY);
       ctx.stroke();
 
-      // Arrowhead
       ctx.beginPath();
       ctx.moveTo(ax, arrowY);
       ctx.lineTo(ax - 5, arrowY + 8);
@@ -259,19 +261,37 @@ var DSA = window.DSA || {};
       ctx.closePath();
       ctx.fill();
 
-      // Label below arrow
       ctx.font = 'bold ' + (fontSize - 1) + 'px ' + css('--font-sans');
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText(label, ax, arrowY + arrowLen + 4);
     }
 
+    function pointerX(idx) {
+      if (idx < 0 || idx >= arr.length) return -1;
+      return startX + idx * (cellW + gap) + cellW / 2;
+    }
+
+    function lerpPointerX(toIdx, fromIdx) {
+      var toAx = pointerX(toIdx);
+      if (toAx < 0) return toAx;
+      if (!isTweening || fromIdx < 0 || fromIdx === toIdx) return toAx;
+      var fromAx = startX + fromIdx * (cellW + gap) + cellW / 2;
+      return lerp(fromAx, toAx, t);
+    }
+
     if (step.foundPair) {
-      drawArrow(step.foundPair[0], css('--viz-found'), 'FOUND');
-      drawArrow(step.foundPair[1], css('--viz-found'), 'FOUND');
+      var fax0 = pointerX(step.foundPair[0]);
+      var fax1 = pointerX(step.foundPair[1]);
+      if (fax0 >= 0) drawArrowAt(fax0, css('--viz-found'), 'FOUND');
+      if (fax1 >= 0) drawArrowAt(fax1, css('--viz-found'), 'FOUND');
     } else {
-      drawArrow(step.left, css('--viz-default'), 'left');
-      drawArrow(step.right, css('--viz-active'), 'right');
+      var fromLeft  = fromStep ? fromStep.left  : step.left;
+      var fromRight = fromStep ? fromStep.right : step.right;
+      var lax = lerpPointerX(step.left,  fromLeft);
+      var rax = lerpPointerX(step.right, fromRight);
+      if (lax >= 0) drawArrowAt(lax, css('--viz-default'), 'left');
+      if (rax >= 0) drawArrowAt(rax, css('--viz-active'),  'right');
     }
 
     // Sum display in top-right

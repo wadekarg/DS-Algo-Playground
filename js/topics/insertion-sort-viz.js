@@ -151,11 +151,31 @@ var DSA = window.DSA || {};
     return steps;
   }
 
+  // ── Tween helpers ───────────────────────────────────────────────────
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function hexToRgb(hex) {
+    var m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = hex.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    return [100, 100, 100];
+  }
+
+  function lerpColor(a, b, t) {
+    var ca = hexToRgb(a), cb = hexToRgb(b);
+    var r  = Math.round(lerp(ca[0], cb[0], t));
+    var g  = Math.round(lerp(ca[1], cb[1], t));
+    var bl = Math.round(lerp(ca[2], cb[2], t));
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+
   /**
    * Render the bar chart on canvas.
    * Key element is shown floating above its destination slot.
    */
-  function renderBars(ctx, step, data) {
+  function renderBars(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
     var colorDefault = getColor('--viz-default', '#3b82f6');
@@ -191,10 +211,52 @@ var DSA = window.DSA || {};
     var barWidth = (barAreaWidth - gap * (n - 1)) / n;
     var barBottom = h - padding;
 
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+
+    // Detect shift step: one element moved one slot right between steps
+    // We detect this by finding an index whose value changed and the source index
+    function getShiftedBar() {
+      if (!isTweening || !fromStep) return null;
+      if (step.shifting === null || step.shifting === undefined) return null;
+      // The bar at (step.shifting + 1) in toStep came from (step.shifting) in fromStep
+      var dest = step.shifting + 1;
+      if (dest < n && fromStep.array && fromStep.array[step.shifting] !== step.array[step.shifting]) {
+        return { dest: dest, src: step.shifting };
+      }
+      return null;
+    }
+    var shiftedBar = getShiftedBar();
+
+    // Detect insert step: floating key lands at insertAt position
+    function getInsertedBar() {
+      if (!isTweening || !fromStep) return null;
+      if (step.insertAt === null || step.insertAt === undefined) return null;
+      if (!step.key) return null;
+      // Determine where the key was floating in fromStep
+      var fromFloatIndex;
+      if (fromStep.shifting !== null && fromStep.shifting !== undefined) {
+        fromFloatIndex = fromStep.shifting;
+      } else if (fromStep.key) {
+        fromFloatIndex = fromStep.key.fromIndex;
+      } else {
+        return null;
+      }
+      if (fromFloatIndex === step.insertAt) return null; // same slot, no movement
+      return { dest: step.insertAt, src: fromFloatIndex };
+    }
+    var insertedBar = getInsertedBar();
+
     for (var j = 0; j < n; j++) {
       var barHeight = (arr[j] / maxVal) * barAreaHeight;
-      var x = padding + j * (barWidth + gap);
-      var y = barBottom - barHeight;
+      var toX = padding + j * (barWidth + gap);
+      var drawX = toX;
+      var drawY = barBottom - barHeight;
+
+      // Lerp x for a bar that shifted right this step
+      if (shiftedBar && j === shiftedBar.dest) {
+        var fromX = padding + shiftedBar.src * (barWidth + gap);
+        drawX = lerp(fromX, toX, tweenT);
+      }
 
       // Determine bar color
       var color = colorDefault;
@@ -221,16 +283,27 @@ var DSA = window.DSA || {};
         color = colorKey;
       }
 
+      // Lerp color when tweening
+      if (isTweening && fromStep) {
+        var fromColor = colorDefault;
+        if (fromStep.sorted && fromStep.sorted.indexOf(j) !== -1) fromColor = colorSorted;
+        if (fromStep.shifting !== null && fromStep.shifting !== undefined && j === fromStep.shifting + 1) fromColor = colorCompare;
+        if (fromStep.insertAt !== null && fromStep.insertAt !== undefined && j === fromStep.insertAt && fromStep.key) fromColor = colorKey;
+        var fromIsKeyFloating = fromStep.key && fromStep.shifting === null && fromStep.insertAt === null;
+        if (fromIsKeyFloating && fromStep.key && j === fromStep.key.fromIndex) fromColor = colorKey;
+        color = lerpColor(fromColor, color, tweenT);
+      }
+
       // Draw bar with rounded top
       var radius = Math.min(barWidth / 4, 6);
       ctx.beginPath();
-      ctx.moveTo(x, y + radius);
-      ctx.lineTo(x, barBottom);
-      ctx.lineTo(x + barWidth, barBottom);
-      ctx.lineTo(x + barWidth, y + radius);
-      ctx.quadraticCurveTo(x + barWidth, y, x + barWidth - radius, y);
-      ctx.lineTo(x + radius, y);
-      ctx.quadraticCurveTo(x, y, x, y + radius);
+      ctx.moveTo(drawX, drawY + radius);
+      ctx.lineTo(drawX, barBottom);
+      ctx.lineTo(drawX + barWidth, barBottom);
+      ctx.lineTo(drawX + barWidth, drawY + radius);
+      ctx.quadraticCurveTo(drawX + barWidth, drawY, drawX + barWidth - radius, drawY);
+      ctx.lineTo(drawX + radius, drawY);
+      ctx.quadraticCurveTo(drawX, drawY, drawX, drawY + radius);
       ctx.closePath();
 
       ctx.fillStyle = color;
@@ -241,13 +314,13 @@ var DSA = window.DSA || {};
       ctx.font = 'bold 13px ' + fontSans();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(String(arr[j]), x + barWidth / 2, y - 4);
+      ctx.fillText(String(arr[j]), drawX + barWidth / 2, drawY - 4);
 
-      // Draw index label below bar
+      // Draw index label below bar at canonical position
       ctx.fillStyle = getColor('--text-tertiary', '#94a3b8');
       ctx.font = '11px ' + fontSans();
       ctx.textBaseline = 'top';
-      ctx.fillText(String(j), x + barWidth / 2, barBottom + 4);
+      ctx.fillText(String(j), toX + barWidth / 2, barBottom + 4);
     }
 
     // Draw the floating key element above the bars when key is extracted
@@ -265,51 +338,87 @@ var DSA = window.DSA || {};
         floatIndex = step.key.fromIndex;
       }
 
-      var floatX = padding + floatIndex * (barWidth + gap);
-      var floatY = padding + topReserve - keyBarHeight - 8;
-      if (floatY < 8) floatY = 8;
-      var floatBarTop = padding + topReserve - keyBarHeight - 8;
-      if (floatBarTop < 8) floatBarTop = 8;
+      // When inserting (floating key slides to its slot), lerp the x position
+      var floatDrawIndex = floatIndex;
+      if (insertedBar && isTweening) {
+        // lerp float x from src to dest
+        var rawFromX = padding + insertedBar.src * (barWidth + gap);
+        var rawToX = padding + insertedBar.dest * (barWidth + gap);
+        var floatX = lerp(rawFromX, rawToX, tweenT);
+        var floatBarTop = padding + topReserve - keyBarHeight - 8;
+        if (floatBarTop < 8) floatBarTop = 8;
 
-      // Draw floating key bar
-      var floatRadius = Math.min(barWidth / 4, 6);
-      ctx.beginPath();
-      ctx.moveTo(floatX, floatBarTop + floatRadius);
-      ctx.lineTo(floatX, floatBarTop + keyBarHeight);
-      ctx.lineTo(floatX + barWidth, floatBarTop + keyBarHeight);
-      ctx.lineTo(floatX + barWidth, floatBarTop + floatRadius);
-      ctx.quadraticCurveTo(floatX + barWidth, floatBarTop, floatX + barWidth - floatRadius, floatBarTop);
-      ctx.lineTo(floatX + floatRadius, floatBarTop);
-      ctx.quadraticCurveTo(floatX, floatBarTop, floatX, floatBarTop + floatRadius);
-      ctx.closePath();
+        var floatRadius = Math.min(barWidth / 4, 6);
+        ctx.beginPath();
+        ctx.moveTo(floatX, floatBarTop + floatRadius);
+        ctx.lineTo(floatX, floatBarTop + keyBarHeight);
+        ctx.lineTo(floatX + barWidth, floatBarTop + keyBarHeight);
+        ctx.lineTo(floatX + barWidth, floatBarTop + floatRadius);
+        ctx.quadraticCurveTo(floatX + barWidth, floatBarTop, floatX + barWidth - floatRadius, floatBarTop);
+        ctx.lineTo(floatX + floatRadius, floatBarTop);
+        ctx.quadraticCurveTo(floatX, floatBarTop, floatX, floatBarTop + floatRadius);
+        ctx.closePath();
+        ctx.fillStyle = colorKey;
+        ctx.globalAlpha = 0.85;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
 
-      ctx.fillStyle = colorKey;
-      ctx.globalAlpha = 0.85;
-      ctx.fill();
-      ctx.globalAlpha = 1.0;
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 13px ' + fontSans();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(String(keyVal), floatX + barWidth / 2, floatBarTop - 2);
+        ctx.fillStyle = colorKey;
+        ctx.font = 'bold 11px ' + fontSans();
+        ctx.fillText('key', floatX + barWidth / 2, floatBarTop - 14);
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = colorKey;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(floatX + barWidth / 2, floatBarTop + keyBarHeight + 2);
+        ctx.lineTo(floatX + barWidth / 2, padding + topReserve);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        // Normal static floating key rendering
+        var floatX2 = padding + floatDrawIndex * (barWidth + gap);
+        var floatBarTop2 = padding + topReserve - keyBarHeight - 8;
+        if (floatBarTop2 < 8) floatBarTop2 = 8;
 
-      // Key value label
-      ctx.fillStyle = textColor;
-      ctx.font = 'bold 13px ' + fontSans();
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(String(keyVal), floatX + barWidth / 2, floatBarTop - 2);
+        var floatAlpha = isTweening ? tweenT : 0.85;
 
-      // "key" label
-      ctx.fillStyle = colorKey;
-      ctx.font = 'bold 11px ' + fontSans();
-      ctx.textBaseline = 'bottom';
-      ctx.fillText('key', floatX + barWidth / 2, floatBarTop - 14);
+        var floatRadius2 = Math.min(barWidth / 4, 6);
+        ctx.beginPath();
+        ctx.moveTo(floatX2, floatBarTop2 + floatRadius2);
+        ctx.lineTo(floatX2, floatBarTop2 + keyBarHeight);
+        ctx.lineTo(floatX2 + barWidth, floatBarTop2 + keyBarHeight);
+        ctx.lineTo(floatX2 + barWidth, floatBarTop2 + floatRadius2);
+        ctx.quadraticCurveTo(floatX2 + barWidth, floatBarTop2, floatX2 + barWidth - floatRadius2, floatBarTop2);
+        ctx.lineTo(floatX2 + floatRadius2, floatBarTop2);
+        ctx.quadraticCurveTo(floatX2, floatBarTop2, floatX2, floatBarTop2 + floatRadius2);
+        ctx.closePath();
+        ctx.fillStyle = colorKey;
+        ctx.globalAlpha = floatAlpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
 
-      // Draw a dashed line from the floating key down to the bar area
-      ctx.setLineDash([4, 3]);
-      ctx.strokeStyle = colorKey;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(floatX + barWidth / 2, floatBarTop + keyBarHeight + 2);
-      ctx.lineTo(floatX + barWidth / 2, padding + topReserve);
-      ctx.stroke();
-      ctx.setLineDash([]);
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 13px ' + fontSans();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(String(keyVal), floatX2 + barWidth / 2, floatBarTop2 - 2);
+        ctx.fillStyle = colorKey;
+        ctx.font = 'bold 11px ' + fontSans();
+        ctx.fillText('key', floatX2 + barWidth / 2, floatBarTop2 - 14);
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = colorKey;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(floatX2 + barWidth / 2, floatBarTop2 + keyBarHeight + 2);
+        ctx.lineTo(floatX2 + barWidth / 2, padding + topReserve);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
 
     // Draw shift arrow indicator when shifting
@@ -320,6 +429,7 @@ var DSA = window.DSA || {};
       var cx1 = padding + shiftTo * (barWidth + gap) + barWidth / 2;
       var arrowY = barBottom + 18;
 
+      ctx.globalAlpha = isTweening ? tweenT : 1;
       ctx.strokeStyle = colorCompare;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -336,6 +446,7 @@ var DSA = window.DSA || {};
       ctx.lineTo(cx1 + triSize, arrowY);
       ctx.closePath();
       ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 

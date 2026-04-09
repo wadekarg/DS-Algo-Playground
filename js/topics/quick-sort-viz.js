@@ -217,10 +217,67 @@ var DSA = window.DSA || {};
     quickSortRecursive(a, i + 1, high, steps, sorted);
   }
 
+  // ── Tween helpers ───────────────────────────────────────────────────
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function hexToRgb(hex) {
+    var m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = hex.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    return [100, 100, 100];
+  }
+
+  function lerpColor(a, b, t) {
+    var ca = hexToRgb(a), cb = hexToRgb(b);
+    var r  = Math.round(lerp(ca[0], cb[0], t));
+    var g  = Math.round(lerp(ca[1], cb[1], t));
+    var bl = Math.round(lerp(ca[2], cb[2], t));
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+
+  function findSwappedPair(fromArr, toArr) {
+    if (!fromArr || !toArr || fromArr.length !== toArr.length) return null;
+    var diff = [];
+    for (var i = 0; i < fromArr.length; i++) {
+      if (fromArr[i] !== toArr[i]) diff.push(i);
+      if (diff.length > 2) return null;
+    }
+    return diff.length === 2 ? diff : null;
+  }
+
+  function qsBarColor(step, j, colorDefault, colorCompare, colorSwap, colorSorted, colorPivot, dimColor) {
+    var color = colorDefault;
+    if (step.sorted && step.sorted.indexOf(j) !== -1) {
+      color = colorSorted;
+    }
+    if (step.activeLeft >= 0 && step.activeRight >= 0) {
+      if ((j < step.activeLeft || j > step.activeRight) && step.sorted.indexOf(j) === -1) {
+        color = dimColor;
+      }
+    }
+    if (j === step.pivot) {
+      color = colorPivot;
+    }
+    if (step.partitioned && step.partitioned.indexOf(j) !== -1 && j !== step.pivot) {
+      if (step.sorted.indexOf(j) === -1) {
+        color = colorCompare;
+      }
+    }
+    if (j === step.left && step.left >= 0 && step.sorted.indexOf(j) === -1 && j !== step.pivot) {
+      color = colorCompare;
+    }
+    if (j === step.right && step.right >= 0 && step.sorted.indexOf(j) === -1 && j !== step.pivot) {
+      color = colorSwap;
+    }
+    return color;
+  }
+
   /**
    * Render the bar chart on canvas.
    */
-  function renderBars(ctx, step, data) {
+  function renderBars(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
     var colorDefault = getColor('--viz-default', '#3b82f6');
@@ -255,58 +312,43 @@ var DSA = window.DSA || {};
     var gap = Math.max(4, barAreaWidth * 0.03);
     var barWidth = (barAreaWidth - gap * (n - 1)) / n;
 
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+    // Detect partition swap: two bars changed position
+    var swappedPair = isTweening ? findSwappedPair(fromStep.array, step.array) : null;
+
     for (var j = 0; j < n; j++) {
       var barHeight = (arr[j] / maxVal) * barAreaHeight;
-      var x = padding + j * (barWidth + gap);
-      var y = h - padding - barHeight;
+      var toX = padding + j * (barWidth + gap);
+      var drawX = toX;
+      var arcOffsetY = 0;
 
-      // Determine bar color
-      var color = colorDefault;
-
-      // Check if sorted
-      if (step.sorted && step.sorted.indexOf(j) !== -1) {
-        color = colorSorted;
+      // Arc swapped bars across each other
+      if (swappedPair && (j === swappedPair[0] || j === swappedPair[1])) {
+        var fromIndex = (j === swappedPair[0]) ? swappedPair[1] : swappedPair[0];
+        var fromX = padding + fromIndex * (barWidth + gap);
+        drawX = lerp(fromX, toX, tweenT);
+        arcOffsetY = -30 * Math.sin(Math.PI * tweenT);
       }
 
-      // Dim elements outside the active partition
-      if (step.activeLeft >= 0 && step.activeRight >= 0) {
-        if ((j < step.activeLeft || j > step.activeRight) && step.sorted.indexOf(j) === -1) {
-          color = dimColor;
-        }
-      }
+      var y = h - padding - barHeight + arcOffsetY;
 
-      // Pivot gets purple
-      if (j === step.pivot) {
-        color = colorPivot;
-      }
-
-      // Partitioned elements (already placed on left side)
-      if (step.partitioned && step.partitioned.indexOf(j) !== -1 && j !== step.pivot) {
-        if (step.sorted.indexOf(j) === -1) {
-          color = colorCompare;
-        }
-      }
-
-      // Left pointer (partition boundary)
-      if (j === step.left && step.left >= 0 && step.sorted.indexOf(j) === -1 && j !== step.pivot) {
-        color = colorCompare;
-      }
-
-      // Right pointer (scanning)
-      if (j === step.right && step.right >= 0 && step.sorted.indexOf(j) === -1 && j !== step.pivot) {
-        color = colorSwap;
+      // Determine bar color with lerp
+      var color = qsBarColor(step, j, colorDefault, colorCompare, colorSwap, colorSorted, colorPivot, dimColor);
+      if (isTweening && fromStep) {
+        var fromColor = qsBarColor(fromStep, j, colorDefault, colorCompare, colorSwap, colorSorted, colorPivot, dimColor);
+        color = lerpColor(fromColor, color, tweenT);
       }
 
       // Draw bar with rounded top
       var radius = Math.min(barWidth / 4, 6);
       ctx.beginPath();
-      ctx.moveTo(x, y + radius);
-      ctx.lineTo(x, h - padding);
-      ctx.lineTo(x + barWidth, h - padding);
-      ctx.lineTo(x + barWidth, y + radius);
-      ctx.quadraticCurveTo(x + barWidth, y, x + barWidth - radius, y);
-      ctx.lineTo(x + radius, y);
-      ctx.quadraticCurveTo(x, y, x, y + radius);
+      ctx.moveTo(drawX, y + radius);
+      ctx.lineTo(drawX, h - padding);
+      ctx.lineTo(drawX + barWidth, h - padding);
+      ctx.lineTo(drawX + barWidth, y + radius);
+      ctx.quadraticCurveTo(drawX + barWidth, y, drawX + barWidth - radius, y);
+      ctx.lineTo(drawX + radius, y);
+      ctx.quadraticCurveTo(drawX, y, drawX, y + radius);
       ctx.closePath();
 
       ctx.fillStyle = color;
@@ -317,21 +359,34 @@ var DSA = window.DSA || {};
       ctx.font = 'bold 13px ' + fontSans();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(String(arr[j]), x + barWidth / 2, y - 4);
+      ctx.fillText(String(arr[j]), drawX + barWidth / 2, y - 4);
 
-      // Draw index label below bar
+      // Draw index label below bar at canonical position
       ctx.fillStyle = getColor('--text-tertiary', '#94a3b8');
       ctx.font = '11px ' + fontSans();
       ctx.textBaseline = 'top';
-      ctx.fillText(String(j), x + barWidth / 2, h - padding + 4);
+      ctx.fillText(String(j), toX + barWidth / 2, h - padding + 4);
     }
 
-    // Draw pointer labels below indices
+    // Draw pointer labels below indices (lerp their x positions)
     var labelY = h - padding + 18;
     var fontSize = 11;
 
+    function lerpedX(stepIdx, fromIdx) {
+      if (!isTweening || fromIdx < 0 || fromIdx === stepIdx) {
+        return stepIdx >= 0 ? padding + stepIdx * (barWidth + gap) + barWidth / 2 : -1;
+      }
+      var fx = padding + fromIdx * (barWidth + gap) + barWidth / 2;
+      var tx = padding + stepIdx * (barWidth + gap) + barWidth / 2;
+      return lerp(fx, tx, tweenT);
+    }
+
+    var fromLeft  = fromStep ? fromStep.left  : step.left;
+    var fromRight = fromStep ? fromStep.right : step.right;
+    var fromPivot = fromStep ? fromStep.pivot : step.pivot;
+
     if (step.left >= 0 && step.left < n) {
-      var lx = padding + step.left * (barWidth + gap) + barWidth / 2;
+      var lx = lerpedX(step.left, fromLeft);
       ctx.fillStyle = colorCompare;
       ctx.font = 'bold ' + fontSize + 'px ' + fontSans();
       ctx.textAlign = 'center';
@@ -340,7 +395,7 @@ var DSA = window.DSA || {};
     }
 
     if (step.right >= 0 && step.right < n) {
-      var rx = padding + step.right * (barWidth + gap) + barWidth / 2;
+      var rx = lerpedX(step.right, fromRight);
       ctx.fillStyle = colorSwap;
       ctx.font = 'bold ' + fontSize + 'px ' + fontSans();
       ctx.textAlign = 'center';
@@ -349,12 +404,11 @@ var DSA = window.DSA || {};
     }
 
     if (step.pivot >= 0 && step.pivot < n) {
-      var px = padding + step.pivot * (barWidth + gap) + barWidth / 2;
+      var px = lerpedX(step.pivot, fromPivot);
       ctx.fillStyle = colorPivot;
       ctx.font = 'bold ' + fontSize + 'px ' + fontSans();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      // Offset slightly if colliding with i or j
       var pivotLabelY = labelY;
       if (step.pivot === step.left || step.pivot === step.right) {
         pivotLabelY = labelY + 12;

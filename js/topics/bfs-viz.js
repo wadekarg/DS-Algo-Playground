@@ -23,8 +23,7 @@ var DSA = window.DSA || {};
 
   var NUM_NODES = 7;
 
-  // Node positions laid out as a tree (relative to canvas size, computed in render)
-  // Stored as fractions of canvas width/height so we can scale
+  // Node positions laid out as a tree (relative to graph area, as fractions)
   var nodeLayoutFractions = [
     { fx: 0.30, fy: 0.15 },  // 0 (root)
     { fx: 0.15, fy: 0.45 },  // 1
@@ -36,16 +35,24 @@ var DSA = window.DSA || {};
   ];
 
   var NODE_RADIUS = 22;
+  var NS = 'http://www.w3.org/2000/svg';
 
-  // ── Colour helpers ────────────────────────────────────────
-  function css(prop) {
-    return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  var svgWrap = null;
+  var svgEl = null;
+  var nodeEls = [];       // SVG <g> elements, indexed by node id
+  var edgeEls = {};       // SVG <line> elements, keyed by 'min-max'
+  var queuePanel = null;  // <g> for queue cells
+  var svgW = 0;
+  var svgH = 0;
+
+  // ── SVG element factory ───────────────────────────────────────────────
+  function svgMake(tag) {
+    return document.createElementNS(NS, tag);
   }
 
-  // ── Compute node positions from canvas dimensions ─────────
+  // ── Compute node positions from SVG dimensions ────────────────────────
   function getNodePositions(w, h) {
     var positions = [];
-    // Use left 60% of canvas for graph, right 40% for queue
     var graphW = w * 0.58;
     var graphH = h;
     for (var i = 0; i < nodeLayoutFractions.length; i++) {
@@ -57,7 +64,7 @@ var DSA = window.DSA || {};
     return positions;
   }
 
-  // ── Compute edges (undirected, no duplicates) ─────────────
+  // ── Compute edges (undirected, no duplicates) ─────────────────────────
   function getEdges(adj) {
     var edges = [];
     var seen = {};
@@ -68,19 +75,264 @@ var DSA = window.DSA || {};
         var key = Math.min(u, v) + '-' + Math.max(u, v);
         if (!seen[key]) {
           seen[key] = true;
-          edges.push({ from: u, to: v });
+          edges.push({ from: u, to: v, key: key });
         }
       }
     }
     return edges;
   }
 
-  // ── Step pre-computation (BFS) ────────────────────────────
+  // ── Build SVG once ────────────────────────────────────────────────────
+  function buildSVG(wrap) {
+    wrap.innerHTML = '';
+
+    var w = wrap.offsetWidth || 640;
+    var h = wrap.offsetHeight || 350;
+    if (h < 200) h = 350;
+
+    svgW = w;
+    svgH = h;
+
+    var svg = svgMake('svg');
+    svg.setAttribute('xmlns', NS);
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    wrap.appendChild(svg);
+    svgEl = svg;
+
+    var positions = getNodePositions(w, h);
+    var edges = getEdges(defaultAdj);
+
+    // ── Section labels ────────────────────────────────────────────────
+    var graphLabel = svgMake('text');
+    graphLabel.setAttribute('x', w * 0.28);
+    graphLabel.setAttribute('y', '16');
+    graphLabel.setAttribute('text-anchor', 'middle');
+    graphLabel.setAttribute('font-size', '12');
+    graphLabel.setAttribute('font-weight', '600');
+    graphLabel.setAttribute('fill', 'var(--text-tertiary)');
+    graphLabel.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+    graphLabel.textContent = 'Graph';
+    svg.appendChild(graphLabel);
+
+    var queueLabel = svgMake('text');
+    queueLabel.setAttribute('x', w * 0.80);
+    queueLabel.setAttribute('y', '16');
+    queueLabel.setAttribute('text-anchor', 'middle');
+    queueLabel.setAttribute('font-size', '12');
+    queueLabel.setAttribute('font-weight', '600');
+    queueLabel.setAttribute('fill', 'var(--text-tertiary)');
+    queueLabel.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+    queueLabel.textContent = 'Queue (FIFO)';
+    svg.appendChild(queueLabel);
+
+    // ── Divider line ──────────────────────────────────────────────────
+    var divider = svgMake('line');
+    divider.setAttribute('x1', w * 0.62);
+    divider.setAttribute('y1', 24);
+    divider.setAttribute('x2', w * 0.62);
+    divider.setAttribute('y2', h - 10);
+    divider.setAttribute('stroke', 'var(--border-color)');
+    divider.setAttribute('stroke-width', '1');
+    divider.setAttribute('stroke-dasharray', '4 4');
+    svg.appendChild(divider);
+
+    // ── Edges ─────────────────────────────────────────────────────────
+    var edgeGroup = svgMake('g');
+    edgeGroup.setAttribute('class', 'svg-edges');
+    for (var ei = 0; ei < edges.length; ei++) {
+      var e = edges[ei];
+      var fp = positions[e.from];
+      var tp = positions[e.to];
+      var line = svgMake('line');
+      line.setAttribute('x1', fp.x);
+      line.setAttribute('y1', fp.y);
+      line.setAttribute('x2', tp.x);
+      line.setAttribute('y2', tp.y);
+      line.setAttribute('class', 'svg-edge svg-edge--default');
+      edgeGroup.appendChild(line);
+      edgeEls[e.key] = line;
+    }
+    svg.appendChild(edgeGroup);
+
+    // ── Nodes ─────────────────────────────────────────────────────────
+    nodeEls = [];
+    for (var ni = 0; ni < NUM_NODES; ni++) {
+      var pos = positions[ni];
+      var g = svgMake('g');
+      g.setAttribute('class', 'svg-node svg-node--default');
+      g.setAttribute('transform', 'translate(' + pos.x + ',' + pos.y + ')');
+
+      var circle = svgMake('circle');
+      circle.setAttribute('r', NODE_RADIUS);
+      g.appendChild(circle);
+
+      var label = svgMake('text');
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('dominant-baseline', 'central');
+      label.textContent = String(ni);
+      g.appendChild(label);
+
+      svg.appendChild(g);
+      nodeEls[ni] = g;
+    }
+
+    // ── Legend ────────────────────────────────────────────────────────
+    var legendItems = [
+      { label: 'Unvisited', cls: 'default' },
+      { label: 'In Queue',  cls: 'queued' },
+      { label: 'Visited',   cls: 'visited' }
+    ];
+    var legendY = h - 22;
+    var legendX = w * 0.64;
+    for (var li = 0; li < legendItems.length; li++) {
+      var item = legendItems[li];
+      var lx = legendX + li * 92;
+
+      var lgNode = svgMake('g');
+      lgNode.setAttribute('class', 'svg-node svg-node--' + item.cls);
+      lgNode.setAttribute('transform', 'translate(' + (lx + 7) + ',' + legendY + ')');
+      var lgC = svgMake('circle');
+      lgC.setAttribute('r', '7');
+      lgNode.appendChild(lgC);
+      svg.appendChild(lgNode);
+
+      var lgT = svgMake('text');
+      lgT.setAttribute('x', lx + 18);
+      lgT.setAttribute('y', legendY);
+      lgT.setAttribute('dominant-baseline', 'central');
+      lgT.setAttribute('font-size', '11');
+      lgT.setAttribute('fill', 'var(--text-secondary)');
+      lgT.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      lgT.textContent = item.label;
+      svg.appendChild(lgT);
+    }
+
+    // ── Queue panel group ─────────────────────────────────────────────
+    queuePanel = svgMake('g');
+    queuePanel.setAttribute('class', 'bfs-queue-panel');
+    svg.appendChild(queuePanel);
+  }
+
+  // ── Update queue panel ────────────────────────────────────────────────
+  function renderQueuePanel(queueData) {
+    queuePanel.innerHTML = '';
+
+    var CELL_W = 36;
+    var CELL_H = 36;
+    var CELL_GAP = 6;
+    var panelX = svgW * 0.64;
+    var panelY = svgH * 0.32;
+
+    if (queueData.length === 0) {
+      var emptyT = svgMake('text');
+      emptyT.setAttribute('x', panelX + (svgW - panelX) / 2);
+      emptyT.setAttribute('y', panelY + CELL_H / 2);
+      emptyT.setAttribute('text-anchor', 'middle');
+      emptyT.setAttribute('dominant-baseline', 'central');
+      emptyT.setAttribute('font-size', '12');
+      emptyT.setAttribute('fill', 'var(--text-tertiary)');
+      emptyT.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      emptyT.textContent = '(empty)';
+      queuePanel.appendChild(emptyT);
+      return;
+    }
+
+    // "front" label above first cell
+    var frontLbl = svgMake('text');
+    frontLbl.setAttribute('x', panelX + CELL_W / 2);
+    frontLbl.setAttribute('y', panelY - 6);
+    frontLbl.setAttribute('text-anchor', 'middle');
+    frontLbl.setAttribute('font-size', '10');
+    frontLbl.setAttribute('fill', 'var(--text-tertiary)');
+    frontLbl.setAttribute('font-family', 'var(--font-mono, monospace)');
+    frontLbl.textContent = 'front';
+    queuePanel.appendChild(frontLbl);
+
+    var maxCells = Math.min(queueData.length, Math.floor((svgW - panelX - 12) / (CELL_W + CELL_GAP)));
+
+    for (var q = 0; q < maxCells; q++) {
+      var cx = panelX + q * (CELL_W + CELL_GAP);
+
+      var rect = svgMake('rect');
+      rect.setAttribute('x', cx);
+      rect.setAttribute('y', panelY);
+      rect.setAttribute('width', CELL_W);
+      rect.setAttribute('height', CELL_H);
+      rect.setAttribute('rx', '5');
+      rect.setAttribute('fill', 'var(--viz-compare, #f59e0b)');
+      rect.setAttribute('stroke', 'var(--border-color)');
+      rect.setAttribute('stroke-width', '1.5');
+      queuePanel.appendChild(rect);
+
+      var ct = svgMake('text');
+      ct.setAttribute('x', cx + CELL_W / 2);
+      ct.setAttribute('y', panelY + CELL_H / 2);
+      ct.setAttribute('text-anchor', 'middle');
+      ct.setAttribute('dominant-baseline', 'central');
+      ct.setAttribute('font-size', '13');
+      ct.setAttribute('font-weight', '700');
+      ct.setAttribute('fill', '#fff');
+      ct.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      ct.setAttribute('pointer-events', 'none');
+      ct.textContent = String(queueData[q]);
+      queuePanel.appendChild(ct);
+    }
+  }
+
+  // ── renderStep: only updates classes on existing SVG elements ─────────
+  function renderStep(step) {
+    if (!svgEl) return;
+
+    // Determine node states
+    var nodeData = step ? step.nodes : null;
+    var currentNode = step ? step.currentNode : -1;
+    var queueData = step ? step.queue : [];
+
+    for (var ni = 0; ni < NUM_NODES; ni++) {
+      var state = nodeData ? nodeData[ni].state : 'unvisited';
+      var isCurrent = (ni === currentNode);
+      var cls = 'svg-node ';
+
+      if (isCurrent) {
+        cls += 'svg-node--active';
+      } else if (state === 'queued') {
+        cls += 'svg-node--queued';
+      } else if (state === 'visited') {
+        cls += 'svg-node--visited';
+      } else {
+        cls += 'svg-node--default';
+      }
+      nodeEls[ni].setAttribute('class', cls);
+    }
+
+    // Update edge classes: traversed edges connect visited nodes
+    var edges = getEdges(defaultAdj);
+    for (var ei = 0; ei < edges.length; ei++) {
+      var e = edges[ei];
+      var lineEl = edgeEls[e.key];
+      if (!lineEl) continue;
+      var fromState = nodeData ? nodeData[e.from].state : 'unvisited';
+      var toState   = nodeData ? nodeData[e.to].state   : 'unvisited';
+      if ((fromState === 'visited' || e.from === currentNode) &&
+          (toState   === 'visited' || e.to   === currentNode)) {
+        lineEl.setAttribute('class', 'svg-edge svg-edge--traversed');
+      } else {
+        lineEl.setAttribute('class', 'svg-edge svg-edge--default');
+      }
+    }
+
+    // Update queue panel
+    renderQueuePanel(queueData);
+  }
+
+  // ── Step pre-computation (BFS) ────────────────────────────────────────
   function computeSteps(adj, startNode) {
     var steps = [];
     var visited = {};
     var queue = [];
-    var nodeStates = {}; // 'unvisited', 'queued', 'visited'
+    var nodeStates = {};
 
     for (var i = 0; i < NUM_NODES; i++) {
       nodeStates[i] = 'unvisited';
@@ -88,7 +340,6 @@ var DSA = window.DSA || {};
 
     var edges = getEdges(adj);
 
-    // Helper to snapshot state
     function snapshot(currentNode, desc, codeLine, variables) {
       var nodes = [];
       for (var n = 0; n < NUM_NODES; n++) {
@@ -105,22 +356,18 @@ var DSA = window.DSA || {};
       };
     }
 
-    // Step 0: Initial state
     steps.push(snapshot(-1, 'BFS starts at node ' + startNode + '. All nodes are unvisited. The queue is empty.', 4, { start: startNode }));
 
-    // Enqueue start node
     queue.push(startNode);
     nodeStates[startNode] = 'queued';
     visited[startNode] = true;
     steps.push(snapshot(startNode, 'Enqueue node ' + startNode + ' (the starting node). Mark it as discovered. Queue: [' + queue.join(', ') + '].', 5, { node: startNode }));
 
     while (queue.length > 0) {
-      // Dequeue front
       var current = queue.shift();
       nodeStates[current] = 'visited';
       steps.push(snapshot(current, 'Dequeue node ' + current + ' from the front of the queue. Process it (mark as visited). Queue: [' + queue.join(', ') + '].', 7, { node: current }));
 
-      // Visit neighbors
       var neighbors = adj[current] || [];
       for (var j = 0; j < neighbors.length; j++) {
         var neighbor = neighbors[j];
@@ -133,201 +380,56 @@ var DSA = window.DSA || {};
       }
     }
 
-    // Final
     steps.push(snapshot(-1, 'BFS complete! All reachable nodes have been visited. The queue is empty.', 6, {}));
 
     return steps;
   }
 
-  // ── Get fill color for node state ─────────────────────────
-  function nodeColor(state) {
-    if (state === 'queued') return css('--viz-compare') || '#f59e0b';
-    if (state === 'visited') return css('--viz-sorted') || '#22c55e';
-    return css('--viz-cell-bg') || '#e2e8f0';
-  }
-
-  function nodeTextColor(state) {
-    if (state === 'visited') return css('--bg-primary') || '#ffffff';
-    return css('--viz-cell-text') || '#1e293b';
-  }
-
-  function nodeBorderColor(state, isCurrent) {
-    if (isCurrent) return css('--viz-active') || '#ef4444';
-    if (state === 'queued') return css('--viz-compare') || '#f59e0b';
-    if (state === 'visited') return css('--viz-sorted') || '#22c55e';
-    return css('--border-color') || '#e2e8f0';
-  }
-
-  // ── Canvas rendering ──────────────────────────────────────
-  function renderStep(ctx, step, data) {
-    var w = data.width;
-    var h = data.height;
-    var positions = getNodePositions(w, h);
-    var edges = step ? step.edges : getEdges(defaultAdj);
-    var nodeData = step ? step.nodes : null;
-    var queueData = step ? step.queue : [];
-    var currentNode = step ? step.currentNode : -1;
-
-    // ── Draw title labels ───────────────────────────────────
-    ctx.font = 'bold 13px ' + css('--font-sans');
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-    ctx.fillText('Graph', w * 0.28, 4);
-    ctx.fillText('Queue (FIFO)', w * 0.80, 4);
-
-    // ── Draw edges ──────────────────────────────────────────
-    for (var e = 0; e < edges.length; e++) {
-      var fromPos = positions[edges[e].from];
-      var toPos = positions[edges[e].to];
-
-      ctx.strokeStyle = css('--viz-arrow') || '#64748b';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(fromPos.x, fromPos.y);
-      ctx.lineTo(toPos.x, toPos.y);
-      ctx.stroke();
-    }
-
-    // ── Draw nodes ──────────────────────────────────────────
-    for (var n = 0; n < NUM_NODES; n++) {
-      var pos = positions[n];
-      var state = nodeData ? nodeData[n].state : 'unvisited';
-      var isCurrent = (n === currentNode);
-
-      // Glow for current node
-      if (isCurrent) {
-        ctx.shadowColor = css('--viz-active') || '#ef4444';
-        ctx.shadowBlur = 14;
-      }
-
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, NODE_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = nodeColor(state);
-      ctx.fill();
-      ctx.strokeStyle = nodeBorderColor(state, isCurrent);
-      ctx.lineWidth = isCurrent ? 3 : 2;
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-
-      // Node label
-      ctx.font = 'bold 15px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = nodeTextColor(state);
-      ctx.fillText(String(n), pos.x, pos.y);
-    }
-
-    // ── Draw queue visualization (right side, horizontal cells) ─
-    var queueX = w * 0.64;
-    var queueY = h * 0.38;
-    var cellW = 40;
-    var cellH = 40;
-    var cellGap = 6;
-    var maxCells = Math.min(7, Math.floor((w - queueX - 10) / (cellW + cellGap)));
-
-    // "Front" label
-    ctx.font = '11px ' + css('--font-mono');
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-    if (queueData.length > 0) {
-      ctx.fillText('front', queueX + cellW / 2, queueY - 4);
-    }
-
-    for (var q = 0; q < queueData.length && q < maxCells; q++) {
-      var cx = queueX + q * (cellW + cellGap);
-      var cy = queueY;
-      var qNodeId = queueData[q];
-
-      // Cell background
-      ctx.fillStyle = css('--viz-compare') || '#f59e0b';
-      ctx.beginPath();
-      var r = 6;
-      ctx.moveTo(cx + r, cy);
-      ctx.lineTo(cx + cellW - r, cy);
-      ctx.quadraticCurveTo(cx + cellW, cy, cx + cellW, cy + r);
-      ctx.lineTo(cx + cellW, cy + cellH - r);
-      ctx.quadraticCurveTo(cx + cellW, cy + cellH, cx + cellW - r, cy + cellH);
-      ctx.lineTo(cx + r, cy + cellH);
-      ctx.quadraticCurveTo(cx, cy + cellH, cx, cy + cellH - r);
-      ctx.lineTo(cx, cy + r);
-      ctx.quadraticCurveTo(cx, cy, cx + r, cy);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = css('--border-color') || '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Cell text
-      ctx.font = 'bold 15px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = css('--viz-cell-text') || '#1e293b';
-      ctx.fillText(String(qNodeId), cx + cellW / 2, cy + cellH / 2);
-    }
-
-    // If queue is empty, show text
-    if (queueData.length === 0) {
-      ctx.font = '13px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-      ctx.fillText('(empty)', w * 0.80, queueY + cellH / 2);
-    }
-
-    // ── Legend ───────────────────────────────────────────────
-    var legendY = h - 28;
-    var legendX = w * 0.64;
-    var legendItems = [
-      { label: 'Unvisited', color: css('--viz-cell-bg') || '#e2e8f0' },
-      { label: 'In Queue', color: css('--viz-compare') || '#f59e0b' },
-      { label: 'Visited', color: css('--viz-sorted') || '#22c55e' }
-    ];
-    ctx.font = '11px ' + css('--font-sans');
-    ctx.textBaseline = 'middle';
-    for (var l = 0; l < legendItems.length; l++) {
-      var lx = legendX + l * 90;
-      ctx.fillStyle = legendItems[l].color;
-      ctx.beginPath();
-      ctx.arc(lx, legendY, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = css('--border-color') || '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.fillStyle = css('--text-secondary') || '#475569';
-      ctx.textAlign = 'left';
-      ctx.fillText(legendItems[l].label, lx + 10, legendY);
-    }
-  }
-
-  // ── Step change callback ──────────────────────────────────
-  function onStepChange(step, data) {
-    var explanationEl = document.querySelector('.viz-explanation');
-    if (explanationEl && step) {
-      explanationEl.textContent = step.description;
-    } else if (explanationEl) {
-      explanationEl.textContent = 'Click Start to begin BFS traversal from node 0.';
-    }
-  }
-
-  // ── Init ──────────────────────────────────────────────────
+  // ── Init ──────────────────────────────────────────────────────────────
   function init() {
-    var canvas = document.getElementById('bfs-canvas');
-    if (!canvas) return;
+    svgWrap = document.getElementById('bfs-svg-wrap');
+    if (!svgWrap) return;
+
+    // Set a minimum height
+    if (!svgWrap.style.height) svgWrap.style.height = '350px';
+
+    buildSVG(svgWrap);
+
+    var explanationEl = document.querySelector('.viz-explanation');
+
+    // Hidden canvas for vizCore control binding
+    var fakeCanvas = document.createElement('canvas');
+    fakeCanvas.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;';
+    var container = svgWrap.closest('.viz-container');
+    if (container) container.appendChild(fakeCanvas);
 
     var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
 
     viz = DSA.vizCore.create('bfs', {
-      canvas: canvas,
-      onRender: renderStep,
-      onStepChange: function(step, data) {
+      canvas: fakeCanvas,
+      tweenDuration: 0,
+      onRender: function(_ctx, step) {
+        renderStep(step);
+      },
+      onStepChange: function(step) {
         if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
-        onStepChange(step, data);
+        if (explanationEl && step) {
+          explanationEl.textContent = step.description;
+        } else if (explanationEl) {
+          explanationEl.textContent = 'Click Start to begin BFS traversal from node 0.';
+        }
       }
     });
+
+    // Rebuild SVG on resize, preserving step state
+    window.addEventListener('resize', function() {
+      buildSVG(svgWrap);
+      if (viz) viz.render();
+    });
+
+    // Set initial step
+    var initialSteps = computeSteps(defaultAdj, 0);
+    viz.setSteps([initialSteps[0]]);
 
     // Wire start button
     var startBtn = document.getElementById('bfs-start-btn');
@@ -342,15 +444,10 @@ var DSA = window.DSA || {};
     var resetBtn = document.getElementById('bfs-reset-btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', function() {
-        viz.reset();
-        var initialSteps = computeSteps(defaultAdj, 0);
-        viz.setSteps([initialSteps[0]]);
+        var steps = computeSteps(defaultAdj, 0);
+        viz.setSteps([steps[0]]);
       });
     }
-
-    // Set initial step
-    var initialSteps = computeSteps(defaultAdj, 0);
-    viz.setSteps([initialSteps[0]]);
   }
 
   DSA.bfsViz = { init: init };

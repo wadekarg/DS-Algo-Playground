@@ -35,13 +35,23 @@ var DSA = window.DSA || {};
   ];
 
   var NODE_RADIUS = 22;
+  var NS = 'http://www.w3.org/2000/svg';
 
-  // ── Colour helpers ────────────────────────────────────────
-  function css(prop) {
-    return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+  var svgWrap = null;
+  var svgEl = null;
+  var nodeEls = [];     // SVG <g> elements, indexed by node id
+  var edgeEls = {};     // SVG <line> elements, keyed by 'min-max'
+  var edgeLens = {};    // pixel length of each edge, keyed by 'min-max'
+  var stackPanel = null; // <g> for stack cells
+  var svgW = 0;
+  var svgH = 0;
+
+  // ── SVG element factory ───────────────────────────────────────────────
+  function svgMake(tag) {
+    return document.createElementNS(NS, tag);
   }
 
-  // ── Compute node positions from canvas dimensions ─────────
+  // ── Compute node positions from SVG dimensions ────────────────────────
   function getNodePositions(w, h) {
     var positions = [];
     var graphW = w * 0.58;
@@ -55,7 +65,7 @@ var DSA = window.DSA || {};
     return positions;
   }
 
-  // ── Compute edges (undirected, no duplicates) ─────────────
+  // ── Compute edges (undirected, no duplicates) ─────────────────────────
   function getEdges(adj) {
     var edges = [];
     var seen = {};
@@ -66,19 +76,299 @@ var DSA = window.DSA || {};
         var key = Math.min(u, v) + '-' + Math.max(u, v);
         if (!seen[key]) {
           seen[key] = true;
-          edges.push({ from: u, to: v });
+          edges.push({ from: u, to: v, key: key });
         }
       }
     }
     return edges;
   }
 
-  // ── Step pre-computation (iterative DFS with explicit stack) ─
+  // ── Compute pixel length of a line ───────────────────────────────────
+  function lineLen(p1, p2) {
+    var dx = p2.x - p1.x;
+    var dy = p2.y - p1.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // ── Build SVG once ────────────────────────────────────────────────────
+  function buildSVG(wrap) {
+    wrap.innerHTML = '';
+    nodeEls = [];
+    edgeEls = {};
+    edgeLens = {};
+
+    var w = wrap.offsetWidth || 640;
+    var h = wrap.offsetHeight || 350;
+    if (h < 200) h = 350;
+
+    svgW = w;
+    svgH = h;
+
+    var svg = svgMake('svg');
+    svg.setAttribute('xmlns', NS);
+    svg.setAttribute('width', w);
+    svg.setAttribute('height', h);
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    wrap.appendChild(svg);
+    svgEl = svg;
+
+    var positions = getNodePositions(w, h);
+    var edges = getEdges(defaultAdj);
+
+    // ── Section labels ────────────────────────────────────────────────
+    var graphLabel = svgMake('text');
+    graphLabel.setAttribute('x', w * 0.28);
+    graphLabel.setAttribute('y', '16');
+    graphLabel.setAttribute('text-anchor', 'middle');
+    graphLabel.setAttribute('font-size', '12');
+    graphLabel.setAttribute('font-weight', '600');
+    graphLabel.setAttribute('fill', 'var(--text-tertiary)');
+    graphLabel.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+    graphLabel.textContent = 'Graph';
+    svg.appendChild(graphLabel);
+
+    var stackLabel = svgMake('text');
+    stackLabel.setAttribute('x', w * 0.80);
+    stackLabel.setAttribute('y', '16');
+    stackLabel.setAttribute('text-anchor', 'middle');
+    stackLabel.setAttribute('font-size', '12');
+    stackLabel.setAttribute('font-weight', '600');
+    stackLabel.setAttribute('fill', 'var(--text-tertiary)');
+    stackLabel.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+    stackLabel.textContent = 'Stack (LIFO)';
+    svg.appendChild(stackLabel);
+
+    // ── Divider line ──────────────────────────────────────────────────
+    var divider = svgMake('line');
+    divider.setAttribute('x1', w * 0.62);
+    divider.setAttribute('y1', 24);
+    divider.setAttribute('x2', w * 0.62);
+    divider.setAttribute('y2', h - 10);
+    divider.setAttribute('stroke', 'var(--border-color)');
+    divider.setAttribute('stroke-width', '1');
+    divider.setAttribute('stroke-dasharray', '4 4');
+    svg.appendChild(divider);
+
+    // ── Edges with dash animation setup ──────────────────────────────
+    var edgeGroup = svgMake('g');
+    edgeGroup.setAttribute('class', 'svg-edges');
+    for (var ei = 0; ei < edges.length; ei++) {
+      var e = edges[ei];
+      var fp = positions[e.from];
+      var tp = positions[e.to];
+      var len = lineLen(fp, tp);
+
+      var line = svgMake('line');
+      line.setAttribute('x1', fp.x);
+      line.setAttribute('y1', fp.y);
+      line.setAttribute('x2', tp.x);
+      line.setAttribute('y2', tp.y);
+      // Start fully drawn (dashoffset = 0 = visible)
+      // Traversed edges will animate: dashoffset set, then transitioned to 0
+      line.setAttribute('stroke-dasharray', len);
+      line.setAttribute('stroke-dashoffset', '0');
+      line.setAttribute('class', 'svg-edge svg-edge--default');
+      edgeGroup.appendChild(line);
+      edgeEls[e.key] = line;
+      edgeLens[e.key] = len;
+    }
+    svg.appendChild(edgeGroup);
+
+    // ── Nodes ─────────────────────────────────────────────────────────
+    nodeEls = [];
+    for (var ni = 0; ni < NUM_NODES; ni++) {
+      var pos = positions[ni];
+      var g = svgMake('g');
+      g.setAttribute('class', 'svg-node svg-node--default');
+      g.setAttribute('transform', 'translate(' + pos.x + ',' + pos.y + ')');
+
+      var circle = svgMake('circle');
+      circle.setAttribute('r', NODE_RADIUS);
+      g.appendChild(circle);
+
+      var label = svgMake('text');
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('dominant-baseline', 'central');
+      label.textContent = String(ni);
+      g.appendChild(label);
+
+      svg.appendChild(g);
+      nodeEls[ni] = g;
+    }
+
+    // ── Legend ────────────────────────────────────────────────────────
+    var legendItems = [
+      { label: 'Unvisited', cls: 'default' },
+      { label: 'On Stack',  cls: 'stacked' },
+      { label: 'Visited',   cls: 'visited' }
+    ];
+    var legendY = h - 22;
+    var legendX = w * 0.64;
+    for (var li = 0; li < legendItems.length; li++) {
+      var item = legendItems[li];
+      var lx = legendX + li * 92;
+
+      var lgNode = svgMake('g');
+      lgNode.setAttribute('class', 'svg-node svg-node--' + item.cls);
+      lgNode.setAttribute('transform', 'translate(' + (lx + 7) + ',' + legendY + ')');
+      var lgC = svgMake('circle');
+      lgC.setAttribute('r', '7');
+      lgNode.appendChild(lgC);
+      svg.appendChild(lgNode);
+
+      var lgT = svgMake('text');
+      lgT.setAttribute('x', lx + 18);
+      lgT.setAttribute('y', legendY);
+      lgT.setAttribute('dominant-baseline', 'central');
+      lgT.setAttribute('font-size', '11');
+      lgT.setAttribute('fill', 'var(--text-secondary)');
+      lgT.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      lgT.textContent = item.label;
+      svg.appendChild(lgT);
+    }
+
+    // ── Stack panel group ─────────────────────────────────────────────
+    stackPanel = svgMake('g');
+    stackPanel.setAttribute('class', 'dfs-stack-panel');
+    svg.appendChild(stackPanel);
+  }
+
+  // ── Update stack panel ────────────────────────────────────────────────
+  function renderStackPanel(stackData) {
+    stackPanel.innerHTML = '';
+
+    var CELL_W = 42;
+    var CELL_H = 34;
+    var CELL_GAP = 5;
+    // Stack panel: right of divider, arranged vertically (top = top of stack)
+    var panelX = svgW * 0.64 + (svgW * 0.38 - CELL_W) / 2;
+    var panelStartY = 32;
+    var maxCells = Math.min(stackData.length, Math.floor((svgH - panelStartY - 50) / (CELL_H + CELL_GAP)));
+
+    if (stackData.length === 0) {
+      var emptyT = svgMake('text');
+      emptyT.setAttribute('x', svgW * 0.80);
+      emptyT.setAttribute('y', panelStartY + CELL_H);
+      emptyT.setAttribute('text-anchor', 'middle');
+      emptyT.setAttribute('dominant-baseline', 'central');
+      emptyT.setAttribute('font-size', '12');
+      emptyT.setAttribute('fill', 'var(--text-tertiary)');
+      emptyT.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      emptyT.textContent = '(empty)';
+      stackPanel.appendChild(emptyT);
+      return;
+    }
+
+    // Display: top of stack first (last element in array)
+    var displayStack = stackData.slice().reverse();
+
+    for (var s = 0; s < maxCells; s++) {
+      var sy = panelStartY + s * (CELL_H + CELL_GAP);
+
+      var rect = svgMake('rect');
+      rect.setAttribute('x', panelX);
+      rect.setAttribute('y', sy);
+      rect.setAttribute('width', CELL_W);
+      rect.setAttribute('height', CELL_H);
+      rect.setAttribute('rx', '5');
+      rect.setAttribute('fill', 'var(--viz-compare, #f59e0b)');
+      rect.setAttribute('stroke', 'var(--border-color)');
+      rect.setAttribute('stroke-width', '1.5');
+      stackPanel.appendChild(rect);
+
+      var ct = svgMake('text');
+      ct.setAttribute('x', panelX + CELL_W / 2);
+      ct.setAttribute('y', sy + CELL_H / 2);
+      ct.setAttribute('text-anchor', 'middle');
+      ct.setAttribute('dominant-baseline', 'central');
+      ct.setAttribute('font-size', '13');
+      ct.setAttribute('font-weight', '700');
+      ct.setAttribute('fill', '#fff');
+      ct.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+      ct.setAttribute('pointer-events', 'none');
+      ct.textContent = String(displayStack[s]);
+      stackPanel.appendChild(ct);
+
+      // "top" label for first cell
+      if (s === 0) {
+        var topLbl = svgMake('text');
+        topLbl.setAttribute('x', panelX + CELL_W + 6);
+        topLbl.setAttribute('y', sy + CELL_H / 2);
+        topLbl.setAttribute('dominant-baseline', 'central');
+        topLbl.setAttribute('font-size', '10');
+        topLbl.setAttribute('fill', 'var(--text-tertiary)');
+        topLbl.setAttribute('font-family', 'var(--font-mono, monospace)');
+        topLbl.textContent = '\u2190 top';
+        stackPanel.appendChild(topLbl);
+      }
+    }
+  }
+
+  // ── renderStep: updates classes on existing SVG elements ─────────────
+  function renderStep(step) {
+    if (!svgEl) return;
+
+    var nodeData = step ? step.nodes : null;
+    var currentNode = step ? step.currentNode : -1;
+    var stackData = step ? step.stack : [];
+
+    // Update node classes
+    for (var ni = 0; ni < NUM_NODES; ni++) {
+      var state = nodeData ? nodeData[ni].state : 'unvisited';
+      var isCurrent = (ni === currentNode);
+      var cls = 'svg-node ';
+
+      if (isCurrent) {
+        cls += 'svg-node--active';
+      } else if (state === 'stacked') {
+        cls += 'svg-node--stacked';
+      } else if (state === 'visited') {
+        cls += 'svg-node--visited';
+      } else {
+        cls += 'svg-node--default';
+      }
+      nodeEls[ni].setAttribute('class', cls);
+    }
+
+    // Update edge classes with dash-draw animation
+    var edges = getEdges(defaultAdj);
+    for (var ei = 0; ei < edges.length; ei++) {
+      var e = edges[ei];
+      var lineEl = edgeEls[e.key];
+      if (!lineEl) continue;
+
+      var fromState = nodeData ? nodeData[e.from].state : 'unvisited';
+      var toState   = nodeData ? nodeData[e.to].state   : 'unvisited';
+      var fromVisited = (fromState === 'visited' || e.from === currentNode);
+      var toVisited   = (toState   === 'visited' || e.to   === currentNode);
+      var isTraversed = fromVisited && toVisited;
+
+      if (isTraversed) {
+        // Animate the line drawing: dashoffset=0 means fully drawn
+        // CSS transition on stroke-dashoffset draws it over 0.5s
+        var len = edgeLens[e.key] || 100;
+        lineEl.setAttribute('stroke-dasharray', len);
+        lineEl.setAttribute('stroke-dashoffset', '0');
+        lineEl.setAttribute('class', 'svg-edge svg-edge--traversed');
+      } else {
+        // For backtracked/untraversed edges: show in muted/default style
+        var len2 = edgeLens[e.key] || 100;
+        lineEl.setAttribute('stroke-dasharray', len2);
+        lineEl.setAttribute('stroke-dashoffset', '0');
+        lineEl.setAttribute('class', 'svg-edge svg-edge--default');
+      }
+    }
+
+    // Update stack panel
+    renderStackPanel(stackData);
+  }
+
+  // ── Step pre-computation (iterative DFS with explicit stack) ──────────
   function computeSteps(adj, startNode) {
     var steps = [];
     var visited = {};
     var stack = [];
-    var nodeStates = {}; // 'unvisited', 'stacked', 'visited'
+    var nodeStates = {};
 
     for (var i = 0; i < NUM_NODES; i++) {
       nodeStates[i] = 'unvisited';
@@ -86,7 +376,6 @@ var DSA = window.DSA || {};
 
     var edges = getEdges(adj);
 
-    // Helper to snapshot state
     function snapshot(currentNode, desc, codeLine, variables) {
       var nodes = [];
       for (var n = 0; n < NUM_NODES; n++) {
@@ -103,19 +392,15 @@ var DSA = window.DSA || {};
       };
     }
 
-    // Step 0: Initial state
     steps.push(snapshot(-1, 'DFS starts at node ' + startNode + '. All nodes are unvisited. The stack is empty.', 2, { node: startNode }));
 
-    // Push start node
     stack.push(startNode);
     nodeStates[startNode] = 'stacked';
     steps.push(snapshot(startNode, 'Push node ' + startNode + ' onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].', 3, { node: startNode }));
 
     while (stack.length > 0) {
-      // Pop from top
       var current = stack.pop();
 
-      // Skip if already visited (can happen with undirected graphs)
       if (nodeStates[current] === 'visited') {
         steps.push(snapshot(current, 'Pop node ' + current + ' from the stack, but it is already visited. Skip it. Stack: [' + stack.slice().reverse().join(', ') + '].', 3, { node: current }));
         continue;
@@ -125,7 +410,6 @@ var DSA = window.DSA || {};
       visited[current] = true;
       steps.push(snapshot(current, 'Pop node ' + current + ' from the stack. Visit it (mark as visited). Stack: [' + stack.slice().reverse().join(', ') + '].', 4, { node: current }));
 
-      // Push unvisited neighbors in reverse order so the first neighbor is on top
       var neighbors = adj[current] || [];
       var toPush = [];
       for (var j = 0; j < neighbors.length; j++) {
@@ -134,7 +418,6 @@ var DSA = window.DSA || {};
         }
       }
 
-      // Push in reverse so the first neighbor ends up on top of the stack
       for (var k = toPush.length - 1; k >= 0; k--) {
         stack.push(toPush[k]);
         nodeStates[toPush[k]] = 'stacked';
@@ -145,210 +428,55 @@ var DSA = window.DSA || {};
       }
     }
 
-    // Final
     steps.push(snapshot(-1, 'DFS complete! All reachable nodes have been visited. The stack is empty.', 7, {}));
 
     return steps;
   }
 
-  // ── Get fill color for node state ─────────────────────────
-  function nodeColor(state) {
-    if (state === 'stacked') return css('--viz-compare') || '#f59e0b';
-    if (state === 'visited') return css('--viz-sorted') || '#22c55e';
-    return css('--viz-cell-bg') || '#e2e8f0';
-  }
-
-  function nodeTextColor(state) {
-    if (state === 'visited') return css('--bg-primary') || '#ffffff';
-    return css('--viz-cell-text') || '#1e293b';
-  }
-
-  function nodeBorderColor(state, isCurrent) {
-    if (isCurrent) return css('--viz-active') || '#ef4444';
-    if (state === 'stacked') return css('--viz-compare') || '#f59e0b';
-    if (state === 'visited') return css('--viz-sorted') || '#22c55e';
-    return css('--border-color') || '#e2e8f0';
-  }
-
-  // ── Canvas rendering ──────────────────────────────────────
-  function renderStep(ctx, step, data) {
-    var w = data.width;
-    var h = data.height;
-    var positions = getNodePositions(w, h);
-    var edges = step ? step.edges : getEdges(defaultAdj);
-    var nodeData = step ? step.nodes : null;
-    var stackData = step ? step.stack : [];
-    var currentNode = step ? step.currentNode : -1;
-
-    // ── Draw title labels ───────────────────────────────────
-    ctx.font = 'bold 13px ' + css('--font-sans');
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-    ctx.fillText('Graph', w * 0.28, 4);
-    ctx.fillText('Stack (LIFO)', w * 0.80, 4);
-
-    // ── Draw edges ──────────────────────────────────────────
-    for (var e = 0; e < edges.length; e++) {
-      var fromPos = positions[edges[e].from];
-      var toPos = positions[edges[e].to];
-
-      ctx.strokeStyle = css('--viz-arrow') || '#64748b';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(fromPos.x, fromPos.y);
-      ctx.lineTo(toPos.x, toPos.y);
-      ctx.stroke();
-    }
-
-    // ── Draw nodes ──────────────────────────────────────────
-    for (var n = 0; n < NUM_NODES; n++) {
-      var pos = positions[n];
-      var state = nodeData ? nodeData[n].state : 'unvisited';
-      var isCurrent = (n === currentNode);
-
-      // Glow for current node
-      if (isCurrent) {
-        ctx.shadowColor = css('--viz-active') || '#ef4444';
-        ctx.shadowBlur = 14;
-      }
-
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, NODE_RADIUS, 0, Math.PI * 2);
-      ctx.fillStyle = nodeColor(state);
-      ctx.fill();
-      ctx.strokeStyle = nodeBorderColor(state, isCurrent);
-      ctx.lineWidth = isCurrent ? 3 : 2;
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-
-      // Node label
-      ctx.font = 'bold 15px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = nodeTextColor(state);
-      ctx.fillText(String(n), pos.x, pos.y);
-    }
-
-    // ── Draw stack visualization (right side, vertical cells) ─
-    var stackX = w * 0.73;
-    var stackCellW = 50;
-    var stackCellH = 36;
-    var stackGap = 4;
-    // Stack top is drawn at the top visually
-    var stackStartY = 28;
-    var maxCells = Math.min(7, Math.floor((h - stackStartY - 40) / (stackCellH + stackGap)));
-
-    // "Top" label
-    ctx.font = '11px ' + css('--font-mono');
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-
-    // Draw stack cells from top (last element) to bottom (first element)
-    var displayStack = stackData.slice().reverse(); // top of stack first
-    for (var s = 0; s < displayStack.length && s < maxCells; s++) {
-      var sx = stackX;
-      var sy = stackStartY + s * (stackCellH + stackGap);
-      var sNodeId = displayStack[s];
-
-      // Cell background
-      ctx.fillStyle = css('--viz-compare') || '#f59e0b';
-      var r = 6;
-      ctx.beginPath();
-      ctx.moveTo(sx + r, sy);
-      ctx.lineTo(sx + stackCellW - r, sy);
-      ctx.quadraticCurveTo(sx + stackCellW, sy, sx + stackCellW, sy + r);
-      ctx.lineTo(sx + stackCellW, sy + stackCellH - r);
-      ctx.quadraticCurveTo(sx + stackCellW, sy + stackCellH, sx + stackCellW - r, sy + stackCellH);
-      ctx.lineTo(sx + r, sy + stackCellH);
-      ctx.quadraticCurveTo(sx, sy + stackCellH, sx, sy + stackCellH - r);
-      ctx.lineTo(sx, sy + r);
-      ctx.quadraticCurveTo(sx, sy, sx + r, sy);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = css('--border-color') || '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Cell text
-      ctx.font = 'bold 15px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = css('--viz-cell-text') || '#1e293b';
-      ctx.fillText(String(sNodeId), sx + stackCellW / 2, sy + stackCellH / 2);
-
-      // "top" label for first cell
-      if (s === 0) {
-        ctx.font = '11px ' + css('--font-mono');
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-        ctx.fillText('\u2190 top', sx + stackCellW + 6, sy + stackCellH / 2);
-      }
-    }
-
-    // If stack is empty, show text
-    if (stackData.length === 0) {
-      ctx.font = '13px ' + css('--font-sans');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = css('--text-tertiary') || '#94a3b8';
-      ctx.fillText('(empty)', stackX + stackCellW / 2, stackStartY + 40);
-    }
-
-    // ── Legend ───────────────────────────────────────────────
-    var legendY = h - 28;
-    var legendX = w * 0.64;
-    var legendItems = [
-      { label: 'Unvisited', color: css('--viz-cell-bg') || '#e2e8f0' },
-      { label: 'On Stack', color: css('--viz-compare') || '#f59e0b' },
-      { label: 'Visited', color: css('--viz-sorted') || '#22c55e' }
-    ];
-    ctx.font = '11px ' + css('--font-sans');
-    ctx.textBaseline = 'middle';
-    for (var l = 0; l < legendItems.length; l++) {
-      var lx = legendX + l * 90;
-      ctx.fillStyle = legendItems[l].color;
-      ctx.beginPath();
-      ctx.arc(lx, legendY, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = css('--border-color') || '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.fillStyle = css('--text-secondary') || '#475569';
-      ctx.textAlign = 'left';
-      ctx.fillText(legendItems[l].label, lx + 10, legendY);
-    }
-  }
-
-  // ── Step change callback ──────────────────────────────────
-  function onStepChange(step, data) {
-    var explanationEl = document.querySelector('.viz-explanation');
-    if (explanationEl && step) {
-      explanationEl.textContent = step.description;
-    } else if (explanationEl) {
-      explanationEl.textContent = 'Click Start to begin DFS traversal from node 0.';
-    }
-  }
-
-  // ── Init ──────────────────────────────────────────────────
+  // ── Init ──────────────────────────────────────────────────────────────
   function init() {
-    var canvas = document.getElementById('dfs-canvas');
-    if (!canvas) return;
+    svgWrap = document.getElementById('dfs-svg-wrap');
+    if (!svgWrap) return;
+
+    if (!svgWrap.style.height) svgWrap.style.height = '350px';
+
+    buildSVG(svgWrap);
+
+    var explanationEl = document.querySelector('.viz-explanation');
+
+    // Hidden canvas for vizCore control binding
+    var fakeCanvas = document.createElement('canvas');
+    fakeCanvas.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;';
+    var container = svgWrap.closest('.viz-container');
+    if (container) container.appendChild(fakeCanvas);
 
     var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
 
     viz = DSA.vizCore.create('dfs', {
-      canvas: canvas,
-      onRender: renderStep,
-      onStepChange: function(step, data) {
+      canvas: fakeCanvas,
+      tweenDuration: 0,
+      onRender: function(_ctx, step) {
+        renderStep(step);
+      },
+      onStepChange: function(step) {
         if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
-        onStepChange(step, data);
+        if (explanationEl && step) {
+          explanationEl.textContent = step.description;
+        } else if (explanationEl) {
+          explanationEl.textContent = 'Click Start to begin DFS traversal from node 0.';
+        }
       }
     });
+
+    // Rebuild SVG on resize, preserving step state
+    window.addEventListener('resize', function() {
+      buildSVG(svgWrap);
+      if (viz) viz.render();
+    });
+
+    // Set initial step
+    var initialSteps = computeSteps(defaultAdj, 0);
+    viz.setSteps([initialSteps[0]]);
 
     // Wire start button
     var startBtn = document.getElementById('dfs-start-btn');
@@ -363,15 +491,10 @@ var DSA = window.DSA || {};
     var resetBtn = document.getElementById('dfs-reset-btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', function() {
-        viz.reset();
-        var initialSteps = computeSteps(defaultAdj, 0);
-        viz.setSteps([initialSteps[0]]);
+        var steps = computeSteps(defaultAdj, 0);
+        viz.setSteps([steps[0]]);
       });
     }
-
-    // Set initial step
-    var initialSteps = computeSteps(defaultAdj, 0);
-    viz.setSteps([initialSteps[0]]);
   }
 
   DSA.dfsViz = { init: init };

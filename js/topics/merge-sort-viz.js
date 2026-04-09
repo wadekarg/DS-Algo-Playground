@@ -220,10 +220,56 @@ var DSA = window.DSA || {};
     });
   }
 
+  // ── Tween helpers ───────────────────────────────────────────────────
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function hexToRgb(hex) {
+    var m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = hex.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (m) return [+m[1], +m[2], +m[3]];
+    return [100, 100, 100];
+  }
+
+  function lerpColor(a, b, t) {
+    var ca = hexToRgb(a), cb = hexToRgb(b);
+    var r  = Math.round(lerp(ca[0], cb[0], t));
+    var g  = Math.round(lerp(ca[1], cb[1], t));
+    var bl = Math.round(lerp(ca[2], cb[2], t));
+    return 'rgb(' + r + ',' + g + ',' + bl + ')';
+  }
+
+  // Determine merge-sort bar color for a given step and index
+  function barColorForStep(step, j, colorDefault, colorCompare, colorSwap, colorSorted) {
+    var color = colorDefault;
+    if (step.merged && step.merged.indexOf(j) !== -1) {
+      color = colorSorted;
+    }
+    if (step.ranges) {
+      for (var r = 0; r < step.ranges.length; r++) {
+        var range = step.ranges[r];
+        if (j >= range.left && j <= range.right) {
+          if (range.color === 'compare' && color !== colorSorted) {
+            color = colorCompare;
+          } else if (range.color === 'swap' && color !== colorSorted) {
+            color = colorSwap;
+          } else if (range.color === 'sorted') {
+            color = colorSorted;
+          }
+        }
+      }
+    }
+    if (step.comparing && step.comparing.indexOf(j) !== -1) {
+      color = colorSwap;
+    }
+    return color;
+  }
+
   /**
    * Render the bar chart on canvas.
    */
-  function renderBars(ctx, step, data) {
+  function renderBars(ctx, step, data, fromStep, tweenT) {
     var w = data.width;
     var h = data.height;
     var colorDefault = getColor('--viz-default', '#3b82f6');
@@ -256,38 +302,25 @@ var DSA = window.DSA || {};
     var gap = Math.max(4, barAreaWidth * 0.03);
     var barWidth = (barAreaWidth - gap * (n - 1)) / n;
 
+    var isTweening = fromStep && tweenT !== undefined && tweenT < 1;
+
     for (var j = 0; j < n; j++) {
-      var barHeight = (arr[j] / maxVal) * barAreaHeight;
       var x = padding + j * (barWidth + gap);
+
+      // Merge sort bars don't physically move — only heights and colors change
+      // Lerp bar height when element value at this index changed (merge placed a new value)
+      var fromVal = (isTweening && fromStep && fromStep.array) ? fromStep.array[j] : arr[j];
+      var toVal = arr[j];
+      var drawVal = isTweening ? lerp(fromVal, toVal, tweenT) : toVal;
+
+      var barHeight = (drawVal / maxVal) * barAreaHeight;
       var y = h - padding - barHeight;
 
-      // Determine bar color
-      var color = colorDefault;
-
-      // Check if in a merged (sorted) range
-      if (step.merged && step.merged.indexOf(j) !== -1) {
-        color = colorSorted;
-      }
-
-      // Check if in a colored range
-      if (step.ranges) {
-        for (var r = 0; r < step.ranges.length; r++) {
-          var range = step.ranges[r];
-          if (j >= range.left && j <= range.right) {
-            if (range.color === 'compare' && color !== colorSorted) {
-              color = colorCompare;
-            } else if (range.color === 'swap' && color !== colorSorted) {
-              color = colorSwap;
-            } else if (range.color === 'sorted') {
-              color = colorSorted;
-            }
-          }
-        }
-      }
-
-      // Override for comparison pointers
-      if (step.comparing && step.comparing.indexOf(j) !== -1) {
-        color = colorSwap;
+      // Determine bar color and lerp it
+      var color = barColorForStep(step, j, colorDefault, colorCompare, colorSwap, colorSorted);
+      if (isTweening && fromStep) {
+        var fromColor = barColorForStep(fromStep, j, colorDefault, colorCompare, colorSwap, colorSorted);
+        color = lerpColor(fromColor, color, tweenT);
       }
 
       // Draw bar with rounded top
@@ -305,12 +338,12 @@ var DSA = window.DSA || {};
       ctx.fillStyle = color;
       ctx.fill();
 
-      // Draw value label above bar
+      // Draw value label above bar (show target value, not interpolated)
       ctx.fillStyle = textColor;
       ctx.font = 'bold 13px ' + fontSans();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(String(arr[j]), x + barWidth / 2, y - 4);
+      ctx.fillText(String(toVal), x + barWidth / 2, y - 4);
 
       // Draw index label below bar
       ctx.fillStyle = getColor('--text-tertiary', '#94a3b8');
@@ -319,7 +352,7 @@ var DSA = window.DSA || {};
       ctx.fillText(String(j), x + barWidth / 2, h - padding + 4);
     }
 
-    // Draw comparing indicator arrows
+    // Draw comparing indicator arrows (fade in)
     if (step.comparing && step.comparing.length === 2) {
       var idx0 = step.comparing[0];
       var idx1 = step.comparing[1];
@@ -327,6 +360,7 @@ var DSA = window.DSA || {};
       var cx1 = padding + idx1 * (barWidth + gap) + barWidth / 2;
       var arrowY = h - padding + 18;
 
+      ctx.globalAlpha = isTweening ? tweenT : 1;
       ctx.strokeStyle = colorSwap;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -334,23 +368,21 @@ var DSA = window.DSA || {};
       ctx.lineTo(cx1, arrowY);
       ctx.stroke();
 
-      // Small triangles at each end
       var triSize = 5;
       ctx.fillStyle = colorSwap;
-      // Left triangle
       ctx.beginPath();
       ctx.moveTo(cx0, arrowY - triSize);
       ctx.lineTo(cx0, arrowY + triSize);
       ctx.lineTo(cx0 + triSize, arrowY);
       ctx.closePath();
       ctx.fill();
-      // Right triangle
       ctx.beginPath();
       ctx.moveTo(cx1, arrowY - triSize);
       ctx.lineTo(cx1, arrowY + triSize);
       ctx.lineTo(cx1 - triSize, arrowY);
       ctx.closePath();
       ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 

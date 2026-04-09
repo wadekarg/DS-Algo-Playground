@@ -21,6 +21,58 @@ var DSA = window.DSA || {};
     var timer = null;
     var dpr = window.devicePixelRatio || 1;
 
+    // Tween state
+    var tweenDuration = opts.tweenDuration !== undefined ? opts.tweenDuration : 350; // ms
+    var tweenRafId = null;
+    var tweenFrom = null;   // step object at tween start
+    var tweenTo = null;     // step object at tween end
+    var tweenStart = null;  // timestamp tween began
+    var tweenActive = false;
+
+    // ── Tween helpers ──────────────────────────────────────────────────
+    function easeInOut(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+
+    function startTween(fromStep, toStep) {
+      if (tweenRafId) cancelAnimationFrame(tweenRafId);
+      if (tweenDuration <= 0) {
+        currentStep = steps.indexOf(toStep);
+        if (currentStep < 0) currentStep = 0;
+        render();
+        return;
+      }
+      tweenFrom = fromStep;
+      tweenTo = toStep;
+      tweenStart = null;
+      tweenActive = true;
+
+      function tick(timestamp) {
+        if (!tweenStart) tweenStart = timestamp;
+        var elapsed = timestamp - tweenStart;
+        var rawT = Math.min(elapsed / tweenDuration, 1);
+        var t = easeInOut(rawT);
+
+        var w = canvas.width / dpr;
+        var h = canvas.height / dpr;
+        ctx.clearRect(0, 0, w, h);
+        if (opts.onRender) {
+          opts.onRender(ctx, tweenTo, { width: w, height: h, step: currentStep, totalSteps: steps.length }, tweenFrom, t);
+        }
+
+        if (rawT < 1) {
+          tweenRafId = requestAnimationFrame(tick);
+        } else {
+          tweenActive = false;
+          tweenRafId = null;
+          tweenFrom = null;
+          tweenTo = null;
+          updateControls();
+        }
+      }
+      tweenRafId = requestAnimationFrame(tick);
+    }
+
     function resizeCanvas() {
       var rect = canvas.parentElement.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -34,9 +86,9 @@ var DSA = window.DSA || {};
       var h = canvas.height / dpr;
       ctx.clearRect(0, 0, w, h);
       if (opts.onRender && steps.length > 0) {
-        opts.onRender(ctx, steps[currentStep], { width: w, height: h, step: currentStep, totalSteps: steps.length });
+        opts.onRender(ctx, steps[currentStep], { width: w, height: h, step: currentStep, totalSteps: steps.length }, null, 1);
       } else if (opts.onRender) {
-        opts.onRender(ctx, null, { width: w, height: h, step: 0, totalSteps: 0 });
+        opts.onRender(ctx, null, { width: w, height: h, step: 0, totalSteps: 0 }, null, 1);
       }
       updateControls();
     }
@@ -74,8 +126,9 @@ var DSA = window.DSA || {};
       clearInterval(timer);
       timer = setInterval(function() {
         if (currentStep < steps.length - 1) {
+          var from = steps[currentStep];
           currentStep++;
-          render();
+          startTween(from, steps[currentStep]);
         } else {
           pause();
         }
@@ -96,16 +149,18 @@ var DSA = window.DSA || {};
     function stepForward() {
       if (currentStep < steps.length - 1) {
         pause();
+        var from = steps[currentStep];
         currentStep++;
-        render();
+        startTween(from, steps[currentStep]);
       }
     }
 
     function stepBackward() {
       if (currentStep > 0) {
         pause();
+        var from = steps[currentStep];
         currentStep--;
-        render();
+        startTween(steps[currentStep], from);
       }
     }
 
