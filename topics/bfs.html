@@ -140,11 +140,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -182,107 +178,6 @@ graph = {
     6: [2]
 }
 print(bfs(graph, 0))  # Output: [0, 1, 2, 3, 4, 5, 6]</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">import java.util.*;
-
-public class BFS {
-    /**
-     * Performs BFS from start node. Returns visited nodes in BFS order.
-     */
-    public static List&lt;Integer&gt; bfs(Map&lt;Integer, List&lt;Integer&gt;&gt; graph, int start) {
-        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
-        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
-        List&lt;Integer&gt; order = new ArrayList&lt;&gt;();
-
-        visited.add(start);
-        queue.add(start);
-
-        while (!queue.isEmpty()) {
-            int node = queue.poll();      // Dequeue from front
-            order.add(node);
-
-            for (int neighbor : graph.get(node)) {
-                if (!visited.contains(neighbor)) {
-                    visited.add(neighbor);
-                    queue.add(neighbor);  // Enqueue at back
-                }
-            }
-        }
-
-        return order;
-    }
-
-    public static void main(String[] args) {
-        Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
-        graph.put(0, Arrays.asList(1, 2));
-        graph.put(1, Arrays.asList(0, 3, 4));
-        graph.put(2, Arrays.asList(0, 5, 6));
-        graph.put(3, Arrays.asList(1));
-        graph.put(4, Arrays.asList(1));
-        graph.put(5, Arrays.asList(2));
-        graph.put(6, Arrays.asList(2));
-
-        System.out.println(bfs(graph, 0));
-        // Output: [0, 1, 2, 3, 4, 5, 6]
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;queue&gt;
-#include &lt;unordered_set&gt;
-using namespace std;
-
-/**
- * Performs BFS from start node. Returns visited nodes in BFS order.
- */
-vector&lt;int&gt; bfs(const vector&lt;vector&lt;int&gt;&gt;&amp; graph, int start) {
-    unordered_set&lt;int&gt; visited;
-    queue&lt;int&gt; q;
-    vector&lt;int&gt; order;
-
-    visited.insert(start);
-    q.push(start);
-
-    while (!q.empty()) {
-        int node = q.front();       // Dequeue from front
-        q.pop();
-        order.push_back(node);
-
-        for (int neighbor : graph[node]) {
-            if (visited.find(neighbor) == visited.end()) {
-                visited.insert(neighbor);
-                q.push(neighbor);   // Enqueue at back
-            }
-        }
-    }
-
-    return order;
-}
-
-int main() {
-    vector&lt;vector&lt;int&gt;&gt; graph = {
-        {1, 2},    // 0
-        {0, 3, 4}, // 1
-        {0, 5, 6}, // 2
-        {1},       // 3
-        {1},       // 4
-        {2},       // 5
-        {2}        // 6
-    };
-
-    vector&lt;int&gt; result = bfs(graph, 0);
-    for (int node : result) {
-        cout &lt;&lt; node &lt;&lt; " ";
-    }
-    // Output: 0 1 2 3 4 5 6
-    cout &lt;&lt; endl;
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

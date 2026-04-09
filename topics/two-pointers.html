@@ -157,11 +157,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -218,119 +214,6 @@ result = two_pointer_pair_sum(arr, target)
 print(f"Pair found at indices {result}: "
       f"{arr[result[0]]} + {arr[result[1]]} = {target}")
 # Output: Pair found at indices (0, 7): 1 + 15 = 16</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">public class TwoPointers {
-
-    /**
-     * Find a pair in a sorted array that sums to target.
-     * Returns an int[] with two indices, or {-1, -1} if not found.
-     */
-    public static int[] pairSum(int[] arr, int target) {
-        int left = 0;
-        int right = arr.length - 1;
-
-        while (left &lt; right) {
-            int sum = arr[left] + arr[right];
-
-            if (sum == target) {
-                return new int[]{left, right};
-            } else if (sum &lt; target) {
-                left++;             // Need a larger sum
-            } else {
-                right--;            // Need a smaller sum
-            }
-        }
-
-        return new int[]{-1, -1};   // No pair found
-    }
-
-    /**
-     * Remove duplicates from a sorted array in-place.
-     * Returns the new length.
-     */
-    public static int removeDuplicates(int[] arr) {
-        if (arr.length == 0) return 0;
-
-        int slow = 0;
-        for (int fast = 1; fast &lt; arr.length; fast++) {
-            if (arr[fast] != arr[slow]) {
-                slow++;
-                arr[slow] = arr[fast];
-            }
-        }
-        return slow + 1;
-    }
-
-    public static void main(String[] args) {
-        int[] arr = {1, 3, 5, 7, 8, 9, 11, 15};
-        int target = 16;
-        int[] result = pairSum(arr, target);
-        System.out.printf("Pair found at indices [%d, %d]: %d + %d = %d%n",
-            result[0], result[1],
-            arr[result[0]], arr[result[1]], target);
-        // Output: Pair found at indices [0, 7]: 1 + 15 = 16
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;utility&gt;
-using namespace std;
-
-/**
- * Find a pair in a sorted array that sums to target.
- * Returns a pair of indices, or {-1, -1} if not found.
- */
-pair&lt;int, int&gt; pairSum(const vector&lt;int&gt;&amp; arr, int target) {
-    int left = 0;
-    int right = static_cast&lt;int&gt;(arr.size()) - 1;
-
-    while (left &lt; right) {
-        int sum = arr[left] + arr[right];
-
-        if (sum == target) {
-            return {left, right};
-        } else if (sum &lt; target) {
-            left++;              // Need a larger sum
-        } else {
-            right--;             // Need a smaller sum
-        }
-    }
-
-    return {-1, -1};            // No pair found
-}
-
-/**
- * Remove duplicates from a sorted array in-place.
- * Returns the new length.
- */
-int removeDuplicates(vector&lt;int&gt;&amp; arr) {
-    if (arr.empty()) return 0;
-
-    int slow = 0;
-    for (int fast = 1; fast &lt; static_cast&lt;int&gt;(arr.size()); fast++) {
-        if (arr[fast] != arr[slow]) {
-            slow++;
-            arr[slow] = arr[fast];
-        }
-    }
-    return slow + 1;
-}
-
-int main() {
-    vector&lt;int&gt; arr = {1, 3, 5, 7, 8, 9, 11, 15};
-    int target = 16;
-    auto [i, j] = pairSum(arr, target);
-    cout &lt;&lt; "Pair found at indices [" &lt;&lt; i &lt;&lt; ", " &lt;&lt; j
-         &lt;&lt; "]: " &lt;&lt; arr[i] &lt;&lt; " + " &lt;&lt; arr[j]
-         &lt;&lt; " = " &lt;&lt; target &lt;&lt; endl;
-    // Output: Pair found at indices [0, 7]: 1 + 15 = 16
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

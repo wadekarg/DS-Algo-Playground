@@ -142,11 +142,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -175,78 +171,6 @@ nums = [2, 1, 5, 1, 3, 2]
 k = 3
 result = max_sum_subarray(nums, k)
 print(f"Max sum of subarray of size {k}: {result}")  # Output: 9</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">public class SlidingWindow {
-    /**
-     * Returns the maximum sum of any contiguous subarray of size k.
-     */
-    public static int maxSumSubarray(int[] arr, int k) {
-        int n = arr.length;
-        if (n < k) return -1;
-
-        // Compute the sum of the first window
-        int windowSum = 0;
-        for (int i = 0; i < k; i++) {
-            windowSum += arr[i];
-        }
-        int maxSum = windowSum;
-
-        // Slide the window from left to right
-        for (int i = k; i < n; i++) {
-            windowSum += arr[i] - arr[i - k];  // Add incoming, remove outgoing
-            maxSum = Math.max(maxSum, windowSum);
-        }
-
-        return maxSum;
-    }
-
-    public static void main(String[] args) {
-        int[] nums = {2, 1, 5, 1, 3, 2};
-        int k = 3;
-        int result = maxSumSubarray(nums, k);
-        System.out.println("Max sum of subarray of size " + k + ": " + result);  // Output: 9
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;algorithm&gt;
-using namespace std;
-
-/**
- * Returns the maximum sum of any contiguous subarray of size k.
- */
-int maxSumSubarray(const vector&lt;int&gt;&amp; arr, int k) {
-    int n = static_cast&lt;int&gt;(arr.size());
-    if (n &lt; k) return -1;
-
-    // Compute the sum of the first window
-    int windowSum = 0;
-    for (int i = 0; i &lt; k; i++) {
-        windowSum += arr[i];
-    }
-    int maxSum = windowSum;
-
-    // Slide the window from left to right
-    for (int i = k; i &lt; n; i++) {
-        windowSum += arr[i] - arr[i - k];  // Add incoming, remove outgoing
-        maxSum = max(maxSum, windowSum);
-    }
-
-    return maxSum;
-}
-
-int main() {
-    vector&lt;int&gt; nums = {2, 1, 5, 1, 3, 2};
-    int k = 3;
-    int result = maxSumSubarray(nums, k);
-    cout &lt;&lt; "Max sum of subarray of size " &lt;&lt; k &lt;&lt; ": " &lt;&lt; result &lt;&lt; endl;  // Output: 9
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

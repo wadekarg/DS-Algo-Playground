@@ -140,11 +140,7 @@
         </div>
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -168,90 +164,6 @@
 numbers = [64, 25, 12, 22, 11, 90, 34, 45]
 print("Unsorted:", numbers)
 print("Sorted:  ", selection_sort(numbers))</pre>
-            </div>
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">public class SelectionSort {
-
-    public static void selectionSort(int[] arr) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++) {
-            // Find the index of the minimum element in arr[i:]
-            int minIdx = i;
-            for (int j = i + 1; j < n; j++) {
-                if (arr[j] < arr[minIdx]) {
-                    minIdx = j;
-                }
-            }
-            // Swap the found minimum with the first unsorted element
-            if (minIdx != i) {
-                int temp = arr[i];
-                arr[i] = arr[minIdx];
-                arr[minIdx] = temp;
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        int[] numbers = {64, 25, 12, 22, 11, 90, 34, 45};
-        System.out.print("Unsorted: ");
-        printArray(numbers);
-
-        selectionSort(numbers);
-
-        System.out.print("Sorted:   ");
-        printArray(numbers);
-    }
-
-    private static void printArray(int[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(arr[i]);
-            if (i < arr.length - 1) System.out.print(", ");
-        }
-        System.out.println();
-    }
-}</pre>
-            </div>
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-using namespace std;
-
-void selectionSort(vector&lt;int&gt;&amp; arr) {
-    int n = arr.size();
-    for (int i = 0; i &lt; n - 1; i++) {
-        // Find the index of the minimum element in arr[i:]
-        int minIdx = i;
-        for (int j = i + 1; j &lt; n; j++) {
-            if (arr[j] &lt; arr[minIdx]) {
-                minIdx = j;
-            }
-        }
-        // Swap the found minimum with the first unsorted element
-        if (minIdx != i) {
-            swap(arr[i], arr[minIdx]);
-        }
-    }
-}
-
-void printArray(const vector&lt;int&gt;&amp; arr) {
-    for (int i = 0; i &lt; arr.size(); i++) {
-        cout &lt;&lt; arr[i];
-        if (i &lt; arr.size() - 1) cout &lt;&lt; ", ";
-    }
-    cout &lt;&lt; endl;
-}
-
-int main() {
-    vector&lt;int&gt; numbers = {64, 25, 12, 22, 11, 90, 34, 45};
-    cout &lt;&lt; "Unsorted: ";
-    printArray(numbers);
-
-    selectionSort(numbers);
-
-    cout &lt;&lt; "Sorted:   ";
-    printArray(numbers);
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

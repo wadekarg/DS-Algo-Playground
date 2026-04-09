@@ -139,11 +139,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -183,81 +179,6 @@ def fibonacci_memo(n, memo=None):
 print(fibonacci(10))        # Output: 55
 print(factorial(5))         # Output: 120
 print(fibonacci_memo(50))   # Output: 12586269025 (instant with memoization)</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">import java.util.HashMap;
-import java.util.Map;
-
-public class Recursion {
-    /** Naive recursive Fibonacci - O(2^n) time */
-    public static int fibonacci(int n) {
-        if (n &lt;= 0) return 0;
-        if (n == 1) return 1;
-        return fibonacci(n - 1) + fibonacci(n - 2);
-    }
-
-    /** Recursive factorial - O(n) time */
-    public static long factorial(int n) {
-        if (n &lt;= 1) return 1;
-        return n * factorial(n - 1);
-    }
-
-    /** Memoized Fibonacci - O(n) time, O(n) space */
-    private static Map&lt;Integer, Long&gt; memo = new HashMap&lt;&gt;();
-
-    public static long fibonacciMemo(int n) {
-        if (n &lt;= 0) return 0;
-        if (n == 1) return 1;
-        if (memo.containsKey(n)) return memo.get(n);
-        long result = fibonacciMemo(n - 1) + fibonacciMemo(n - 2);
-        memo.put(n, result);
-        return result;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(fibonacci(10));       // Output: 55
-        System.out.println(factorial(5));         // Output: 120
-        System.out.println(fibonacciMemo(50));    // Output: 12586269025
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;unordered_map&gt;
-using namespace std;
-
-/** Naive recursive Fibonacci - O(2^n) time */
-int fibonacci(int n) {
-    if (n &lt;= 0) return 0;
-    if (n == 1) return 1;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-/** Recursive factorial - O(n) time */
-long long factorial(int n) {
-    if (n &lt;= 1) return 1;
-    return n * factorial(n - 1);
-}
-
-/** Memoized Fibonacci - O(n) time, O(n) space */
-unordered_map&lt;int, long long&gt; memo;
-
-long long fibonacciMemo(int n) {
-    if (n &lt;= 0) return 0;
-    if (n == 1) return 1;
-    if (memo.count(n)) return memo[n];
-    memo[n] = fibonacciMemo(n - 1) + fibonacciMemo(n - 2);
-    return memo[n];
-}
-
-int main() {
-    cout &lt;&lt; fibonacci(10) &lt;&lt; endl;        // Output: 55
-    cout &lt;&lt; factorial(5) &lt;&lt; endl;          // Output: 120
-    cout &lt;&lt; fibonacciMemo(50) &lt;&lt; endl;     // Output: 12586269025
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

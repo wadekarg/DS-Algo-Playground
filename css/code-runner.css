@@ -1,23 +1,9 @@
-/* ===== Code Runner Trigger Button ===== */
-.code-runner__trigger {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid var(--accent-success);
-  color: var(--accent-success);
-  margin-left: var(--space-sm);
-  font-weight: 600;
-  transition: background var(--transition-speed), color var(--transition-speed);
-}
-
-.code-runner__trigger:hover {
-  background: var(--accent-success);
-  color: var(--text-inverse);
-}
-
 /* ===== Runner Panel Container ===== */
 .code-runner-panel {
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  margin-top: var(--space-md);
+  border-top: none;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  margin-top: 0;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
@@ -28,14 +14,16 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
-  background: var(--bg-tertiary);
+  background: #282a36;
   border-bottom: 1px solid var(--border-color);
 }
 
 .code-runner-panel__title {
+  font-size: 0.75rem;
   font-weight: 600;
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
+  color: #6272a4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .code-runner-panel__actions {
@@ -61,18 +49,6 @@
 .code-runner-panel__reset:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
-}
-
-.code-runner-panel__close {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-tertiary);
-}
-
-.code-runner-panel__close:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--accent-danger);
-  color: var(--accent-danger);
 }
 
 /* ===== CodeMirror editor wrapper ===== */

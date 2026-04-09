@@ -147,11 +147,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -179,73 +175,6 @@
 nums = [2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91]
 result = binary_search(nums, 23)
 print(f"Found at index: {result}")  # Output: Found at index: 5</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">public class BinarySearch {
-    /**
-     * Returns the index of target in sorted array, or -1 if not found.
-     */
-    public static int binarySearch(int[] arr, int target) {
-        int low = 0;
-        int high = arr.length - 1;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;  // Avoids overflow
-
-            if (arr[mid] == target) {
-                return mid;             // Target found
-            } else if (arr[mid] < target) {
-                low = mid + 1;          // Search right half
-            } else {
-                high = mid - 1;         // Search left half
-            }
-        }
-
-        return -1;                      // Target not in array
-    }
-
-    public static void main(String[] args) {
-        int[] nums = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91};
-        int result = binarySearch(nums, 23);
-        System.out.println("Found at index: " + result);  // Output: 5
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-using namespace std;
-
-/**
- * Returns the index of target in sorted vector, or -1 if not found.
- */
-int binarySearch(const vector&lt;int&gt;&amp; arr, int target) {
-    int low = 0;
-    int high = static_cast&lt;int&gt;(arr.size()) - 1;
-
-    while (low &lt;= high) {
-        int mid = low + (high - low) / 2;  // Avoids overflow
-
-        if (arr[mid] == target) {
-            return mid;             // Target found
-        } else if (arr[mid] &lt; target) {
-            low = mid + 1;          // Search right half
-        } else {
-            high = mid - 1;         // Search left half
-        }
-    }
-
-    return -1;                      // Target not in array
-}
-
-int main() {
-    vector&lt;int&gt; nums = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91};
-    int result = binarySearch(nums, 23);
-    cout &lt;&lt; "Found at index: " &lt;&lt; result &lt;&lt; endl;  // Output: 5
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

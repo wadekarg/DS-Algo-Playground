@@ -112,12 +112,11 @@ var DSA = window.DSA || {};
 
     panel.innerHTML =
       '<div class="code-runner-panel__header">' +
-        '<span class="code-runner-panel__title">Interactive Python Editor</span>' +
+        '<span class="code-runner-panel__title">Python</span>' +
         '<div class="code-runner-panel__actions">' +
           '<span class="code-runner-panel__status">Loading editor\u2026</span>' +
           '<button class="btn btn--sm code-runner-panel__reset" title="Reset to original code">Reset</button>' +
           '<button class="btn btn--sm btn--success code-runner-panel__run" title="Run code">\u25b6 Run</button>' +
-          '<button class="btn btn--sm code-runner-panel__close" title="Close">\u2715 Close</button>' +
         '</div>' +
       '</div>' +
       '<div class="code-runner-panel__editor-wrap"></div>' +
@@ -134,31 +133,24 @@ var DSA = window.DSA || {};
     var header = block.querySelector('.code-block__header');
     if (!header) return;
 
-    // Add trigger button
-    var triggerBtn = document.createElement('button');
-    triggerBtn.className = 'btn btn--sm code-runner__trigger';
-    triggerBtn.title = 'Open interactive Python editor';
-    triggerBtn.innerHTML = '\u25b6 Run';
-    header.appendChild(triggerBtn);
-
-    var runnerPanel = null;
     var cmEditor = null;
     var originalSource = '';
 
     function openPanel() {
-      if (runnerPanel) return; // already open
-
       originalSource = getPythonSource(block);
 
-      runnerPanel = buildPanel(originalSource);
-      block.parentNode.insertBefore(runnerPanel, block.nextSibling);
+      // Hide the static syntax-highlighted code body
+      var codeBody = block.querySelector('.code-block__body');
+      if (codeBody) codeBody.style.display = 'none';
+
+      var runnerPanel = buildPanel(originalSource);
+      block.appendChild(runnerPanel);
 
       var statusEl    = runnerPanel.querySelector('.code-runner-panel__status');
       var editorWrap  = runnerPanel.querySelector('.code-runner-panel__editor-wrap');
       var outputEl    = runnerPanel.querySelector('.code-runner-panel__output');
       var runBtn      = runnerPanel.querySelector('.code-runner-panel__run');
       var resetBtn    = runnerPanel.querySelector('.code-runner-panel__reset');
-      var closeBtn    = runnerPanel.querySelector('.code-runner-panel__close');
 
       // Load CodeMirror then create editor
       loadCodeMirror(function(err) {
@@ -199,18 +191,6 @@ var DSA = window.DSA || {};
         outputEl.textContent = 'Click \u25b6 Run to execute\u2026';
         outputEl.classList.remove('code-runner-panel__output--error');
       });
-
-      // Close button
-      closeBtn.addEventListener('click', function() {
-        closePanel();
-      });
-    }
-
-    function closePanel() {
-      if (!runnerPanel) return;
-      runnerPanel.parentNode.removeChild(runnerPanel);
-      runnerPanel = null;
-      cmEditor = null;
     }
 
     function runCode(statusEl, outputEl) {
@@ -280,13 +260,8 @@ var DSA = window.DSA || {};
       }
     }
 
-    triggerBtn.addEventListener('click', function() {
-      if (runnerPanel) {
-        closePanel();
-      } else {
-        openPanel();
-      }
-    });
+    // Open the panel immediately — no trigger button, always live
+    openPanel();
   }
 
   // --- Public init ---

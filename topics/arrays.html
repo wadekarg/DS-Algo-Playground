@@ -145,11 +145,7 @@ return False</pre>
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -193,127 +189,6 @@ def linear_search(array, target):
 
 idx = linear_search(arr, 19)
 print("Search for 19: found at index", idx)</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">import java.util.ArrayList;
-import java.util.Arrays;
-
-public class ArrayOperations {
-
-    // Insert at a specific index - O(n)
-    public static int[] insertAt(int[] arr, int index, int value) {
-        int[] result = new int[arr.length + 1];
-        for (int i = 0; i < index; i++) {
-            result[i] = arr[i];
-        }
-        result[index] = value;
-        for (int i = index; i < arr.length; i++) {
-            result[i + 1] = arr[i];
-        }
-        return result;
-    }
-
-    // Delete at a specific index - O(n)
-    public static int[] deleteAt(int[] arr, int index) {
-        if (index < 0 || index >= arr.length) return arr;
-        int[] result = new int[arr.length - 1];
-        for (int i = 0; i < index; i++) {
-            result[i] = arr[i];
-        }
-        for (int i = index + 1; i < arr.length; i++) {
-            result[i - 1] = arr[i];
-        }
-        return result;
-    }
-
-    // Linear search - O(n)
-    public static int linearSearch(int[] arr, int target) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == target) return i;
-        }
-        return -1;
-    }
-
-    public static void main(String[] args) {
-        int[] arr = {5, 12, 8, 3, 19, 7};
-        System.out.println("Original: " + Arrays.toString(arr));
-
-        // Access by index - O(1)
-        System.out.println("Element at index 2: " + arr[2]);
-
-        // Insert
-        arr = insertAt(arr, 2, 99);
-        System.out.println("After insert: " + Arrays.toString(arr));
-
-        // Delete
-        arr = deleteAt(arr, 2);
-        System.out.println("After delete: " + Arrays.toString(arr));
-
-        // Search
-        int idx = linearSearch(arr, 19);
-        System.out.println("Search for 19: index " + idx);
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-using namespace std;
-
-// Insert at a specific index - O(n)
-void insertAt(vector&lt;int&gt;&amp; arr, int index, int value) {
-    arr.insert(arr.begin() + index, value);
-}
-
-// Delete at a specific index - O(n)
-void deleteAt(vector&lt;int&gt;&amp; arr, int index) {
-    if (index &lt; 0 || index &gt;= (int)arr.size()) return;
-    arr.erase(arr.begin() + index);
-}
-
-// Linear search - O(n)
-int linearSearch(const vector&lt;int&gt;&amp; arr, int target) {
-    for (int i = 0; i &lt; (int)arr.size(); i++) {
-        if (arr[i] == target) return i;
-    }
-    return -1;
-}
-
-void printArray(const vector&lt;int&gt;&amp; arr) {
-    cout &lt;&lt; "[";
-    for (int i = 0; i &lt; (int)arr.size(); i++) {
-        if (i &gt; 0) cout &lt;&lt; ", ";
-        cout &lt;&lt; arr[i];
-    }
-    cout &lt;&lt; "]" &lt;&lt; endl;
-}
-
-int main() {
-    vector&lt;int&gt; arr = {5, 12, 8, 3, 19, 7};
-    cout &lt;&lt; "Original: ";
-    printArray(arr);
-
-    // Access by index - O(1)
-    cout &lt;&lt; "Element at index 2: " &lt;&lt; arr[2] &lt;&lt; endl;
-
-    // Insert
-    insertAt(arr, 2, 99);
-    cout &lt;&lt; "After insert: ";
-    printArray(arr);
-
-    // Delete
-    deleteAt(arr, 2);
-    cout &lt;&lt; "After delete: ";
-    printArray(arr);
-
-    // Search
-    int idx = linearSearch(arr, 19);
-    cout &lt;&lt; "Search for 19: index " &lt;&lt; idx &lt;&lt; endl;
-
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

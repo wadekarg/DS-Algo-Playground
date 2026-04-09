@@ -154,11 +154,7 @@ def search(node, val):
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -206,108 +202,6 @@ for v in [50, 30, 70, 20, 40, 60, 80]:
 print(inorder(root))         # [20, 30, 40, 50, 60, 70, 80]
 print(search(root, 40))      # &lt;BSTNode object&gt;
 print(search(root, 99))      # None</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">class BSTNode {
-    int val;
-    BSTNode left, right;
-
-    BSTNode(int val) {
-        this.val = val;
-        this.left = null;
-        this.right = null;
-    }
-}
-
-public class BST {
-    private BSTNode root;
-
-    /** Insert a value into the BST. */
-    public void insert(int val) {
-        root = insertRec(root, val);
-    }
-
-    private BSTNode insertRec(BSTNode node, int val) {
-        if (node == null) return new BSTNode(val);
-        if (val &lt; node.val)
-            node.left = insertRec(node.left, val);
-        else if (val &gt; node.val)
-            node.right = insertRec(node.right, val);
-        return node;
-    }
-
-    /** Search for a value. Returns true if found. */
-    public boolean search(int val) {
-        return searchRec(root, val);
-    }
-
-    private boolean searchRec(BSTNode node, int val) {
-        if (node == null) return false;
-        if (val == node.val) return true;
-        if (val &lt; node.val) return searchRec(node.left, val);
-        return searchRec(node.right, val);
-    }
-
-    public static void main(String[] args) {
-        BST tree = new BST();
-        int[] values = {50, 30, 70, 20, 40, 60, 80};
-        for (int v : values) tree.insert(v);
-
-        System.out.println(tree.search(40));  // true
-        System.out.println(tree.search(99));  // false
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-using namespace std;
-
-struct BSTNode {
-    int val;
-    BSTNode* left;
-    BSTNode* right;
-    BSTNode(int v) : val(v), left(nullptr), right(nullptr) {}
-};
-
-/** Insert a value into the BST and return the root. */
-BSTNode* insert(BSTNode* root, int val) {
-    if (!root) return new BSTNode(val);
-    if (val &lt; root-&gt;val)
-        root-&gt;left = insert(root-&gt;left, val);
-    else if (val &gt; root-&gt;val)
-        root-&gt;right = insert(root-&gt;right, val);
-    return root;
-}
-
-/** Search for a value. Returns the node or nullptr. */
-BSTNode* search(BSTNode* root, int val) {
-    if (!root || root-&gt;val == val) return root;
-    if (val &lt; root-&gt;val) return search(root-&gt;left, val);
-    return search(root-&gt;right, val);
-}
-
-/** Print inorder traversal. */
-void inorder(BSTNode* root) {
-    if (!root) return;
-    inorder(root-&gt;left);
-    cout &lt;&lt; root-&gt;val &lt;&lt; " ";
-    inorder(root-&gt;right);
-}
-
-int main() {
-    BSTNode* root = nullptr;
-    int values[] = {50, 30, 70, 20, 40, 60, 80};
-    for (int v : values) root = insert(root, v);
-
-    inorder(root);  // 20 30 40 50 60 70 80
-    cout &lt;&lt; endl;
-
-    cout &lt;&lt; (search(root, 40) ? "Found" : "Not found") &lt;&lt; endl;  // Found
-    cout &lt;&lt; (search(root, 99) ? "Found" : "Not found") &lt;&lt; endl;  // Not found
-    return 0;
-}</pre>
             </div>
           </div>
         </div>

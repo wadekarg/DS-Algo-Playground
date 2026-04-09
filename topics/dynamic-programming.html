@@ -140,11 +140,7 @@
 
         <div class="code-block">
           <div class="code-block__header">
-            <div class="code-block__tabs">
-              <button class="code-block__tab code-block__tab--active" data-lang="python">Python</button>
-              <button class="code-block__tab" data-lang="java">Java</button>
-              <button class="code-block__tab" data-lang="cpp">C++</button>
-            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
             <button class="code-block__copy">Copy</button>
           </div>
           <div class="code-block__body">
@@ -183,91 +179,6 @@ def fib_tab(n):
 # Example usage
 print(fib_memo(10))  # Output: 55
 print(fib_tab(10))   # Output: 55</pre>
-            </div>
-            <!-- Java -->
-            <div class="code-block__panel" data-lang="java">
-              <pre class="code-block__pre">import java.util.HashMap;
-import java.util.Map;
-
-public class DynamicProgramming {
-
-    // --- Memoization (Top-Down) ---
-    private static Map&lt;Integer, Long&gt; memo = new HashMap&lt;&gt;();
-
-    public static long fibMemo(int n) {
-        if (memo.containsKey(n)) {
-            return memo.get(n);
-        }
-        if (n &lt;= 1) {
-            return n;
-        }
-        long result = fibMemo(n - 1) + fibMemo(n - 2);
-        memo.put(n, result);
-        return result;
-    }
-
-    // --- Tabulation (Bottom-Up) ---
-    public static long fibTab(int n) {
-        if (n &lt;= 1) {
-            return n;
-        }
-        long[] dp = new long[n + 1];
-        dp[0] = 0;
-        dp[1] = 1;
-
-        for (int i = 2; i &lt;= n; i++) {
-            dp[i] = dp[i - 1] + dp[i - 2];
-        }
-        return dp[n];
-    }
-
-    public static void main(String[] args) {
-        System.out.println(fibMemo(10));  // Output: 55
-        System.out.println(fibTab(10));   // Output: 55
-    }
-}</pre>
-            </div>
-            <!-- C++ -->
-            <div class="code-block__panel" data-lang="cpp">
-              <pre class="code-block__pre">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;unordered_map&gt;
-using namespace std;
-
-// --- Memoization (Top-Down) ---
-unordered_map&lt;int, long long&gt; memo;
-
-long long fibMemo(int n) {
-    if (memo.count(n)) {
-        return memo[n];
-    }
-    if (n &lt;= 1) {
-        return n;
-    }
-    memo[n] = fibMemo(n - 1) + fibMemo(n - 2);
-    return memo[n];
-}
-
-// --- Tabulation (Bottom-Up) ---
-long long fibTab(int n) {
-    if (n &lt;= 1) {
-        return n;
-    }
-    vector&lt;long long&gt; dp(n + 1);
-    dp[0] = 0;
-    dp[1] = 1;
-
-    for (int i = 2; i &lt;= n; i++) {
-        dp[i] = dp[i - 1] + dp[i - 2];
-    }
-    return dp[n];
-}
-
-int main() {
-    cout &lt;&lt; fibMemo(10) &lt;&lt; endl;  // Output: 55
-    cout &lt;&lt; fibTab(10) &lt;&lt; endl;   // Output: 55
-    return 0;
-}</pre>
             </div>
           </div>
         </div>
