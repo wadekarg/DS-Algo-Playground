@@ -112,10 +112,144 @@
   padding: var(--space-lg);
 }
 
+/* ── Carousel viewport ── */
+.quiz__viewport {
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.quiz__track {
+  position: relative;
+}
+
+/* Every question is a slide, hidden by default */
+.quiz__slide {
+  display: none;
+  animation: none;
+}
+
+.quiz__slide--active {
+  display: block;
+}
+
+/* Slide-in from right */
+@keyframes quizEnterRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Slide-in from left */
+@keyframes quizEnterLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+/* Slide-out to left */
+@keyframes quizExitLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-40px); }
+}
+/* Slide-out to right */
+@keyframes quizExitRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+
+.quiz__slide--enter-right {
+  display: block;
+  animation: quizEnterRight 0.3s ease forwards;
+}
+.quiz__slide--enter-left {
+  display: block;
+  animation: quizEnterLeft 0.3s ease forwards;
+}
+.quiz__slide--exit-left {
+  display: block;
+  animation: quizExitLeft 0.3s ease forwards;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  pointer-events: none;
+}
+.quiz__slide--exit-right {
+  display: block;
+  animation: quizExitRight 0.3s ease forwards;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  pointer-events: none;
+}
+
+/* ── Nav bar ── */
+.quiz__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin: var(--space-md) 0 var(--space-sm);
+}
+
+.quiz__nav-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed);
+  flex-shrink: 0;
+}
+
+.quiz__nav-btn:hover:not(:disabled) {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+
+.quiz__nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Dot indicators */
+.quiz__nav-counter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.quiz__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-color-strong);
+  cursor: pointer;
+  transition: background var(--transition-speed), transform var(--transition-speed);
+  flex-shrink: 0;
+}
+
+.quiz__dot:hover {
+  background: var(--accent-primary);
+  transform: scale(1.2);
+}
+
+.quiz__dot--current {
+  background: var(--accent-primary);
+  transform: scale(1.25);
+}
+
+.quiz__dot--answered {
+  background: var(--accent-success);
+}
+
+.quiz__dot--current.quiz__dot--answered {
+  background: var(--accent-primary);
+}
+
+/* Question card itself — no border-bottom needed any more */
 .quiz__question {
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-md);
 }
 
 .quiz__question:last-child {
