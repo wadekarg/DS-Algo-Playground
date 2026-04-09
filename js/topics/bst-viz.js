@@ -379,7 +379,7 @@ var DSA = window.DSA || {};
 
   // ── Compute positions via inorder traversal ───────────────────────
   // Returns array of {val, x, y, parentVal, inorderIdx, depth}
-  function computeLayout(treeRoot, svgW) {
+  function computeLayout(treeRoot, svgW, svgH) {
     if (!treeRoot) return [];
 
     var nodes = [];
@@ -408,9 +408,15 @@ var DSA = window.DSA || {};
     var count = nodes.length;
     var usableW = svgW - PAD_X * 2;
 
+    // Dynamic level height: fit all levels within available height with padding
+    var maxDepth = 0;
+    nodes.forEach(function(n) { if (n.depth > maxDepth) maxDepth = n.depth; });
+    var dynLevelH = maxDepth > 0 ? Math.min(LEVEL_H, (svgH - 70) / maxDepth) : LEVEL_H;
+    dynLevelH = Math.max(dynLevelH, 45); // never collapse too tight
+
     nodes.forEach(function(n) {
       n.x = PAD_X + (count > 1 ? (n.inorderIdx / (count - 1)) * usableW : svgW / 2);
-      n.y = 40 + n.depth * LEVEL_H;
+      n.y = 40 + n.depth * dynLevelH;
     });
 
     return nodes;
@@ -420,11 +426,12 @@ var DSA = window.DSA || {};
   function renderStep(step) {
     if (!svgEl || !svgWrap) return;
 
-    var w = svgWrap.offsetWidth || 600;
-    var h = svgWrap.offsetHeight || 400;
+    var rect = svgWrap.getBoundingClientRect();
+    var w = (rect.width > 20 ? rect.width : svgWrap.offsetWidth) || 600;
+    var h = (rect.height > 20 ? rect.height : svgWrap.offsetHeight) || 400;
+    // Only set viewBox — let CSS control the rendered size
     svgEl.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-    svgEl.setAttribute('width', w);
-    svgEl.setAttribute('height', h);
+    svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
     var tree = step ? step.tree : root;
 
@@ -443,7 +450,7 @@ var DSA = window.DSA || {};
       return;
     }
 
-    var layout = computeLayout(tree, w);
+    var layout = computeLayout(tree, w, h);
 
     // Build lookup by val for edge drawing
     var byVal = {};

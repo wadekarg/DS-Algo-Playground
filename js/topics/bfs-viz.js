@@ -86,8 +86,9 @@ var DSA = window.DSA || {};
   function buildSVG(wrap) {
     wrap.innerHTML = '';
 
-    var w = wrap.offsetWidth || 640;
-    var h = wrap.offsetHeight || 350;
+    var rect = wrap.getBoundingClientRect();
+    var w = (rect.width > 20 ? rect.width : wrap.offsetWidth) || 640;
+    var h = (rect.height > 20 ? rect.height : wrap.offsetHeight) || 350;
     if (h < 200) h = 350;
 
     svgW = w;
@@ -95,9 +96,8 @@ var DSA = window.DSA || {};
 
     var svg = svgMake('svg');
     svg.setAttribute('xmlns', NS);
-    svg.setAttribute('width', w);
-    svg.setAttribute('height', h);
     svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     wrap.appendChild(svg);
     svgEl = svg;
 
@@ -393,7 +393,8 @@ var DSA = window.DSA || {};
     // Set a minimum height
     if (!svgWrap.style.height) svgWrap.style.height = '350px';
 
-    buildSVG(svgWrap);
+    // Defer buildSVG until after layout so offsetWidth is correct
+    requestAnimationFrame(function() { buildSVG(svgWrap); });
 
     var explanationEl = document.querySelector('.viz-explanation');
 

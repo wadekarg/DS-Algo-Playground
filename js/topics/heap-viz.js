@@ -290,11 +290,11 @@ var DSA = window.DSA || {};
   function renderStep(step) {
     if (!svgEl || !svgWrap) return;
 
-    var w = svgWrap.offsetWidth || 600;
-    var h = svgWrap.offsetHeight || 400;
+    var rect = svgWrap.getBoundingClientRect();
+    var w = (rect.width > 20 ? rect.width : svgWrap.offsetWidth) || 600;
+    var h = (rect.height > 20 ? rect.height : svgWrap.offsetHeight) || 400;
     svgEl.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-    svgEl.setAttribute('width', w);
-    svgEl.setAttribute('height', h);
+    svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svgEl.innerHTML = '';
 
     if (!step) {
