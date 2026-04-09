@@ -13,7 +13,6 @@ var DSA = window.DSA || {};
 
   // --- CDN URLs ---
   var CM_CSS      = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css';
-  var CM_DRACULA  = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css';
   var CM_JS       = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js';
   var CM_PYTHON   = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js';
   var CM_CLOSE    = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js';
@@ -48,7 +47,6 @@ var DSA = window.DSA || {};
     cmLoading = true;
 
     loadCSS(CM_CSS);
-    loadCSS(CM_DRACULA);
 
     loadScript(CM_JS, function(err) {
       if (err) { flushCmCallbacks(err); return; }
