@@ -9,15 +9,8 @@ var DSA = window.DSA || {};
   var explanationEl = null;
 
   // Layout constants
-  var BUCKET_H = 40;
-  var BUCKET_W = 60;
-  var CHAIN_CELL_W = 56;
-  var CHAIN_CELL_H = 36;
-  var CHAIN_GAP = 12;
-  var ROW_GAP = 8;
   var INDEX_LABEL_W = 36;
-  var LEFT_MARGIN = 30;
-  var TOP_MARGIN = 60;
+  var LEFT_MARGIN = 20;
   var ARROW_LEN = 10;
 
   // ---------- CSS helpers ----------
@@ -296,62 +289,81 @@ var DSA = window.DSA || {};
     var h = data.height;
 
     var colorDefault = getColor('--viz-default', '#3b82f6');
-    var colorActive = getColor('--viz-active', '#ef4444');
-    var colorFound = getColor('--viz-found', '#22c55e');
-    var colorCellBg = getColor('--viz-cell-bg', '#e2e8f0');
+    var colorActive  = getColor('--viz-active',  '#ef4444');
+    var colorFound   = getColor('--viz-found',   '#22c55e');
+    var colorCellBg  = getColor('--viz-cell-bg', '#e2e8f0');
     var colorCellText = getColor('--viz-cell-text', '#1e293b');
-    var colorArrow = getColor('--viz-arrow', '#64748b');
-    var colorAccent = getColor('--accent-primary', '#3b82f6');
-    var textPrimary = getColor('--text-primary', '#1e293b');
+    var colorArrow   = getColor('--viz-arrow',   '#64748b');
+    var colorAccent  = getColor('--accent-primary', '#3b82f6');
+    var textPrimary  = getColor('--text-primary', '#1e293b');
     var textTertiary = getColor('--text-tertiary', '#94a3b8');
 
     ctx.clearRect(0, 0, w, h);
 
     if (!step || !step.buckets) {
       ctx.fillStyle = textPrimary;
-      ctx.font = '16px ' + fontSans();
+      ctx.font = '15px ' + fontSans();
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.fillText('Use the controls below to perform hash table operations.', w / 2, h / 2);
       return;
     }
 
     var bkts = step.buckets;
-    var hashCalc = step.hashCalc || '';
+    var hashCalc    = step.hashCalc    || '';
     var activeBucket = step.activeBucket !== undefined ? step.activeBucket : -1;
-    var activeItem = step.activeItem || null;
-    var foundItem = step.foundItem || null;
+    var activeItem  = step.activeItem  || null;
+    var foundItem   = step.foundItem   || null;
 
-    // Draw hash calculation text at top
+    // ── Compute all layout values from canvas size ──────────────────
+    var TOP_MARGIN  = hashCalc ? 38 : 24;
+    var LABEL_ROW_H = 18;                          // column-header row
+    var availH      = h - TOP_MARGIN - LABEL_ROW_H - 8;
+    var ROW_H       = Math.floor(availH / bkts.length);  // total per bucket row
+    ROW_H           = Math.max(ROW_H, 28);
+    var BUCKET_H    = Math.round(ROW_H * 0.80);
+    var BUCKET_W    = Math.min(64, Math.round(w * 0.12));
+    var CHAIN_H     = Math.round(BUCKET_H * 0.82);
+    var CHAIN_W     = Math.min(56, Math.round(w * 0.10));
+    var CHAIN_GAP   = Math.max(6, Math.round(w * 0.015));
+    var bucketStartX = LEFT_MARGIN + INDEX_LABEL_W;
+    var labelY      = TOP_MARGIN;
+    var firstRowY   = TOP_MARGIN + LABEL_ROW_H;
+
+    // ── Hash-calc banner ────────────────────────────────────────────
     if (hashCalc) {
       ctx.fillStyle = colorAccent;
-      ctx.font = 'bold 15px ' + fontMono();
+      ctx.font = 'bold 13px ' + fontMono();
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
-      ctx.fillText('hash(' + hashCalc.split(' % ')[0] + ') = ' + hashCalc, LEFT_MARGIN, 12);
+      ctx.fillText('hash(' + hashCalc.split(' % ')[0] + ') = ' + hashCalc, LEFT_MARGIN, 6);
     }
 
-    // Draw bucket rows
-    var bucketStartX = LEFT_MARGIN + INDEX_LABEL_W;
-    var rowHeight = BUCKET_H + ROW_GAP;
+    // ── Column headers ───────────────────────────────────────────────
+    ctx.fillStyle = textPrimary;
+    ctx.font = 'bold 11px ' + fontSans();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('Bucket', bucketStartX, labelY);
+    ctx.fillText('Chained Values', bucketStartX + BUCKET_W + CHAIN_GAP + ARROW_LEN + 4, labelY);
 
+    // ── Bucket rows ──────────────────────────────────────────────────
     for (var b = 0; b < bkts.length; b++) {
-      var rowY = TOP_MARGIN + b * rowHeight;
-      var isActiveBucket = (b === activeBucket);
+      var rowY   = firstRowY + b * ROW_H;
+      var midY   = rowY + BUCKET_H / 2;
+      var isActive = (b === activeBucket);
 
       // Index label
-      ctx.fillStyle = isActiveBucket ? colorActive : textTertiary;
-      ctx.font = 'bold 13px ' + fontMono();
+      ctx.fillStyle = isActive ? colorActive : textTertiary;
+      ctx.font = 'bold 12px ' + fontMono();
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      ctx.fillText(String(b), bucketStartX - 8, rowY + BUCKET_H / 2);
+      ctx.fillText(String(b), bucketStartX - 6, midY);
 
-      // Bucket cell (the main bucket box)
-      var bucketBorderColor = isActiveBucket ? colorActive : colorDefault;
-      var bucketFillColor = colorCellBg;
-
-      ctx.fillStyle = bucketFillColor;
-      ctx.strokeStyle = bucketBorderColor;
-      ctx.lineWidth = isActiveBucket ? 2.5 : 1.5;
+      // Bucket cell
+      ctx.fillStyle = colorCellBg;
+      ctx.strokeStyle = isActive ? colorActive : colorDefault;
+      ctx.lineWidth = isActive ? 2.5 : 1.5;
       roundRect(ctx, bucketStartX, rowY, BUCKET_W, BUCKET_H, 4);
       ctx.fill();
       ctx.stroke();
@@ -359,128 +371,99 @@ var DSA = window.DSA || {};
       var chain = bkts[b];
 
       if (chain.length === 0) {
-        // Empty bucket - show "null" or empty indicator
         ctx.fillStyle = textTertiary;
-        ctx.font = '11px ' + fontMono();
+        ctx.font = '10px ' + fontMono();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('empty', bucketStartX + BUCKET_W / 2, rowY + BUCKET_H / 2);
+        ctx.fillText('∅', bucketStartX + BUCKET_W / 2, midY);
       } else {
-        // Draw chained values as connected cells
-        var chainStartX = bucketStartX + BUCKET_W + CHAIN_GAP + ARROW_LEN + 4;
-
-        // Arrow from bucket to first chain cell
-        var arrowFromX = bucketStartX + BUCKET_W;
-        var arrowToX = chainStartX;
-        var arrowY = rowY + BUCKET_H / 2;
-
-        ctx.strokeStyle = colorArrow;
-        ctx.fillStyle = colorArrow;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(arrowFromX + 2, arrowY);
-        ctx.lineTo(arrowToX - 2, arrowY);
-        ctx.stroke();
-
-        // Arrowhead
-        ctx.beginPath();
-        ctx.moveTo(arrowToX - 2, arrowY);
-        ctx.lineTo(arrowToX - 9, arrowY - 4);
-        ctx.lineTo(arrowToX - 9, arrowY + 4);
-        ctx.closePath();
-        ctx.fill();
-
-        // Draw each chained value
-        for (var c = 0; c < chain.length; c++) {
-          var cellX = chainStartX + c * (CHAIN_CELL_W + CHAIN_GAP + ARROW_LEN);
-          var cellY = rowY + (BUCKET_H - CHAIN_CELL_H) / 2;
-          var val = chain[c];
-
-          // Determine highlight
-          var cellFill = colorCellBg;
-          var cellBorder = colorDefault;
-          var cellTextColor = colorCellText;
-
-          if (foundItem && foundItem.bucket === b && foundItem.index === c) {
-            cellFill = colorFound;
-            cellBorder = colorFound;
-            cellTextColor = '#ffffff';
-          } else if (activeItem && activeItem.bucket === b && activeItem.index === c) {
-            cellFill = colorActive;
-            cellBorder = colorActive;
-            cellTextColor = '#ffffff';
-          } else if (isActiveBucket) {
-            cellBorder = colorActive;
-          }
-
-          // Draw cell
-          ctx.fillStyle = cellFill;
-          ctx.strokeStyle = cellBorder;
-          ctx.lineWidth = 2;
-          roundRect(ctx, cellX, cellY, CHAIN_CELL_W, CHAIN_CELL_H, 4);
-          ctx.fill();
-          ctx.stroke();
-
-          // Draw value text
-          ctx.fillStyle = cellTextColor;
-          ctx.font = 'bold 14px ' + fontSans();
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(String(val), cellX + CHAIN_CELL_W / 2, cellY + CHAIN_CELL_H / 2);
-
-          // Draw arrow to next chain cell (if not last)
-          if (c < chain.length - 1) {
-            var nextArrowFromX = cellX + CHAIN_CELL_W;
-            var nextArrowToX = cellX + CHAIN_CELL_W + CHAIN_GAP + ARROW_LEN;
-            var chainArrowY = cellY + CHAIN_CELL_H / 2;
-
-            ctx.strokeStyle = colorArrow;
-            ctx.fillStyle = colorArrow;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(nextArrowFromX + 2, chainArrowY);
-            ctx.lineTo(nextArrowToX - 2, chainArrowY);
-            ctx.stroke();
-
-            // Arrowhead
-            ctx.beginPath();
-            ctx.moveTo(nextArrowToX - 2, chainArrowY);
-            ctx.lineTo(nextArrowToX - 8, chainArrowY - 3);
-            ctx.lineTo(nextArrowToX - 8, chainArrowY + 3);
-            ctx.closePath();
-            ctx.fill();
-          } else {
-            // Draw null terminator after last element
-            var nullX = cellX + CHAIN_CELL_W + 8;
-            var nullY = cellY + CHAIN_CELL_H / 2;
-            ctx.fillStyle = textTertiary;
-            ctx.font = '10px ' + fontMono();
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('null', nullX, nullY);
-          }
-        }
-
-        // Show bucket count inside the main bucket cell
+        // Count label inside bucket
         ctx.fillStyle = colorCellText;
         ctx.font = '11px ' + fontSans();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(chain.length + (chain.length === 1 ? ' item' : ' items'), bucketStartX + BUCKET_W / 2, rowY + BUCKET_H / 2);
+        ctx.fillText(String(chain.length), bucketStartX + BUCKET_W / 2, midY);
+
+        // Arrow bucket → first chain cell
+        var chainStartX = bucketStartX + BUCKET_W + CHAIN_GAP + ARROW_LEN + 4;
+        var arrowFromX  = bucketStartX + BUCKET_W;
+        var arrowToX    = chainStartX;
+
+        ctx.strokeStyle = colorArrow;
+        ctx.fillStyle   = colorArrow;
+        ctx.lineWidth   = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(arrowFromX + 2, midY);
+        ctx.lineTo(arrowToX - 2, midY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(arrowToX - 2, midY);
+        ctx.lineTo(arrowToX - 8, midY - 4);
+        ctx.lineTo(arrowToX - 8, midY + 4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Chain cells
+        for (var c = 0; c < chain.length; c++) {
+          var cellX = chainStartX + c * (CHAIN_W + CHAIN_GAP + ARROW_LEN);
+          var cellY = rowY + (BUCKET_H - CHAIN_H) / 2;
+
+          // Stop drawing if cell would go off canvas
+          if (cellX + CHAIN_W > w - 4) break;
+
+          var cellFill   = colorCellBg;
+          var cellBorder = colorDefault;
+          var cellTxt    = colorCellText;
+
+          if (foundItem && foundItem.bucket === b && foundItem.index === c) {
+            cellFill = colorFound; cellBorder = colorFound; cellTxt = '#fff';
+          } else if (activeItem && activeItem.bucket === b && activeItem.index === c) {
+            cellFill = colorActive; cellBorder = colorActive; cellTxt = '#fff';
+          } else if (isActive) {
+            cellBorder = colorActive;
+          }
+
+          ctx.fillStyle = cellFill;
+          ctx.strokeStyle = cellBorder;
+          ctx.lineWidth = 2;
+          roundRect(ctx, cellX, cellY, CHAIN_W, CHAIN_H, 4);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = cellTxt;
+          ctx.font = 'bold 13px ' + fontSans();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(chain[c]), cellX + CHAIN_W / 2, cellY + CHAIN_H / 2);
+
+          // Arrow or null terminator
+          if (c < chain.length - 1) {
+            var nfx = cellX + CHAIN_W;
+            var ntx = cellX + CHAIN_W + CHAIN_GAP + ARROW_LEN;
+            var cay = cellY + CHAIN_H / 2;
+            ctx.strokeStyle = colorArrow;
+            ctx.fillStyle   = colorArrow;
+            ctx.lineWidth   = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(nfx + 2, cay);
+            ctx.lineTo(ntx - 2, cay);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(ntx - 2, cay);
+            ctx.lineTo(ntx - 7, cay - 3);
+            ctx.lineTo(ntx - 7, cay + 3);
+            ctx.closePath();
+            ctx.fill();
+          } else if (cellX + CHAIN_W + 28 < w) {
+            ctx.fillStyle = textTertiary;
+            ctx.font = '10px ' + fontMono();
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('null', cellX + CHAIN_W + 6, cellY + CHAIN_H / 2);
+          }
+        }
       }
     }
-
-    // Draw the title label above the bucket array
-    ctx.fillStyle = textPrimary;
-    ctx.font = 'bold 12px ' + fontSans();
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText('Bucket', bucketStartX, TOP_MARGIN - 8);
-
-    ctx.fillStyle = textPrimary;
-    ctx.font = 'bold 12px ' + fontSans();
-    ctx.textAlign = 'left';
-    ctx.fillText('Chained Values', bucketStartX + BUCKET_W + CHAIN_GAP + ARROW_LEN + 4, TOP_MARGIN - 8);
   }
 
   // ---------- Update explanation ----------
