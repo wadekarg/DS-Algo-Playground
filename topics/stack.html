@@ -94,6 +94,15 @@
             <canvas id="stack-canvas"></canvas>
           </div>
           <div class="viz-explanation">Stack initialized with [10, 25, 8, 42]. Top element: 42. Use the buttons below to perform operations.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">stack = []
+# Push
+stack.append(val)
+# Pop
+val = stack.pop()
+# Peek
+val = stack[-1]</pre>
+          </div>
 
           <!-- Playback controls -->
           <div class="viz-controls">
@@ -385,6 +394,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📞</div>
+              <div class="realworld-card__body">
+                <strong>Function Call Stack</strong>
+                <span>Every program's call stack is literally a stack (frames pushed/popped)</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">↩️</div>
+              <div class="realworld-card__body">
+                <strong>Undo Operations</strong>
+                <span>Ctrl+Z pushes state onto a stack; redo pops it</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🖩</div>
+              <div class="realworld-card__body">
+                <strong>Expression Evaluation</strong>
+                <span>Compilers parse <code>3 * (4 + 2)</code> using an operator/operand stack</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🌐</div>
+              <div class="realworld-card__body">
+                <strong>Browser Back Button</strong>
+                <span>Visited pages are pushed onto a stack; Back pops them</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Valid Parentheses"
+            data-difficulty="easy"
+            data-fn="is_valid"
+            data-starter='def is_valid(s):\n    """Return True if parentheses/brackets/braces are balanced."""\n    pass'
+            data-tests='[{"args": ["()"], "expected": "True", "label": "\"()\" → True"}, {"args": ["()[]{}" ], "expected": "True", "label": "\"()[]{}\" → True"}, {"args": ["(]"], "expected": "False", "label": "\"(]\" → False"}, {"args": ["{[()]}"], "expected": "True", "label": "\"{[()]}\" → True"}]'>
+            <div class="practice-problem">Given a string containing only <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>[</code>, <code>]</code>, return <code>True</code> if the brackets are valid and properly nested.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Evaluate Postfix Expression"
+            data-difficulty="medium"
+            data-fn="eval_postfix"
+            data-starter='def eval_postfix(tokens):\n    """Evaluate a Reverse Polish Notation expression and return the integer result."""\n    pass'
+            data-tests='[{"args": [["2","1","+","3","*"]], "expected": "9", "label": "[\"2\",\"1\",\"+\",\"3\",\"*\"] → 9"}, {"args": [["4","13","5","/","+"]], "expected": "6", "label": "[\"4\",\"13\",\"5\",\"/\",\"+\"] → 6"}]'>
+            <div class="practice-problem">Evaluate a Reverse Polish Notation (postfix) expression given as a list of string tokens. Supported operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> (truncate toward zero).</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -573,6 +644,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/stack-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

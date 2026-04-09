@@ -89,7 +89,7 @@ var DSA = window.DSA || {};
     var edges = getEdges(adj);
 
     // Helper to snapshot state
-    function snapshot(currentNode, desc) {
+    function snapshot(currentNode, desc, codeLine, variables) {
       var nodes = [];
       for (var n = 0; n < NUM_NODES; n++) {
         nodes.push({ id: n, state: nodeStates[n] });
@@ -99,24 +99,26 @@ var DSA = window.DSA || {};
         edges: edges,
         queue: queue.slice(),
         currentNode: currentNode,
+        codeLine: codeLine || null,
+        variables: variables || {},
         description: desc
       };
     }
 
     // Step 0: Initial state
-    steps.push(snapshot(-1, 'BFS starts at node ' + startNode + '. All nodes are unvisited. The queue is empty.'));
+    steps.push(snapshot(-1, 'BFS starts at node ' + startNode + '. All nodes are unvisited. The queue is empty.', 4, { start: startNode }));
 
     // Enqueue start node
     queue.push(startNode);
     nodeStates[startNode] = 'queued';
     visited[startNode] = true;
-    steps.push(snapshot(startNode, 'Enqueue node ' + startNode + ' (the starting node). Mark it as discovered. Queue: [' + queue.join(', ') + '].'));
+    steps.push(snapshot(startNode, 'Enqueue node ' + startNode + ' (the starting node). Mark it as discovered. Queue: [' + queue.join(', ') + '].', 5, { node: startNode }));
 
     while (queue.length > 0) {
       // Dequeue front
       var current = queue.shift();
       nodeStates[current] = 'visited';
-      steps.push(snapshot(current, 'Dequeue node ' + current + ' from the front of the queue. Process it (mark as visited). Queue: [' + queue.join(', ') + '].'));
+      steps.push(snapshot(current, 'Dequeue node ' + current + ' from the front of the queue. Process it (mark as visited). Queue: [' + queue.join(', ') + '].', 7, { node: current }));
 
       // Visit neighbors
       var neighbors = adj[current] || [];
@@ -126,13 +128,13 @@ var DSA = window.DSA || {};
           visited[neighbor] = true;
           queue.push(neighbor);
           nodeStates[neighbor] = 'queued';
-          steps.push(snapshot(current, 'Neighbor ' + neighbor + ' of node ' + current + ' is unvisited. Enqueue it. Queue: [' + queue.join(', ') + '].'));
+          steps.push(snapshot(current, 'Neighbor ' + neighbor + ' of node ' + current + ' is unvisited. Enqueue it. Queue: [' + queue.join(', ') + '].', 10, { node: current, neighbor: neighbor }));
         }
       }
     }
 
     // Final
-    steps.push(snapshot(-1, 'BFS complete! All reachable nodes have been visited. The queue is empty.'));
+    steps.push(snapshot(-1, 'BFS complete! All reachable nodes have been visited. The queue is empty.', 6, {}));
 
     return steps;
   }
@@ -316,10 +318,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('bfs-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('bfs', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire start button

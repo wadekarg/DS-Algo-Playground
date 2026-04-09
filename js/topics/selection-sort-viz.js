@@ -56,6 +56,8 @@ var DSA = window.DSA || {};
       currentMin: null,
       sorted: sorted.slice(),
       swapping: null,
+      codeLine: 2,
+      variables: { n: n },
       description: 'Initial array: [' + a.join(', ') + ']. Selection sort will find the minimum element in the unsorted portion and swap it into the correct position.'
     });
 
@@ -69,6 +71,8 @@ var DSA = window.DSA || {};
         currentMin: i,
         sorted: sorted.slice(),
         swapping: null,
+        codeLine: 3,
+        variables: { i: i, min_idx: i },
         description: 'Pass ' + (i + 1) + ': Looking for the minimum in the unsorted portion (index ' + i + ' to ' + (n - 1) + '). Starting with ' + a[i] + ' (index ' + i + ') as the assumed minimum.'
       });
 
@@ -81,6 +85,8 @@ var DSA = window.DSA || {};
           currentMin: minIdx,
           sorted: sorted.slice(),
           swapping: null,
+          codeLine: 5,
+          variables: { i: i, j: j, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Comparing current minimum ' + a[minIdx] + ' (index ' + minIdx + ') with ' + a[j] + ' (index ' + j + ').'
         });
 
@@ -95,6 +101,8 @@ var DSA = window.DSA || {};
             currentMin: minIdx,
             sorted: sorted.slice(),
             swapping: null,
+            codeLine: 6,
+            variables: { i: i, j: j, min_idx: minIdx },
             description: 'Pass ' + (i + 1) + ': Found new minimum! ' + a[minIdx] + ' (index ' + minIdx + ') is smaller than ' + a[oldMinIdx] + ' (index ' + oldMinIdx + '). Updating minimum.'
           });
         }
@@ -107,6 +115,8 @@ var DSA = window.DSA || {};
         currentMin: minIdx,
         sorted: sorted.slice(),
         swapping: null,
+        codeLine: 7,
+        variables: { i: i, min_idx: minIdx },
         description: 'Pass ' + (i + 1) + ': Minimum of unsorted portion is ' + a[minIdx] + ' (index ' + minIdx + ').' + (minIdx !== i ? ' It needs to be swapped with ' + a[i] + ' (index ' + i + ').' : ' It is already in position ' + i + '. No swap needed.')
       });
 
@@ -119,6 +129,8 @@ var DSA = window.DSA || {};
           currentMin: null,
           sorted: sorted.slice(),
           swapping: [i, minIdx],
+          codeLine: 7,
+          variables: { i: i, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Swapping ' + a[i] + ' (index ' + i + ') with ' + a[minIdx] + ' (index ' + minIdx + ').'
         });
 
@@ -134,6 +146,8 @@ var DSA = window.DSA || {};
           currentMin: null,
           sorted: sorted.slice(),
           swapping: [i, minIdx],
+          codeLine: 7,
+          variables: { i: i, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Swapped! Array is now [' + a.join(', ') + '].'
         });
       }
@@ -148,6 +162,8 @@ var DSA = window.DSA || {};
         currentMin: null,
         sorted: sorted.slice(),
         swapping: null,
+        codeLine: 8,
+        variables: { i: i },
         description: 'Pass ' + (i + 1) + ' complete. Element ' + a[i] + ' is now in its sorted position (index ' + i + ').'
       });
     }
@@ -160,6 +176,8 @@ var DSA = window.DSA || {};
       currentMin: null,
       sorted: sorted.slice(),
       swapping: null,
+      codeLine: 8,
+      variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + ']. Selection sort made ' + (n - 1) + ' passes through the array.'
     });
 
@@ -359,10 +377,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('selection-sort-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('selection-sort', {
       canvas: canvas,
       onRender: renderBars,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Load default sample
@@ -386,6 +409,20 @@ var DSA = window.DSA || {};
         if (arr.length >= 2) {
           loadArray(arr);
         }
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('ss-custom-input');
+    var customBtn = document.getElementById('ss-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

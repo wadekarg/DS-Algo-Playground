@@ -102,6 +102,19 @@
           </div>
 
           <div class="viz-explanation">Set a target sum and click Find Pair to begin.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def two_sum_sorted(arr, target):
+    left, right = 0, len(arr) - 1
+    while left &lt; right:
+        s = arr[left] + arr[right]
+        if s == target:
+            return (left, right)
+        elif s &lt; target:
+            left += 1
+        else:
+            right -= 1
+    return None</pre>
+          </div>
 
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -128,6 +141,9 @@
             <input type="text" class="viz-ops__input" id="tp-target-input" value="16" placeholder="Target sum">
             <button class="btn btn--primary btn--sm" id="tp-search-btn">Find Pair</button>
             <button class="btn btn--secondary btn--sm" id="tp-randomize-btn">Randomize</button>
+            <span class="viz-ops__sep">|</span>
+            <input type="text" id="tp-custom-input" class="viz-ops__input viz-ops__input--wide" placeholder="e.g. 5, 2, 8, 1, 9" aria-label="Custom array">
+            <button id="tp-custom-btn" class="btn btn--secondary btn--sm">Visualize</button>
           </div>
         </div>
       </section>
@@ -354,6 +370,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">➕</div>
+              <div class="realworld-card__body">
+                <strong>Two Sum (Sorted)</strong>
+                <span>O(n) solution with left and right pointers on a sorted array</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">💧</div>
+              <div class="realworld-card__body">
+                <strong>Container With Most Water</strong>
+                <span>Classic interview: max area with two height pointers</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔗</div>
+              <div class="realworld-card__body">
+                <strong>Merge Sorted Lists</strong>
+                <span>Merging step of merge sort is a two-pointer operation</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🧬</div>
+              <div class="realworld-card__body">
+                <strong>DNA Palindromes</strong>
+                <span>Checking if a DNA sequence is a palindrome with two pointers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Two Sum (Sorted)"
+            data-difficulty="easy"
+            data-fn="two_sum_sorted"
+            data-starter='def two_sum_sorted(arr, target):\n    """Return 1-indexed positions of two numbers summing to target in sorted arr."""\n    pass'
+            data-tests='[{"args": [[2,7,11,15], 9], "expected": "[1, 2]", "label": "[2,7,11,15] target=9 → [1,2]"}, {"args": [[2,3,4], 6], "expected": "[1, 3]", "label": "[2,3,4] target=6 → [1,3]"}]'>
+            <div class="practice-problem">Given a sorted array and a target sum, return the 1-indexed positions of the two numbers that add up to the target.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="3Sum"
+            data-difficulty="medium"
+            data-fn="three_sum"
+            data-starter='def three_sum(arr):\n    """Return all unique triplets that sum to 0, sorted."""\n    pass'
+            data-tests='[{"args": [[-1,0,1,2,-1,-4]], "expected": "[[-1, -1, 2], [-1, 0, 1]]", "label": "[-1,0,1,2,-1,-4] → [[-1,-1,2],[-1,0,1]]"}, {"args": [[0,0,0]], "expected": "[[0, 0, 0]]", "label": "[0,0,0] → [[0,0,0]]"}]'>
+            <div class="practice-problem">Find all unique triplets in the array that sum to zero. Each triplet should be sorted, and the list of triplets should be sorted.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -541,6 +619,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/two-pointers-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

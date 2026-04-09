@@ -30,6 +30,8 @@ var DSA = window.DSA || {};
       dep2: -1,
       completed: completed.slice(),
       formula: '',
+      codeLine: 1,
+      variables: { n: n },
       description: 'Compute Fibonacci numbers from fib(0) to fib(' + n + ') using dynamic programming (bottom-up tabulation).'
     });
 
@@ -43,6 +45,8 @@ var DSA = window.DSA || {};
       dep2: -1,
       completed: completed.slice(),
       formula: 'fib(0) = 0',
+      codeLine: 3,
+      variables: { n: n },
       description: 'Base case: fib(0) = 0. Fill the first cell of our DP table.'
     });
 
@@ -57,6 +61,8 @@ var DSA = window.DSA || {};
         dep2: -1,
         completed: completed.slice(),
         formula: 'fib(1) = 1',
+        codeLine: 4,
+        variables: { n: n },
         description: 'Base case: fib(1) = 1. Fill the second cell.'
       });
     }
@@ -71,6 +77,8 @@ var DSA = window.DSA || {};
         dep2: i - 2,
         completed: completed.slice(),
         formula: 'fib(' + i + ') = fib(' + (i - 1) + ') + fib(' + (i - 2) + ') = ' + dp[i - 1] + ' + ' + dp[i - 2],
+        codeLine: 6,
+        variables: { i: i, 'dp[i-1]': dp[i - 1], 'dp[i-2]': dp[i - 2] },
         description: 'Computing fib(' + i + '): look up fib(' + (i - 1) + ') = ' + dp[i - 1] + ' and fib(' + (i - 2) + ') = ' + dp[i - 2] + ' from the table.'
       });
 
@@ -84,6 +92,8 @@ var DSA = window.DSA || {};
         dep2: -1,
         completed: completed.slice(),
         formula: 'fib(' + i + ') = ' + dp[i],
+        codeLine: 6,
+        variables: { i: i, 'dp[i]': dp[i] },
         description: 'fib(' + i + ') = ' + dp[i - 1] + ' + ' + dp[i - 2] + ' = ' + dp[i] + '. Cell filled!'
       });
     }
@@ -96,6 +106,8 @@ var DSA = window.DSA || {};
       dep2: -1,
       completed: completed.slice(),
       formula: 'fib(' + n + ') = ' + dp[n],
+      codeLine: 7,
+      variables: { n: n, result: dp[n] },
       description: 'Done! The Fibonacci sequence up to fib(' + n + ') = ' + dp[n] + ' has been computed using O(n) time and O(n) space.'
     });
 
@@ -305,10 +317,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('dp-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('dp', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire n input

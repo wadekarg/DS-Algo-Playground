@@ -39,6 +39,8 @@ var DSA = window.DSA || {};
       sorted: [],
       activeLeft: 0,
       activeRight: n - 1,
+      codeLine: 1,
+      variables: { lo: 0, hi: n - 1 },
       description: 'Initial array: [' + a.join(', ') + ']. Quick sort will choose a pivot, partition the array around it, then recursively sort each partition.'
     });
 
@@ -58,6 +60,8 @@ var DSA = window.DSA || {};
       sorted: allIndices,
       activeLeft: -1,
       activeRight: -1,
+      codeLine: 4,
+      variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
     });
 
@@ -81,6 +85,8 @@ var DSA = window.DSA || {};
         sorted: sorted.slice(),
         activeLeft: low,
         activeRight: high,
+        codeLine: 2,
+        variables: { lo: low, hi: high },
         description: 'Subarray [' + low + '..' + high + '] has only one element (' + a[low] + '). It is already sorted.'
       });
       return;
@@ -99,6 +105,8 @@ var DSA = window.DSA || {};
       sorted: sorted.slice(),
       activeLeft: low,
       activeRight: high,
+      codeLine: 8,
+      variables: { pivot: pivotVal, lo: low, hi: high },
       description: 'Partitioning [' + low + '..' + high + ']. Pivot = ' + pivotVal + ' (index ' + pivotIdx + '). Elements smaller go left, larger go right.'
     });
 
@@ -117,6 +125,8 @@ var DSA = window.DSA || {};
         sorted: sorted.slice(),
         activeLeft: low,
         activeRight: high,
+        codeLine: 10,
+        variables: { i: i, j: j, pivot: pivotVal },
         description: 'Scanning index ' + j + ': value ' + a[j] + '. Comparing with pivot ' + pivotVal + '. Partition boundary (i) at index ' + i + '.'
       });
 
@@ -136,6 +146,8 @@ var DSA = window.DSA || {};
             sorted: sorted.slice(),
             activeLeft: low,
             activeRight: high,
+            codeLine: 12,
+            variables: { i: i, j: j, pivot: pivotVal },
             description: 'Swapped ' + a[i] + ' (index ' + i + ') and ' + a[j] + ' (index ' + j + '). Moving partition boundary right.'
           });
         } else {
@@ -148,6 +160,8 @@ var DSA = window.DSA || {};
             sorted: sorted.slice(),
             activeLeft: low,
             activeRight: high,
+            codeLine: 11,
+            variables: { i: i, j: j, pivot: pivotVal },
             description: a[i] + ' <= pivot ' + pivotVal + '. Element stays in place. Moving partition boundary right.'
           });
         }
@@ -163,6 +177,8 @@ var DSA = window.DSA || {};
           sorted: sorted.slice(),
           activeLeft: low,
           activeRight: high,
+          codeLine: 10,
+          variables: { i: i, j: j, pivot: pivotVal },
           description: a[j] + ' > pivot ' + pivotVal + '. Element stays on the right side. Partition boundary unchanged at index ' + i + '.'
         });
       }
@@ -189,6 +205,8 @@ var DSA = window.DSA || {};
       sorted: sorted.slice(),
       activeLeft: low,
       activeRight: high,
+      codeLine: 13,
+      variables: { i: i, pivot: a[i] },
       description: 'Pivot ' + a[i] + ' placed at index ' + i + ' (its final sorted position). Left partition: [' + low + '..' + (i - 1) + '], Right partition: [' + (i + 1) + '..' + high + '].'
     });
 
@@ -387,10 +405,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('quick-sort-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('quick-sort', {
       canvas: canvas,
       onRender: renderBars,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Load default sample
@@ -434,6 +457,20 @@ var DSA = window.DSA || {};
             loadArray(parsed);
           }
         }
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('qs-custom-input');
+    var customBtn = document.getElementById('qs-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

@@ -101,6 +101,15 @@
             <canvas id="hash-table-canvas"></canvas>
           </div>
           <div class="viz-explanation">Hash table with 8 buckets. Initial values: [15, 42, 8, 23, 7, 31, 50, 19]. Hash function: key % 8. Use the operation buttons below.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">table = {}
+# Hash function
+idx = hash(key) % size
+# Insert
+table[key] = value
+# Search
+value = table.get(key)</pre>
+          </div>
 
           <!-- Playback controls -->
           <div class="viz-controls">
@@ -435,6 +444,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🐍</div>
+              <div class="realworld-card__body">
+                <strong>Python Dicts</strong>
+                <span><code>{}</code> is a hash table; O(1) average lookup powers everyday Python</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔍</div>
+              <div class="realworld-card__body">
+                <strong>Database Indexes</strong>
+                <span>Hash indexes on columns enable O(1) row lookup by key</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🌐</div>
+              <div class="realworld-card__body">
+                <strong>DNS Resolution</strong>
+                <span>Domain names → IP addresses via a distributed hash table</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">💾</div>
+              <div class="realworld-card__body">
+                <strong>Caches</strong>
+                <span>Redis, Memcached, and CPU caches use hash tables for O(1) get/set</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Two Sum"
+            data-difficulty="easy"
+            data-fn="two_sum"
+            data-starter='def two_sum(nums, target):\n    """Return list of two indices that add up to target."""\n    pass'
+            data-tests='[{"args": [[2,7,11,15], 9], "expected": "[0, 1]", "label": "[2,7,11,15] target=9 → [0,1]"}, {"args": [[3,2,4], 6], "expected": "[1, 2]", "label": "[3,2,4] target=6 → [1,2]"}]'>
+            <div class="practice-problem">Given an array of integers and a target sum, return the indices of the two numbers that add up to the target. Assume exactly one solution exists.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Group Anagrams"
+            data-difficulty="medium"
+            data-fn="group_anagrams"
+            data-starter='def group_anagrams(strs):\n    """Group strings by anagram. Return sorted list of sorted groups."""\n    pass'
+            data-tests='[{"args": [["eat","tea","tan","ate","nat","bat"]], "expected": "[['\''ate'\'', '\''eat'\'', '\''tea'\''], ['\''bat'\''], ['\''nat'\'', '\''tan'\'']]", "label": "groups eat/tea/ate, tan/nat, bat"}]'>
+            <div class="practice-problem">Group an array of strings into lists of anagrams. Return a sorted list of groups, where each group is sorted alphabetically.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">
@@ -623,6 +694,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/hash-table-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

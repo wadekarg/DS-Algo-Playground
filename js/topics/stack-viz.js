@@ -53,6 +53,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
+      codeLine: 5,
+      variables: { val: value },
       description: 'Current stack' + (s.length > 0 ? ': [' + s.join(', ') + ']. Top is ' + s[s.length - 1] + '.' : ' is empty.') + ' We will push ' + value + ' onto the stack.'
     });
 
@@ -64,6 +66,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
+      codeLine: 6,
+      variables: { val: value, size: s.length },
       description: 'Pushing ' + value + ' onto the top of the stack.'
     });
 
@@ -74,6 +78,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl3,
+      codeLine: 6,
+      variables: { val: value, size: s.length },
       description: 'Push complete! ' + value + ' is now the top element. Stack size: ' + s.length + '.'
     });
 
@@ -82,6 +88,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
+      codeLine: 6,
+      variables: { size: s.length },
       description: 'Stack is now [' + s.join(', ') + ']. Top element: ' + s[s.length - 1] + '.'
     });
 
@@ -113,6 +121,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
+      codeLine: 9,
+      variables: { top: poppedValue },
       description: 'Current stack: [' + s.join(', ') + ']. We will pop the top element (' + poppedValue + ').'
     });
 
@@ -123,6 +133,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
+      codeLine: 10,
+      variables: { top: poppedValue },
       description: 'Removing top element: ' + poppedValue + '.'
     });
 
@@ -133,6 +145,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl3,
+      codeLine: 10,
+      variables: { top: poppedValue },
       description: 'Popping ' + poppedValue + ' from the stack...'
     });
 
@@ -192,6 +206,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
+      codeLine: 13,
+      variables: { top: topValue },
       description: 'Current stack: [' + s.join(', ') + ']. We will peek at the top element.'
     });
 
@@ -202,6 +218,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
+      codeLine: 14,
+      variables: { top: topValue },
       description: 'Peek: The top element is ' + topValue + '. Peek does not modify the stack.'
     });
 
@@ -210,6 +228,8 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
+      codeLine: 14,
+      variables: { top: topValue },
       description: 'Peek complete. Stack remains [' + s.join(', ') + '] with ' + s.length + ' elements.'
     });
 
@@ -458,10 +478,15 @@ var DSA = window.DSA || {};
     // Initialize with default stack
     stack = defaultStack.slice();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('stack', {
       canvas: canvas,
       onRender: onRender,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Set initial display step

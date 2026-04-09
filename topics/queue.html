@@ -106,6 +106,14 @@
             <canvas id="queue-canvas"></canvas>
           </div>
           <div class="viz-explanation">Queue: [15, 42, 8, 23, 7]. Use the operation buttons below.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">from collections import deque
+queue = deque()
+# Enqueue
+queue.append(val)
+# Dequeue
+val = queue.popleft()</pre>
+          </div>
 
           <!-- Playback controls -->
           <div class="viz-controls">
@@ -418,6 +426,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🖨️</div>
+              <div class="realworld-card__body">
+                <strong>Print Spooler</strong>
+                <span>Jobs are queued and processed in order</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🌐</div>
+              <div class="realworld-card__body">
+                <strong>Web Server Requests</strong>
+                <span>HTTP requests wait in a queue before being handled</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🤖</div>
+              <div class="realworld-card__body">
+                <strong>BFS Graph Search</strong>
+                <span>BFS uses a queue to explore nodes level-by-level</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📦</div>
+              <div class="realworld-card__body">
+                <strong>Message Queues</strong>
+                <span>Kafka, RabbitMQ, and SQS are industrial-grade queues</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="First Unique Character"
+            data-difficulty="easy"
+            data-fn="first_unique"
+            data-starter='def first_unique(s):\n    """Return the first non-repeating character, or \"\" if none."""\n    pass'
+            data-tests='[{"args": ["leetcode"], "expected": "'\''l'\''", "label": "\"leetcode\" → \"l\""}, {"args": ["aabb"], "expected": "'\'''\''", "label": "\"aabb\" → \"\""}, {"args": ["loveleetcode"], "expected": "'\''v'\''", "label": "\"loveleetcode\" → \"v\""}]'>
+            <div class="practice-problem">Given a string, return the first non-repeating character. If every character repeats, return an empty string <code>""</code>.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Sliding Window Maximum"
+            data-difficulty="medium"
+            data-fn="sliding_max"
+            data-starter='def sliding_max(arr, k):\n    """Return list of maximums for each window of size k."""\n    pass'
+            data-tests='[{"args": [[1,3,-1,-3,5,3,6,7], 3], "expected": "[3, 3, 5, 5, 6, 7]", "label": "[1,3,-1,-3,5,3,6,7] k=3 → [3,3,5,5,6,7]"}]'>
+            <div class="practice-problem">Given an array and window size <code>k</code>, return a list containing the maximum value of each sliding window of size <code>k</code>.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">
@@ -606,6 +676,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/queue-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

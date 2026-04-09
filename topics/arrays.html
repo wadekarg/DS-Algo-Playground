@@ -89,6 +89,20 @@
 
           <!-- Explanation -->
           <div class="viz-explanation">Choose an operation and click a button to begin.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">arr = [10, 20, 30, 40, 50]
+# Access: O(1)
+print(arr[2])
+# Insert at index i
+arr.insert(i, val)
+# Delete at index i
+arr.pop(i)
+# Search (linear)
+for x in arr:
+    if x == target:
+        return True
+return False</pre>
+          </div>
 
           <!-- Playback controls -->
           <div class="viz-controls">
@@ -119,6 +133,9 @@
             <button id="arr-insert-btn" class="btn btn--primary btn--sm">Insert</button>
             <button id="arr-delete-btn" class="btn btn--danger btn--sm">Delete</button>
             <button id="arr-search-btn" class="btn btn--secondary btn--sm">Search</button>
+            <span class="viz-ops__sep">|</span>
+            <input type="text" id="arr-custom-input" class="viz-ops__input viz-ops__input--wide" placeholder="e.g. 5, 2, 8, 1, 9" aria-label="Custom array">
+            <button id="arr-custom-btn" class="btn btn--secondary btn--sm">Visualize</button>
           </div>
         </div>
       </section>
@@ -370,6 +387,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🐍</div>
+              <div class="realworld-card__body">
+                <strong>Python Lists</strong>
+                <span>The built-in <code>list</code> type is a dynamic array; every Python program uses it</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🖼️</div>
+              <div class="realworld-card__body">
+                <strong>Image Pixels</strong>
+                <span>Images stored as 2D arrays (width × height) of pixel values</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🗃️</div>
+              <div class="realworld-card__body">
+                <strong>Database Tables</strong>
+                <span>Relational DB rows stored in contiguous pages for fast sequential scans</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📊</div>
+              <div class="realworld-card__body">
+                <strong>NumPy / Tensors</strong>
+                <span>NumPy arrays and ML tensors are the backbone of all data science</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Find Maximum"
+            data-difficulty="easy"
+            data-fn="find_max"
+            data-starter='def find_max(arr):\n    """Return the maximum value in arr."""\n    pass'
+            data-tests='[{"args": [[3,1,4,1,5,9]], "expected": "9", "label": "finds max in [3,1,4,1,5,9]"}, {"args": [[-5,-1,-3]], "expected": "-1", "label": "finds max in [-5,-1,-3]"}, {"args": [[7]], "expected": "7", "label": "single element [7]"}]'>
+            <div class="practice-problem">Given an array of integers, return the maximum value.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Rotate Right"
+            data-difficulty="medium"
+            data-fn="rotate_right"
+            data-starter='def rotate_right(arr, k):\n    """Rotate arr right by k positions and return result."""\n    pass'
+            data-tests='[{"args": [[1,2,3,4,5], 2], "expected": "[4, 5, 1, 2, 3]", "label": "[1,2,3,4,5] rotated right by 2"}, {"args": [[1,2,3], 4], "expected": "[3, 1, 2]", "label": "[1,2,3] rotated right by 4"}]'>
+            <div class="practice-problem">Rotate an array right by <code>k</code> positions. If <code>k</code> is larger than the array length, wrap around.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 6: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -485,6 +564,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/arrays-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

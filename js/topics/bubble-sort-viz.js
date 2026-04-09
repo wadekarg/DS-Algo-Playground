@@ -30,6 +30,8 @@ var DSA = window.DSA || {};
       comparing: [],
       swapped: false,
       sorted: sorted.slice(),
+      codeLine: 2,
+      variables: { n: n },
       description: 'Initial array: [' + a.join(', ') + ']. Bubble sort will compare adjacent elements and swap them if they are in the wrong order.'
     });
 
@@ -43,6 +45,8 @@ var DSA = window.DSA || {};
           comparing: [j, j + 1],
           swapped: false,
           sorted: sorted.slice(),
+          codeLine: 6,
+          variables: { i: i, j: j },
           description: 'Pass ' + (i + 1) + ': Comparing ' + a[j] + ' (index ' + j + ') and ' + a[j + 1] + ' (index ' + (j + 1) + ').'
         });
 
@@ -58,6 +62,8 @@ var DSA = window.DSA || {};
             comparing: [j, j + 1],
             swapped: true,
             sorted: sorted.slice(),
+            codeLine: 7,
+            variables: { i: i, j: j },
             description: 'Swapped! ' + a[j] + ' and ' + a[j + 1] + ' were out of order. Array is now [' + a.join(', ') + '].'
           });
         } else {
@@ -66,6 +72,8 @@ var DSA = window.DSA || {};
             comparing: [j, j + 1],
             swapped: false,
             sorted: sorted.slice(),
+            codeLine: 6,
+            variables: { i: i, j: j },
             description: 'No swap needed. ' + a[j] + ' <= ' + a[j + 1] + ', they are already in order.'
           });
         }
@@ -79,6 +87,8 @@ var DSA = window.DSA || {};
         comparing: [],
         swapped: false,
         sorted: sorted.slice(),
+        codeLine: 9,
+        variables: { i: i, swapped: swappedThisPass },
         description: 'Pass ' + (i + 1) + ' complete. Element ' + a[n - 1 - i] + ' is now in its sorted position (index ' + (n - 1 - i) + ').'
       });
 
@@ -95,6 +105,8 @@ var DSA = window.DSA || {};
           comparing: [],
           swapped: false,
           sorted: sorted.slice(),
+          codeLine: 10,
+          variables: { i: i, swapped: false },
           description: 'No swaps in pass ' + (i + 1) + ' -- the array is already sorted! Early exit optimization triggered.'
         });
         break;
@@ -113,6 +125,8 @@ var DSA = window.DSA || {};
         comparing: [],
         swapped: false,
         sorted: sorted.slice(),
+        codeLine: 11,
+        variables: { n: n },
         description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
       });
     }
@@ -277,10 +291,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('bubble-sort-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('bubble-sort', {
       canvas: canvas,
       onRender: renderBars,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Load default sample
@@ -292,6 +311,20 @@ var DSA = window.DSA || {};
       randomizeBtn.addEventListener('click', function() {
         var arr = randomArray();
         loadArray(arr);
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('bs-custom-input');
+    var customBtn = document.getElementById('bs-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

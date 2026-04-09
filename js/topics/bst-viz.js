@@ -179,6 +179,8 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
+      codeLine: 2,
+      variables: { val: val },
       description: 'Insert ' + val + ': starting at the root.'
     });
 
@@ -192,6 +194,8 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: path.slice(),
         found: null,
+        codeLine: val < node.val ? 4 : 6,
+        variables: { val: val, node: node.val },
         description: 'Compare ' + val + ' with node ' + node.val + '. ' +
           (val < node.val ? val + ' < ' + node.val + ', go left.' : val + ' > ' + node.val + ', go right.')
       });
@@ -212,6 +216,8 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [val],
       found: val,
+      codeLine: 3,
+      variables: { val: val },
       description: 'Inserted ' + val + ' as a ' + (node && val < node.val ? 'left' : 'right') + ' child of ' + (node ? node.val : 'root') + '.'
     });
 
@@ -219,6 +225,8 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
+      codeLine: 7,
+      variables: { val: val },
       description: 'Insert complete. Value ' + val + ' has been added to the BST.'
     });
 
@@ -243,6 +251,8 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
+      codeLine: 11,
+      variables: { val: val },
       description: 'Search for ' + val + ': starting at the root.'
     });
 
@@ -257,12 +267,16 @@ var DSA = window.DSA || {};
           tree: cloneTree(root),
           highlighted: path.slice(),
           found: val,
+          codeLine: 11,
+          variables: { val: val, node: node.val },
           description: 'Found ' + val + '! Node matches the search value.'
         });
         steps.push({
           tree: cloneTree(root),
           highlighted: [],
           found: val,
+          codeLine: 11,
+          variables: { val: val },
           description: 'Search complete. Value ' + val + ' exists in the BST.'
         });
         return steps;
@@ -272,6 +286,8 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: path.slice(),
         found: null,
+        codeLine: val < node.val ? 13 : 14,
+        variables: { val: val, node: node.val },
         description: 'Compare ' + val + ' with node ' + node.val + '. ' +
           (val < node.val ? val + ' < ' + node.val + ', go left.' : val + ' > ' + node.val + ', go right.')
       });
@@ -287,6 +303,8 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: path.slice(),
       found: null,
+      codeLine: 11,
+      variables: { val: val },
       description: 'Reached a null child. Value ' + val + ' is not in the BST.'
     });
 
@@ -661,10 +679,15 @@ var DSA = window.DSA || {};
 
     buildInitialTree();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('bst', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Show initial state

@@ -90,6 +90,15 @@
           </div>
 
           <div class="viz-explanation">Set the window size k and click Start to begin.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def max_sum_window(arr, k):
+    window = sum(arr[:k])
+    best = window
+    for i in range(k, len(arr)):
+        window += arr[i] - arr[i - k]
+        best = max(best, window)
+    return best</pre>
+          </div>
 
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -117,6 +126,9 @@
             <input type="number" class="viz-ops__input" id="sw-k-input" value="3" min="1" max="15" style="width:60px;">
             <button class="btn btn--primary btn--sm" id="sw-start-btn">Start</button>
             <button class="btn btn--secondary btn--sm" id="sw-randomize-btn">Randomize</button>
+            <span class="viz-ops__sep">|</span>
+            <input type="text" id="sw-custom-input" class="viz-ops__input viz-ops__input--wide" placeholder="e.g. 5, 2, 8, 1, 9" aria-label="Custom array">
+            <button id="sw-custom-btn" class="btn btn--secondary btn--sm">Visualize</button>
           </div>
         </div>
       </section>
@@ -280,6 +292,68 @@ int main() {
         </div>
         <div class="topic-section__content">
           <p>Compared to the brute-force approach that examines all O(n &times; k) subarrays, the sliding window technique is a significant improvement. For variable-size windows (e.g., longest substring without repeating characters), space may increase to O(min(n, m)) where m is the character set size, but time remains O(n).</p>
+        </div>
+      </section>
+
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📡</div>
+              <div class="realworld-card__body">
+                <strong>Network Rate Limiting</strong>
+                <span>Count requests in the last 60 s: slide the window as time passes</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📈</div>
+              <div class="realworld-card__body">
+                <strong>Moving Averages</strong>
+                <span>Stock charts display moving averages computed with a sliding window</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔎</div>
+              <div class="realworld-card__body">
+                <strong>Substring Search</strong>
+                <span>Finding longest substring without repeating characters</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🎥</div>
+              <div class="realworld-card__body">
+                <strong>Video Streaming</strong>
+                <span>Buffer a sliding window of video frames for smooth playback</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Maximum Sum Window"
+            data-difficulty="easy"
+            data-fn="max_sum_window"
+            data-starter='def max_sum_window(arr, k):\n    """Return maximum sum of any subarray of size k."""\n    pass'
+            data-tests='[{"args": [[1,3,-1,-3,5,3,6,7], 3], "expected": "16", "label": "[1,3,-1,-3,5,3,6,7] k=3 → 16"}, {"args": [[2,1,5,1,3,2], 3], "expected": "9", "label": "[2,1,5,1,3,2] k=3 → 9"}]'>
+            <div class="practice-problem">Given an array and window size <code>k</code>, return the maximum sum of any contiguous subarray of size <code>k</code>.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Longest Substring Without Repeating"
+            data-difficulty="medium"
+            data-fn="longest_unique_substring"
+            data-starter='def longest_unique_substring(s):\n    """Return length of longest substring without repeating characters."""\n    pass'
+            data-tests='[{"args": ["abcabcbb"], "expected": "3", "label": "\"abcabcbb\" → 3"}, {"args": ["bbbbb"], "expected": "1", "label": "\"bbbbb\" → 1"}, {"args": ["pwwkew"], "expected": "3", "label": "\"pwwkew\" → 3"}]'>
+            <div class="practice-problem">Find the length of the longest substring that contains no repeating characters.</div>
+          </div>
         </div>
       </section>
 
@@ -470,6 +544,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/sliding-window-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

@@ -15,6 +15,8 @@ var DSA = window.DSA || {};
     // Topic page modules
     if (DSA.codeBlock) DSA.codeBlock.init();
     if (DSA.quiz) DSA.quiz.init();
+    if (DSA.codeRunner) DSA.codeRunner.init();
+    if (DSA.practice) DSA.practice.init();
 
     // Topic-specific visualizations
     if (DSA.arraysViz) DSA.arraysViz.init();

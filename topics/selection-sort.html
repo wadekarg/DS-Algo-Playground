@@ -90,6 +90,17 @@
             <canvas id="selection-sort-canvas"></canvas>
           </div>
           <div class="viz-explanation">Press Play or Step to start the visualization.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr</pre>
+          </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
               <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
@@ -114,6 +125,9 @@
             <input type="text" id="ss-array-input" class="input input--sm" placeholder="e.g. 64, 25, 12, 22, 11" style="width:220px;">
             <button class="btn btn--secondary btn--sm" id="ss-load-btn">Load</button>
             <button class="btn btn--secondary btn--sm" id="ss-randomize-btn">Randomize</button>
+            <span class="viz-ops__sep">|</span>
+            <input type="text" id="ss-custom-input" class="viz-ops__input viz-ops__input--wide" placeholder="e.g. 5, 2, 8, 1, 9" aria-label="Custom array">
+            <button id="ss-custom-btn" class="btn btn--secondary btn--sm">Visualize</button>
           </div>
         </div>
       </section>
@@ -286,6 +300,61 @@ int main() {
               </tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">💾</div>
+              <div class="realworld-card__body">
+                <strong>Flash Memory</strong>
+                <span>Minimises the number of writes (only n−1 swaps), ideal for write-limited media</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🃏</div>
+              <div class="realworld-card__body">
+                <strong>Card Sorting</strong>
+                <span>Intuitive hand-sorting strategy: scan for minimum, place it</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🎓</div>
+              <div class="realworld-card__body">
+                <strong>Education</strong>
+                <span>Clear separation of "sorted" and "unsorted" sub-arrays aids teaching</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Minimum Swaps to Sort"
+            data-difficulty="easy"
+            data-fn="min_swaps_to_sort"
+            data-starter='def min_swaps_to_sort(arr):\n    """Return the minimum number of swaps to sort arr (selection sort logic)."""\n    pass'
+            data-tests='[{"args": [[4,3,1,2]], "expected": "3", "label": "[4,3,1,2] → 3 swaps"}, {"args": [[1,2,3]], "expected": "0", "label": "[1,2,3] already sorted → 0"}]'>
+            <div class="practice-problem">Using selection sort logic (find minimum, swap to front), return the number of swaps needed to sort the array.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Sort by Frequency"
+            data-difficulty="medium"
+            data-fn="sort_by_frequency"
+            data-starter='def sort_by_frequency(arr):\n    """Sort by frequency descending; tie-break by value ascending."""\n    pass'
+            data-tests='[{"args": [[4,5,6,5,4,3]], "expected": "[4, 4, 5, 5, 3, 6]", "label": "[4,5,6,5,4,3] → [4,4,5,5,3,6]"}]'>
+            <div class="practice-problem">Sort the array by element frequency in descending order. Break ties by element value in ascending order.</div>
+          </div>
         </div>
       </section>
 
@@ -474,6 +543,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/selection-sort-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

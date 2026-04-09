@@ -30,6 +30,8 @@ var DSA = window.DSA || {};
       high: high,
       eliminated: eliminated.slice(),
       found: -1,
+      codeLine: 2,
+      variables: { low: low, high: high },
       description: 'Start binary search for target ' + target + '. The sorted array has ' + arr.length + ' elements. low = ' + low + ', high = ' + high + ', mid = ' + mid + '.'
     });
 
@@ -45,6 +47,8 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: mid,
+          codeLine: 4,
+          variables: { low: low, mid: mid, high: high },
           description: 'arr[' + mid + '] = ' + arr[mid] + ' equals target ' + target + '. Element found at index ' + mid + '!'
         });
         return steps;
@@ -57,6 +61,8 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
+          codeLine: 6,
+          variables: { low: low, mid: mid, high: high },
           description: 'Compare arr[' + mid + '] = ' + arr[mid] + ' with target ' + target + '. Since ' + arr[mid] + ' < ' + target + ', eliminate the left half (indices ' + low + ' to ' + mid + ').'
         });
         for (var i = low; i <= mid; i++) {
@@ -72,6 +78,8 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
+          codeLine: 8,
+          variables: { low: low, mid: mid, high: high },
           description: 'Compare arr[' + mid + '] = ' + arr[mid] + ' with target ' + target + '. Since ' + arr[mid] + ' > ' + target + ', eliminate the right half (indices ' + mid + ' to ' + high + ').'
         });
         for (var j = mid; j <= high; j++) {
@@ -90,6 +98,8 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
+          codeLine: 3,
+          variables: { low: low, mid: newMid, high: high },
           description: 'Narrow search space: low = ' + low + ', high = ' + high + ', mid = ' + newMid + '. Remaining elements: ' + (high - low + 1) + '.'
         });
       }
@@ -103,6 +113,8 @@ var DSA = window.DSA || {};
       high: high,
       eliminated: eliminated.slice(),
       found: -1,
+      codeLine: 9,
+      variables: { low: low, high: high },
       description: 'low (' + low + ') > high (' + high + '). Target ' + target + ' is not in the array.'
     });
 
@@ -281,6 +293,12 @@ var DSA = window.DSA || {};
     return arr;
   }
 
+  // ── Load a custom array (sorts it, then re-runs search) ────────────
+  function loadArray(arr) {
+    currentArray = arr.slice().sort(function(a, b) { return a - b; });
+    runSearch();
+  }
+
   // ── Run a search ───────────────────────────────────────────────────
   function runSearch() {
     var inputEl = document.getElementById('bs-target-input');
@@ -299,10 +317,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('binary-search-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('binary-search', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire target input
@@ -339,6 +362,20 @@ var DSA = window.DSA || {};
           targetInput.value = currentTarget;
         }
         runSearch();
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('bin-custom-input');
+    var customBtn = document.getElementById('bin-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
 

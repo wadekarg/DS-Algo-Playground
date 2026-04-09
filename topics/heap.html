@@ -102,6 +102,35 @@
           </div>
 
           <div class="viz-explanation">Use the controls below to perform heap operations.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def insert(heap, val):
+    heap.append(val)
+    i = len(heap) - 1
+    while i > 0:
+        p = (i - 1) // 2
+        if heap[i] > heap[p]:
+            heap[i], heap[p] = heap[p], heap[i]
+            i = p
+        else: break
+def extract_max(heap):
+    max_val = heap[0]
+    heap[0] = heap.pop()
+    heapify_down(heap, 0)
+    return max_val
+def heapify_down(heap, i):
+    n = len(heap)
+    while True:
+        largest = i
+        l, r = 2*i+1, 2*i+2
+        if l &lt; n and heap[l] > heap[largest]: largest = l
+        if r &lt; n and heap[r] > heap[largest]: largest = r
+        if largest == i: break
+        heap[i], heap[largest] = heap[largest], heap[i]
+        i = largest
+def build_heap(arr):
+    for i in range(len(arr)//2 - 1, -1, -1):
+        heapify_down(arr, i)</pre>
+          </div>
 
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -420,6 +449,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🏥</div>
+              <div class="realworld-card__body">
+                <strong>Task Scheduling</strong>
+                <span>OS schedulers use a min-heap to pick the highest-priority process</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🗺️</div>
+              <div class="realworld-card__body">
+                <strong>Dijkstra's Algorithm</strong>
+                <span>Shortest-path finds the minimum-weight edge using a min-heap</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📈</div>
+              <div class="realworld-card__body">
+                <strong>Top-K Elements</strong>
+                <span>"Find top 10 most-visited pages" solved with a size-10 min-heap</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔄</div>
+              <div class="realworld-card__body">
+                <strong>Heap Sort</strong>
+                <span>Sorting algorithm built directly on the heap data structure</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Kth Largest Element"
+            data-difficulty="easy"
+            data-fn="kth_largest"
+            data-starter='def kth_largest(nums, k):\n    """Return the kth largest element in nums."""\n    pass'
+            data-tests='[{"args": [[3,2,1,5,6,4], 2], "expected": "5", "label": "[3,2,1,5,6,4] k=2 → 5"}, {"args": [[3,2,3,1,2,4,5,5,6], 4], "expected": "4", "label": "[3,2,3,1,2,4,5,5,6] k=4 → 4"}]'>
+            <div class="practice-problem">Find the kth largest element in an unsorted array (1-indexed, so k=1 means the largest).</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Merge K Sorted Lists"
+            data-difficulty="medium"
+            data-fn="merge_k_sorted"
+            data-starter='def merge_k_sorted(lists):\n    """Merge k sorted lists into one sorted list."""\n    pass'
+            data-tests='[{"args": [[[1,4,5],[1,3,4],[2,6]]], "expected": "[1, 1, 2, 3, 4, 4, 5, 6]", "label": "merges [[1,4,5],[1,3,4],[2,6]]"}]'>
+            <div class="practice-problem">Given a list of sorted lists, merge them all into a single sorted list and return it.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -607,6 +698,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/heap-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

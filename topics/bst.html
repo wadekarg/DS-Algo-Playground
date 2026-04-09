@@ -96,6 +96,21 @@
           </div>
 
           <div class="viz-explanation">Binary Search Tree with values [50, 30, 70, 20, 40, 60, 80]. Use the buttons below to perform operations.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def insert(node, val):
+    if not node: return Node(val)
+    if val &lt; node.val:
+        node.left = insert(node.left, val)
+    elif val > node.val:
+        node.right = insert(node.right, val)
+    return node
+def search(node, val):
+    if node is None or node.val == val:
+        return node
+    if val &lt; node.val:
+        return search(node.left, val)
+    return search(node.right, val)</pre>
+          </div>
 
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -346,6 +361,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🌳</div>
+              <div class="realworld-card__body">
+                <strong>File Systems</strong>
+                <span>Directory trees are BSTs sorted by filename</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🗄️</div>
+              <div class="realworld-card__body">
+                <strong>Database B-Trees</strong>
+                <span>MySQL/PostgreSQL indexes use B-trees (generalised BSTs)</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔤</div>
+              <div class="realworld-card__body">
+                <strong>Auto-complete</strong>
+                <span>Sorted BST of words enables fast prefix search</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📈</div>
+              <div class="realworld-card__body">
+                <strong>Order Books</strong>
+                <span>Trading exchanges keep buy/sell orders in BST-like sorted structures</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Validate BST Inorder"
+            data-difficulty="easy"
+            data-fn="is_bst_valid"
+            data-starter='def is_bst_valid(arr):\n    """Return True if arr is strictly increasing (valid BST inorder)."""\n    pass'
+            data-tests='[{"args": [[1,3,5,7]], "expected": "True", "label": "[1,3,5,7] strictly increasing → True"}, {"args": [[5,3,7]], "expected": "False", "label": "[5,3,7] not increasing → False"}]'>
+            <div class="practice-problem">Given an inorder traversal of a BST as a list, verify it is strictly increasing (which validates the BST property).</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Kth Smallest"
+            data-difficulty="medium"
+            data-fn="kth_smallest"
+            data-starter='def kth_smallest(arr, k):\n    """Return the kth smallest element (1-indexed) from sorted inorder list."""\n    pass'
+            data-tests='[{"args": [[1,2,3,4,5], 3], "expected": "3", "label": "[1,2,3,4,5] k=3 → 3"}, {"args": [[5,10,15], 1], "expected": "5", "label": "[5,10,15] k=1 → 5"}]'>
+            <div class="practice-problem">Given a sorted inorder traversal list and an integer <code>k</code>, return the kth smallest element (1-indexed).</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -533,6 +610,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/bst-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

@@ -84,6 +84,8 @@ var DSA = window.DSA || {};
       nodes: nodes,
       states: copyStates(nodeStates),
       currentNode: -1,
+      codeLine: 1,
+      variables: { n: n },
       description: 'Start recursive Fibonacci computation for fib(' + n + '). The tree shows all recursive calls that will be made.'
     });
 
@@ -97,6 +99,8 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
+        codeLine: node.isLeaf ? 2 : 3,
+        variables: { n: node.n },
         description: 'Call fib(' + node.n + ')' + (node.isLeaf ? '. Base case: return ' + node.value + '.' : '. Need fib(' + (node.n - 1) + ') and fib(' + (node.n - 2) + ').')
       });
 
@@ -107,6 +111,8 @@ var DSA = window.DSA || {};
           nodes: nodes,
           states: copyStates(nodeStates),
           currentNode: nodeIdx,
+          codeLine: 2,
+          variables: { n: node.n, result: node.value },
           description: 'fib(' + node.n + ') = ' + node.value + ' (base case). Return ' + node.value + '.'
         });
         return;
@@ -142,6 +148,8 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
+        codeLine: 3,
+        variables: { n: node.n, result: node.value },
         description: 'fib(' + node.n + ') = fib(' + (node.n - 1) + ') + fib(' + (node.n - 2) + ') = ' + nodes.filter(function(nd) { return nd.x === node.left.x && nd.y === node.left.y; })[0].value + ' + ' + nodes.filter(function(nd) { return nd.x === node.right.x && nd.y === node.right.y; })[0].value + ' = ' + node.value + '.'
       });
 
@@ -150,6 +158,8 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
+        codeLine: 3,
+        variables: { n: node.n, result: node.value },
         description: 'fib(' + node.n + ') = ' + node.value + ' computed and returned.'
       });
     }
@@ -161,6 +171,8 @@ var DSA = window.DSA || {};
       nodes: nodes,
       states: copyStates(nodeStates),
       currentNode: -1,
+      codeLine: 3,
+      variables: { n: n, result: nodes[0].value },
       description: 'Done! fib(' + n + ') = ' + nodes[0].value + '. Total recursive calls: ' + nodes.length + '. Notice the repeated subproblems -- this is why DP is more efficient.'
     });
 
@@ -351,10 +363,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('recursion-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('recursion', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire n input

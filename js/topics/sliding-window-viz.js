@@ -43,6 +43,8 @@ var DSA = window.DSA || {};
       maxStart: -1,
       maxEnd: -1,
       phase: 'init',
+      codeLine: 2,
+      variables: { k: k },
       description: 'Find the maximum sum subarray of size k = ' + k + ' in an array of ' + arr.length + ' elements.'
     });
 
@@ -65,6 +67,8 @@ var DSA = window.DSA || {};
       maxStart: maxStart,
       maxEnd: maxEnd,
       phase: 'initial-window',
+      codeLine: 2,
+      variables: { window_sum: windowSum, max_sum: maxSum },
       description: 'Initial window [0..' + (k - 1) + ']: sum = ' + windowSum + '. This is our first max sum.'
     });
 
@@ -96,6 +100,8 @@ var DSA = window.DSA || {};
         maxStart: maxStart,
         maxEnd: maxEnd,
         phase: 'sliding',
+        codeLine: 4,
+        variables: { i: j, window_sum: windowSum, max_sum: maxSum },
         description: desc
       });
     }
@@ -110,6 +116,8 @@ var DSA = window.DSA || {};
       maxStart: maxStart,
       maxEnd: maxEnd,
       phase: 'done',
+      codeLine: 5,
+      variables: { max_sum: maxSum },
       description: 'Done! Maximum sum subarray of size ' + k + ' is [' + maxStart + '..' + maxEnd + '] with sum = ' + maxSum + '.'
     });
 
@@ -305,6 +313,12 @@ var DSA = window.DSA || {};
     return arr;
   }
 
+  // ── Load a custom array ────────────────────────────────────────────
+  function loadArray(arr) {
+    currentArray = arr.slice();
+    runSlidingWindow();
+  }
+
   // ── Run sliding window ─────────────────────────────────────────────
   function runSlidingWindow() {
     var kInput = document.getElementById('sw-k-input');
@@ -323,10 +337,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('sliding-window-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('sliding-window', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire k input
@@ -358,6 +377,20 @@ var DSA = window.DSA || {};
           kInput.value = currentK;
         }
         runSlidingWindow();
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('sw-custom-input');
+    var customBtn = document.getElementById('sw-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
 

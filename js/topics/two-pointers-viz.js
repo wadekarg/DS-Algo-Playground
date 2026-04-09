@@ -28,6 +28,8 @@ var DSA = window.DSA || {};
       found: -1,
       foundPair: null,
       eliminated: [],
+      codeLine: 2,
+      variables: { left: left, right: right },
       description: 'Initialize two pointers: left = 0 (value ' + arr[left] + '), right = ' + right + ' (value ' + arr[right] + '). Target sum = ' + target + '.'
     });
 
@@ -45,6 +47,8 @@ var DSA = window.DSA || {};
           found: 1,
           foundPair: [left, right],
           eliminated: eliminated.slice(),
+          codeLine: 5,
+          variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' equals target ' + target + '. Pair found!'
         });
         return steps;
@@ -57,6 +61,8 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
+          codeLine: 7,
+          variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' < ' + target + '. Sum too small, move left pointer right.'
         });
         if (eliminated.indexOf(left) === -1) eliminated.push(left);
@@ -68,6 +74,8 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
+          codeLine: 7,
+          variables: { left: left, right: right },
           description: 'Left pointer moved to index ' + left + ' (value ' + arr[left] + '). Now checking arr[' + left + '] + arr[' + right + '].'
         });
       } else {
@@ -79,6 +87,8 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
+          codeLine: 9,
+          variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' > ' + target + '. Sum too large, move right pointer left.'
         });
         if (eliminated.indexOf(right) === -1) eliminated.push(right);
@@ -90,6 +100,8 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
+          codeLine: 9,
+          variables: { left: left, right: right },
           description: 'Right pointer moved to index ' + right + ' (value ' + arr[right] + '). Now checking arr[' + left + '] + arr[' + right + '].'
         });
       }
@@ -103,6 +115,8 @@ var DSA = window.DSA || {};
       found: -1,
       foundPair: null,
       eliminated: eliminated.slice(),
+      codeLine: 10,
+      variables: { left: left, right: right },
       description: 'Pointers have crossed (left >= right). No pair sums to ' + target + '.'
     });
 
@@ -297,6 +311,12 @@ var DSA = window.DSA || {};
     return arr;
   }
 
+  // ── Load a custom array (sorts it, then re-runs search) ────────────
+  function loadArray(arr) {
+    currentArray = arr.slice().sort(function(a, b) { return a - b; });
+    runSearch();
+  }
+
   // ── Run a search ───────────────────────────────────────────────────
   function runSearch() {
     var inputEl = document.getElementById('tp-target-input');
@@ -315,10 +335,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('two-pointers-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('two-pointers', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire target input
@@ -361,6 +386,20 @@ var DSA = window.DSA || {};
           targetInput.value = currentTarget;
         }
         runSearch();
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('tp-custom-input');
+    var customBtn = document.getElementById('tp-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
 

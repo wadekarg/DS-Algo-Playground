@@ -301,11 +301,13 @@ var DSA = window.DSA || {};
   }
 
   // ---------- Build step with snapshot ----------
-  function makeStep(explanation, overrides) {
+  function makeStep(explanation, overrides, codeLine, variables) {
     return {
       state: { head: cloneList() },
       explanation: explanation,
-      overrides: overrides || {}
+      overrides: overrides || {},
+      codeLine: codeLine || null,
+      variables: variables || {}
     };
   }
 
@@ -316,27 +318,27 @@ var DSA = window.DSA || {};
     var newNode = new LLNode(value);
 
     // Step 1: Show current list
-    steps.push(makeStep('Current list. We will insert ' + value + ' at the head.'));
+    steps.push(makeStep('Current list. We will insert ' + value + ' at the head.', {}, 2, { val: value }));
 
     // Step 2: Create new node (shown above)
     newNode.next = head;
     head = newNode;
     var overrides1 = { 0: { highlight: 'active', offsetY: -60 } };
-    steps.push(makeStep('Created new node with value ' + value + '. It appears above the list.', overrides1));
+    steps.push(makeStep('Created new node with value ' + value + '. It appears above the list.', overrides1, 2, { val: value }));
 
     // Step 3: Point new node's next to old head
     var overrides2 = { 0: { highlight: 'active', offsetY: -30 } };
     if (toArray().length > 1) {
       overrides2[1] = { highlight: 'active' };
     }
-    steps.push(makeStep('New node\'s next pointer now points to the old head.', overrides2));
+    steps.push(makeStep('New node\'s next pointer now points to the old head.', overrides2, 3, { val: value }));
 
     // Step 4: Update head pointer, node slides into position
     var overrides3 = { 0: { highlight: 'found' } };
-    steps.push(makeStep('Head pointer updated. Node ' + value + ' is now the new head of the list.', overrides3));
+    steps.push(makeStep('Head pointer updated. Node ' + value + ' is now the new head of the list.', overrides3, 6, { val: value }));
 
     // Step 5: Final clean state
-    steps.push(makeStep('Insert at head complete. The list now has ' + listLength() + ' nodes.'));
+    steps.push(makeStep('Insert at head complete. The list now has ' + listLength() + ' nodes.', {}, 6, {}));
 
     return steps;
   }
@@ -469,7 +471,7 @@ var DSA = window.DSA || {};
     }
 
     var steps = [];
-    steps.push(makeStep('Searching for value ' + value + ' in the list. Starting from head.'));
+    steps.push(makeStep('Searching for value ' + value + ' in the list. Starting from head.', {}, 7, { curr: 'head' }));
 
     var cur = head;
     var idx = 0;
@@ -482,13 +484,13 @@ var DSA = window.DSA || {};
         overrides[j] = { highlight: 'default' };
       }
       overrides[idx] = { highlight: 'active' };
-      steps.push(makeStep('Checking node at index ' + idx + ': value = ' + cur.data + (cur.data === value ? ' --- MATCH!' : ' --- not a match.'), overrides));
+      steps.push(makeStep('Checking node at index ' + idx + ': value = ' + cur.data + (cur.data === value ? ' --- MATCH!' : ' --- not a match.'), overrides, 9, { curr: cur.data }));
 
       if (cur.data === value) {
         // Found
         var ovFound = {};
         ovFound[idx] = { highlight: 'found' };
-        steps.push(makeStep('Value ' + value + ' found at index ' + idx + '!', ovFound));
+        steps.push(makeStep('Value ' + value + ' found at index ' + idx + '!', ovFound, 9, { curr: cur.data }));
         found = true;
         break;
       }
@@ -498,10 +500,10 @@ var DSA = window.DSA || {};
     }
 
     if (!found) {
-      steps.push(makeStep('Value ' + value + ' was not found in the list. Reached the end (null).'));
+      steps.push(makeStep('Value ' + value + ' was not found in the list. Reached the end (null).', {}, 10, { curr: 'null' }));
     }
 
-    steps.push(makeStep('Search complete.'));
+    steps.push(makeStep('Search complete.', {}, 10, {}));
     return steps;
   }
 
@@ -546,10 +548,15 @@ var DSA = window.DSA || {};
 
     buildInitialList();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('linked-lists', {
       canvas: canvas,
       onRender: onRender,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Set initial steps showing the default list

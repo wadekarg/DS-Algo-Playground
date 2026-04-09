@@ -152,6 +152,8 @@ var DSA = window.DSA || {};
     steps.push({
       cells: snapshot.slice(),
       highlights: h1,
+      codeLine: 5,
+      variables: { i: idx },
       label: 'Highlight target index ' + idx + ' for insertion'
     });
 
@@ -183,6 +185,8 @@ var DSA = window.DSA || {};
       steps.push({
         cells: partial,
         highlights: hs,
+        codeLine: 5,
+        variables: { i: idx, shift: i },
         label: 'Shift element at index ' + i + ' one position right'
       });
     }
@@ -196,6 +200,8 @@ var DSA = window.DSA || {};
       cells: final,
       highlights: hf,
       dropping: { index: idx, value: value },
+      codeLine: 5,
+      variables: { i: idx, val: value },
       label: 'Insert value ' + value + ' at index ' + idx
     });
 
@@ -203,6 +209,8 @@ var DSA = window.DSA || {};
     steps.push({
       cells: final,
       highlights: hf,
+      codeLine: 5,
+      variables: { i: idx, val: value },
       label: 'Insertion complete. Array now has ' + final.length + ' elements'
     });
 
@@ -228,6 +236,8 @@ var DSA = window.DSA || {};
     steps.push({
       cells: snapshot.slice(),
       highlights: h1,
+      codeLine: 7,
+      variables: { i: index },
       label: 'Highlight element ' + snapshot[index] + ' at index ' + index + ' for deletion'
     });
 
@@ -236,6 +246,8 @@ var DSA = window.DSA || {};
       cells: snapshot.slice(),
       highlights: h1,
       fadingOut: index,
+      codeLine: 7,
+      variables: { i: index },
       label: 'Remove element ' + snapshot[index] + ' from position ' + index
     });
 
@@ -255,6 +267,8 @@ var DSA = window.DSA || {};
       steps.push({
         cells: partial,
         highlights: hs,
+        codeLine: 7,
+        variables: { i: i },
         label: 'Shift element from index ' + (i + 1) + ' left to index ' + i
       });
     }
@@ -265,6 +279,8 @@ var DSA = window.DSA || {};
     steps.push({
       cells: final,
       highlights: {},
+      codeLine: 7,
+      variables: { i: index },
       label: 'Deletion complete. Array now has ' + final.length + ' elements'
     });
 
@@ -291,6 +307,8 @@ var DSA = window.DSA || {};
           cells: snapshot.slice(),
           highlights: hs,
           pointer: i,
+          codeLine: 10,
+          variables: { i: i, target: value },
           label: 'Found ' + value + ' at index ' + i + '!'
         });
         break;
@@ -300,6 +318,8 @@ var DSA = window.DSA || {};
         cells: snapshot.slice(),
         highlights: hs,
         pointer: i,
+        codeLine: 9,
+        variables: { i: i, target: value },
         label: 'Check index ' + i + ': value is ' + snapshot[i] + ' (not ' + value + ')'
       });
     }
@@ -312,6 +332,8 @@ var DSA = window.DSA || {};
       steps.push({
         cells: snapshot.slice(),
         highlights: hAll,
+        codeLine: 11,
+        variables: { target: value },
         label: 'Value ' + value + ' not found in the array'
       });
     }
@@ -331,6 +353,13 @@ var DSA = window.DSA || {};
     el.textContent = step.label || ('Step ' + (meta.step + 1) + ' of ' + meta.totalSteps);
   }
 
+  /* ── Load array ─────────────────────────────────────────── */
+
+  function loadArray(newArr) {
+    arr = newArr.slice();
+    viz.setSteps([]);
+  }
+
   /* ── Initialisation ─────────────────────────────────────── */
 
   function init() {
@@ -339,10 +368,15 @@ var DSA = window.DSA || {};
 
     arr = [5, 12, 8, 3, 19, 7];
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('arrays', {
       canvas: canvas,
       onRender: render,
-      onStepChange: updateExplanation
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        updateExplanation(step, data);
+      }
     });
 
     // Wire operation buttons
@@ -381,6 +415,20 @@ var DSA = window.DSA || {};
         var result = buildSearchSteps(val);
         viz.setSteps(result.steps);
         // search does not mutate the array
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('arr-custom-input');
+    var customBtn = document.getElementById('arr-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

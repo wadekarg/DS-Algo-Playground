@@ -90,6 +90,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [],
       completed: [],
+      codeLine: 2,
+      variables: { val: value },
       description: 'Current max-heap: [' + h.join(', ') + ']. We will insert ' + value + '.'
     });
 
@@ -101,6 +103,8 @@ var DSA = window.DSA || {};
       highlighted: [idx],
       swapping: [],
       completed: [],
+      codeLine: 3,
+      variables: { val: value, idx: idx },
       description: 'Insert ' + value + ' at the end of the array (index ' + idx + '). Now we bubble up to restore the heap property.'
     });
 
@@ -114,6 +118,8 @@ var DSA = window.DSA || {};
         swapping: [],
         completed: [],
         parent: pIdx,
+        codeLine: 5,
+        variables: { val: h[idx], parent: h[pIdx], idx: idx, pIdx: pIdx },
         description: 'Compare ' + h[idx] + ' (index ' + idx + ') with parent ' + h[pIdx] + ' (index ' + pIdx + ').'
       });
 
@@ -125,6 +131,8 @@ var DSA = window.DSA || {};
           highlighted: [],
           swapping: [idx, pIdx],
           completed: [],
+          codeLine: 6,
+          variables: { val: h[pIdx], parent: h[idx] },
           description: 'Swap ' + h[pIdx] + ' and ' + h[idx] + ' because child was larger than parent.'
         });
         idx = pIdx;
@@ -135,6 +143,8 @@ var DSA = window.DSA || {};
           highlighted: [],
           swapping: [],
           completed: [idx],
+          codeLine: 7,
+          variables: { val: h[idx] },
           description: h[idx] + ' <= parent ' + h[pIdx] + '. Heap property satisfied. Bubble-up complete.'
         });
         break;
@@ -147,6 +157,8 @@ var DSA = window.DSA || {};
         highlighted: [],
         swapping: [],
         completed: [0],
+        codeLine: 7,
+        variables: { val: h[0] },
         description: 'Element ' + h[0] + ' bubbled up to the root. Insert complete.'
       });
     }
@@ -157,6 +169,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [],
       completed: [],
+      codeLine: 7,
+      variables: { size: h.length },
       description: 'Insert complete. Max-heap: [' + h.join(', ') + '].'
     });
 
@@ -187,6 +201,8 @@ var DSA = window.DSA || {};
       highlighted: [0],
       swapping: [],
       completed: [],
+      codeLine: 10,
+      variables: { max: maxVal },
       description: 'Extract-Max: The root element ' + maxVal + ' is the maximum. We will remove it.'
     });
 
@@ -197,6 +213,8 @@ var DSA = window.DSA || {};
         highlighted: [],
         swapping: [],
         completed: [],
+        codeLine: 14,
+        variables: { max: maxVal },
         description: 'Heap had only one element. Extracted ' + maxVal + '. Heap is now empty.'
       });
       return { steps: steps, result: h };
@@ -210,6 +228,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [0, lastIdx],
       completed: [],
+      codeLine: 11,
+      variables: { max: h[lastIdx], last: h[0] },
       description: 'Swap root ' + h[lastIdx] + ' with last element ' + h[0] + '.'
     });
 
@@ -220,6 +240,8 @@ var DSA = window.DSA || {};
       highlighted: [0],
       swapping: [],
       completed: [],
+      codeLine: 12,
+      variables: { max: maxVal, root: h[0] },
       description: 'Remove ' + maxVal + ' from the end. Now sink down ' + h[0] + ' (index 0) to restore heap property.'
     });
 
@@ -244,6 +266,8 @@ var DSA = window.DSA || {};
           highlighted: [],
           swapping: [],
           completed: [idx],
+          codeLine: 14,
+          variables: { val: h[idx] },
           description: h[idx] + ' (index ' + idx + ') is larger than both children. Sink-down complete.'
         });
         break;
@@ -259,6 +283,8 @@ var DSA = window.DSA || {};
         swapping: [],
         completed: [],
         parent: idx,
+        codeLine: 13,
+        variables: { val: h[idx], largest: h[largest] },
         description: 'Compare ' + h[idx] + ' (index ' + idx + ') with children. Largest child is ' + h[largest] + ' (index ' + largest + ').'
       });
 
@@ -269,6 +295,8 @@ var DSA = window.DSA || {};
         highlighted: [],
         swapping: [idx, largest],
         completed: [],
+        codeLine: 13,
+        variables: { val: h[idx], largest: h[largest] },
         description: 'Swap ' + h[idx] + ' and ' + h[largest] + '.'
       });
 
@@ -281,6 +309,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [],
       completed: [],
+      codeLine: 14,
+      variables: { max: maxVal },
       description: 'Extract-Max complete. Removed ' + maxVal + '. Max-heap: [' + h.join(', ') + '].'
     });
 
@@ -298,6 +328,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [],
       completed: [],
+      codeLine: 17,
+      variables: { n: n },
       description: 'Build max-heap from array: [' + h.join(', ') + ']. We start from the last non-leaf node and sift down each node.'
     });
 
@@ -310,6 +342,8 @@ var DSA = window.DSA || {};
         highlighted: [i],
         swapping: [],
         completed: [],
+        codeLine: 18,
+        variables: { i: i, val: h[i] },
         description: 'Sift down node ' + h[i] + ' at index ' + i + '.'
       });
 
@@ -329,6 +363,8 @@ var DSA = window.DSA || {};
             highlighted: [],
             swapping: [],
             completed: [idx],
+            codeLine: 18,
+            variables: { val: h[idx] },
             description: h[idx] + ' at index ' + idx + ' satisfies heap property. No swap needed.'
           });
           break;
@@ -341,6 +377,8 @@ var DSA = window.DSA || {};
           swapping: [],
           completed: [],
           parent: idx,
+          codeLine: 13,
+          variables: { val: h[idx], largest: h[largest] },
           description: 'Compare ' + h[idx] + ' (index ' + idx + ') with largest child ' + h[largest] + ' (index ' + largest + ').'
         });
 
@@ -351,6 +389,8 @@ var DSA = window.DSA || {};
           highlighted: [],
           swapping: [idx, largest],
           completed: [],
+          codeLine: 13,
+          variables: { val: h[idx], largest: h[largest] },
           description: 'Swap ' + h[idx] + ' and ' + h[largest] + '.'
         });
 
@@ -363,6 +403,8 @@ var DSA = window.DSA || {};
       highlighted: [],
       swapping: [],
       completed: [],
+      codeLine: 14,
+      variables: { n: n },
       description: 'Heapify complete! Max-heap: [' + h.join(', ') + '].'
     });
 
@@ -588,10 +630,15 @@ var DSA = window.DSA || {};
 
     heap = INITIAL_HEAP.slice();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('heap', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Show initial state

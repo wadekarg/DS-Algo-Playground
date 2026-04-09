@@ -335,3 +335,6 @@ tr:last-child td {
   font-size: var(--font-size-sm);
   font-weight: 600;
 }
+
+.viz-ops__sep { color: var(--border-color-strong); margin: 0 var(--space-xs); }
+.viz-ops__input--wide { width: 180px; }

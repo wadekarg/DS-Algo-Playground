@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning Path - DS-Algo-Playground</title>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+  <style>
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .revealed { opacity: 1; transform: translateY(0); }
+
+    .prereqs-wrap {
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      margin-top: var(--space-xl);
+    }
+
+    .prereqs-svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .prereqs-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+
+    .prereqs-legend__item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+    }
+
+    .prereqs-legend__swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .prereq-node {
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .prereq-node:hover {
+      opacity: 0.85;
+    }
+
+    .prereq-node rect {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+
+    .prereq-node text {
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+
+      <!-- Page Header -->
+      <section class="reveal">
+        <h1 style="font-size:var(--font-size-3xl);font-weight:800;margin-bottom:var(--space-sm);">Learning Path</h1>
+        <p style="font-size:var(--font-size-lg);color:var(--text-secondary);max-width:640px;">
+          A prerequisite map showing which topics to learn before others. Follow the arrows — each arrow means "learn the source topic before the target."
+        </p>
+      </section>
+
+      <!-- Legend -->
+      <section class="reveal" style="margin-top:var(--space-xl);">
+        <div class="prereqs-legend">
+          <div class="prereqs-legend__item">
+            <div class="prereqs-legend__swatch" style="background:#3b82f6;"></div>
+            <span>Data Structures</span>
+          </div>
+          <div class="prereqs-legend__item">
+            <div class="prereqs-legend__swatch" style="background:#8b5cf6;"></div>
+            <span>Sorting</span>
+          </div>
+          <div class="prereqs-legend__item">
+            <div class="prereqs-legend__swatch" style="background:#06b6d4;"></div>
+            <span>Searching</span>
+          </div>
+          <div class="prereqs-legend__item">
+            <div class="prereqs-legend__swatch" style="background:#22c55e;"></div>
+            <span>Techniques</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SVG Dependency Graph -->
+      <section class="reveal">
+        <div class="prereqs-wrap">
+          <svg class="prereqs-svg" viewBox="0 0 920 760" width="920" height="760" xmlns="http://www.w3.org/2000/svg" aria-label="Topic prerequisite dependency graph">
+
+            <!-- Arrowhead marker -->
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+              </marker>
+            </defs>
+
+            <!--
+              Layout (approximate centre-x, centre-y per node, node size 110×34):
+              Layer 0 (top): Arrays(200,40), Recursion(680,40)
+              Layer 1: Linked Lists(60,140), Stack(200,140), Queue(340,140), Hash Table(480,140), Binary Search(620,140), BST(760,140)
+              Layer 2: Bubble Sort(60,240), Selection Sort(185,240), Insertion Sort(310,240), Merge Sort(480,240), Quick Sort(620,240), Heap(760,240)
+              Layer 3: Two Pointers(110,340), Sliding Window(280,340), Dynamic Programming(480,340), DFS(660,340), BFS(800,340)
+            -->
+
+            <!-- ===================== EDGES ===================== -->
+            <!-- Arrays → Linked Lists -->
+            <line x1="200" y1="57" x2="100" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Stack -->
+            <line x1="200" y1="57" x2="200" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Queue -->
+            <line x1="213" y1="57" x2="340" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Hash Table -->
+            <line x1="225" y1="57" x2="470" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Binary Search -->
+            <line x1="235" y1="57" x2="600" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Bubble Sort -->
+            <line x1="190" y1="57" x2="80" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Selection Sort -->
+            <line x1="196" y1="57" x2="195" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Insertion Sort -->
+            <line x1="205" y1="57" x2="310" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Merge Sort -->
+            <line x1="215" y1="57" x2="470" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Quick Sort -->
+            <line x1="222" y1="57" x2="600" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Two Pointers -->
+            <line x1="185" y1="57" x2="120" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Arrays → Sliding Window -->
+            <line x1="200" y1="57" x2="280" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+            <!-- Recursion → Dynamic Programming -->
+            <line x1="680" y1="57" x2="520" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Recursion → BST -->
+            <line x1="700" y1="57" x2="760" y2="123" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Recursion → Merge Sort -->
+            <line x1="667" y1="57" x2="510" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Recursion → Quick Sort -->
+            <line x1="673" y1="57" x2="635" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Recursion → DFS -->
+            <line x1="690" y1="57" x2="665" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+            <!-- Stack → DFS -->
+            <line x1="210" y1="157" x2="640" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- Queue → BFS -->
+            <line x1="360" y1="157" x2="790" y2="323" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <!-- BST → Heap -->
+            <line x1="760" y1="157" x2="760" y2="223" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+            <!-- ===================== NODES ===================== -->
+            <!-- Layer 0 -->
+            <!-- Arrays (Data Structure: #3b82f6) -->
+            <a href="topics/arrays.html">
+              <g class="prereq-node" transform="translate(145,23)">
+                <rect width="110" height="34" rx="8" fill="#3b82f6"/>
+                <text x="55" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Arrays</text>
+              </g>
+            </a>
+
+            <!-- Recursion (Technique: #22c55e) -->
+            <a href="topics/recursion.html">
+              <g class="prereq-node" transform="translate(625,23)">
+                <rect width="110" height="34" rx="8" fill="#22c55e"/>
+                <text x="55" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Recursion</text>
+              </g>
+            </a>
+
+            <!-- Layer 1 -->
+            <!-- Linked Lists -->
+            <a href="topics/linked-lists.html">
+              <g class="prereq-node" transform="translate(15,123)">
+                <rect width="120" height="34" rx="8" fill="#3b82f6"/>
+                <text x="60" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Linked Lists</text>
+              </g>
+            </a>
+
+            <!-- Stack -->
+            <a href="topics/stack.html">
+              <g class="prereq-node" transform="translate(155,123)">
+                <rect width="90" height="34" rx="8" fill="#3b82f6"/>
+                <text x="45" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Stack</text>
+              </g>
+            </a>
+
+            <!-- Queue -->
+            <a href="topics/queue.html">
+              <g class="prereq-node" transform="translate(295,123)">
+                <rect width="90" height="34" rx="8" fill="#3b82f6"/>
+                <text x="45" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Queue</text>
+              </g>
+            </a>
+
+            <!-- Hash Table -->
+            <a href="topics/hash-table.html">
+              <g class="prereq-node" transform="translate(420,123)">
+                <rect width="110" height="34" rx="8" fill="#3b82f6"/>
+                <text x="55" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Hash Table</text>
+              </g>
+            </a>
+
+            <!-- Binary Search -->
+            <a href="topics/binary-search.html">
+              <g class="prereq-node" transform="translate(557,123)">
+                <rect width="126" height="34" rx="8" fill="#06b6d4"/>
+                <text x="63" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Binary Search</text>
+              </g>
+            </a>
+
+            <!-- BST -->
+            <a href="topics/bst.html">
+              <g class="prereq-node" transform="translate(715,123)">
+                <rect width="90" height="34" rx="8" fill="#3b82f6"/>
+                <text x="45" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">BST</text>
+              </g>
+            </a>
+
+            <!-- Layer 2 -->
+            <!-- Bubble Sort -->
+            <a href="topics/bubble-sort.html">
+              <g class="prereq-node" transform="translate(15,223)">
+                <rect width="120" height="34" rx="8" fill="#8b5cf6"/>
+                <text x="60" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Bubble Sort</text>
+              </g>
+            </a>
+
+            <!-- Selection Sort -->
+            <a href="topics/selection-sort.html">
+              <g class="prereq-node" transform="translate(143,223)">
+                <rect width="124" height="34" rx="8" fill="#8b5cf6"/>
+                <text x="62" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Selection Sort</text>
+              </g>
+            </a>
+
+            <!-- Insertion Sort -->
+            <a href="topics/insertion-sort.html">
+              <g class="prereq-node" transform="translate(271,223)">
+                <rect width="124" height="34" rx="8" fill="#8b5cf6"/>
+                <text x="62" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Insertion Sort</text>
+              </g>
+            </a>
+
+            <!-- Merge Sort -->
+            <a href="topics/merge-sort.html">
+              <g class="prereq-node" transform="translate(415,223)">
+                <rect width="110" height="34" rx="8" fill="#8b5cf6"/>
+                <text x="55" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Merge Sort</text>
+              </g>
+            </a>
+
+            <!-- Quick Sort -->
+            <a href="topics/quick-sort.html">
+              <g class="prereq-node" transform="translate(555,223)">
+                <rect width="110" height="34" rx="8" fill="#8b5cf6"/>
+                <text x="55" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Quick Sort</text>
+              </g>
+            </a>
+
+            <!-- Heap -->
+            <a href="topics/heap.html">
+              <g class="prereq-node" transform="translate(715,223)">
+                <rect width="90" height="34" rx="8" fill="#3b82f6"/>
+                <text x="45" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">Heap</text>
+              </g>
+            </a>
+
+            <!-- Layer 3 -->
+            <!-- Two Pointers -->
+            <a href="topics/two-pointers.html">
+              <g class="prereq-node" transform="translate(55,323)">
+                <rect width="120" height="34" rx="8" fill="#22c55e"/>
+                <text x="60" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Two Pointers</text>
+              </g>
+            </a>
+
+            <!-- Sliding Window -->
+            <a href="topics/sliding-window.html">
+              <g class="prereq-node" transform="translate(213,323)">
+                <rect width="126" height="34" rx="8" fill="#22c55e"/>
+                <text x="63" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Sliding Window</text>
+              </g>
+            </a>
+
+            <!-- Dynamic Programming -->
+            <a href="topics/dynamic-programming.html">
+              <g class="prereq-node" transform="translate(385,323)">
+                <rect width="168" height="34" rx="8" fill="#22c55e"/>
+                <text x="84" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="white">Dynamic Programming</text>
+              </g>
+            </a>
+
+            <!-- DFS -->
+            <a href="topics/dfs.html">
+              <g class="prereq-node" transform="translate(615,323)">
+                <rect width="80" height="34" rx="8" fill="#06b6d4"/>
+                <text x="40" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">DFS</text>
+              </g>
+            </a>
+
+            <!-- BFS -->
+            <a href="topics/bfs.html">
+              <g class="prereq-node" transform="translate(755,323)">
+                <rect width="80" height="34" rx="8" fill="#06b6d4"/>
+                <text x="40" y="22" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="white">BFS</text>
+              </g>
+            </a>
+
+          </svg>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">Space</span><span>Play / Pause visualization</span>
+        <span class="shortcut-key">&larr;</span><span>Step backward</span>
+        <span class="shortcut-key">&rarr;</span><span>Step forward</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/sidebar-nav.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script>
+    // Reveal on scroll (same pattern as index.html inline style)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

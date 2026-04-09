@@ -87,7 +87,7 @@ var DSA = window.DSA || {};
     var edges = getEdges(adj);
 
     // Helper to snapshot state
-    function snapshot(currentNode, desc) {
+    function snapshot(currentNode, desc, codeLine, variables) {
       var nodes = [];
       for (var n = 0; n < NUM_NODES; n++) {
         nodes.push({ id: n, state: nodeStates[n] });
@@ -97,17 +97,19 @@ var DSA = window.DSA || {};
         edges: edges,
         stack: stack.slice(),
         currentNode: currentNode,
+        codeLine: codeLine || null,
+        variables: variables || {},
         description: desc
       };
     }
 
     // Step 0: Initial state
-    steps.push(snapshot(-1, 'DFS starts at node ' + startNode + '. All nodes are unvisited. The stack is empty.'));
+    steps.push(snapshot(-1, 'DFS starts at node ' + startNode + '. All nodes are unvisited. The stack is empty.', 2, { node: startNode }));
 
     // Push start node
     stack.push(startNode);
     nodeStates[startNode] = 'stacked';
-    steps.push(snapshot(startNode, 'Push node ' + startNode + ' onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].'));
+    steps.push(snapshot(startNode, 'Push node ' + startNode + ' onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].', 3, { node: startNode }));
 
     while (stack.length > 0) {
       // Pop from top
@@ -115,13 +117,13 @@ var DSA = window.DSA || {};
 
       // Skip if already visited (can happen with undirected graphs)
       if (nodeStates[current] === 'visited') {
-        steps.push(snapshot(current, 'Pop node ' + current + ' from the stack, but it is already visited. Skip it. Stack: [' + stack.slice().reverse().join(', ') + '].'));
+        steps.push(snapshot(current, 'Pop node ' + current + ' from the stack, but it is already visited. Skip it. Stack: [' + stack.slice().reverse().join(', ') + '].', 3, { node: current }));
         continue;
       }
 
       nodeStates[current] = 'visited';
       visited[current] = true;
-      steps.push(snapshot(current, 'Pop node ' + current + ' from the stack. Visit it (mark as visited). Stack: [' + stack.slice().reverse().join(', ') + '].'));
+      steps.push(snapshot(current, 'Pop node ' + current + ' from the stack. Visit it (mark as visited). Stack: [' + stack.slice().reverse().join(', ') + '].', 4, { node: current }));
 
       // Push unvisited neighbors in reverse order so the first neighbor is on top
       var neighbors = adj[current] || [];
@@ -139,12 +141,12 @@ var DSA = window.DSA || {};
       }
 
       if (toPush.length > 0) {
-        steps.push(snapshot(current, 'Push unvisited neighbors of node ' + current + ': [' + toPush.join(', ') + '] onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].'));
+        steps.push(snapshot(current, 'Push unvisited neighbors of node ' + current + ': [' + toPush.join(', ') + '] onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].', 6, { node: current }));
       }
     }
 
     // Final
-    steps.push(snapshot(-1, 'DFS complete! All reachable nodes have been visited. The stack is empty.'));
+    steps.push(snapshot(-1, 'DFS complete! All reachable nodes have been visited. The stack is empty.', 7, {}));
 
     return steps;
   }
@@ -337,10 +339,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('dfs-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('dfs', {
       canvas: canvas,
       onRender: renderStep,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Wire start button

@@ -41,6 +41,8 @@ var DSA = window.DSA || {};
       shifting: null,
       sorted: [0],
       insertAt: null,
+      codeLine: 1,
+      variables: { n: n },
       description: 'Initial array: [' + a.join(', ') + ']. The first element (' + a[0] + ') is considered sorted. Insertion sort will pick each remaining element and insert it into the correct position within the sorted portion.'
     });
 
@@ -58,6 +60,8 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: sortedSoFar.slice(),
         insertAt: null,
+        codeLine: 2,
+        variables: { i: i, key: keyValue },
         description: 'Pass ' + i + ': Extract key = ' + keyValue + ' from index ' + i + '. We will find the correct position in the sorted portion [0..' + (i - 1) + '] to insert it.'
       });
 
@@ -73,6 +77,8 @@ var DSA = window.DSA || {};
           shifting: j,
           sorted: sortedSoFar.slice(),
           insertAt: null,
+          codeLine: 5,
+          variables: { i: i, j: j, key: keyValue },
           description: 'Shift ' + a[j] + ' (index ' + j + ') one position right to index ' + (j + 1) + '. It is greater than key ' + keyValue + '.'
         });
         shifted = true;
@@ -87,6 +93,8 @@ var DSA = window.DSA || {};
           shifting: null,
           sorted: sortedSoFar.slice(),
           insertAt: i,
+          codeLine: 4,
+          variables: { i: i, j: j, key: keyValue },
           description: 'No shift needed. Key ' + keyValue + ' is already greater than or equal to element at index ' + (i - 1) + '. It stays at index ' + i + '.'
         });
       }
@@ -106,6 +114,8 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: newSorted.slice(),
         insertAt: insertPos,
+        codeLine: 6,
+        variables: { i: i, j: insertPos, key: keyValue },
         description: 'Insert key ' + keyValue + ' at index ' + insertPos + '. Sorted portion is now [' + a.slice(0, i + 1).join(', ') + '].'
       });
 
@@ -116,6 +126,8 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: newSorted.slice(),
         insertAt: null,
+        codeLine: 7,
+        variables: { i: i },
         description: 'Pass ' + i + ' complete. Elements at indices [0..' + i + '] are sorted: [' + a.slice(0, i + 1).join(', ') + '].'
       });
     }
@@ -131,6 +143,8 @@ var DSA = window.DSA || {};
       shifting: null,
       sorted: allSorted,
       insertAt: null,
+      codeLine: 7,
+      variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
     });
 
@@ -380,10 +394,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('insertion-sort-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('insertion-sort', {
       canvas: canvas,
       onRender: renderBars,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Load default sample
@@ -424,6 +443,20 @@ var DSA = window.DSA || {};
             loadArray(arr);
           }
         }
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('is-custom-input');
+    var customBtn = document.getElementById('is-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

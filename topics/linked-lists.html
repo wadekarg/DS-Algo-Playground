@@ -96,6 +96,21 @@
             <canvas id="linked-list-canvas"></canvas>
           </div>
           <div class="viz-explanation">Singly linked list: 10 &rarr; 25 &rarr; 8 &rarr; 42 &rarr; 17. Use the operation buttons below to manipulate the list.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">class Node:
+    def __init__(self, val):
+        self.val = val; self.next = None
+def insert_head(head, val):
+    new_node = Node(val)
+    new_node.next = head
+    return new_node
+def search(head, val):
+    cur = head
+    while cur:
+        if cur.val == val: return cur
+        cur = cur.next
+    return None</pre>
+          </div>
 
           <!-- Playback controls -->
           <div class="viz-controls">
@@ -554,6 +569,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🌐</div>
+              <div class="realworld-card__body">
+                <strong>Browser History</strong>
+                <span>Back/forward navigation uses a doubly-linked list of page URLs</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🎵</div>
+              <div class="realworld-card__body">
+                <strong>Music Playlists</strong>
+                <span>Spotify's play queue is a linked list (easy insert/delete anywhere)</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🧠</div>
+              <div class="realworld-card__body">
+                <strong>OS Memory Allocator</strong>
+                <span>Free memory blocks tracked as a linked list for malloc/free</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">↩️</div>
+              <div class="realworld-card__body">
+                <strong>Undo / Redo</strong>
+                <span>Text editors chain operations in a doubly-linked list</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Reverse a List"
+            data-difficulty="easy"
+            data-fn="reverse_list"
+            data-starter='def reverse_list(lst):\n    """Return the list reversed."""\n    pass'
+            data-tests='[{"args": [[1,2,3,4,5]], "expected": "[5, 4, 3, 2, 1]", "label": "reverses [1,2,3,4,5]"}, {"args": [[1]], "expected": "[1]", "label": "single element [1]"}]'>
+            <div class="practice-problem">Given a Python list representing a linked list, return a new list with the elements in reverse order.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Find Middle Element"
+            data-difficulty="medium"
+            data-fn="find_middle"
+            data-starter='def find_middle(lst):\n    """Return the middle element (right-middle for even length)."""\n    pass'
+            data-tests='[{"args": [[1,2,3,4,5]], "expected": "3", "label": "middle of [1,2,3,4,5] → 3"}, {"args": [[1,2,3,4]], "expected": "3", "label": "right-middle of [1,2,3,4] → 3"}]'>
+            <div class="practice-problem">Return the middle element of the list. For even-length lists, return the right-middle element (index <code>len//2</code>).</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 6: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">
@@ -742,6 +819,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/linked-lists-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

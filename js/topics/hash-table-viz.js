@@ -81,6 +81,8 @@ var DSA = window.DSA || {};
       activeBucket: opts.activeBucket !== undefined ? opts.activeBucket : -1,
       activeItem: opts.activeItem || null,   // { bucket: N, index: N }
       foundItem: opts.foundItem || null,      // { bucket: N, index: N }
+      codeLine: opts.codeLine || null,
+      variables: opts.variables || {},
       description: desc
     };
   }
@@ -92,25 +94,26 @@ var DSA = window.DSA || {};
 
     // Step 1: Show current state
     steps.push(makeStep(
-      'Current hash table. We will insert value ' + value + '.'
+      'Current hash table. We will insert value ' + value + '.',
+      { codeLine: 7, variables: { key: value } }
     ));
 
     // Step 2: Show hash calculation
     steps.push(makeStep(
       'Computing hash: ' + value + ' % ' + numBuckets + ' = ' + h + '. The value belongs in bucket ' + h + '.',
-      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 4, variables: { key: value, idx: h } }
     ));
 
     // Step 3: Check if bucket already has items (collision info)
     if (buckets[h].length > 0) {
       steps.push(makeStep(
         'Bucket ' + h + ' already contains [' + buckets[h].join(', ') + ']. Collision! We will chain the new value at the end.',
-        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 8, variables: { idx: h } }
       ));
     } else {
       steps.push(makeStep(
         'Bucket ' + h + ' is empty. We will place ' + value + ' as the first element.',
-        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 8, variables: { idx: h } }
       ));
     }
 
@@ -122,13 +125,16 @@ var DSA = window.DSA || {};
       {
         hashCalc: value + ' % ' + numBuckets + ' = ' + h,
         activeBucket: h,
-        foundItem: { bucket: h, index: newIndex }
+        foundItem: { bucket: h, index: newIndex },
+        codeLine: 8,
+        variables: { idx: h, key: value }
       }
     ));
 
     // Step 5: Final clean state
     steps.push(makeStep(
-      'Insert complete. Value ' + value + ' is now stored in bucket ' + h + '.'
+      'Insert complete. Value ' + value + ' is now stored in bucket ' + h + '.',
+      { codeLine: 8, variables: { idx: h } }
     ));
 
     return steps;
@@ -141,13 +147,14 @@ var DSA = window.DSA || {};
 
     // Step 1: Show current state
     steps.push(makeStep(
-      'Searching for value ' + value + ' in the hash table.'
+      'Searching for value ' + value + ' in the hash table.',
+      { codeLine: 12, variables: { key: value } }
     ));
 
     // Step 2: Compute hash
     steps.push(makeStep(
       'Computing hash: ' + value + ' % ' + numBuckets + ' = ' + h + '. We look in bucket ' + h + '.',
-      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 13, variables: { key: value, idx: h } }
     ));
 
     var chain = buckets[h];
@@ -523,10 +530,15 @@ var DSA = window.DSA || {};
 
     buildInitialTable();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('hash-table', {
       canvas: canvas,
       onRender: onRender,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Set initial display step

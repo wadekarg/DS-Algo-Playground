@@ -33,6 +33,8 @@ var DSA = window.DSA || {};
       ranges: [{ left: 0, right: n - 1, color: 'default' }],
       comparing: null,
       merged: [],
+      codeLine: 2,
+      variables: { n: n },
       description: 'Initial array: [' + a.join(', ') + ']. Merge sort will recursively divide the array in half, then merge sorted halves back together.'
     });
 
@@ -49,6 +51,8 @@ var DSA = window.DSA || {};
       ranges: [{ left: 0, right: n - 1, color: 'sorted' }],
       comparing: null,
       merged: allIndices,
+      codeLine: 7,
+      variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
     });
 
@@ -69,6 +73,8 @@ var DSA = window.DSA || {};
       ],
       comparing: null,
       merged: [],
+      codeLine: 4,
+      variables: { mid: mid, left: left, right: right },
       description: 'Split: Dividing subarray [' + left + '..' + right + '] into [' + left + '..' + mid + '] and [' + (mid + 1) + '..' + right + ']. Values: [' + a.slice(left, mid + 1).join(', ') + '] and [' + a.slice(mid + 1, right + 1).join(', ') + '].'
     });
 
@@ -99,6 +105,8 @@ var DSA = window.DSA || {};
       ],
       comparing: null,
       merged: [],
+      codeLine: 9,
+      variables: { i: i, j: j },
       description: 'Merge: Merging [' + leftArr.join(', ') + '] and [' + rightArr.join(', ') + '] into positions [' + left + '..' + right + '].'
     });
 
@@ -115,6 +123,8 @@ var DSA = window.DSA || {};
         ],
         comparing: [leftIdx, rightIdx],
         merged: mergedSoFar.slice(),
+        codeLine: 10,
+        variables: { i: i, j: j },
         description: 'Comparing ' + leftArr[i] + ' (left, index ' + leftIdx + ') with ' + rightArr[j] + ' (right, index ' + rightIdx + ').'
       });
 
@@ -129,6 +139,8 @@ var DSA = window.DSA || {};
           ],
           comparing: null,
           merged: mergedSoFar.slice(),
+          codeLine: 11,
+          variables: { i: i, j: j },
           description: 'Picked ' + leftArr[i] + ' from left subarray. Placed at index ' + k + '.'
         });
         i++;
@@ -143,6 +155,8 @@ var DSA = window.DSA || {};
           ],
           comparing: null,
           merged: mergedSoFar.slice(),
+          codeLine: 13,
+          variables: { i: i, j: j },
           description: 'Picked ' + rightArr[j] + ' from right subarray. Placed at index ' + k + '.'
         });
         j++;
@@ -161,6 +175,8 @@ var DSA = window.DSA || {};
         ],
         comparing: null,
         merged: mergedSoFar.slice(),
+        codeLine: 14,
+        variables: { i: i, j: j },
         description: 'Copying remaining element ' + leftArr[i] + ' from left subarray to index ' + k + '.'
       });
       i++;
@@ -178,6 +194,8 @@ var DSA = window.DSA || {};
         ],
         comparing: null,
         merged: mergedSoFar.slice(),
+        codeLine: 14,
+        variables: { i: i, j: j },
         description: 'Copying remaining element ' + rightArr[j] + ' from right subarray to index ' + k + '.'
       });
       j++;
@@ -196,6 +214,8 @@ var DSA = window.DSA || {};
       ],
       comparing: null,
       merged: mergedRange,
+      codeLine: 7,
+      variables: { left: left, right: right },
       description: 'Merge complete for [' + left + '..' + right + ']: [' + a.slice(left, right + 1).join(', ') + '] is now sorted.'
     });
   }
@@ -376,10 +396,15 @@ var DSA = window.DSA || {};
     var canvas = document.getElementById('merge-sort-canvas');
     if (!canvas) return;
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('merge-sort', {
       canvas: canvas,
       onRender: renderBars,
-      onStepChange: onStepChange
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        onStepChange(step, data);
+      }
     });
 
     // Load default sample
@@ -423,6 +448,20 @@ var DSA = window.DSA || {};
             loadArray(parsed);
           }
         }
+      });
+    }
+
+    // Custom array input
+    var customInput = document.getElementById('ms-custom-input');
+    var customBtn = document.getElementById('ms-custom-btn');
+    if (customBtn && customInput) {
+      customBtn.addEventListener('click', function() {
+        var raw = customInput.value.trim();
+        if (!raw) return;
+        var nums = raw.split(',').map(function(s) {
+          return parseInt(s.trim(), 10);
+        }).filter(function(n) { return !isNaN(n); });
+        if (nums.length >= 2) loadArray(nums);
       });
     }
   }

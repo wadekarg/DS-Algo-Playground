@@ -212,6 +212,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
+      codeLine: 7,
+      variables: { val: value },
       description: 'Current queue: [' + snapshot.join(', ') + ']. We will enqueue ' + value + ' at the rear.'
     });
 
@@ -224,6 +226,8 @@ var DSA = window.DSA || {};
         frontIndex: 0,
         rearIndex: len - 1,
         highlights: h2,
+        codeLine: 8,
+        variables: { val: value },
         description: 'Current rear is at index ' + (len - 1) + ' (value: ' + snapshot[len - 1] + ').'
       });
     }
@@ -238,6 +242,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: newArr.length - 1,
       highlights: h3,
+      codeLine: 8,
+      variables: { val: value, size: newArr.length },
       description: 'Value ' + value + ' added at index ' + (newArr.length - 1) + '. Rear pointer moves to the new element.'
     });
 
@@ -247,6 +253,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: newArr.length - 1,
       highlights: {},
+      codeLine: 8,
+      variables: { size: newArr.length },
       description: 'Enqueue complete. Queue now has ' + newArr.length + ' elements: [' + newArr.join(', ') + '].'
     });
 
@@ -277,6 +285,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
+      codeLine: 11,
+      variables: { front: removedValue },
       description: 'Current queue: [' + snapshot.join(', ') + ']. We will dequeue from the front.'
     });
 
@@ -288,6 +298,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: h2,
+      codeLine: 11,
+      variables: { front: removedValue },
       description: 'Front element is ' + removedValue + ' at index 0. This will be removed.'
     });
 
@@ -299,6 +311,8 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: h3,
+      codeLine: 11,
+      variables: { front: removedValue },
       description: 'Removing ' + removedValue + ' from the front of the queue.'
     });
 
@@ -444,10 +458,15 @@ var DSA = window.DSA || {};
 
     queue = INITIAL_QUEUE.slice();
 
+    var traceEl = (DSA.codeTrace && document.querySelector('.code-trace')) ? DSA.codeTrace.init(document.querySelector('.code-trace')) : null;
+
     viz = DSA.vizCore.create('queue', {
       canvas: canvas,
       onRender: render,
-      onStepChange: updateExplanation
+      onStepChange: function(step, data) {
+        if (traceEl && step) DSA.codeTrace.applyStep(traceEl, step);
+        updateExplanation(step, data);
+      }
     });
 
     // Wire buttons

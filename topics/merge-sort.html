@@ -88,6 +88,25 @@
             <canvas id="merge-sort-canvas"></canvas>
           </div>
           <div class="viz-explanation">Press Play or Step to start the visualization.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    while left and right:
+        if left[0] &lt;= right[0]:
+            result.append(left.pop(0))
+        else:
+            result.append(right.pop(0))
+    result.extend(left or right)
+    return result</pre>
+          </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
               <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
@@ -112,6 +131,9 @@
             <input type="text" id="ms-array-input" class="input input--sm" placeholder="e.g. 38, 27, 43, 3, 9, 82, 10" style="width:240px;">
             <button class="btn btn--primary btn--sm" id="ms-load-btn">Load</button>
             <button class="btn btn--secondary btn--sm" id="ms-randomize-btn">Randomize</button>
+            <span class="viz-ops__sep">|</span>
+            <input type="text" id="ms-custom-input" class="viz-ops__input viz-ops__input--wide" placeholder="e.g. 5, 2, 8, 1, 9" aria-label="Custom array">
+            <button id="ms-custom-btn" class="btn btn--secondary btn--sm">Visualize</button>
           </div>
         </div>
       </section>
@@ -325,6 +347,68 @@ int main() {
         </div>
       </section>
 
+      <!-- Real-World Applications -->
+      <section class="topic-section reveal">
+        <h2 class="topic-section__title">Real-World Applications</h2>
+        <div class="topic-section__content">
+          <div class="realworld-grid">
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📁</div>
+              <div class="realworld-card__body">
+                <strong>External Sort</strong>
+                <span>Sorting files too large for RAM: merge sorted chunks from disk</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">☕</div>
+              <div class="realworld-card__body">
+                <strong>Java Arrays.sort</strong>
+                <span>Java uses merge sort for <code>Arrays.sort(Object[])</code> (stable sort needed)</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">🔀</div>
+              <div class="realworld-card__body">
+                <strong>Git Merge</strong>
+                <span>Conceptually merges two diverged commit histories (like merging two sorted lists)</span>
+              </div>
+            </div>
+            <div class="realworld-card">
+              <div class="realworld-card__icon">📊</div>
+              <div class="realworld-card__body">
+                <strong>Stable Sort</strong>
+                <span>Preserves original order of equal elements, required in many DB queries</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice</h2>
+        <div class="practice-problems">
+          <!-- Problem 1 -->
+          <div class="practice-block"
+            data-title="Merge Two Sorted Lists"
+            data-difficulty="easy"
+            data-fn="merge_sorted"
+            data-starter='def merge_sorted(a, b):\n    """Merge two sorted lists into one sorted list."""\n    pass'
+            data-tests='[{"args": [[1,3,5],[2,4,6]], "expected": "[1, 2, 3, 4, 5, 6]", "label": "[1,3,5] + [2,4,6] → [1,2,3,4,5,6]"}, {"args": [[1],[2,3]], "expected": "[1, 2, 3]", "label": "[1] + [2,3] → [1,2,3]"}]'>
+            <div class="practice-problem">Given two sorted lists, merge them into a single sorted list without using built-in sort.</div>
+          </div>
+          <!-- Problem 2 -->
+          <div class="practice-block"
+            data-title="Merge Sort"
+            data-difficulty="medium"
+            data-fn="merge_sort"
+            data-starter='def merge_sort(arr):\n    """Return a sorted list using merge sort algorithm."""\n    pass'
+            data-tests='[{"args": [[38,27,43,3,9,82,10]], "expected": "[3, 9, 10, 27, 38, 43, 82]", "label": "[38,27,43,3,9,82,10] → sorted"}]'>
+            <div class="practice-problem">Implement merge sort and return the sorted array as a new list.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section 5: Quiz -->
       <section class="topic-section">
         <h2 class="topic-section__title">Quiz</h2>
@@ -510,6 +594,8 @@ int main() {
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/merge-sort-viz.js"></script>
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
