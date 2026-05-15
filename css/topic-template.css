@@ -1,0 +1,312 @@
+/* ────────────────────────────────────────────────────────────
+   topic-template.css — shared styles for the interview-prep
+   sections rendered by js/topic-renderer.js. Uses existing CSS
+   variables so themes work without changes.
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Topic header (Section 1) ────────────────────────────── */
+.topic-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.topic-header-meta .meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.topic-header-meta .meta-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Interview Cheat Sheet (Section 3) ────────────────────── */
+.cheat-sheet-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  margin: 16px 0 24px;
+}
+.cheat-sheet-head {
+  padding: 10px 14px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--accent-primary, #6366f1), var(--accent-light, #818cf8));
+  color: white;
+  font-size: 14px;
+}
+.cheat-sheet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px;
+}
+.cs-box {
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.cs-box-ops      { background: rgba(99, 102, 241, 0.08); }
+.cs-box-use      { background: rgba(34, 197, 94, 0.08); }
+.cs-box-avoid    { background: rgba(239, 68, 68, 0.06); }
+.cs-box-pitfall  { background: rgba(245, 158, 11, 0.08); }
+.cs-box .cs-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.cs-box .cs-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.cs-box .cs-op-name {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+.cs-box .cs-O {
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.cs-O-good { color: #16a34a; }
+.cs-O-bad  { color: #dc2626; }
+
+@media (max-width: 640px) {
+  .cheat-sheet-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Patterns that use this (Section 7) ──────────────────── */
+.patterns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+.pattern-card {
+  display: block;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.pattern-card:hover {
+  border-color: var(--accent-primary, #6366f1);
+  transform: translateY(-2px);
+}
+.pattern-card .pattern-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: var(--accent-primary, #6366f1);
+}
+.pattern-card .pattern-one-liner {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Ask before coding (Section 8) ───────────────────────── */
+.ask-callout {
+  border-left: 4px solid var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.05);
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin: 16px 0 24px;
+}
+.ask-callout h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.ask-callout ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.ask-callout li { margin-bottom: 4px; }
+
+/* ── Curated problems (Section 9) ────────────────────────── */
+.problems-section {
+  margin: 16px 0 24px;
+}
+.problem-group-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 18px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-secondary);
+}
+.problem-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 3px;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+.problem-row:hover { background: var(--surface); }
+.problem-row .problem-title {
+  font-weight: 500;
+  flex: 1 1 200px;
+}
+.problem-row .problem-title a {
+  color: var(--accent-primary, #6366f1);
+  text-decoration: none;
+}
+.problem-row .problem-title a:hover { text-decoration: underline; }
+.pill {
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.pill-easy { background: rgba(34, 197, 94, 0.15); color: #166534; }
+.pill-medium { background: rgba(245, 158, 11, 0.15); color: #92400e; }
+.pill-hard { background: rgba(239, 68, 68, 0.15); color: #991b1b; }
+.pill-pattern { background: rgba(99, 102, 241, 0.15); color: #3730a3; }
+.pill-blind-75 { background: rgba(250, 204, 21, 0.15); color: #854d0e; }
+.pill-neetcode-150 { background: rgba(168, 85, 247, 0.15); color: #6b21a8; }
+.pill-faang-common { background: rgba(244, 114, 182, 0.15); color: #9d174d; }
+
+/* ── Solution walkthroughs (Section 10) ──────────────────── */
+.walkthrough-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  margin: 12px 0;
+}
+.walkthrough-head {
+  padding: 12px 14px;
+  background: rgba(99, 102, 241, 0.06);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.walkthrough-head .walkthrough-title {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+}
+.walkthrough-summary {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.approach-block {
+  border-top: 1px solid var(--border);
+}
+.approach-block:first-of-type { border-top: none; }
+.approach-summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  list-style: none;
+  user-select: none;
+}
+.approach-summary::-webkit-details-marker { display: none; }
+.approach-summary::before {
+  content: '▶';
+  font-size: 10px;
+  color: var(--text-secondary);
+  transition: transform 0.15s;
+}
+details[open] .approach-summary::before { transform: rotate(90deg); }
+.approach-name { font-weight: 600; flex: 1; }
+.approach-O-time, .approach-O-space {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.approach-O-good { background: rgba(34, 197, 94, 0.15); color: #166534; }
+.approach-O-bad  { background: rgba(239, 68, 68, 0.15); color: #991b1b; }
+.approach-body {
+  padding: 0 14px 12px;
+}
+.approach-body pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 12px;
+  border-radius: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.approach-body .approach-why {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+/* ── Reasoned next steps (Section 13) ────────────────────── */
+.next-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+.next-step-card {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.next-step-card:hover {
+  border-color: var(--accent-primary, #6366f1);
+  transform: translateY(-2px);
+}
+.next-step-card .next-step-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.next-step-card .next-step-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--accent-primary, #6366f1);
+  margin-bottom: 6px;
+}
+.next-step-card .next-step-why {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
