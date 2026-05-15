@@ -167,5 +167,23 @@
     "patterns": ["hash-map"],
     "topics": ["hash-table"],
     "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "valid-palindrome",
+    "title": "Valid Palindrome",
+    "leetcode_url": "https://leetcode.com/problems/valid-palindrome/",
+    "difficulty": "easy",
+    "patterns": ["two-pointers"],
+    "topics": ["two-pointers"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "remove-duplicates-from-sorted-array",
+    "title": "Remove Duplicates from Sorted Array",
+    "leetcode_url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+    "difficulty": "easy",
+    "patterns": ["two-pointers"],
+    "topics": ["two-pointers", "arrays"],
+    "frequency_tags": ["faang-common"]
   }
 ]
