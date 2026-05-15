@@ -101,7 +101,50 @@ function renderCheatSheet(topicId, data) {
     </div>
   `;
 }
-function renderPatternsThatUseThis(topicId) { /* Task A6 */ }
+/**
+ * Render cross-link cards to patterns that operate on this topic.
+ * Reads from _patternsCache; finds patterns where appears_in includes topicId.
+ * Special case: on a pattern page, also shows "Data structures this works on" —
+ * the inverse direction. We detect a pattern page by checking if topicId itself
+ * is a pattern id in patterns.json.
+ */
+function renderPatternsThatUseThis(topicId) {
+  const slot = document.querySelector('[data-section="patterns-that-use-this"]');
+  if (!slot) return;
+
+  const isPatternPage = _patternsCache.some(p => p.id === topicId);
+  let cards;
+  let heading;
+  if (isPatternPage) {
+    // On a pattern page, link to the data structures this pattern operates on
+    const me = _patternsCache.find(p => p.id === topicId);
+    cards = (me?.appears_in || []).map(dsId => {
+      const niceTitle = dsId.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+      return { title: niceTitle, url: `${dsId}.html`, oneLiner: `Uses ${niceTitle} as the underlying structure.` };
+    });
+    heading = 'Where this pattern is used';
+  } else {
+    // On a data-structure page, link to patterns
+    cards = _patternsCache
+      .filter(p => (p.appears_in || []).includes(topicId))
+      .map(p => ({ title: p.title, url: p.topic_url.replace(/^topics\//, ''), oneLiner: p.one_liner }));
+    heading = 'Patterns that use this';
+  }
+  if (cards.length === 0) {
+    slot.innerHTML = '';
+    return;
+  }
+  const cardsHtml = cards.map(c => `
+    <a class="pattern-card" href="${c.url}">
+      <div class="pattern-title">${c.title}</div>
+      <div class="pattern-one-liner">${c.oneLiner}</div>
+    </a>
+  `).join('');
+  slot.innerHTML = `
+    <h2>${heading}</h2>
+    <div class="patterns-grid">${cardsHtml}</div>
+  `;
+}
 function renderAskBeforeCoding(topicId, data) { /* Task A7 */ }
 function renderCuratedProblems(topicId) { /* Task A8 */ }
 function renderSolutionWalkthroughs(topicId) { /* Task A9 */ }
