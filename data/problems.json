@@ -1,0 +1,28 @@
+[
+  {
+    "id": "two-sum",
+    "title": "Two Sum",
+    "leetcode_url": "https://leetcode.com/problems/two-sum/",
+    "difficulty": "easy",
+    "patterns": ["hash-map"],
+    "topics": ["arrays", "hash-table"],
+    "frequency_tags": ["blind-75", "faang-common"],
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(1)",
+        "code": "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]",
+        "explanation": "Check every pair. Slow but correct. Useful as the obvious first approach in an interview."
+      },
+      {
+        "name": "Hash Map",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        if target - x in seen:\n            return [seen[target-x], i]\n        seen[x] = i",
+        "explanation": "Trade O(n) space for O(n) time. Single pass: for each element, ask the hash map if its complement was already seen."
+      }
+    ]
+  }
+]
