@@ -24,5 +24,121 @@
         "explanation": "Trade O(n) space for O(n) time. Single pass: for each element, ask the hash map if its complement was already seen."
       }
     ]
+  },
+  {
+    "id": "contains-duplicate",
+    "title": "Contains Duplicate",
+    "leetcode_url": "https://leetcode.com/problems/contains-duplicate/",
+    "difficulty": "easy",
+    "patterns": ["hash-map"],
+    "topics": ["arrays", "hash-table"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock",
+    "title": "Best Time to Buy and Sell Stock",
+    "leetcode_url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+    "difficulty": "easy",
+    "patterns": ["kadane"],
+    "topics": ["arrays"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "maximum-subarray",
+    "title": "Maximum Subarray",
+    "leetcode_url": "https://leetcode.com/problems/maximum-subarray/",
+    "difficulty": "medium",
+    "patterns": ["kadane"],
+    "topics": ["arrays", "dynamic-programming"],
+    "frequency_tags": ["blind-75", "faang-common"],
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(1)",
+        "code": "def max_subarray(nums):\n    best = nums[0]\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            best = max(best, s)\n    return best",
+        "explanation": "Try every starting index, sum forward. Correct but quadratic."
+      },
+      {
+        "name": "Kadane's Algorithm",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def max_subarray(nums):\n    best = cur = nums[0]\n    for x in nums[1:]:\n        cur = max(x, cur + x)\n        best = max(best, cur)\n    return best",
+        "explanation": "At each index, decide: extend the previous subarray, or start fresh from here? Track running best. The key insight: if the previous sum is negative, it's useless — start fresh."
+      }
+    ]
+  },
+  {
+    "id": "3sum",
+    "title": "3Sum",
+    "leetcode_url": "https://leetcode.com/problems/3sum/",
+    "difficulty": "medium",
+    "patterns": ["two-pointers"],
+    "topics": ["arrays", "two-pointers"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "container-with-most-water",
+    "title": "Container With Most Water",
+    "leetcode_url": "https://leetcode.com/problems/container-with-most-water/",
+    "difficulty": "medium",
+    "patterns": ["two-pointers"],
+    "topics": ["arrays", "two-pointers"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "product-of-array-except-self",
+    "title": "Product of Array Except Self",
+    "leetcode_url": "https://leetcode.com/problems/product-of-array-except-self/",
+    "difficulty": "medium",
+    "patterns": ["prefix-sum"],
+    "topics": ["arrays", "prefix-sum"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "rotate-array",
+    "title": "Rotate Array",
+    "leetcode_url": "https://leetcode.com/problems/rotate-array/",
+    "difficulty": "medium",
+    "patterns": ["in-place"],
+    "topics": ["arrays"],
+    "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "longest-consecutive-sequence",
+    "title": "Longest Consecutive Sequence",
+    "leetcode_url": "https://leetcode.com/problems/longest-consecutive-sequence/",
+    "difficulty": "medium",
+    "patterns": ["hash-map"],
+    "topics": ["arrays", "hash-table"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "trapping-rain-water",
+    "title": "Trapping Rain Water",
+    "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+    "difficulty": "hard",
+    "patterns": ["two-pointers"],
+    "topics": ["arrays", "two-pointers"],
+    "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "first-missing-positive",
+    "title": "First Missing Positive",
+    "leetcode_url": "https://leetcode.com/problems/first-missing-positive/",
+    "difficulty": "hard",
+    "patterns": ["in-place"],
+    "topics": ["arrays"],
+    "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "subarray-sum-equals-k",
+    "title": "Subarray Sum Equals K",
+    "leetcode_url": "https://leetcode.com/problems/subarray-sum-equals-k/",
+    "difficulty": "medium",
+    "patterns": ["prefix-sum", "hash-map"],
+    "topics": ["arrays", "prefix-sum", "hash-table"],
+    "frequency_tags": ["faang-common"]
   }
 ]
