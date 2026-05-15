@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two Sum - DS-Algo-Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+  <link rel="stylesheet" href="../css/practice.css">
+  <link rel="stylesheet" href="../css/code-runner.css">
+  <style>
+    /* ── Problem page specific layout ─────────────────────── */
+    .problem-page-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .problem-page-layout { grid-template-columns: 1fr; }
+      .problem-sidebar { order: -1; }
+    }
+
+    /* ── Problem header card ───────────────────────────────── */
+    .problem-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 16px;
+    }
+    .problem-links {
+      display: flex;
+      gap: 12px;
+      margin: 0 0 24px;
+      flex-wrap: wrap;
+    }
+    .problem-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-primary, #6366f1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .problem-links a:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-primary, #6366f1);
+    }
+
+    /* ── Problem statement card ────────────────────────────── */
+    .problem-statement {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      line-height: 1.7;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+    .problem-constraints {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+    .problem-constraints__label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .problem-constraints ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .problem-constraints li {
+      font-size: 13px;
+      font-family: var(--font-mono, monospace);
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* ── Examples ──────────────────────────────────────────── */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+    .example-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+    }
+    .example-card__num {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .example-card__io {
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .example-card__io .io-label {
+      color: var(--text-secondary);
+    }
+    .example-card__io .io-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .example-card__explanation {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* ── Try It section ────────────────────────────────────── */
+    .try-it-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .try-it-header h2 {
+      margin: 0;
+    }
+    .try-it-note {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── Sidebar ───────────────────────────────────────────── */
+    .problem-sidebar {
+      position: sticky;
+      top: 20px;
+    }
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .sidebar-card__head {
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sidebar-card__body {
+      padding: 10px 0;
+    }
+    .related-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: background 0.12s;
+    }
+    .related-item:hover { background: var(--bg-secondary, #f8fafc); }
+    .related-item__title { flex: 1; font-weight: 500; }
+    .related-item__title a {
+      color: var(--accent-primary, #6366f1);
+      text-decoration: none;
+    }
+    .related-item__title a:hover { text-decoration: underline; }
+
+    /* ── Approaches ────────────────────────────────────────── */
+    .approaches-note {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body data-topic="problems">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#problems">Problems</a>
+        <span class="breadcrumbs__sep">/</span>
+        <span>Two Sum</span>
+      </div>
+
+      <!-- Problem title + meta -->
+      <h1 class="topic-header__title" style="margin-bottom:8px;">Two Sum</h1>
+      <div class="problem-meta-bar">
+        <span class="pill pill-easy">Easy</span>
+        <span class="pill pill-pattern">Arrays &amp; Hashing</span>
+        <span class="pill pill-pattern">Hash Map</span>
+        <span class="pill pill-blind-75">Blind 75</span>
+        <span class="pill pill-faang-common">FAANG Common</span>
+      </div>
+      <div class="problem-links">
+        <a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View on LeetCode
+        </a>
+        <a href="../topics/arrays.html">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Arrays &amp; Hashing
+        </a>
+        <a href="../index.html#problems">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Problems
+        </a>
+      </div>
+
+      <!-- Two-column layout: main content + sidebar -->
+      <div class="problem-page-layout">
+
+        <!-- ── Left: main column ──────────────────────────── -->
+        <div class="problem-main">
+
+          <!-- Problem Statement -->
+          <section class="topic-section">
+            <h2 class="topic-section__title">Problem</h2>
+            <div class="problem-statement">
+              <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return <strong>indices of the two numbers</strong> such that they add up to <code>target</code>.</p>
+              <p style="margin-top:10px;">You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice. You can return the answer in any order.</p>
+              <div class="problem-constraints">
+                <div class="problem-constraints__label">Constraints</div>
+                <ul>
+                  <li>2 &lt;= nums.length &lt;= 10<sup>4</sup></li>
+                  <li>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></li>
+                  <li>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></li>
+                  <li>Only one valid answer exists.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Examples -->
+          <section class="topic-section">
+            <h2 class="topic-section__title">Examples</h2>
+            <div class="examples-grid">
+              <div class="example-card">
+                <div class="example-card__num">Example 1</div>
+                <div class="example-card__io">
+                  <div><span class="io-label">Input: </span><span class="io-value">nums = [2,7,11,15], target = 9</span></div>
+                  <div><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></div>
+                </div>
+                <div class="example-card__explanation">nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].</div>
+              </div>
+              <div class="example-card">
+                <div class="example-card__num">Example 2</div>
+                <div class="example-card__io">
+                  <div><span class="io-label">Input: </span><span class="io-value">nums = [3,2,4], target = 6</span></div>
+                  <div><span class="io-label">Output: </span><span class="io-value">[1, 2]</span></div>
+                </div>
+              </div>
+              <div class="example-card">
+                <div class="example-card__num">Example 3</div>
+                <div class="example-card__io">
+                  <div><span class="io-label">Input: </span><span class="io-value">nums = [3,3], target = 6</span></div>
+                  <div><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Try It Yourself -->
+          <section class="topic-section">
+            <div class="try-it-header">
+              <h2 class="topic-section__title" style="margin-bottom:0;">Try It Yourself</h2>
+            </div>
+            <p class="try-it-note">Write your solution below, then click <strong>Run Tests</strong> to check it against all three test cases.</p>
+
+            <div class="practice-block"
+              data-title="Two Sum"
+              data-difficulty="easy"
+              data-fn="two_sum"
+              data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
+              data-tests='[
+                {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
+                {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
+                {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
+              ]'>
+              <div class="practice-problem">
+                Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
+              </div>
+            </div>
+          </section>
+
+          <!-- Approaches -->
+          <section class="topic-section">
+            <h2 class="topic-section__title">Approaches</h2>
+            <p class="approaches-note">Expand each approach to see the code, complexity, and the reasoning you'd walk through in an interview.</p>
+
+            <div class="walkthrough-card">
+              <div class="walkthrough-head">
+                <span class="walkthrough-title">Solution Walkthroughs</span>
+              </div>
+
+              <!-- Brute Force -->
+              <details class="approach-block">
+                <summary class="approach-summary">
+                  <span class="approach-name">Brute Force</span>
+                  <span class="approach-O-time approach-O-bad">Time: O(n²)</span>
+                  <span class="approach-O-space approach-O-good">Space: O(1)</span>
+                </summary>
+                <div class="approach-body">
+                  <pre>def two_sum(nums, target):
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]</pre>
+                  <p class="approach-why">
+                    Check every possible pair. For each element at index <code>i</code>, scan all elements after it to find a complement. This is the first thing you'd say in an interview — it shows you understand the problem before jumping to the optimal approach. Slow, but provably correct. O(n²) time because of the nested loop; O(1) space because you only store loop indices.
+                  </p>
+                </div>
+              </details>
+
+              <!-- Hash Map -->
+              <details class="approach-block">
+                <summary class="approach-summary">
+                  <span class="approach-name">Hash Map (Optimal)</span>
+                  <span class="approach-O-time approach-O-good">Time: O(n)</span>
+                  <span class="approach-O-space approach-O-bad">Space: O(n)</span>
+                </summary>
+                <div class="approach-body">
+                  <pre>def two_sum(nums, target):
+    seen = {}
+    for i, x in enumerate(nums):
+        complement = target - x
+        if complement in seen:
+            return [seen[complement], i]
+        seen[x] = i</pre>
+                  <p class="approach-why">
+                    For each number <code>x</code>, ask: "have I already seen <code>target - x</code>?" If yes, we have our pair — return its stored index and the current index. If no, store <code>x</code> with its index for future lookups. A single pass through the array, O(n) time. We trade O(n) space (the hash map) for the speed gain. The key insight: instead of looking forward for a pair, we look backward at what we've already seen.
+                  </p>
+                </div>
+              </details>
+
+            </div><!-- /.walkthrough-card -->
+          </section>
+
+        </div><!-- /.problem-main -->
+
+        <!-- ── Right: sidebar ─────────────────────────────── -->
+        <aside class="problem-sidebar">
+
+          <!-- Related problems -->
+          <div class="sidebar-card">
+            <div class="sidebar-card__head">Related Problems</div>
+            <div class="sidebar-card__body" id="related-problems-list">
+              <!-- Populated inline below -->
+              <div class="related-item">
+                <span class="pill pill-easy" style="flex-shrink:0;">Easy</span>
+                <span class="related-item__title"><a href="contains-duplicate.html">Contains Duplicate</a></span>
+              </div>
+              <div class="related-item">
+                <span class="pill pill-medium" style="flex-shrink:0;">Med</span>
+                <span class="related-item__title"><a href="group-anagrams.html">Group Anagrams</a></span>
+              </div>
+              <div class="related-item">
+                <span class="pill pill-medium" style="flex-shrink:0;">Med</span>
+                <span class="related-item__title"><a href="longest-consecutive-sequence.html">Longest Consecutive Sequence</a></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Topic pages -->
+          <div class="sidebar-card">
+            <div class="sidebar-card__head">Topic Pages</div>
+            <div class="sidebar-card__body">
+              <div class="related-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                <span class="related-item__title"><a href="../topics/arrays.html">Arrays</a></span>
+              </div>
+              <div class="related-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                <span class="related-item__title"><a href="../topics/hash-table.html">Hash Table</a></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pattern info -->
+          <div class="sidebar-card">
+            <div class="sidebar-card__head">Pattern</div>
+            <div class="sidebar-card__body" style="padding: 14px;">
+              <span class="pill pill-pattern" style="margin-bottom:8px;display:inline-block;">Hash Map</span>
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
+                Use a hash map to trade space for time. Instead of O(n) search, get O(1) lookup. Classic for "find pair / complement" problems.
+              </p>
+            </div>
+          </div>
+
+          <!-- Frequency info -->
+          <div class="sidebar-card">
+            <div class="sidebar-card__head">Frequency</div>
+            <div class="sidebar-card__body" style="padding: 14px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="pill pill-blind-75">Blind 75</span>
+                <span class="pill pill-faang-common">FAANG Common</span>
+              </div>
+              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:10px 0 0;">
+                One of the most commonly asked interview problems. Often used as a warm-up before harder hash map questions.
+              </p>
+            </div>
+          </div>
+
+        </aside>
+
+      </div><!-- /.problem-page-layout -->
+
+    </div><!-- /.main__content -->
+  </div><!-- /.main -->
+
+  <!-- Scripts — same order as topic pages -->
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/keyboard.js"></script>
+
+  <script>
+    // Inline problem data (prototype — will migrate to problems.json once format approved)
+    const problem = {
+      id: 'two-sum',
+      title: 'Two Sum',
+      leetcode_url: 'https://leetcode.com/problems/two-sum/',
+      difficulty: 'easy',
+      topics: ['arrays', 'hash-table'],
+      patterns: ['hash-map'],
+      frequency_tags: ['blind-75', 'faang-common'],
+      neetcode_category: 'Arrays & Hashing',
+      summary: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.',
+      constraints: [
+        '2 <= nums.length <= 10^4',
+        '-10^9 <= nums[i] <= 10^9',
+        '-10^9 <= target <= 10^9',
+        'Only one valid answer exists.'
+      ],
+      examples: [
+        { input: 'nums = [2,7,11,15], target = 9', output: '[0, 1]', explanation: 'nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].' },
+        { input: 'nums = [3,2,4], target = 6',     output: '[1, 2]', explanation: '' },
+        { input: 'nums = [3,3], target = 6',        output: '[0, 1]', explanation: '' }
+      ],
+      starter_code: 'def two_sum(nums, target):\n    # Your code here\n    pass',
+      // NOTE: expected values must match Python repr() output exactly (spaces after commas)
+      test_cases: [
+        { input: { nums: [2,7,11,15], target: 9 }, expected: '[0, 1]' },
+        { input: { nums: [3,2,4],     target: 6 }, expected: '[1, 2]' },
+        { input: { nums: [3,3],       target: 6 }, expected: '[0, 1]' }
+      ],
+      approaches: [
+        {
+          name: 'Brute Force',
+          time: 'O(n²)',
+          space: 'O(1)',
+          code: 'def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]',
+          explanation: 'Check every pair. Slow but correct — useful as the obvious first approach you propose in an interview before optimizing.'
+        },
+        {
+          name: 'Hash Map',
+          time: 'O(n)',
+          space: 'O(n)',
+          code: 'def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        complement = target - x\n        if complement in seen:\n            return [seen[complement], i]\n        seen[x] = i',
+          explanation: 'For each number, check if its complement (target - x) has already been seen. If yes, we found our pair. If no, store the current number with its index. Single pass, O(n) time at the cost of O(n) space.'
+        }
+      ],
+      related_problem_ids: ['contains-duplicate', 'group-anagrams', 'longest-consecutive-sequence']
+    };
+
+    // Init practice blocks (handles the editor + test runner)
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.DSA && DSA.practice) {
+        DSA.practice.init();
+      }
+    });
+  </script>
+</body>
+</html>
