@@ -1,0 +1,58 @@
+[
+  {
+    "id": "two-pointers",
+    "title": "Two Pointers",
+    "topic_url": "topics/two-pointers.html",
+    "appears_in": ["arrays", "linked-lists", "binary-search"],
+    "one_liner": "When the array is sorted (or you need to find a pair), scan with two indices instead of nested loops."
+  },
+  {
+    "id": "sliding-window",
+    "title": "Sliding Window",
+    "topic_url": "topics/sliding-window.html",
+    "appears_in": ["arrays", "hash-table"],
+    "one_liner": "When the question asks about a contiguous subarray with a constraint, slide a window instead of nested loops."
+  },
+  {
+    "id": "binary-search",
+    "title": "Binary Search",
+    "topic_url": "topics/binary-search.html",
+    "appears_in": ["arrays"],
+    "one_liner": "When the input is sorted (or you can binary-search on the answer), halve the search space each step."
+  },
+  {
+    "id": "prefix-sum",
+    "title": "Prefix Sum",
+    "topic_url": "topics/prefix-sum.html",
+    "appears_in": ["arrays"],
+    "one_liner": "When you'll query the sum of many subarrays, precompute prefix sums once and answer each query in O(1)."
+  },
+  {
+    "id": "fast-slow-pointers",
+    "title": "Fast & Slow Pointers",
+    "topic_url": "topics/fast-slow-pointers.html",
+    "appears_in": ["linked-lists", "arrays"],
+    "one_liner": "When detecting cycles or finding the middle of a sequence, move two pointers at different speeds."
+  },
+  {
+    "id": "backtracking",
+    "title": "Backtracking",
+    "topic_url": "topics/backtracking.html",
+    "appears_in": ["arrays", "recursion"],
+    "one_liner": "When you need all subsets, permutations, or combinations, build solutions recursively and undo failed choices."
+  },
+  {
+    "id": "hash-map",
+    "title": "Hash Map",
+    "topic_url": "topics/hash-table.html",
+    "appears_in": ["arrays", "hash-table"],
+    "one_liner": "When brute force is O(n²) with a nested lookup loop, a hash map collapses it to O(n)."
+  },
+  {
+    "id": "kadane",
+    "title": "Kadane's Algorithm",
+    "topic_url": "topics/arrays.html#kadane",
+    "appears_in": ["arrays", "dynamic-programming"],
+    "one_liner": "For maximum subarray sum, track best-ending-here vs best-so-far in a single pass."
+  }
+]
