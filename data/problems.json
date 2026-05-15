@@ -221,5 +221,41 @@
     "patterns": ["sliding-window"],
     "topics": ["sliding-window"],
     "frequency_tags": []
+  },
+  {
+    "id": "binary-search",
+    "title": "Binary Search",
+    "leetcode_url": "https://leetcode.com/problems/binary-search/",
+    "difficulty": "easy",
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "search-in-rotated-sorted-array",
+    "title": "Search in Rotated Sorted Array",
+    "leetcode_url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+    "difficulty": "medium",
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "find-minimum-in-rotated-sorted-array",
+    "title": "Find Minimum in Rotated Sorted Array",
+    "leetcode_url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+    "difficulty": "medium",
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "koko-eating-bananas",
+    "title": "Koko Eating Bananas",
+    "leetcode_url": "https://leetcode.com/problems/koko-eating-bananas/",
+    "difficulty": "medium",
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
+    "frequency_tags": ["faang-common"]
   }
 ]
