@@ -312,4 +312,50 @@
     "topics": ["fast-slow-pointers"],
     "frequency_tags": []
   }
+  ,
+  {
+    "id": "subsets",
+    "title": "Subsets",
+    "leetcode_url": "https://leetcode.com/problems/subsets/",
+    "difficulty": "medium",
+    "patterns": ["backtracking"],
+    "topics": ["backtracking", "recursion"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "permutations",
+    "title": "Permutations",
+    "leetcode_url": "https://leetcode.com/problems/permutations/",
+    "difficulty": "medium",
+    "patterns": ["backtracking"],
+    "topics": ["backtracking", "recursion"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "combinations",
+    "title": "Combinations",
+    "leetcode_url": "https://leetcode.com/problems/combinations/",
+    "difficulty": "medium",
+    "patterns": ["backtracking"],
+    "topics": ["backtracking"],
+    "frequency_tags": []
+  },
+  {
+    "id": "n-queens",
+    "title": "N-Queens",
+    "leetcode_url": "https://leetcode.com/problems/n-queens/",
+    "difficulty": "hard",
+    "patterns": ["backtracking"],
+    "topics": ["backtracking"],
+    "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "word-search",
+    "title": "Word Search",
+    "leetcode_url": "https://leetcode.com/problems/word-search/",
+    "difficulty": "medium",
+    "patterns": ["backtracking"],
+    "topics": ["backtracking"],
+    "frequency_tags": ["faang-common"]
+  }
 ]

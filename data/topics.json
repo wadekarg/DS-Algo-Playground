@@ -210,4 +210,15 @@
     "description": "Move two pointers at different speeds. Detect cycles, find middles.",
     "tags": ["fast slow", "tortoise hare", "cycle", "linked list"]
   }
+  ,
+  {
+    "id": "backtracking",
+    "title": "Backtracking",
+    "category": "Techniques",
+    "url": "topics/backtracking.html",
+    "icon": "↶",
+    "color": "#9333ea",
+    "description": "Build solutions recursively; undo failed choices and try the next.",
+    "tags": ["backtracking", "recursion", "subsets", "permutations", "combinations"]
+  }
 ]
