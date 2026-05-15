@@ -7,6 +7,7 @@
   <link rel="icon" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
 </head>
 <body data-topic="hash-table">
   <!-- Sidebar -->
@@ -84,6 +85,10 @@
           </ul>
           <p>Hash tables are one of the most widely used data structures in practice. They power dictionaries in Python, objects in JavaScript, HashMaps in Java, and are used internally in databases, caches, symbol tables, and countless other systems.</p>
         </div>
+      </section>
+
+      <section>
+        <div data-section="cheat-sheet"></div>
       </section>
 
       <!-- Section 2: Interactive Visualization -->
@@ -315,29 +320,20 @@ ht.display()</pre>
         </div>
       </section>
 
-      <!-- Practice -->
-      <section class="topic-section">
-        <h2 class="topic-section__title">Practice</h2>
-        <div class="practice-problems">
-          <!-- Problem 1 -->
-          <div class="practice-block"
-            data-title="Two Sum"
-            data-difficulty="easy"
-            data-fn="two_sum"
-            data-starter='def two_sum(nums, target):\n    """Return list of two indices that add up to target."""\n    pass'
-            data-tests='[{"args": [[2,7,11,15], 9], "expected": "[0, 1]", "label": "[2,7,11,15] target=9 → [0,1]"}, {"args": [[3,2,4], 6], "expected": "[1, 2]", "label": "[3,2,4] target=6 → [1,2]"}]'>
-            <div class="practice-problem">Given an array of integers and a target sum, return the indices of the two numbers that add up to the target. Assume exactly one solution exists.</div>
-          </div>
-          <!-- Problem 2 -->
-          <div class="practice-block"
-            data-title="Group Anagrams"
-            data-difficulty="medium"
-            data-fn="group_anagrams"
-            data-starter='def group_anagrams(strs):\n    """Group strings by anagram. Return sorted list of sorted groups."""\n    pass'
-            data-tests='[{"args": [["eat","tea","tan","ate","nat","bat"]], "expected": "[['\''ate'\'', '\''eat'\'', '\''tea'\''], ['\''bat'\''], ['\''nat'\'', '\''tan'\'']]", "label": "groups eat/tea/ate, tan/nat, bat"}]'>
-            <div class="practice-problem">Group an array of strings into lists of anagrams. Return a sorted list of groups, where each group is sorted alphabetically.</div>
-          </div>
-        </div>
+      <section>
+        <div data-section="patterns-that-use-this"></div>
+      </section>
+
+      <section>
+        <div data-section="ask-before-coding"></div>
+      </section>
+
+      <section>
+        <div data-section="curated-problems"></div>
+      </section>
+
+      <section>
+        <div data-section="solution-walkthroughs"></div>
       </section>
 
       <!-- Section 5: Quiz -->
@@ -477,23 +473,9 @@ ht.display()</pre>
         </div>
       </section>
 
-      <!-- Topic Navigation -->
-      <nav class="topic-nav">
-        <a href="queue.html" class="topic-nav__link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          <div>
-            <span class="topic-nav__label">Previous</span>
-            <span class="topic-nav__title">Queue</span>
-          </div>
-        </a>
-        <a href="bst.html" class="topic-nav__link">
-          <div style="text-align:right;">
-            <span class="topic-nav__label">Next</span>
-            <span class="topic-nav__title">Binary Search Tree</span>
-          </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </a>
-      </nav>
+      <section>
+        <div data-section="reasoned-next-steps"></div>
+      </section>
 
     </div>
   </div>
@@ -531,5 +513,60 @@ ht.display()</pre>
   <script src="../js/practice.js"></script>
   <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
+  <script src="../js/topic-renderer.js"></script>
+  <script>
+    const cheatSheet = {
+      ops: [
+        { name: "hash[k]",      complexity: "O(1) avg", good: true  },
+        { name: "set/insert",   complexity: "O(1) avg", good: true  },
+        { name: "delete",       complexity: "O(1) avg", good: true  },
+        { name: "worst case",   complexity: "O(n)",     good: false }
+      ],
+      use: [
+        "Key-based lookups by string/int/tuple",
+        "Counting frequencies",
+        "Detecting duplicates",
+        "Memoizing function results"
+      ],
+      avoid: [
+        "Ordered iteration → use sorted container or list",
+        "Range queries → use sorted structure or BIT",
+        "Tiny keyspace → use array indexed by key"
+      ],
+      pitfalls: [
+        "Unhashable keys (e.g., mutable list)",
+        "Hash collisions can degrade to O(n)",
+        "Iteration order isn't guaranteed (pre-3.7 Python)"
+      ]
+    };
+    const asks = [
+      "Are the keys integers, strings, or tuples?",
+      "What's the size of the keyspace? (Affects load-factor concerns.)",
+      "Do we need ordered iteration? (If yes, hash map isn't right.)",
+      "Are collisions or worst-case latency a concern?",
+      "What should I return when a key is missing?"
+    ];
+    const nextSteps = [
+      {
+        label: "Prereq",
+        title: "Arrays",
+        url: "arrays.html",
+        why: "Hash tables are built on top of arrays — understanding indexed storage first makes hashing click."
+      },
+      {
+        label: "Pattern to tackle",
+        title: "Two Pointers",
+        url: "two-pointers.html",
+        why: "Hash sets often work in concert with two-pointer patterns (e.g., remove duplicates from sorted list)."
+      },
+      {
+        label: "Adjacent topic",
+        title: "Binary Search Tree",
+        url: "bst.html",
+        why: "When you need ordered iteration plus O(log n) lookups, BSTs cover what hash maps don't."
+      }
+    ];
+    renderTopic('hash-table', cheatSheet, asks, nextSteps);
+  </script>
 </body>
 </html>

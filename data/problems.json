@@ -140,5 +140,32 @@
     "patterns": ["prefix-sum", "hash-map"],
     "topics": ["arrays", "prefix-sum", "hash-table"],
     "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "valid-anagram",
+    "title": "Valid Anagram",
+    "leetcode_url": "https://leetcode.com/problems/valid-anagram/",
+    "difficulty": "easy",
+    "patterns": ["hash-map"],
+    "topics": ["hash-table"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "group-anagrams",
+    "title": "Group Anagrams",
+    "leetcode_url": "https://leetcode.com/problems/group-anagrams/",
+    "difficulty": "medium",
+    "patterns": ["hash-map"],
+    "topics": ["hash-table"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "top-k-frequent-elements",
+    "title": "Top K Frequent Elements",
+    "leetcode_url": "https://leetcode.com/problems/top-k-frequent-elements/",
+    "difficulty": "medium",
+    "patterns": ["hash-map"],
+    "topics": ["hash-table"],
+    "frequency_tags": ["blind-75", "faang-common"]
   }
 ]
