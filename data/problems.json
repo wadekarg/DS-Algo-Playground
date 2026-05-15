@@ -139,7 +139,24 @@
     "difficulty": "medium",
     "patterns": ["prefix-sum", "hash-map"],
     "topics": ["arrays", "prefix-sum", "hash-table"],
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": ["faang-common"],
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(1)",
+        "code": "def subarray_sum(nums, k):\n    count = 0\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            if s == k:\n                count += 1\n    return count",
+        "explanation": "Try every starting index, sum forward, check each running total. Correct but quadratic."
+      },
+      {
+        "name": "Prefix Sum + Hash Map",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def subarray_sum(nums, k):\n    count = 0\n    prefix = 0\n    seen = {0: 1}  # prefix sum -> count\n    for x in nums:\n        prefix += x\n        if prefix - k in seen:\n            count += seen[prefix - k]\n        seen[prefix] = seen.get(prefix, 0) + 1\n    return count",
+        "explanation": "Maintain a running prefix sum. For each position, ask: 'have I seen a prefix sum equal to (current_prefix - k)?' If yes, that means a subarray ending here sums to k. Hash map gives O(1) lookup."
+      }
+    ]
   },
   {
     "id": "valid-anagram",

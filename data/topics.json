@@ -188,5 +188,15 @@
     "color": "#be185d",
     "description": "Function calling itself to solve problems. Visualize call stacks and memoization.",
     "tags": ["recursion", "call stack", "base case", "fibonacci", "memoization"]
+  },
+  {
+    "id": "prefix-sum",
+    "title": "Prefix Sum",
+    "category": "Techniques",
+    "url": "topics/prefix-sum.html",
+    "icon": "\u03a3",
+    "color": "#0891b2",
+    "description": "Precompute cumulative sums to answer range-sum queries in O(1).",
+    "tags": ["prefix sum", "range query", "cumulative", "technique"]
   }
 ]
