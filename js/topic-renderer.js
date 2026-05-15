@@ -48,7 +48,6 @@ async function renderTopic(topicId, cheatSheetData, asksData, nextStepsData) {
   renderPatternsThatUseThis(topicId);
   renderAskBeforeCoding(topicId, asksData);
   renderCuratedProblems(topicId);
-  renderSolutionWalkthroughs(topicId);
   renderReasonedNextSteps(topicId, nextStepsData);
 }
 
@@ -233,6 +232,10 @@ function renderCuratedProblems(topicId) {
   `;
 }
 /**
+ * NOTE: Not called by renderTopic as of sub-project-1 closeout — walkthroughs
+ * will live on dedicated per-problem pages built in sub-project 2. Function is
+ * kept here for potential reuse by the new per-problem page renderer.
+ *
  * Render inline collapsible solution walkthroughs for problems that have
  * has_walkthrough: true and are tagged with this topic.
  */
