@@ -284,4 +284,23 @@ function renderSolutionWalkthroughs(topicId) {
     ${cards}
   `;
 }
-function renderReasonedNextSteps(topicId, data) { /* Task A10 */ }
+/**
+ * Render the "Reasoned next steps" footer cards.
+ * @param {object[]} data - shape: [{ label, title, url, why }, ...]
+ *   label is e.g. "Prereq", "Next, learn", "Pattern to tackle"
+ */
+function renderReasonedNextSteps(topicId, data) {
+  const slot = document.querySelector('[data-section="reasoned-next-steps"]');
+  if (!slot || !data || data.length === 0) return;
+  const cards = data.map(c => `
+    <a class="next-step-card" href="${c.url}">
+      <div class="next-step-label">${c.label}</div>
+      <div class="next-step-title">${c.title}</div>
+      <div class="next-step-why">${c.why}</div>
+    </a>
+  `).join('');
+  slot.innerHTML = `
+    <h2>What's next</h2>
+    <div class="next-steps-grid">${cards}</div>
+  `;
+}

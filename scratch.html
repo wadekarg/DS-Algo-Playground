@@ -32,7 +32,12 @@
     "What's the constraint on N? (Determines acceptable Big-O)",
     "Empty array? Single element? Return what?"
   ];
-  renderTopic('arrays', arraysCheatSheet, arraysAsks, []).then(() => console.log('done'));
+  const arraysNextSteps = [
+    { label: "Prereq", title: "Complexity Basics", url: "complexity.html", why: "Big-O notation underpins every Big-O claim on this page." },
+    { label: "Next, learn", title: "Hash Tables", url: "topics/hash-table.html", why: "O(1) lookups complement arrays' O(1) index access — the two together unlock Two Sum." },
+    { label: "Pattern to tackle", title: "Two Pointers", url: "topics/two-pointers.html", why: "Sorted arrays are where two-pointer techniques shine." }
+  ];
+  renderTopic('arrays', arraysCheatSheet, arraysAsks, arraysNextSteps).then(() => console.log('done'));
 </script>
 </body>
 </html>
