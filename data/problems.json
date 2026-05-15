@@ -275,4 +275,41 @@
     "topics": ["binary-search"],
     "frequency_tags": ["faang-common"]
   }
+  ,
+  {
+    "id": "linked-list-cycle",
+    "title": "Linked List Cycle",
+    "leetcode_url": "https://leetcode.com/problems/linked-list-cycle/",
+    "difficulty": "easy",
+    "patterns": ["fast-slow-pointers"],
+    "topics": ["fast-slow-pointers", "linked-lists"],
+    "frequency_tags": ["blind-75"]
+  },
+  {
+    "id": "linked-list-cycle-ii",
+    "title": "Linked List Cycle II",
+    "leetcode_url": "https://leetcode.com/problems/linked-list-cycle-ii/",
+    "difficulty": "medium",
+    "patterns": ["fast-slow-pointers"],
+    "topics": ["fast-slow-pointers", "linked-lists"],
+    "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "middle-of-the-linked-list",
+    "title": "Middle of the Linked List",
+    "leetcode_url": "https://leetcode.com/problems/middle-of-the-linked-list/",
+    "difficulty": "easy",
+    "patterns": ["fast-slow-pointers"],
+    "topics": ["fast-slow-pointers", "linked-lists"],
+    "frequency_tags": []
+  },
+  {
+    "id": "happy-number",
+    "title": "Happy Number",
+    "leetcode_url": "https://leetcode.com/problems/happy-number/",
+    "difficulty": "easy",
+    "patterns": ["fast-slow-pointers"],
+    "topics": ["fast-slow-pointers"],
+    "frequency_tags": []
+  }
 ]

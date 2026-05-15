@@ -199,4 +199,15 @@
     "description": "Precompute cumulative sums to answer range-sum queries in O(1).",
     "tags": ["prefix sum", "range query", "cumulative", "technique"]
   }
+  ,
+  {
+    "id": "fast-slow-pointers",
+    "title": "Fast & Slow Pointers",
+    "category": "Techniques",
+    "url": "topics/fast-slow-pointers.html",
+    "icon": "⇄",
+    "color": "#7c3aed",
+    "description": "Move two pointers at different speeds. Detect cycles, find middles.",
+    "tags": ["fast slow", "tortoise hare", "cycle", "linked list"]
+  }
 ]
