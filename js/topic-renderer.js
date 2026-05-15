@@ -224,5 +224,64 @@ function renderCuratedProblems(topicId) {
     <div class="problems-section">${groupsHtml}</div>
   `;
 }
-function renderSolutionWalkthroughs(topicId) { /* Task A9 */ }
+/**
+ * Render inline collapsible solution walkthroughs for problems that have
+ * has_walkthrough: true and are tagged with this topic.
+ */
+function renderSolutionWalkthroughs(topicId) {
+  const slot = document.querySelector('[data-section="solution-walkthroughs"]');
+  if (!slot) return;
+
+  const flagships = _problemsCache.filter(
+    p => p.has_walkthrough && (p.topics || []).includes(topicId)
+  );
+  if (flagships.length === 0) {
+    slot.innerHTML = '';
+    return;
+  }
+
+  // Heuristic for "is this complexity good?" — count n's in the expression
+  // O(1), O(log n), O(n) are good; O(n^2), O(n²), O(n!), O(2^n) are bad
+  const isGood = expr => {
+    const e = expr.toLowerCase().replace(/\s/g, '');
+    if (/n[\^²2]/.test(e) || /2\^n/.test(e) || /n!/.test(e) || /n\*n/.test(e)) return false;
+    return true;
+  };
+
+  const escapeCode = code =>
+    code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const cards = flagships.map(prob => {
+    const approaches = (prob.approaches || []).map((a, i) => `
+      <details class="approach-block" ${i === prob.approaches.length - 1 ? 'open' : ''}>
+        <summary class="approach-summary">
+          <span class="approach-name">${a.name}</span>
+          <span class="approach-O-time approach-O-${isGood(a.time) ? 'good' : 'bad'}">${a.time}</span>
+          <span class="approach-O-space approach-O-${isGood(a.space) ? 'good' : 'bad'}">${a.space}</span>
+        </summary>
+        <div class="approach-body">
+          <pre><code>${escapeCode(a.code)}</code></pre>
+          <div class="approach-why"><em>Why it works:</em> ${a.explanation}</div>
+        </div>
+      </details>
+    `).join('');
+    return `
+      <div class="walkthrough-card">
+        <div class="walkthrough-head">
+          <span class="walkthrough-title">${prob.title}</span>
+          <a href="${prob.leetcode_url}" target="_blank" rel="noopener" style="font-size: 13px;">↗ on LeetCode</a>
+        </div>
+        ${approaches}
+      </div>
+    `;
+  }).join('');
+
+  slot.innerHTML = `
+    <h2>Solution Walkthroughs</h2>
+    <p style="font-size: 14px; color: var(--text-secondary);">
+      Brute force → optimal, with code and complexity for each approach. Click an approach to expand.
+    </p>
+    ${cards}
+  `;
+}
 function renderReasonedNextSteps(topicId, data) { /* Task A10 */ }
