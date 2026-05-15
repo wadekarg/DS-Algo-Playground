@@ -161,6 +161,68 @@ function renderAskBeforeCoding(topicId, data) {
     </div>
   `;
 }
-function renderCuratedProblems(topicId) { /* Task A8 */ }
+/**
+ * Render curated problems list, grouped by pattern.
+ * Each row: title (link to LeetCode) + difficulty pill + pattern pill + frequency pills.
+ */
+function renderCuratedProblems(topicId) {
+  const slot = document.querySelector('[data-section="curated-problems"]');
+  if (!slot) return;
+
+  const mine = _problemsCache.filter(p => (p.topics || []).includes(topicId));
+  if (mine.length === 0) {
+    slot.innerHTML = '<h2>Problems</h2><p>No problems curated for this topic yet.</p>';
+    return;
+  }
+
+  // Group by primary pattern (first entry in patterns[])
+  const groups = {};
+  for (const prob of mine) {
+    const key = (prob.patterns && prob.patterns[0]) || 'general';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(prob);
+  }
+
+  // Within each group, sort by difficulty: easy → medium → hard
+  const diffOrder = { easy: 0, medium: 1, hard: 2 };
+  Object.values(groups).forEach(g =>
+    g.sort((a, b) => (diffOrder[a.difficulty] ?? 9) - (diffOrder[b.difficulty] ?? 9))
+  );
+
+  // Pattern id → human title (look up in patterns.json)
+  const patternTitle = id => {
+    const p = _patternsCache.find(p => p.id === id);
+    return p ? p.title : id.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const renderRow = prob => {
+    const freqPills = (prob.frequency_tags || []).map(t =>
+      `<span class="pill pill-${t}">${t.replace(/-/g, ' ')}</span>`
+    ).join('');
+    const patternPills = (prob.patterns || []).map(p =>
+      `<span class="pill pill-pattern">${patternTitle(p)}</span>`
+    ).join('');
+    return `
+      <div class="problem-row">
+        <span class="problem-title"><a href="${prob.leetcode_url}" target="_blank" rel="noopener">${prob.title}</a></span>
+        <span class="pill pill-${prob.difficulty}">${prob.difficulty}</span>
+        ${patternPills}
+        ${freqPills}
+      </div>
+    `;
+  };
+
+  const groupsHtml = Object.entries(groups).map(([key, probs]) => `
+    <div class="problem-group">
+      <div class="problem-group-title">${patternTitle(key)}</div>
+      ${probs.map(renderRow).join('')}
+    </div>
+  `).join('');
+
+  slot.innerHTML = `
+    <h2>Problems</h2>
+    <div class="problems-section">${groupsHtml}</div>
+  `;
+}
 function renderSolutionWalkthroughs(topicId) { /* Task A9 */ }
 function renderReasonedNextSteps(topicId, data) { /* Task A10 */ }
