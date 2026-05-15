@@ -145,7 +145,22 @@ function renderPatternsThatUseThis(topicId) {
     <div class="patterns-grid">${cardsHtml}</div>
   `;
 }
-function renderAskBeforeCoding(topicId, data) { /* Task A7 */ }
+/**
+ * Render the boxed "Ask before coding" callout.
+ * @param {string} topicId - currently unused but kept for symmetry
+ * @param {string[]} data - array of question strings
+ */
+function renderAskBeforeCoding(topicId, data) {
+  const slot = document.querySelector('[data-section="ask-before-coding"]');
+  if (!slot || !data || data.length === 0) return;
+  const items = data.map(q => `<li>${q}</li>`).join('');
+  slot.innerHTML = `
+    <div class="ask-callout">
+      <h4>🎯 Before you code, ask:</h4>
+      <ul>${items}</ul>
+    </div>
+  `;
+}
 function renderCuratedProblems(topicId) { /* Task A8 */ }
 function renderSolutionWalkthroughs(topicId) { /* Task A9 */ }
 function renderReasonedNextSteps(topicId, data) { /* Task A10 */ }

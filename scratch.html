@@ -25,7 +25,14 @@
     avoid: ["Frequent middle inserts → linked list", "Key-based lookup → hash map", "Min/max → heap"],
     pitfalls: ["Off-by-one on end index", "Mutating during iteration", "Integer overflow on sums"]
   };
-  renderTopic('arrays', arraysCheatSheet, {}, []).then(() => console.log('done'));
+  const arraysAsks = [
+    "Is the array sorted? Can I sort it?",
+    "Are there duplicates? Negative numbers?",
+    "Can I modify the input in place?",
+    "What's the constraint on N? (Determines acceptable Big-O)",
+    "Empty array? Single element? Return what?"
+  ];
+  renderTopic('arrays', arraysCheatSheet, arraysAsks, []).then(() => console.log('done'));
 </script>
 </body>
 </html>
