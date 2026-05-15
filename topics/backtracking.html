@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backtracking - DS-Algo-Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="backtracking">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumbs__sep">/</span>
+        <span>Backtracking</span>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Backtracking</h1>
+        <p class="topic-header__desc">Build candidate solutions step-by-step. When a step fails or finishes, undo and try the next option.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Algorithm Pattern</span>
+          <span class="badge badge--green">Combinatorial</span>
+        </div>
+      </div>
+
+      <!-- Cheat Sheet slot -->
+      <section>
+        <div data-section="cheat-sheet"></div>
+      </section>
+
+      <!-- Section: What & Why -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">What &amp; Why</h2>
+        <div class="topic-section__content">
+          <p>Backtracking is structured trial-and-error. You build a solution piece by piece (a 'choose' step), explore deeper, and when a branch is fully explored (or fails), you 'un-choose' (backtrack) and try the next option. It's the natural fit for combinatorial problems: subsets, permutations, combinations, paths.</p>
+          <p>The pattern is recursion with explicit state restoration. You modify shared state (a list, a path), recurse, then undo the modification before returning. The recursion tree visualization makes this concrete &mdash; every node is a partial solution, every leaf is a complete one.</p>
+        </div>
+      </section>
+
+      <!-- Section: Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Visualization</h2>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="viz-canvas" width="700" height="380"></canvas>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" id="prev-step" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" id="next-step" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" id="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Code (Python) -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code (Python)</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">def subsets(nums):
+    result = []
+    def backtrack(start, current):
+        result.append(current[:])
+        for i in range(start, len(nums)):
+            current.append(nums[i])      # choose
+            backtrack(i + 1, current)    # explore
+            current.pop()                # un-choose (backtrack)
+    backtrack(0, [])
+    return result</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Complexity Analysis -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Operation</th>
+                <th>Time</th>
+                <th>Space</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Subsets</strong></td>
+                <td>O(2&#8319; &times; n)</td>
+                <td>O(n) recursion</td>
+              </tr>
+              <tr>
+                <td><strong>Permutations</strong></td>
+                <td>O(n! &times; n)</td>
+                <td>O(n) recursion</td>
+              </tr>
+              <tr>
+                <td><strong>Combinations</strong></td>
+                <td>O(C(n,k) &times; k)</td>
+                <td>O(k) recursion</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Interview-prep slots -->
+      <section>
+        <div data-section="patterns-that-use-this"></div>
+      </section>
+
+      <section>
+        <div data-section="ask-before-coding"></div>
+      </section>
+
+      <section>
+        <div data-section="curated-problems"></div>
+      </section>
+
+      <section>
+        <div data-section="solution-walkthroughs"></div>
+      </section>
+
+      <section>
+        <div data-section="reasoned-next-steps"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">Space</span><span>Play / Pause visualization</span>
+        <span class="shortcut-key">&larr;</span><span>Step backward</span>
+        <span class="shortcut-key">&rarr;</span><span>Step forward</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/topic-renderer.js"></script>
+  <script src="../js/topics/backtracking-viz.js"></script>
+  <script>
+    BacktrackingViz.attach('viz-canvas');
+
+    const cheatSheet = {
+      ops: [
+        { name: "subsets",        complexity: "O(2ⁿ)",     good: false },
+        { name: "permutations",   complexity: "O(n!)",     good: false },
+        { name: "combinations",   complexity: "O(C(n,k))", good: false },
+        { name: "space (depth)",  complexity: "O(n)",      good: true  }
+      ],
+      use: [
+        "Generate all subsets / permutations / combinations",
+        "N-Queens, Sudoku, word search",
+        "When you need to enumerate, not optimize",
+        "Tree / graph traversal with paths"
+      ],
+      avoid: [
+        "Counting only (no enumeration) → DP / combinatorics formula",
+        "Optimization problem → DP or greedy",
+        "N is large (> ~20 typically)"
+      ],
+      pitfalls: [
+        "Forgetting to undo state after recursive call",
+        "Appending a reference instead of a copy (result.append(current) vs current[:])",
+        "Off-by-one on the start index when ordering matters",
+        "Pruning too aggressively and missing valid branches"
+      ]
+    };
+    const asks = [
+      "All subsets, all permutations, or all combinations of size k?",
+      "Are duplicates in the input allowed? Should output skip duplicate solutions?",
+      "What's the size of N? (Sets the upper bound on feasibility.)",
+      "Any constraint that lets us prune early (sorted input, target sum, etc.)?",
+      "Return the count, the items, or the items + count?"
+    ];
+    const nextSteps = [
+      {
+        label: "Prereq",
+        title: "Recursion",
+        url: "recursion.html",
+        why: "Backtracking IS recursion with explicit un-choose steps. Know recursion first."
+      },
+      {
+        label: "Adjacent",
+        title: "Dynamic Programming",
+        url: "dynamic-programming.html",
+        why: "DP and backtracking solve different problems. DP optimizes; backtracking enumerates. Know when to reach for each."
+      },
+      {
+        label: "Apply to",
+        title: "BFS / DFS",
+        url: "dfs.html",
+        why: "Backtracking is DFS with state restoration. Graph traversal problems often use it under the hood."
+      }
+    ];
+    renderTopic('backtracking', cheatSheet, asks, nextSteps);
+  </script>
+</body>
+</html>
