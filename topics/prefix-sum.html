@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prefix Sum - DS-Algo-Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="prefix-sum">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumbs__sep">/</span>
+        <span>Prefix Sum</span>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Prefix Sum</h1>
+        <p class="topic-header__desc">Precompute cumulative sums in O(n) time, then answer any range-sum query in O(1). A classic interview pattern for problems about subarray sums.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Algorithm Pattern</span>
+          <span class="badge badge--green">O(1) Query</span>
+        </div>
+      </div>
+
+      <!-- Cheat Sheet slot -->
+      <section>
+        <div data-section="cheat-sheet"></div>
+      </section>
+
+      <!-- Section: What & Why -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">What &amp; Why</h2>
+        <div class="topic-section__content">
+          <p>Given an array <code>nums</code>, the prefix sum array <code>prefix</code> stores the cumulative sum: <code>prefix[i] = nums[0] + nums[1] + ... + nums[i-1]</code>. The sum of any subarray <code>nums[l..r]</code> is then just <code>prefix[r+1] - prefix[l]</code> &mdash; a single subtraction.</p>
+          <p>Building the prefix array takes O(n). Every query after that is O(1). If you'll ask many range-sum questions on the same input, this is the right tool.</p>
+        </div>
+      </section>
+
+      <!-- Section: Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Visualization</h2>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="viz-canvas" width="700" height="200"></canvas>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" id="prev-step" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" id="next-step" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" id="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Code (Python) -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code (Python)</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">def build_prefix(nums):
+    prefix = [0]
+    for x in nums:
+        prefix.append(prefix[-1] + x)
+    return prefix
+
+def range_sum(prefix, l, r):
+    return prefix[r + 1] - prefix[l]
+
+# Example
+nums = [3, 1, 4, 1, 5, 9, 2, 6]
+prefix = build_prefix(nums)         # O(n) preprocessing
+print(range_sum(prefix, 2, 5))      # 4+1+5+9 = 19, in O(1)</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Complexity Analysis -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Operation</th>
+                <th>Time</th>
+                <th>Space</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Build prefix array</strong></td>
+                <td>O(n)</td>
+                <td>O(n)</td>
+              </tr>
+              <tr>
+                <td><strong>Range sum query</strong></td>
+                <td>O(1)</td>
+                <td>O(1)</td>
+              </tr>
+              <tr>
+                <td><strong>Update single element</strong></td>
+                <td>O(n) rebuild</td>
+                <td>&mdash;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="topic-section__content" style="margin-top:var(--space-md);">
+          <p><strong>Note:</strong> If updates are common, look into Binary Indexed Trees / Segment Trees instead &mdash; they give O(log n) update and O(log n) query.</p>
+        </div>
+      </section>
+
+      <!-- Interview-prep slots -->
+      <section>
+        <div data-section="patterns-that-use-this"></div>
+      </section>
+
+      <section>
+        <div data-section="ask-before-coding"></div>
+      </section>
+
+      <section>
+        <div data-section="curated-problems"></div>
+      </section>
+
+      <section>
+        <div data-section="solution-walkthroughs"></div>
+      </section>
+
+      <section>
+        <div data-section="reasoned-next-steps"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">Space</span><span>Play / Pause visualization</span>
+        <span class="shortcut-key">&larr;</span><span>Step backward</span>
+        <span class="shortcut-key">&rarr;</span><span>Step forward</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/topic-renderer.js"></script>
+  <script src="../js/topics/prefix-sum-viz.js"></script>
+  <script>
+    // Start the visualization
+    PrefixSumViz.attach('viz-canvas', [3, 1, 4, 1, 5, 9, 2, 6], 2, 5);
+
+    // Render interview-prep sections
+    const cheatSheet = {
+      ops: [
+        { name: "build prefix",  complexity: "O(n)", good: true  },
+        { name: "range query",   complexity: "O(1)", good: true  },
+        { name: "point update",  complexity: "O(n)", good: false },
+        { name: "space",         complexity: "O(n)", good: true  }
+      ],
+      use: [
+        "Many range-sum queries on a static array",
+        "Number of subarrays with sum = K (with hash map)",
+        "Cumulative metrics: rainfall totals, running averages, etc.",
+        "2D version: rectangle sum queries"
+      ],
+      avoid: [
+        "Frequent point updates → use Binary Indexed Tree (BIT)",
+        "Sum that depends on order, not just total → use DP",
+        "Sliding-window-style problems → use Sliding Window pattern instead"
+      ],
+      pitfalls: [
+        "Off-by-one: prefix has length n+1, indices shift by 1",
+        "Integer overflow on long arrays of large values",
+        "Re-deriving range_sum formula under stress (memorize: prefix[r+1] - prefix[l])"
+      ]
+    };
+    const asks = [
+      "How many queries vs. updates? Many queries + few updates → prefix sum.",
+      "Will the input array change? If yes, may need BIT/Segment Tree instead.",
+      "Are negative numbers possible? Affects 'subarray sum = K' problems.",
+      "1D or 2D range? 2D needs 2D prefix sum.",
+      "What does empty array / empty range return?"
+    ];
+    const nextSteps = [
+      {
+        label: "Prereq",
+        title: "Arrays",
+        url: "arrays.html",
+        why: "Prefix sum is an array-on-an-array. You need fluency with indexed arrays first."
+      },
+      {
+        label: "Related pattern",
+        title: "Hash Tables",
+        url: "hash-table.html",
+        why: "Combining prefix sum with a hash map unlocks 'Subarray Sum Equals K' — a very common interview question."
+      },
+      {
+        label: "Adjacent topic",
+        title: "Sliding Window",
+        url: "sliding-window.html",
+        why: "Sliding window handles contiguous subarrays under constraints; prefix sum handles arbitrary range queries. Know when to reach for each."
+      }
+    ];
+    renderTopic('prefix-sum', cheatSheet, asks, nextSteps);
+  </script>
+</body>
+</html>
