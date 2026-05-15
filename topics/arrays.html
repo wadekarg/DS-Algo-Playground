@@ -7,6 +7,7 @@
   <link rel="icon" href="../assets/favicon.svg">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
 </head>
 <body data-topic="arrays">
   <!-- Sidebar -->
@@ -76,6 +77,10 @@
           </ul>
           <p>The main trade-off is that <strong>insertion and deletion</strong> in the middle of an array are expensive &mdash; O(n) &mdash; because elements must be shifted to maintain contiguity. When frequent insertions and deletions are needed, a linked list or other structure may be more appropriate.</p>
         </div>
+      </section>
+
+      <section>
+        <div data-section="cheat-sheet"></div>
       </section>
 
       <!-- Section 2: Interactive Visualization -->
@@ -240,26 +245,20 @@ print("Search for 19: found at index", idx)</pre>
         </div>
       </section>
 
-      <!-- Section 5: Practice Problems -->
-      <section class="topic-section">
-        <h2 class="topic-section__title">Practice Problems</h2>
-        <div class="problems-list">
-          <div class="problem-item">
-            <span class="badge badge--green">Easy</span>
-            <span class="problem-item__name">Two Sum</span>
-            <a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener" class="problem-item__link">LeetCode #1 &rarr;</a>
-          </div>
-          <div class="problem-item">
-            <span class="badge badge--green">Easy</span>
-            <span class="problem-item__name">Best Time to Buy and Sell Stock</span>
-            <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank" rel="noopener" class="problem-item__link">LeetCode #121 &rarr;</a>
-          </div>
-          <div class="problem-item">
-            <span class="badge badge--green">Easy</span>
-            <span class="problem-item__name">Contains Duplicate</span>
-            <a href="https://leetcode.com/problems/contains-duplicate/" target="_blank" rel="noopener" class="problem-item__link">LeetCode #217 &rarr;</a>
-          </div>
-        </div>
+      <section>
+        <div data-section="patterns-that-use-this"></div>
+      </section>
+
+      <section>
+        <div data-section="ask-before-coding"></div>
+      </section>
+
+      <section>
+        <div data-section="curated-problems"></div>
+      </section>
+
+      <section>
+        <div data-section="solution-walkthroughs"></div>
       </section>
 
       <!-- Real-World Applications -->
@@ -396,16 +395,9 @@ print("Search for 19: found at index", idx)</pre>
         </div>
       </section>
 
-      <!-- Topic Navigation -->
-      <nav class="topic-nav">
-        <div></div>
-        <a href="linked-lists.html" class="topic-nav__link">
-          <div>
-            <div class="topic-nav__label">Next</div>
-            <div class="topic-nav__title">Linked Lists &rarr;</div>
-          </div>
-        </a>
-      </nav>
+      <section>
+        <div data-section="reasoned-next-steps"></div>
+      </section>
     </div>
   </div>
 
@@ -442,5 +434,60 @@ print("Search for 19: found at index", idx)</pre>
   <script src="../js/practice.js"></script>
   <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
+  <script src="../js/topic-renderer.js"></script>
+  <script>
+    const arraysCheatSheet = {
+      ops: [
+        { name: "arr[i]",        complexity: "O(1)",  good: true  },
+        { name: "arr.append()",  complexity: "O(1)*", good: true  },
+        { name: "insert middle", complexity: "O(n)",  good: false },
+        { name: "search",        complexity: "O(n)",  good: false }
+      ],
+      use: [
+        "Need random access by index",
+        "Size is known or bounded",
+        "Iterate more than insert",
+        "Cache-friendliness matters"
+      ],
+      avoid: [
+        "Frequent middle inserts → linked list",
+        "Key-based lookup → hash map",
+        "Min/max access → heap"
+      ],
+      pitfalls: [
+        "Off-by-one on end index",
+        "Mutating during iteration",
+        "Integer overflow on sums"
+      ]
+    };
+    const arraysAsks = [
+      "Is the array sorted? Can I sort it?",
+      "Are there duplicates? Negative numbers? Zeros?",
+      "Can I modify the input in place, or do I need to preserve it?",
+      "What's the constraint on N? (Determines whether O(n²) is acceptable)",
+      "What should I return on empty / single-element input?"
+    ];
+    const arraysNextSteps = [
+      {
+        label: "Prereq",
+        title: "Complexity Basics",
+        url: "../complexity.html",
+        why: "Every Big-O claim on this page assumes you know what Big-O means."
+      },
+      {
+        label: "Next, learn",
+        title: "Hash Tables",
+        url: "hash-table.html",
+        why: "O(1) key lookups complement arrays' O(1) index access — together they unlock Two Sum and many more."
+      },
+      {
+        label: "Pattern to tackle",
+        title: "Two Pointers",
+        url: "two-pointers.html",
+        why: "Sorted arrays are where two-pointer techniques shine — collapses many O(n²) brute-force scans into O(n)."
+      }
+    ];
+    renderTopic('arrays', arraysCheatSheet, arraysAsks, arraysNextSteps);
+  </script>
 </body>
 </html>
