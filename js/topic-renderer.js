@@ -124,10 +124,18 @@ function renderPatternsThatUseThis(topicId) {
     });
     heading = 'Where this pattern is used';
   } else {
-    // On a data-structure page, link to patterns
+    // On a data-structure page, link to patterns. Skip cards that point back
+    // to the current page (e.g. hash-map.topic_url is hash-table.html, which
+    // shouldn't appear on hash-table.html itself).
+    const currentBasename = (typeof window !== 'undefined' && window.location ? window.location.pathname.split('/').pop() : '') || `${topicId}.html`;
     cards = _patternsCache
       .filter(p => (p.appears_in || []).includes(topicId))
-      .map(p => ({ title: p.title, url: p.topic_url.replace(/^topics\//, ''), oneLiner: p.one_liner }));
+      .map(p => ({ title: p.title, url: p.topic_url.replace(/^topics\//, ''), oneLiner: p.one_liner }))
+      .filter(c => {
+        // Strip URL fragments (e.g. arrays.html#kadane → arrays.html) for comparison
+        const cardPage = c.url.split('#')[0];
+        return cardPage !== currentBasename;
+      });
     heading = 'Patterns that use this';
   }
   if (cards.length === 0) {

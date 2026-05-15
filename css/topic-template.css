@@ -25,16 +25,16 @@
 
 /* ── Interview Cheat Sheet (Section 3) ────────────────────── */
 .cheat-sheet-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--bg-card);
   margin: 16px 0 24px;
 }
 .cheat-sheet-head {
   padding: 10px 14px;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--accent-primary, #6366f1), var(--accent-light, #818cf8));
+  background: linear-gradient(135deg, var(--accent-primary, #6366f1), var(--accent-secondary, #818cf8));
   color: white;
   font-size: 14px;
 }
@@ -96,9 +96,9 @@
 .pattern-card {
   display: block;
   padding: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: var(--surface);
+  background: var(--bg-card);
   text-decoration: none;
   color: inherit;
   transition: transform 0.15s, border-color 0.15s;
@@ -149,7 +149,7 @@
   font-size: 14px;
   margin: 18px 0 6px;
   padding-bottom: 4px;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-color);
   color: var(--text-secondary);
 }
 .problem-row {
@@ -162,7 +162,7 @@
   font-size: 14px;
   flex-wrap: wrap;
 }
-.problem-row:hover { background: var(--surface); }
+.problem-row:hover { background: var(--bg-card); }
 .problem-row .problem-title {
   font-weight: 500;
   flex: 1 1 200px;
@@ -191,16 +191,16 @@
 
 /* ── Solution walkthroughs (Section 10) ──────────────────── */
 .walkthrough-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--bg-card);
   margin: 12px 0;
 }
 .walkthrough-head {
   padding: 12px 14px;
   background: rgba(99, 102, 241, 0.06);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -213,13 +213,13 @@
 }
 .walkthrough-summary {
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-secondary);
 }
 .approach-block {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-color);
 }
 .approach-block:first-of-type { border-top: none; }
 .approach-summary {
@@ -280,9 +280,9 @@ details[open] .approach-summary::before { transform: rotate(90deg); }
 }
 .next-step-card {
   padding: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  background: var(--surface);
+  background: var(--bg-card);
   text-decoration: none;
   color: inherit;
   transition: transform 0.15s, border-color 0.15s;
