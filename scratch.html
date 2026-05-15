@@ -14,7 +14,18 @@
 <div data-section="reasoned-next-steps"></div>
 <script src="js/topic-renderer.js"></script>
 <script>
-  renderTopic('arrays', {}, {}, []).then(() => console.log('renderTopic done'));
+  const arraysCheatSheet = {
+    ops: [
+      { name: "arr[i]", complexity: "O(1)", good: true },
+      { name: "arr.append()", complexity: "O(1)*", good: true },
+      { name: "insert middle", complexity: "O(n)", good: false },
+      { name: "search", complexity: "O(n)", good: false }
+    ],
+    use: ["Need random access by index", "Size is known or bounded", "Iterate more than insert"],
+    avoid: ["Frequent middle inserts → linked list", "Key-based lookup → hash map", "Min/max → heap"],
+    pitfalls: ["Off-by-one on end index", "Mutating during iteration", "Integer overflow on sums"]
+  };
+  renderTopic('arrays', arraysCheatSheet, {}, []).then(() => console.log('done'));
 </script>
 </body>
 </html>

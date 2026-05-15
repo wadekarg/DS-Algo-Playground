@@ -53,7 +53,54 @@ async function renderTopic(topicId, cheatSheetData, asksData, nextStepsData) {
 }
 
 // Section render functions are added in subsequent tasks.
-function renderCheatSheet(topicId, data) { /* Task A5 */ }
+/**
+ * Render the 4-box Interview Cheat Sheet.
+ * @param {string} topicId - used for the title (capitalized)
+ * @param {object} data - shape:
+ *   {
+ *     ops: [{ name: "arr[i]", complexity: "O(1)", good: true }, ...],
+ *     use: ["Need random access", "Size is bounded", ...],
+ *     avoid: ["Frequent middle inserts → linked list", ...],
+ *     pitfalls: ["Off-by-one on end index", ...]
+ *   }
+ */
+function renderCheatSheet(topicId, data) {
+  const slot = document.querySelector('[data-section="cheat-sheet"]');
+  if (!slot || !data) return;
+  const title = topicId
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+  const opsRows = (data.ops || []).map(o => `
+    <div class="cs-row">
+      <span class="cs-op-name">${o.name}</span>
+      <span class="cs-O ${o.good ? 'cs-O-good' : 'cs-O-bad'}">${o.complexity}</span>
+    </div>`).join('');
+  const list = arr => (arr || []).map(item => `<div class="cs-row" style="display:block">${item}</div>`).join('');
+  slot.innerHTML = `
+    <div class="cheat-sheet-card">
+      <div class="cheat-sheet-head">⚡ Interview Cheat Sheet — ${title}</div>
+      <div class="cheat-sheet-grid">
+        <div class="cs-box cs-box-ops">
+          <div class="cs-label">⏱ Ops at a glance</div>
+          ${opsRows}
+        </div>
+        <div class="cs-box cs-box-use">
+          <div class="cs-label">✓ Use when</div>
+          ${list(data.use)}
+        </div>
+        <div class="cs-box cs-box-avoid">
+          <div class="cs-label">✗ Reach for instead</div>
+          ${list(data.avoid)}
+        </div>
+        <div class="cs-box cs-box-pitfall">
+          <div class="cs-label">⚠ Pitfalls</div>
+          ${list(data.pitfalls)}
+        </div>
+      </div>
+    </div>
+  `;
+}
 function renderPatternsThatUseThis(topicId) { /* Task A6 */ }
 function renderAskBeforeCoding(topicId, data) { /* Task A7 */ }
 function renderCuratedProblems(topicId) { /* Task A8 */ }
