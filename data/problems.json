@@ -101,7 +101,7 @@
     "title": "Rotate Array",
     "leetcode_url": "https://leetcode.com/problems/rotate-array/",
     "difficulty": "medium",
-    "patterns": ["in-place"],
+    "patterns": ["two-pointers"],
     "topics": ["arrays"],
     "frequency_tags": ["faang-common"]
   },
@@ -128,7 +128,7 @@
     "title": "First Missing Positive",
     "leetcode_url": "https://leetcode.com/problems/first-missing-positive/",
     "difficulty": "hard",
-    "patterns": ["in-place"],
+    "patterns": ["hash-map"],
     "topics": ["arrays"],
     "frequency_tags": ["faang-common"]
   },
