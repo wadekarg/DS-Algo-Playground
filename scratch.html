@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Renderer Test</title>
+<link rel="stylesheet" href="css/topic-template.css">
+</head>
+<body>
+<h1>Renderer test page</h1>
+<div data-section="cheat-sheet"></div>
+<div data-section="patterns-that-use-this"></div>
+<div data-section="ask-before-coding"></div>
+<div data-section="curated-problems"></div>
+<div data-section="solution-walkthroughs"></div>
+<div data-section="reasoned-next-steps"></div>
+<script src="js/topic-renderer.js"></script>
+<script>
+  renderTopic('arrays', {}, {}, []).then(() => console.log('renderTopic done'));
+</script>
+</body>
+</html>
