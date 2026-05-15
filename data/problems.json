@@ -185,5 +185,41 @@
     "patterns": ["two-pointers"],
     "topics": ["two-pointers", "arrays"],
     "frequency_tags": ["faang-common"]
+  },
+  {
+    "id": "longest-substring-without-repeating-characters",
+    "title": "Longest Substring Without Repeating Characters",
+    "leetcode_url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "difficulty": "medium",
+    "patterns": ["sliding-window", "hash-map"],
+    "topics": ["sliding-window", "hash-table"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "minimum-window-substring",
+    "title": "Minimum Window Substring",
+    "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+    "difficulty": "hard",
+    "patterns": ["sliding-window"],
+    "topics": ["sliding-window"],
+    "frequency_tags": ["blind-75", "faang-common"]
+  },
+  {
+    "id": "permutation-in-string",
+    "title": "Permutation in String",
+    "leetcode_url": "https://leetcode.com/problems/permutation-in-string/",
+    "difficulty": "medium",
+    "patterns": ["sliding-window"],
+    "topics": ["sliding-window"],
+    "frequency_tags": []
+  },
+  {
+    "id": "maximum-average-subarray-i",
+    "title": "Maximum Average Subarray I",
+    "leetcode_url": "https://leetcode.com/problems/maximum-average-subarray-i/",
+    "difficulty": "easy",
+    "patterns": ["sliding-window"],
+    "topics": ["sliding-window"],
+    "frequency_tags": []
   }
 ]
