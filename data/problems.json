@@ -9031,5 +9031,723 @@
       "daily-temperatures",
       "min-stack"
     ]
+  },
+  {
+    "id": "largest-rectangle-in-histogram",
+    "title": "Largest Rectangle in Histogram",
+    "leetcode_url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+    "leetcode_id": 84,
+    "difficulty": "hard",
+    "patterns": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array of integers heights representing the bar heights of a histogram (each bar has width 1), return the area of the largest rectangle that can be formed within the histogram.",
+    "constraints": [
+      "1 <= heights.length <= 10^5",
+      "0 <= heights[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "heights = [2,1,5,6,2,3]",
+        "output": "10",
+        "explanation": "The bars at indices 2 and 3 (heights 5 and 6) form a rectangle of height 5 \u00d7 width 2 = 10."
+      },
+      {
+        "input": "heights = [2,4]",
+        "output": "4",
+        "explanation": "Rectangle of height 2 \u00d7 width 2 = 4, or height 4 \u00d7 width 1 = 4. Either way, 4."
+      }
+    ],
+    "function_name": "largestRectangleArea",
+    "function_signature": "def largestRectangleArea(heights):",
+    "starter_code": "def largestRectangleArea(heights):\n    # Return the area of the largest rectangle in the histogram.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic [2,1,5,6,2,3]",
+        "args": [
+          [
+            2,
+            1,
+            5,
+            6,
+            2,
+            3
+          ]
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "two bars",
+        "args": [
+          [
+            2,
+            4
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "single bar",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            3,
+            3,
+            3,
+            3
+          ]
+        ],
+        "expected": "12"
+      },
+      {
+        "label": "increasing",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "9"
+      },
+      {
+        "label": "decreasing",
+        "args": [
+          [
+            5,
+            4,
+            3,
+            2,
+            1
+          ]
+        ],
+        "expected": "9"
+      },
+      {
+        "label": "with zero",
+        "args": [
+          [
+            0,
+            9
+          ]
+        ],
+        "expected": "9"
+      },
+      {
+        "label": "all zeros",
+        "args": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Monotonic increasing stack of indices. For each bar i: while the stack's top is taller than heights[i], pop it \u2014 that popped bar's rectangle is bounded on the right by i and on the left by the new stack top. Compute its area: height = heights[popped], width = i - new_top - 1 (or i if stack empty). Track the max. Push i. After the loop, drain the stack with virtual right boundary at len(heights).",
+      "clarifying_questions": [
+        {
+          "question": "Can heights contain zeros?",
+          "why": "Yes, per constraints (heights[i] >= 0). A zero acts as a 'floor' \u2014 any tall bar to its left can't extend right of it. The algorithm naturally handles this (zeros cause the stack to drain when seen)."
+        },
+        {
+          "question": "Can the array be empty?",
+          "why": "Per constraints, length >= 1. Single-element returns its height. Defensive empty handling is cheap."
+        },
+        {
+          "question": "Width \u2014 is each bar exactly 1 unit wide?",
+          "why": "Yes. So area = (height of shortest bar in range) \u00d7 (number of bars in range)."
+        },
+        {
+          "question": "Why is this Hard?",
+          "why": "Brute force O(n\u00b2) (for each bar, expand left/right). The O(n) monotonic stack is non-obvious \u2014 that's what makes it Hard."
+        },
+        {
+          "question": "Can I use a divide-and-conquer approach?",
+          "why": "Yes, with segment tree or RMQ \u2192 O(n log n). But the stack solution is O(n) and the expected answer."
+        }
+      ],
+      "think_out_loud": "Insight: for each bar, the maximum rectangle USING THAT BAR'S HEIGHT extends from the previous shorter bar (left) to the next shorter bar (right). So if I can find, for each bar, the nearest shorter bar on each side, I know its max rectangle. Monotonic increasing stack gives me 'next shorter on the right' as I scan; the new top after popping gives me 'previous shorter on the left'. Pop on each shorter incoming bar; compute area at pop time. Sentinel: pretend there's a bar of height 0 at the end so the stack drains.",
+      "edge_cases": [
+        {
+          "category": "Single bar",
+          "details": "Just return its height."
+        },
+        {
+          "category": "All equal heights",
+          "details": "Area = h \u00d7 n. Stack stays size 1 until end; final drain computes it."
+        },
+        {
+          "category": "Increasing heights",
+          "details": "Stack only grows; final drain pops each, computing left-bounded widths."
+        },
+        {
+          "category": "Decreasing heights",
+          "details": "Each new bar pops earlier ones immediately. Right-bounded widths."
+        },
+        {
+          "category": "Zero in the middle",
+          "details": "Forces a full drain. Subdivides the problem."
+        },
+        {
+          "category": "All zeros",
+          "details": "Maximum rectangle area is 0."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b2) brute force \u2014 TLE on 10^5.",
+        "Storing heights on the stack instead of indices \u2014 can't compute width.",
+        "Forgetting the final drain \u2014 bars still on the stack at the end have their right boundary at n.",
+        "Off-by-one in width formula: i - stack[-1] - 1 (NOT just i - stack[-1]).",
+        "Using a sentinel of -1 left-side and h=0 right-side simplifies code; many solutions forget one of them."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The hardest monotonic stack problem \u2014 and a rite of passage for FAANG interviews. Mostly tests whether you've seen the 'use a stack to find next-smaller-element' pattern and can adapt it.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. Often paired with Maximal Rectangle (2D version) as a follow-up. If you've never seen this trick, deriving it on the spot is nearly impossible.",
+      "really_testing": [
+        "Pattern recognition: 'rectangle with min-height-in-range' \u2192 monotonic stack.",
+        "Storing indices to compute widths.",
+        "Width formula precision (i - new_top - 1).",
+        "Sentinel handling at the end (drain the stack)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Has seen the trick. Derives the width formula. Codes it cleanly in 15-20 min. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Gets O(n\u00b2) first; sees the optimization with a hint and codes it correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck after O(n\u00b2); cannot derive the stack approach even with strong hints."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate any approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'largest rectangle inside the histogram'.",
+        "Brute force: 'for each bar, expand until shorter' \u2014 O(n\u00b2). Mention then move on.",
+        "Insight: 'for each bar as the SHORTEST, find left and right shorter bounds. Then area = h \u00d7 (right - left - 1)'.",
+        "Pitch monotonic increasing stack: 'pop when incoming is shorter; the popped bar finds its right bound here, left bound is the new top'.",
+        "Code: stack = []. max_area = 0. for i, h in enumerate(heights): while stack and heights[stack[-1]] > h: top = stack.pop(); width = i if not stack else i - stack[-1] - 1; max_area = max(max_area, heights[top] * width). stack.append(i). Then drain at end with i = len(heights).",
+        "Walk [2,1,5,6,2,3]: detailed trace showing pops at i=1 (pops 2), at i=4 (pops 6 then 5), final drain pops 3, 2, 1."
+      ],
+      "playbook_meta": "Total time: 15-25 min. Follow-up: Maximal Rectangle (in a binary matrix \u2014 apply this algorithm to each row of cumulative heights).",
+      "dont_do": [
+        "Don't write O(n\u00b2) \u2014 TLE.",
+        "Don't store heights on stack.",
+        "Don't forget the final drain.",
+        "Don't get the width formula wrong \u2014 it's (i - new_top - 1), not (i - popped)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Monotonic Increasing Stack",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def largestRectangleArea(heights):\n    stack = []  # indices with strictly increasing heights\n    max_area = 0\n    n = len(heights)\n    \n    for i in range(n):\n        while stack and heights[stack[-1]] > heights[i]:\n            top = stack.pop()\n            # Width is i - (new stack top) - 1, or i if stack now empty\n            width = i if not stack else i - stack[-1] - 1\n            max_area = max(max_area, heights[top] * width)\n        stack.append(i)\n    \n    # Drain remaining bars with virtual right boundary at n\n    while stack:\n        top = stack.pop()\n        width = n if not stack else n - stack[-1] - 1\n        max_area = max(max_area, heights[top] * width)\n    \n    return max_area",
+        "explanation": "Maintain a stack of indices where heights are strictly increasing. When a shorter bar appears, every taller bar still on the stack has found its 'next shorter to the right' (the current bar). Pop each, compute its rectangle with width = i - new_top - 1. After the loop, drain the stack as if a bar of height 0 sat at index n. Each index is pushed and popped at most once \u2192 O(n) total."
+      },
+      {
+        "name": "Brute Force (Don't ship this)",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def largestRectangleArea(heights):\n    max_area = 0\n    n = len(heights)\n    for i in range(n):\n        min_h = heights[i]\n        for j in range(i, n):\n            min_h = min(min_h, heights[j])\n            max_area = max(max_area, min_h * (j - i + 1))\n    return max_area",
+        "explanation": "For each pair (i, j) compute the min height in [i..j] and area = min_h \u00d7 (j - i + 1). Correct but O(n\u00b2) \u2014 TLEs on n = 10^5. Useful only as a conversational stepping stone."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "daily-temperatures",
+      "min-stack"
+    ]
+  },
+  {
+    "id": "invert-binary-tree",
+    "title": "Invert Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/invert-binary-tree/",
+    "leetcode_id": 226,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given the root of a binary tree, invert the tree (mirror it left-to-right at every level), and return the root. (Here the function takes a level-order list and returns the inverted level-order list.)",
+    "constraints": [
+      "The number of nodes in the tree is in the range [0, 100].",
+      "-100 <= Node.val <= 100"
+    ],
+    "examples": [
+      {
+        "input": "values = [4,2,7,1,3,6,9]",
+        "output": "[4,7,2,9,6,3,1]",
+        "explanation": "Each node's left and right children are swapped at every level."
+      },
+      {
+        "input": "values = [2,1,3]",
+        "output": "[2,3,1]",
+        "explanation": "Root has left=1, right=3 \u2192 swap \u2192 left=3, right=1."
+      },
+      {
+        "input": "values = []",
+        "output": "[]",
+        "explanation": "Empty tree \u2014 return empty."
+      }
+    ],
+    "function_name": "invertTree",
+    "function_signature": "def invertTree(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef invertTree(values):\n    # The test runner sends JSON args, so we build a tree, invert it, and serialize back.\n    # Pretend the signature is invertTree(root: TreeNode) -> TreeNode.\n    root = build_tree(values)\n    \n    # Your code: recursively (or iteratively) swap left/right at every node.\n    \n    return tree_to_list(root)\n",
+    "test_cases": [
+      {
+        "label": "classic [4,2,7,1,3,6,9]",
+        "args": [
+          [
+            4,
+            2,
+            7,
+            1,
+            3,
+            6,
+            9
+          ]
+        ],
+        "expected": "[4, 7, 2, 9, 6, 3, 1]"
+      },
+      {
+        "label": "small [2,1,3]",
+        "args": [
+          [
+            2,
+            1,
+            3
+          ]
+        ],
+        "expected": "[2, 3, 1]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "left-only",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "[1, None, 2, None, 3]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Simplest tree problem. At every node, swap its left and right children. Then recurse into both. Or invert by post-order: recurse first, then swap. Both work. Iterative BFS works too \u2014 process every node in a queue, swap its children, enqueue both.",
+      "clarifying_questions": [
+        {
+          "question": "Are we modifying in-place or returning a new tree?",
+          "why": "Spec says modify in place and return the (same) root. Building a new tree wastes memory and time."
+        },
+        {
+          "question": "What's an empty tree's inverse?",
+          "why": "Empty. Trivial but worth confirming you handle root = None without crashing."
+        },
+        {
+          "question": "Iterative or recursive \u2014 preference?",
+          "why": "Recursive is cleaner; iterative shows you can use a queue. Both are fine answers; ask if they have a preference."
+        },
+        {
+          "question": "Is the tree always a BST?",
+          "why": "No \u2014 just a binary tree. (BST inversion would BREAK the BST property; this problem is about generic binary trees.)"
+        }
+      ],
+      "think_out_loud": "Recursive: at root, swap left and right; recurse into both. Base case: root is None \u2014 return None. Three lines of code. Iterative with BFS: queue starts with root; for each node, swap its children, enqueue them. Both are O(n) with O(h) or O(n) extra space respectively.",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "Return None. Recursive base case handles it."
+        },
+        {
+          "category": "Single node",
+          "details": "No children to swap. Just return the node."
+        },
+        {
+          "category": "Skewed tree (left-only)",
+          "details": "After inversion becomes right-only. Each node's right becomes left."
+        },
+        {
+          "category": "Full balanced tree",
+          "details": "Every internal node swaps. The result is a mirror image."
+        },
+        {
+          "category": "Duplicate values",
+          "details": "Doesn't matter \u2014 inversion is positional, not value-based."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to recurse after swapping \u2014 only swaps top level.",
+        "Recursing BEFORE swapping in a pre-order... actually works! Just be consistent.",
+        "Returning the inverted subtree instead of mutating \u2014 wastes memory but correct.",
+        "Not handling None at root \u2014 crashes immediately.",
+        "Trying to use BST property \u2014 there's none here."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The 'Max-Howell-couldn't-invert-a-binary-tree' question. Famous for being asked at Google and being trivially short \u2014 but you have to actually do it right.",
+      "introduction_context": "Phone screen across FAANG. Famously asked of Max Howell (Homebrew creator). Solving it in 30 seconds is the bar; longer than 2 minutes raises eyebrows.",
+      "really_testing": [
+        "Basic comfort with recursive tree traversal.",
+        "Handling the None base case.",
+        "Choosing pre-/post-order naturally."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes it in 30-60 seconds. Mentions both recursive and iterative as alternatives."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Codes it in 2-3 min, correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Needs prompting to start. Or makes the None-handling mistake."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive the recursion. Tries to build a new tree from scratch."
+        }
+      ],
+      "playbook": [
+        "Restate: 'mirror every level \u2014 swap left and right at every node'.",
+        "Pitch: 'recurse, swap, return'. 3 lines.",
+        "Code: def invert(node): if not node: return None. node.left, node.right = invert(node.right), invert(node.left). return node.",
+        "Mention iterative alternative: BFS with queue, swap each node's children as we visit.",
+        "Edge: empty tree returns None. \u2713"
+      ],
+      "playbook_meta": "Total time: 1-3 min. Sometimes the interviewer follows up with Same Tree or Symmetric Tree.",
+      "dont_do": [
+        "Don't overthink it \u2014 3 lines.",
+        "Don't build a new tree \u2014 mutate in place.",
+        "Don't forget the None base case."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Recursive (DFS)",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef invertTree(values):\n    root = build_tree(values)\n    \n    def invert(node):\n        if not node:\n            return None\n        node.left, node.right = invert(node.right), invert(node.left)\n        return node\n    \n    invert(root)\n    return tree_to_list(root)",
+        "explanation": "Standard recursive answer. At every node, swap left and right (recursively-inverted subtrees). Base case: None. Three lines of work per node, O(n) total. Recursion depth is the tree height (worst case n for a skewed tree, log n for balanced)."
+      },
+      {
+        "name": "Iterative BFS (queue)",
+        "time": "O(n)",
+        "space": "O(n) for the queue",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\nfrom collections import deque\n\ndef invertTree(values):\n    root = build_tree(values)\n    if root is None:\n        return []\n    \n    queue = deque([root])\n    while queue:\n        node = queue.popleft()\n        node.left, node.right = node.right, node.left\n        if node.left:\n            queue.append(node.left)\n        if node.right:\n            queue.append(node.right)\n    \n    return tree_to_list(root)",
+        "explanation": "BFS variant. Use a queue; pop a node, swap its children, enqueue both (now-swapped) children. Avoids recursion \u2014 useful if the interviewer asks for non-recursive, or if the tree is deeper than the call stack can handle."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-depth-of-binary-tree",
+      "same-tree",
+      "symmetric-tree"
+    ]
+  },
+  {
+    "id": "maximum-depth-of-binary-tree",
+    "title": "Maximum Depth of Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+    "leetcode_id": 104,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given the root of a binary tree, return its maximum depth \u2014 the number of nodes along the longest path from the root to the deepest leaf.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [0, 10^4].",
+      "-100 <= Node.val <= 100"
+    ],
+    "examples": [
+      {
+        "input": "values = [3,9,20,None,None,15,7]",
+        "output": "3",
+        "explanation": "Three levels: 3 \u2192 (9, 20) \u2192 (15, 7). Longest path has 3 nodes."
+      },
+      {
+        "input": "values = [1,None,2]",
+        "output": "2",
+        "explanation": "Skewed right. Depth 2."
+      },
+      {
+        "input": "values = []",
+        "output": "0",
+        "explanation": "Empty tree has depth 0."
+      }
+    ],
+    "function_name": "maxDepth",
+    "function_signature": "def maxDepth(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef maxDepth(values):\n    # Test runner sends JSON; we build the tree here.\n    # Pretend the signature is maxDepth(root: TreeNode) -> int.\n    root = build_tree(values)\n    \n    # Your code: depth = 0 if None else 1 + max(left_depth, right_depth).\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic [3,9,20,N,N,15,7]",
+        "args": [
+          [
+            3,
+            9,
+            20,
+            null,
+            null,
+            15,
+            7
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "skewed [1,N,2]",
+        "args": [
+          [
+            1,
+            null,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            42
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "long left chain",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3,
+            null,
+            4
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "balanced 4 levels",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "3"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Trivial recursion. Empty tree: depth 0. Otherwise: 1 + max(depth of left subtree, depth of right subtree). Done. BFS works too \u2014 count levels.",
+      "clarifying_questions": [
+        {
+          "question": "Depth counted in nodes or edges?",
+          "why": "Nodes. Single root = depth 1, not 0. Empty tree = 0. Clarifies the +1 vs +0."
+        },
+        {
+          "question": "Empty tree case?",
+          "why": "Depth 0. Recursive base case."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "Recursive is simpler. Iterative BFS counts levels. Either is fine \u2014 ask preference."
+        },
+        {
+          "question": "Bound on tree size?",
+          "why": "Up to 10^4. Recursion depth could match \u2014 generally fine, but if you're worried about stack overflow, mention BFS."
+        }
+      ],
+      "think_out_loud": "Three-line recursive function. if not root: return 0; return 1 + max(maxDepth(root.left), maxDepth(root.right)). For BFS: queue with (node, depth) pairs, return the maximum depth seen.",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "Depth 0. Base case."
+        },
+        {
+          "category": "Single node",
+          "details": "Depth 1. Both subtrees are empty (depth 0); 1 + max(0, 0) = 1."
+        },
+        {
+          "category": "Skewed tree",
+          "details": "Depth = number of nodes (worst case for balanced perception)."
+        },
+        {
+          "category": "Perfect tree",
+          "details": "Depth = log2(n+1). Sanity check."
+        },
+        {
+          "category": "Recursion-depth concern",
+          "details": "For n=10^4 skewed, recursion could overflow. Iterative BFS avoids it."
+        }
+      ],
+      "common_mistakes": [
+        "Returning 0 for single root \u2014 off-by-one (forgot the +1).",
+        "Using max() without the +1 \u2014 counts levels minus 1.",
+        "Confusing depth (nodes) with height (edges) \u2014 interview spec varies.",
+        "Not handling None \u2014 crashes on root.left when root is None.",
+        "Iterative without tracking depth properly (e.g., BFS where you forget to count levels)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Easiest tree problem. Tests basic recursive structure on a tree.",
+      "introduction_context": "Phone screen filler everywhere. If you can't solve this in 1 min, the rest of the interview gets harder. Often a warmup before a harder tree problem.",
+      "really_testing": [
+        "Comfort with recursive tree traversal.",
+        "Base case handling.",
+        "Knowing 'depth' vs 'height' convention."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes the 3-line recursion in 30s. Mentions BFS as alternative."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Codes correctly in 2 min."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one (returns nodes - 1 or levels - 1)."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive recursion."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count nodes on longest root-to-leaf path'.",
+        "Pitch: 'recursive \u2014 1 + max(left depth, right depth), base case 0'.",
+        "Code: if not root: return 0. return 1 + max(maxDepth(root.left), maxDepth(root.right)).",
+        "Walk [3,9,20,N,N,15,7]: left(9)=1, right(20)=1 + max(1,1)=2. Root = 1 + max(1, 2) = 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 1-2 min. Follow-up: Balanced Binary Tree (use depth and check |L-R| <= 1).",
+      "dont_do": [
+        "Don't write 5+ lines for a 3-line recursion.",
+        "Don't forget the +1.",
+        "Don't return early without recursing into both subtrees."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Recursive (DFS)",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef maxDepth(values):\n    root = build_tree(values)\n    \n    def depth(node):\n        if not node:\n            return 0\n        return 1 + max(depth(node.left), depth(node.right))\n    \n    return depth(root)",
+        "explanation": "The textbook 3-line recursion. Empty tree = 0; otherwise the depth is 1 (for the current node) plus the max depth of its two subtrees. Each node visited once \u2192 O(n). Recursion depth equals tree height."
+      },
+      {
+        "name": "Iterative BFS (level counting)",
+        "time": "O(n)",
+        "space": "O(w) where w is the max width",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    \"\"\"Build a binary tree from a level-order list (None marks a missing child).\"\"\"\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    \"\"\"Serialize a binary tree to a level-order list (trailing Nones trimmed).\"\"\"\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\nfrom collections import deque\n\ndef maxDepth(values):\n    root = build_tree(values)\n    if root is None:\n        return 0\n    \n    queue = deque([root])\n    levels = 0\n    while queue:\n        levels += 1\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n    return levels",
+        "explanation": "BFS by levels. Each iteration of the outer loop processes exactly one level \u2014 increment the counter and drain. Avoids deep recursion stacks. Good answer when the tree might be skewed and the interviewer mentions stack-overflow concerns."
+      }
+    ],
+    "related_problem_ids": [
+      "invert-binary-tree",
+      "balanced-binary-tree",
+      "same-tree"
+    ]
   }
 ]
