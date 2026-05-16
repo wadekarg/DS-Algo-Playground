@@ -27134,5 +27134,548 @@
       "rotate-image",
       "spiral-matrix"
     ]
+  },
+  {
+    "id": "powx-n",
+    "title": "Pow(x, n)",
+    "leetcode_url": "https://leetcode.com/problems/powx-n/",
+    "leetcode_id": 50,
+    "difficulty": "medium",
+    "patterns": [
+      "math",
+      "recursion",
+      "binary-exponentiation"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Implement pow(x, n) which calculates x raised to the power n.",
+    "constraints": [
+      "-100.0 < x < 100.0",
+      "-2^31 <= n <= 2^31-1",
+      "n is an integer",
+      "Result is in [-10^4, 10^4]"
+    ],
+    "examples": [
+      {
+        "input": "x = 2.00000, n = 10",
+        "output": "1024.00000",
+        "explanation": "2^10."
+      },
+      {
+        "input": "x = 2.00000, n = -2",
+        "output": "0.25",
+        "explanation": "1/(2^2)."
+      }
+    ],
+    "function_name": "myPow",
+    "function_signature": "def myPow(x, n):",
+    "starter_code": "def myPow(x, n):\n    # Binary exponentiation. O(log n). Handle negative n by inverting at start.\n    pass",
+    "test_cases": [
+      {
+        "label": "2^10",
+        "args": [
+          2.0,
+          10
+        ],
+        "expected": "1024.0"
+      },
+      {
+        "label": "2^-2",
+        "args": [
+          2.0,
+          -2
+        ],
+        "expected": "0.25"
+      },
+      {
+        "label": "x^0",
+        "args": [
+          3.0,
+          0
+        ],
+        "expected": "1.0"
+      },
+      {
+        "label": "1^big",
+        "args": [
+          1.0,
+          1000000
+        ],
+        "expected": "1.0"
+      },
+      {
+        "label": "neg base",
+        "args": [
+          -2.0,
+          3
+        ],
+        "expected": "-8.0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Binary exponentiation. If n<0: invert x and negate n. Recursively/iteratively compute x^n by squaring: x^n = (x^(n/2))^2 if even, x*(x^(n/2))^2 if odd.",
+      "clarifying_questions": [
+        {
+          "question": "Negative n?",
+          "why": "Yes \u2014 invert."
+        },
+        {
+          "question": "x=0, n<0?",
+          "why": "Undefined. Spec implies it doesn't occur."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "Iterative avoids stack overflow on min int n."
+        }
+      ],
+      "think_out_loud": "Squaring trick. Each step halves n.",
+      "edge_cases": [
+        {
+          "category": "n=0",
+          "details": "1."
+        },
+        {
+          "category": "n=1",
+          "details": "x."
+        },
+        {
+          "category": "n<0",
+          "details": "Invert x, negate n."
+        },
+        {
+          "category": "x=1 or -1",
+          "details": "Trivial."
+        }
+      ],
+      "common_mistakes": [
+        "Linear loop \u2014 TLE on big n.",
+        "Forgetting to handle negative n.",
+        "Stack overflow on recursive with INT_MIN."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Binary exponentiation classic.",
+      "introduction_context": "Common at Amazon, Bloomberg.",
+      "really_testing": [
+        "Fast power algorithm.",
+        "Negative n handling."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Iterative binary exp in 5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Recursive correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Linear loop."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "if n < 0: x = 1/x; n = -n.",
+        "result = 1. while n > 0: if n & 1: result *= x. x *= x. n >>= 1. return result."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't linear loop.",
+        "Don't recurse on huge n."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative Binary Exponentiation",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "code": "def myPow(x, n):\n    if n < 0:\n        x = 1 / x\n        n = -n\n    result = 1.0\n    while n > 0:\n        if n & 1:\n            result *= x\n        x *= x\n        n >>= 1\n    return result",
+        "explanation": "Standard binary exponentiation. Each step: if low bit of n is 1, multiply result by current x. Square x. Shift n right. O(log n)."
+      }
+    ],
+    "related_problem_ids": [
+      "happy-number",
+      "plus-one",
+      "multiply-strings"
+    ]
+  },
+  {
+    "id": "plus-one",
+    "title": "Plus One",
+    "leetcode_url": "https://leetcode.com/problems/plus-one/",
+    "leetcode_id": 66,
+    "difficulty": "easy",
+    "patterns": [
+      "math",
+      "array"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a non-negative integer represented as an array of digits (most significant first), increment by one.",
+    "constraints": [
+      "1 <= digits.length <= 100",
+      "0 <= digits[i] <= 9",
+      "No leading zeros except 0 itself"
+    ],
+    "examples": [
+      {
+        "input": "digits = [1,2,3]",
+        "output": "[1,2,4]",
+        "explanation": "123 + 1 = 124."
+      },
+      {
+        "input": "digits = [9]",
+        "output": "[1,0]",
+        "explanation": "9 + 1 = 10."
+      }
+    ],
+    "function_name": "plusOne",
+    "function_signature": "def plusOne(digits):",
+    "starter_code": "def plusOne(digits):\n    # Iterate from end. Add 1 with carry. If still carry at end, prepend 1.\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,2,3]",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "label": "[9]",
+        "args": [
+          [
+            9
+          ]
+        ],
+        "expected": "[1, 0]"
+      },
+      {
+        "label": "[9,9,9]",
+        "args": [
+          [
+            9,
+            9,
+            9
+          ]
+        ],
+        "expected": "[1, 0, 0, 0]"
+      },
+      {
+        "label": "[0]",
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "[1,9,9]",
+        "args": [
+          [
+            1,
+            9,
+            9
+          ]
+        ],
+        "expected": "[2, 0, 0]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Iterate from rightmost digit. Carry starts at 1. While carry, add to digit; if digit == 10, set to 0 and propagate. Else done. If carry remains, prepend 1.",
+      "clarifying_questions": [
+        {
+          "question": "Non-negative?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Leading zeros?",
+          "why": "No, except [0]."
+        },
+        {
+          "question": "Mutate input or new array?",
+          "why": "Either; in-place is fine but prepend needs new array anyway when overflowing."
+        }
+      ],
+      "think_out_loud": "Simple carry simulation.",
+      "edge_cases": [
+        {
+          "category": "[0]",
+          "details": "[1]."
+        },
+        {
+          "category": "Single 9",
+          "details": "[1, 0]."
+        },
+        {
+          "category": "All 9s",
+          "details": "[1, 0, 0, ...] with extra digit."
+        },
+        {
+          "category": "No carry propagation",
+          "details": "Increment last digit, done."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to handle the case where all digits become 0 (prepend 1).",
+        "Wrong indexing."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Easy carry simulation.",
+      "introduction_context": "Phone screen filler.",
+      "really_testing": [
+        "Carry handling.",
+        "Prepend on overflow."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 2-3 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses all-9s case."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Tries to convert to int (overflow risk)."
+        }
+      ],
+      "playbook": [
+        "for i in range(len(digits)-1, -1, -1): if digits[i] < 9: digits[i] += 1; return digits. digits[i] = 0. return [1] + digits."
+      ],
+      "playbook_meta": "Total time: 2-4 min.",
+      "dont_do": [
+        "Don't convert to int (overflow on huge lists).",
+        "Don't forget the prepend."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Carry from Right",
+        "time": "O(n)",
+        "space": "O(1) extra (mutates input)",
+        "code": "def plusOne(digits):\n    for i in range(len(digits) - 1, -1, -1):\n        if digits[i] < 9:\n            digits[i] += 1\n            return digits\n        digits[i] = 0\n    return [1] + digits",
+        "explanation": "Walk right-to-left. Increment first non-9; return. Otherwise turn 9s into 0s and propagate. If we exit the loop, every digit was 9 \u2014 prepend 1."
+      }
+    ],
+    "related_problem_ids": [
+      "multiply-strings",
+      "powx-n"
+    ]
+  },
+  {
+    "id": "multiply-strings",
+    "title": "Multiply Strings",
+    "leetcode_url": "https://leetcode.com/problems/multiply-strings/",
+    "leetcode_id": 43,
+    "difficulty": "medium",
+    "patterns": [
+      "math",
+      "string"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two non-negative integers num1 and num2 as strings, return their product as a string. Don't convert directly to int.",
+    "constraints": [
+      "1 <= num1.length, num2.length <= 200",
+      "Both consist of digits only; no leading zeros except '0' itself."
+    ],
+    "examples": [
+      {
+        "input": "num1 = \"2\", num2 = \"3\"",
+        "output": "\"6\""
+      },
+      {
+        "input": "num1 = \"123\", num2 = \"456\"",
+        "output": "\"56088\""
+      }
+    ],
+    "function_name": "multiply",
+    "function_signature": "def multiply(num1, num2):",
+    "starter_code": "def multiply(num1, num2):\n    # Use result array of size m+n. Each digit pair contributes to indices i+j and i+j+1.\n    pass",
+    "test_cases": [
+      {
+        "label": "small",
+        "args": [
+          "2",
+          "3"
+        ],
+        "expected": "'6'"
+      },
+      {
+        "label": "123*456",
+        "args": [
+          "123",
+          "456"
+        ],
+        "expected": "'56088'"
+      },
+      {
+        "label": "by 0",
+        "args": [
+          "123",
+          "0"
+        ],
+        "expected": "'0'"
+      },
+      {
+        "label": "by 1",
+        "args": [
+          "999",
+          "1"
+        ],
+        "expected": "'999'"
+      },
+      {
+        "label": "large",
+        "args": [
+          "99",
+          "99"
+        ],
+        "expected": "'9801'"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Schoolbook multiplication. Allocate result of size m+n (each pair contributes 2 digits). For each pair (i, j): result[i+j+1] += d1*d2; carry to result[i+j]. Strip leading zeros at end.",
+      "clarifying_questions": [
+        {
+          "question": "Why not convert to int?",
+          "why": "Spec forbids; tests big-int handling."
+        },
+        {
+          "question": "Result size?",
+          "why": "m+n digits max."
+        },
+        {
+          "question": "Leading zeros in output?",
+          "why": "Strip them; '0' stays as '0'."
+        }
+      ],
+      "think_out_loud": "Standard grade-school. Each digit pair contributes to result[i+j+1] (low) with carry to result[i+j].",
+      "edge_cases": [
+        {
+          "category": "By 0",
+          "details": "Result '0'."
+        },
+        {
+          "category": "Single digits",
+          "details": "Direct."
+        },
+        {
+          "category": "Large strings",
+          "details": "Algorithm O(m*n) handles 200x200."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to strip leading zeros.",
+        "Off-by-one on indices.",
+        "Converting to int."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Big-int multiplication.",
+      "introduction_context": "Common at Amazon, Bloomberg.",
+      "really_testing": [
+        "Schoolbook algorithm.",
+        "Carry handling.",
+        "Big-int reasoning."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Schoolbook in 10-12 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct, minor bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Index bugs."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "if num1 == '0' or num2 == '0': return '0'.",
+        "m, n = len(num1), len(num2). result = [0] * (m+n).",
+        "for i in range(m-1, -1, -1):",
+        "  for j in range(n-1, -1, -1):",
+        "    mul = int(num1[i]) * int(num2[j]) + result[i+j+1].",
+        "    result[i+j+1] = mul % 10. result[i+j] += mul // 10.",
+        "return ''.join(map(str, result)).lstrip('0') or '0'."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't convert to int.",
+        "Don't forget zero check.",
+        "Don't leak leading zeros."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Schoolbook Multiplication",
+        "time": "O(m*n)",
+        "space": "O(m+n)",
+        "code": "def multiply(num1, num2):\n    if num1 == '0' or num2 == '0':\n        return '0'\n    m, n = len(num1), len(num2)\n    result = [0] * (m + n)\n    for i in range(m - 1, -1, -1):\n        for j in range(n - 1, -1, -1):\n            mul = int(num1[i]) * int(num2[j]) + result[i + j + 1]\n            result[i + j + 1] = mul % 10\n            result[i + j] += mul // 10\n    return ''.join(map(str, result)).lstrip('0') or '0'",
+        "explanation": "Allocate m+n-digit result. For each digit pair (i, j), the product lands at result[i+j+1] (low digit) with carry to result[i+j]. Accumulate, then strip leading zeros."
+      }
+    ],
+    "related_problem_ids": [
+      "plus-one",
+      "powx-n"
+    ]
   }
 ]
