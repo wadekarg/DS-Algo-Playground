@@ -20148,5 +20148,625 @@
       "longest-increasing-subsequence",
       "house-robber"
     ]
+  },
+  {
+    "id": "longest-palindromic-substring",
+    "title": "Longest Palindromic Substring",
+    "leetcode_url": "https://leetcode.com/problems/longest-palindromic-substring/",
+    "leetcode_id": 5,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "string",
+      "expand-around-center"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given a string s, return the longest palindromic substring of s.",
+    "constraints": [
+      "1 <= s.length <= 1000",
+      "s consists of digits and English letters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"babad\"",
+        "output": "\"bab\" or \"aba\"",
+        "explanation": "Either is a valid answer (length 3)."
+      },
+      {
+        "input": "s = \"cbbd\"",
+        "output": "\"bb\"",
+        "explanation": "Longest is 'bb' (length 2)."
+      }
+    ],
+    "function_name": "longestPalindrome",
+    "function_signature": "def longestPalindrome(s):",
+    "starter_code": "def longestPalindrome(s):\n    # Expand around each center. O(n^2) time, O(1) space.\n    # 2n-1 centers: each character + each gap between adjacent characters.\n    pass",
+    "test_cases": [
+      {
+        "label": "babad -> bab",
+        "args": [
+          "babad"
+        ],
+        "expected": "'bab'"
+      },
+      {
+        "label": "cbbd",
+        "args": [
+          "cbbd"
+        ],
+        "expected": "'bb'"
+      },
+      {
+        "label": "single char",
+        "args": [
+          "a"
+        ],
+        "expected": "'a'"
+      },
+      {
+        "label": "all same",
+        "args": [
+          "aaaa"
+        ],
+        "expected": "'aaaa'"
+      },
+      {
+        "label": "no palindrome > 1",
+        "args": [
+          "abc"
+        ],
+        "expected": "'a'"
+      },
+      {
+        "label": "long palindrome",
+        "args": [
+          "forgeeksskeegfor"
+        ],
+        "expected": "'geeksskeeg'"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Expand-around-center. For each of 2n-1 possible centers (each character, each gap), expand outward while characters match. Track the longest span seen. O(n\u00b2) time, O(1) extra space \u2014 simpler than DP and faster in practice.",
+      "clarifying_questions": [
+        {
+          "question": "Return any valid longest, or a specific one?",
+          "why": "Any. If multiple ties exist, any is fine."
+        },
+        {
+          "question": "Odd-length and even-length palindromes both possible?",
+          "why": "Yes. That's why 2n-1 centers: n single-char centers (odd) + n-1 gap centers (even)."
+        },
+        {
+          "question": "Manacher's algorithm \u2014 overkill?",
+          "why": "O(n) but very tricky to code. Expand-around-center O(n\u00b2) is the bar; mention Manacher's as an optional follow-up."
+        },
+        {
+          "question": "Case-sensitive?",
+          "why": "Per spec, no normalization needed. Match exactly."
+        },
+        {
+          "question": "Empty string?",
+          "why": "Per constraints n >= 1, so trivially the empty case doesn't occur. Defensive return '' is cheap."
+        }
+      ],
+      "think_out_loud": "Expand-around-center. Helper: expand(l, r) \u2014 while in bounds and s[l] == s[r], decrement l, increment r. Returns s[l+1:r]. For each i: check expand(i, i) (odd center) and expand(i, i+1) (even center). Track the longest.",
+      "edge_cases": [
+        {
+          "category": "Single character",
+          "details": "Trivially palindrome of length 1."
+        },
+        {
+          "category": "All same characters",
+          "details": "Entire string is palindrome."
+        },
+        {
+          "category": "No palindrome longer than 1",
+          "details": "Return any single character."
+        },
+        {
+          "category": "Tied longests",
+          "details": "Return any."
+        },
+        {
+          "category": "Even vs odd length",
+          "details": "Algorithm checks both via 2n-1 centers."
+        }
+      ],
+      "common_mistakes": [
+        "Only checking odd centers (single-char) \u2014 misses 'bb', 'abba', etc.",
+        "Off-by-one in slicing (s[l+1:r] vs s[l:r+1]).",
+        "O(n\u00b3) brute force enumerating all substrings.",
+        "Trying DP without realizing the recurrence dp[i][j] = (s[i]==s[j]) and dp[i+1][j-1].",
+        "Forgetting to update the longest when current is bigger."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic palindrome problem. Expand-around-center is THE expected solution.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. Often the first 'medium' in a string-heavy round.",
+      "really_testing": [
+        "Recognizing expand-around-center.",
+        "Handling both odd and even palindrome lengths.",
+        "Clean implementation with helper.",
+        "Avoiding O(n\u00b3) brute force."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Expand-around-center in 8-10 min. Both odd/even handled. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DP solution (O(n\u00b2)) or expand-around-center with one bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses even-length palindromes. Or O(n\u00b3) brute force."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate any sub-cubic approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'longest palindromic substring'.",
+        "Insight: 'expand around each center, 2n-1 centers'.",
+        "Helper: def expand(l, r): while l >= 0 and r < len(s) and s[l] == s[r]: l -= 1; r += 1. return s[l+1:r].",
+        "Code: longest = ''. for i in range(len(s)): p1 = expand(i, i); p2 = expand(i, i+1). longest = max(longest, p1, p2, key=len). return longest.",
+        "Walk 'babad': i=0 expand(0,0)='b', expand(0,1)=''. i=1 expand(1,1)='aba'(b matches), expand(1,2)=''. longest='aba'. Continue. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Manacher's (O(n)) \u2014 usually only requested at the highest bar.",
+      "dont_do": [
+        "Don't miss even-length palindromes.",
+        "Don't O(n\u00b3) brute force.",
+        "Don't try Manacher's first.",
+        "Don't off-by-one slicing."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Expand Around Center",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def longestPalindrome(s):\n    if not s:\n        return ''\n    \n    def expand(l, r):\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            l -= 1\n            r += 1\n        return s[l+1:r]\n    \n    longest = ''\n    for i in range(len(s)):\n        p1 = expand(i, i)        # odd-length center\n        p2 = expand(i, i + 1)    # even-length center\n        longest = max(longest, p1, p2, key=len)\n    return longest",
+        "explanation": "For each of 2n-1 centers, expand outward while characters match. Each expansion takes O(n) in the worst case; total O(n\u00b2). O(1) extra space. Cleaner than the DP approach (O(n\u00b2) time, O(n\u00b2) space) and easier to reason about."
+      }
+    ],
+    "related_problem_ids": [
+      "palindromic-substrings",
+      "longest-substring-without-repeating-characters",
+      "longest-increasing-subsequence"
+    ]
+  },
+  {
+    "id": "palindromic-substrings",
+    "title": "Palindromic Substrings",
+    "leetcode_url": "https://leetcode.com/problems/palindromic-substrings/",
+    "leetcode_id": 647,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "string",
+      "expand-around-center"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a string s, return the COUNT of palindromic substrings in it. Substrings with different start or end positions are counted separately, even if they consist of the same characters.",
+    "constraints": [
+      "1 <= s.length <= 1000",
+      "s consists of lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"abc\"",
+        "output": "3",
+        "explanation": "'a', 'b', 'c'. Each single char is a palindrome."
+      },
+      {
+        "input": "s = \"aaa\"",
+        "output": "6",
+        "explanation": "'a','a','a','aa','aa','aaa'. Six total."
+      }
+    ],
+    "function_name": "countSubstrings",
+    "function_signature": "def countSubstrings(s):",
+    "starter_code": "def countSubstrings(s):\n    # Same expand-around-center, but count each successful expansion instead of tracking length.\n    pass",
+    "test_cases": [
+      {
+        "label": "abc",
+        "args": [
+          "abc"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "aaa",
+        "args": [
+          "aaa"
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "aaaa",
+        "args": [
+          "aaaa"
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "single char",
+        "args": [
+          "x"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "abba",
+        "args": [
+          "abba"
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "no palindrome > 1",
+        "args": [
+          "abcd"
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Same expand-around-center. For each of 2n-1 centers, every successful expansion (chars matching) is a new palindromic substring \u2014 count it. Sum across all centers.",
+      "clarifying_questions": [
+        {
+          "question": "Count substrings or distinct substrings?",
+          "why": "Substrings \u2014 duplicates counted separately by position."
+        },
+        {
+          "question": "Single characters count?",
+          "why": "Yes \u2014 each is trivially a palindrome."
+        },
+        {
+          "question": "Empty substring?",
+          "why": "Not counted. Spec implicitly assumes length >= 1."
+        },
+        {
+          "question": "Same expand-around-center as LPS, just count?",
+          "why": "Yes. Almost identical code, but increment a counter instead of tracking length."
+        },
+        {
+          "question": "Can DP also solve this?",
+          "why": "Yes. dp[i][j] = True iff s[i:j+1] is palindrome. Total trues = answer. O(n\u00b2) time, O(n\u00b2) space."
+        }
+      ],
+      "think_out_loud": "Two helper expansions per center i: odd (i, i) and even (i, i+1). Each step that keeps l, r in bounds and s[l]==s[r] is one more palindromic substring \u2014 count it. Sum across all i.",
+      "edge_cases": [
+        {
+          "category": "Single character",
+          "details": "1 palindrome."
+        },
+        {
+          "category": "All same characters",
+          "details": "n + n-1 + ... + 1 = n(n+1)/2 palindromes."
+        },
+        {
+          "category": "No 2+ palindrome",
+          "details": "Just n (single chars)."
+        },
+        {
+          "category": "Mixed",
+          "details": "Algorithm counts each correctly."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b3) brute force.",
+        "Forgetting even-length centers.",
+        "Off-by-one when counting.",
+        "Counting the same palindrome twice (e.g., 'aba' from center 'b' vs 'aa' from gap).",
+        "Subtracting 1 because 'single chars aren't palindromes' \u2014 they are."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Counting variant of Longest Palindromic Substring. Same algorithm.",
+      "introduction_context": "Common at Amazon, Microsoft. Often follows LPS in the same round.",
+      "really_testing": [
+        "Expand-around-center adapted for counting.",
+        "Handling odd and even centers.",
+        "Avoiding O(n\u00b3) brute force."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 4-6 min. Reuses LPS pattern."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Works it out, minor bug fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses even centers."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Brute force O(n\u00b3)."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count palindromic substrings'.",
+        "Pitch: 'expand-around-center, count each successful expansion'.",
+        "Code: count = 0. def expand(l, r): nonlocal count. while l>=0 and r<len(s) and s[l]==s[r]: count+=1; l-=1; r+=1. for i in range(len(s)): expand(i, i); expand(i, i+1). return count.",
+        "Walk 'aaa': odd centers: 'a'(1), 'aaa'(2), 'a'(1) \u2014 wait need to count each step. expand(0,0): match \u2192 count=1. l=-1 stop. expand(0,1): s[0]==s[1] \u2192 count=2. l=-1 stop. Continue. Total 6 for 'aaa'. \u2713"
+      ],
+      "playbook_meta": "Total time: 4-7 min.",
+      "dont_do": [
+        "Don't O(n\u00b3).",
+        "Don't skip even centers.",
+        "Don't double-count via DP indices.",
+        "Don't think single chars don't count."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Expand Around Center",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def countSubstrings(s):\n    count = 0\n    \n    def expand(l, r):\n        nonlocal count\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            count += 1\n            l -= 1\n            r += 1\n    \n    for i in range(len(s)):\n        expand(i, i)        # odd-length\n        expand(i, i + 1)    # even-length\n    \n    return count",
+        "explanation": "Same expand-around-center as Longest Palindromic Substring, but count every successful step instead of tracking length. Each expansion that finds a palindrome at the current (l, r) adds 1 to the count. O(n\u00b2) time, O(1) space."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-palindromic-substring",
+      "longest-substring-without-repeating-characters",
+      "longest-increasing-subsequence"
+    ]
+  },
+  {
+    "id": "partition-equal-subset-sum",
+    "title": "Partition Equal Subset Sum",
+    "leetcode_url": "https://leetcode.com/problems/partition-equal-subset-sum/",
+    "leetcode_id": 416,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "knapsack"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an integer array nums, return True if you can partition the array into two subsets with equal sum. Each element must be in exactly one subset.",
+    "constraints": [
+      "1 <= nums.length <= 200",
+      "1 <= nums[i] <= 100"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,5,11,5]",
+        "output": "True",
+        "explanation": "[1,5,5] and [11] both sum to 11."
+      },
+      {
+        "input": "nums = [1,2,3,5]",
+        "output": "False",
+        "explanation": "Cannot split [1,2,3,5] into two equal-sum subsets."
+      }
+    ],
+    "function_name": "canPartition",
+    "function_signature": "def canPartition(nums):",
+    "starter_code": "def canPartition(nums):\n    # Reduces to subset-sum: is there a subset summing to total/2?\n    # 1D boolean DP of size target+1. Iterate nums; for each num, update dp from right to left.\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,5,11,5]",
+        "args": [
+          [
+            1,
+            5,
+            11,
+            5
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "[1,2,3,5]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            5
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single element",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "two equal",
+        "args": [
+          [
+            2,
+            2
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "odd total",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "odd total impossible",
+        "args": [
+          [
+            1,
+            2,
+            5
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Reduces to subset-sum: is there a subset of nums summing to total/2? If total is odd, immediately False. Otherwise, 0/1 knapsack DP. dp[j] = True iff some subset sums to j. Iterate nums; for each, update dp[j] = dp[j] or dp[j - num] (iterating j from target down to num to avoid double-counting).",
+      "clarifying_questions": [
+        {
+          "question": "Each element used at most once?",
+          "why": "Yes per spec. 0/1 knapsack, not unbounded."
+        },
+        {
+          "question": "What if total is odd?",
+          "why": "Can't split evenly. Return False immediately."
+        },
+        {
+          "question": "Empty subset allowed (sum = 0)?",
+          "why": "Technically yes \u2014 but spec implies non-trivial split. dp[0] = True base case is fine."
+        },
+        {
+          "question": "Why iterate j right-to-left?",
+          "why": "To avoid using the same num twice in the same iteration. Left-to-right would treat the problem as unbounded knapsack (reuse allowed)."
+        },
+        {
+          "question": "Time complexity?",
+          "why": "O(n * target) where target = sum/2. With n=200 and max sum = 200*100 = 20000, target=10000 \u2192 2 million ops, fine."
+        }
+      ],
+      "think_out_loud": "Subset-sum reduction. Compute total; if odd, False. target = total // 2. dp = [False] * (target+1); dp[0] = True. For each num: for j from target down to num: dp[j] = dp[j] or dp[j-num]. Return dp[target]. O(n*target) time, O(target) space.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "Can't split \u2192 False."
+        },
+        {
+          "category": "Two equal elements",
+          "details": "True. Each in its own subset."
+        },
+        {
+          "category": "Odd total",
+          "details": "False immediately."
+        },
+        {
+          "category": "All zeros (out of spec)",
+          "details": "True if length > 0. Spec says nums >= 1."
+        },
+        {
+          "category": "Large target",
+          "details": "Pseudo-polynomial. With nums up to 100 and length 200, target up to 10000 \u2192 fine."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting the odd-total early return.",
+        "Iterating j left-to-right \u2014 turns into unbounded knapsack.",
+        "Trying greedy or exhaustive search \u2014 exponential.",
+        "Off-by-one in range (j from target downto num-1 vs num).",
+        "Treating as a 2D DP unnecessarily \u2014 1D rolling works."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "0/1 knapsack subset-sum variant. Tests the DP iteration direction trick.",
+      "introduction_context": "Common at Amazon, Microsoft. The 'iterate right-to-left' detail is the discriminator.",
+      "really_testing": [
+        "Reduction to subset-sum.",
+        "0/1 knapsack DP.",
+        "Iteration direction (right-to-left to avoid reuse).",
+        "Odd-total early exit."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Reduces to subset-sum and codes 1D DP in 6-8 min. Explains direction."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Codes 2D DP. Refactors to 1D when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy or exhaustive; doesn't see DP."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't articulate any algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'partition into two equal-sum subsets'.",
+        "Reduction: 'subset summing to total/2'.",
+        "Pitch 1D knapsack DP.",
+        "Code: total = sum(nums). if total % 2: return False. target = total // 2. dp = [False] * (target + 1); dp[0] = True. for num in nums: for j in range(target, num - 1, -1): dp[j] = dp[j] or dp[j - num]. return dp[target].",
+        "Walk [1,5,11,5]: total=22, target=11. After processing nums: dp[11] = True (1+5+5). \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Last Stone Weight II (similar reduction).",
+      "dont_do": [
+        "Don't iterate j left-to-right (becomes unbounded).",
+        "Don't forget odd-total exit.",
+        "Don't 2D when 1D suffices.",
+        "Don't brute force."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "1D Knapsack DP",
+        "time": "O(n * target)",
+        "space": "O(target)",
+        "code": "def canPartition(nums):\n    total = sum(nums)\n    if total % 2 != 0:\n        return False\n    target = total // 2\n    \n    dp = [False] * (target + 1)\n    dp[0] = True\n    for num in nums:\n        # Iterate right-to-left so we use each num at most once\n        for j in range(target, num - 1, -1):\n            dp[j] = dp[j] or dp[j - num]\n    return dp[target]",
+        "explanation": "Reduces to: is there a subset summing to total/2? If total is odd, impossible. Otherwise, classic 0/1 knapsack subset-sum DP. dp[j] = True iff some subset of seen elements sums to j. For each num, update dp from RIGHT to LEFT (so we don't reuse this num within the same iteration). O(n * target) time, O(target) space."
+      }
+    ],
+    "related_problem_ids": [
+      "coin-change",
+      "house-robber",
+      "longest-increasing-subsequence"
+    ]
   }
 ]
