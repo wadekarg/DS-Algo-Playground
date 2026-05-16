@@ -14946,5 +14946,869 @@
       "course-schedule",
       "pacific-atlantic-water-flow"
     ]
+  },
+  {
+    "id": "course-schedule",
+    "title": "Course Schedule",
+    "leetcode_url": "https://leetcode.com/problems/course-schedule/",
+    "leetcode_id": 207,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs",
+      "topological-sort"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "There are numCourses courses labeled 0 to numCourses - 1. Given prerequisites[i] = [a, b] meaning you must take b before a, return True if you can finish all courses (no cycles in the prerequisite graph).",
+    "constraints": [
+      "1 <= numCourses <= 2000",
+      "0 <= prerequisites.length <= 5000",
+      "prerequisites[i].length == 2",
+      "0 <= ai, bi < numCourses",
+      "All pairs (ai, bi) are unique."
+    ],
+    "examples": [
+      {
+        "input": "numCourses = 2, prerequisites = [[1,0]]",
+        "output": "True",
+        "explanation": "Take 0, then 1. Possible."
+      },
+      {
+        "input": "numCourses = 2, prerequisites = [[1,0],[0,1]]",
+        "output": "False",
+        "explanation": "1 requires 0, 0 requires 1 \u2014 cycle."
+      }
+    ],
+    "function_name": "canFinish",
+    "function_signature": "def canFinish(numCourses, prerequisites):",
+    "starter_code": "def canFinish(numCourses, prerequisites):\n    # Return True if all courses can be completed (no cycles in the prereq graph).\n    pass",
+    "test_cases": [
+      {
+        "label": "linear chain",
+        "args": [
+          2,
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "simple cycle",
+        "args": [
+          2,
+          [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "no prereqs",
+        "args": [
+          3,
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "DAG",
+        "args": [
+          4,
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              2
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "self-loop cycle",
+        "args": [
+          1,
+          [
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "longer cycle",
+        "args": [
+          3,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Cycle detection in a directed graph. Two standard approaches: (1) DFS with 3-color (white/gray/black) \u2014 finding gray during DFS means cycle. (2) Kahn's algorithm (BFS): peel off zero-in-degree nodes; if you can't peel everything, there's a cycle. Both O(V + E).",
+      "clarifying_questions": [
+        {
+          "question": "Edge direction: [a, b] means 'b is prereq of a'?",
+          "why": "Yes per spec. So the edge in the graph goes b \u2192 a (b must come first). Confirm orientation."
+        },
+        {
+          "question": "Self-loops or duplicate edges?",
+          "why": "Per spec, no duplicate pairs. But a self-loop [a, a] is technically distinct from a duplicate \u2014 algorithm catches it as a cycle."
+        },
+        {
+          "question": "Can numCourses be 1 with no prereqs?",
+          "why": "Yes \u2014 trivially True. Empty prereqs always returns True."
+        },
+        {
+          "question": "DFS or BFS approach?",
+          "why": "Both work. DFS 3-color is shorter. Kahn's BFS produces a topological order as a bonus."
+        },
+        {
+          "question": "What about course scheduling (LC 210) follow-up?",
+          "why": "Returns the actual order, not just feasibility. Kahn's algorithm extends naturally."
+        }
+      ],
+      "think_out_loud": "Build adjacency list from prerequisites. Use DFS with 3 states: WHITE = unvisited, GRAY = in current path, BLACK = fully explored. If DFS hits a GRAY node, cycle exists \u2192 return False. BLACK nodes can be skipped (already fully checked, no cycle through them). After all DFS calls, return True.",
+      "edge_cases": [
+        {
+          "category": "Empty prereqs",
+          "details": "No edges. Trivially True."
+        },
+        {
+          "category": "Self-loop",
+          "details": "[a, a] \u2192 cycle of length 1. DFS catches: WHITE \u2192 GRAY \u2192 sees GRAY \u2192 False."
+        },
+        {
+          "category": "Disconnected components",
+          "details": "Loop over all nodes, run DFS from each unvisited. Catches cycles in any component."
+        },
+        {
+          "category": "Long linear chain",
+          "details": "No cycle. DFS unrolls; everything goes BLACK."
+        },
+        {
+          "category": "Multi-cycle",
+          "details": "Any single cycle is enough to return False. Don't keep searching once found."
+        }
+      ],
+      "common_mistakes": [
+        "Confusing edge direction in [a, b]. Read spec carefully.",
+        "Treating BLACK nodes as visited equivalent to GRAY \u2014 leads to false-positive cycles. Use 3 states, not 2.",
+        "Forgetting to short-circuit on cycle detection.",
+        "Building wrong adjacency list (forward vs reverse).",
+        "Not handling disconnected components \u2014 only DFS from node 0."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Cycle detection / topological sort classic. Foundation for build systems, task scheduling, dependency resolution.",
+      "introduction_context": "Onsite at Amazon, Meta, Google, Microsoft. The 3-color DFS or Kahn's BFS are the two canonical solutions; knowing either is fine.",
+      "really_testing": [
+        "Recognizing 'can topological order be built?' = 'is the graph acyclic?'.",
+        "DFS 3-color OR Kahn's algorithm.",
+        "Disconnected component handling.",
+        "Edge direction from problem statement."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pitches DFS 3-color or Kahn's in 2 min. Codes in 8-10 min. Walks through cycle example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly; might need to switch from 2-color to 3-color when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong edge direction or 2-state false positives."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate cycle detection. Tries to enumerate paths."
+        }
+      ],
+      "playbook": [
+        "Restate: 'finish all courses iff no cycle in prereq graph'.",
+        "Build graph: 'edge from prereq to course'.",
+        "DFS 3-color: WHITE/GRAY/BLACK arrays. For each WHITE node: dfs(node). dfs marks GRAY, recurses on neighbors; if neighbor is GRAY \u2192 cycle. Mark BLACK on return.",
+        "Code outline. Adjacency list from prereqs. state = [0]*n. def dfs(u): if state[u] == 1: return False (cycle). if state[u] == 2: return True. state[u] = 1. for v in graph[u]: if not dfs(v): return False. state[u] = 2. return True. for i in range(n): if not dfs(i): return False. return True.",
+        "Walk simple cycle [[1,0],[0,1]]: graph[0]=[1], graph[1]=[0]. DFS(0): state[0]=1; DFS(1): state[1]=1; DFS(0): state[0]==1 \u2192 cycle. Return False. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Course Schedule II (return order \u2014 Kahn's gives it for free).",
+      "dont_do": [
+        "Don't use 2-color (false cycles).",
+        "Don't skip the multi-component loop.",
+        "Don't enumerate all paths \u2014 exponential.",
+        "Don't get edge direction wrong."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with 3-Color (WHITE/GRAY/BLACK)",
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "code": "def canFinish(numCourses, prerequisites):\n    graph = [[] for _ in range(numCourses)]\n    for a, b in prerequisites:\n        graph[b].append(a)  # edge: b must come before a\n    \n    WHITE, GRAY, BLACK = 0, 1, 2\n    state = [WHITE] * numCourses\n    \n    def dfs(u):\n        if state[u] == GRAY:\n            return False  # cycle detected\n        if state[u] == BLACK:\n            return True  # already proven safe\n        state[u] = GRAY\n        for v in graph[u]:\n            if not dfs(v):\n                return False\n        state[u] = BLACK\n        return True\n    \n    for i in range(numCourses):\n        if not dfs(i):\n            return False\n    return True",
+        "explanation": "Standard cycle detection. GRAY means 'currently exploring this node's subtree' \u2014 if we encounter another GRAY, there's a back edge \u2192 cycle. BLACK means 'fully explored, no cycles found through here' \u2014 skip. The outer loop handles disconnected components. O(V + E)."
+      },
+      {
+        "name": "Kahn's Algorithm (BFS by in-degree)",
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "code": "from collections import deque\n\ndef canFinish(numCourses, prerequisites):\n    graph = [[] for _ in range(numCourses)]\n    in_degree = [0] * numCourses\n    for a, b in prerequisites:\n        graph[b].append(a)\n        in_degree[a] += 1\n    \n    queue = deque(i for i in range(numCourses) if in_degree[i] == 0)\n    processed = 0\n    \n    while queue:\n        u = queue.popleft()\n        processed += 1\n        for v in graph[u]:\n            in_degree[v] -= 1\n            if in_degree[v] == 0:\n                queue.append(v)\n    \n    return processed == numCourses",
+        "explanation": "Kahn's algorithm. Compute in-degrees; start with all zero-in-degree nodes. Repeatedly remove a node, decrement neighbors' in-degrees; new zeros enter the queue. If we process all numCourses nodes, no cycle. If some remain unprocessed, there's a cycle blocking them. Bonus: this produces a topological order if you record the dequeue order."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "clone-graph",
+      "pacific-atlantic-water-flow"
+    ]
+  },
+  {
+    "id": "pacific-atlantic-water-flow",
+    "title": "Pacific Atlantic Water Flow",
+    "leetcode_url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+    "leetcode_id": 417,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs",
+      "grid"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n matrix heights where heights[r][c] is the elevation, return all cells where water can flow to both the Pacific (top + left edges) and Atlantic (bottom + right edges) oceans. Water flows from a cell to neighbors with equal or lower height.",
+    "constraints": [
+      "m == heights.length, n == heights[r].length",
+      "1 <= m, n <= 200",
+      "0 <= heights[r][c] <= 10^5"
+    ],
+    "examples": [
+      {
+        "input": "heights = [[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]]",
+        "output": "[[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]",
+        "explanation": "Each listed cell can drain to both oceans."
+      },
+      {
+        "input": "heights = [[1]]",
+        "output": "[[0,0]]",
+        "explanation": "Single cell touches both oceans trivially."
+      }
+    ],
+    "function_name": "pacificAtlantic",
+    "function_signature": "def pacificAtlantic(heights):",
+    "starter_code": "def pacificAtlantic(heights):\n    # Return list of [r,c] cells from which water reaches both Pacific and Atlantic oceans.\n    # Hint: reverse the problem \u2014 start from ocean edges and walk UPHILL.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          [
+            [
+              1,
+              2,
+              2,
+              3,
+              5
+            ],
+            [
+              3,
+              2,
+              3,
+              4,
+              4
+            ],
+            [
+              2,
+              4,
+              5,
+              3,
+              1
+            ],
+            [
+              6,
+              7,
+              1,
+              4,
+              5
+            ],
+            [
+              5,
+              1,
+              1,
+              2,
+              4
+            ]
+          ]
+        ],
+        "expected": "[[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]]"
+      },
+      {
+        "label": "single cell",
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "[[0, 0]]"
+      },
+      {
+        "label": "all equal heights",
+        "args": [
+          [
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        ],
+        "expected": "[[0, 0], [0, 1], [1, 0], [1, 1]]"
+      },
+      {
+        "label": "2x2 mixed",
+        "args": [
+          [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "[[0, 0], [0, 1], [1, 0], [1, 1]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Forward simulation (from each cell, can we reach both oceans?) is wasteful. Reverse: from each ocean's edge, walk UPHILL (\u2265 height) and mark reachable cells. The intersection of Pacific-reachable and Atlantic-reachable sets is the answer.",
+      "clarifying_questions": [
+        {
+          "question": "Water flows to equal or LOWER, right?",
+          "why": "Per spec, equal or lower (>=). Critical \u2014 affects the inequality."
+        },
+        {
+          "question": "Pacific is top + left edges; Atlantic is bottom + right?",
+          "why": "Yes per spec. Both diagonals are edges of one ocean (corner cells touch both)."
+        },
+        {
+          "question": "Are corner cells always in the answer?",
+          "why": "Yes \u2014 they touch both oceans directly. (0,0) is Pacific; (0,0) is also... well, (0,0) is top-left \u2192 Pacific. But (m-1, 0) is bottom-left \u2192 both Pacific (left) and Atlantic (bottom)."
+        },
+        {
+          "question": "Could the grid be 1xN or Nx1?",
+          "why": "Yes, per constraints. Algorithm handles it \u2014 every cell on a 1x1 grid touches both oceans."
+        },
+        {
+          "question": "Why reverse the problem?",
+          "why": "Going forward: m*n cells \u00d7 DFS each = O((mn)\u00b2). Reverse: 2 BFS/DFS from O(m+n) starting points, total O(mn). Much faster."
+        }
+      ],
+      "think_out_loud": "Reverse simulation. Two DFS/BFS: from Pacific edges walking UPHILL (visit any neighbor with height >= current); from Atlantic edges similarly. The cells reachable in BOTH walks are the answer. Two visited sets, intersect at the end.",
+      "edge_cases": [
+        {
+          "category": "Single cell",
+          "details": "Touches both oceans \u2192 answer is [[0,0]]."
+        },
+        {
+          "category": "1xN or Nx1 grid",
+          "details": "Every cell touches at least one ocean from each edge \u2014 algorithm handles."
+        },
+        {
+          "category": "All equal heights",
+          "details": "All cells reachable from both oceans (since we use >= for uphill). Answer is every cell."
+        },
+        {
+          "category": "Sharp peaks",
+          "details": "Cells at peak can drain in any direction if they touch an ocean; reverse DFS reaches them from both."
+        },
+        {
+          "category": "Disconnected high spots",
+          "details": "Only reachable if uphill chain to an ocean exists."
+        }
+      ],
+      "common_mistakes": [
+        "Forward simulation per cell \u2014 O((mn)\u00b2), TLE.",
+        "Using > instead of >= for uphill \u2014 misses equal-height plateaus.",
+        "Starting only from corners, not full edges \u2014 misses interior ocean access.",
+        "Not separating Pacific and Atlantic reachable sets \u2014 confusion.",
+        "Forgetting to handle the two oceans' edges separately."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "BFS/DFS variant with the reverse-the-problem insight. Tests both the algorithm and the meta-observation.",
+      "introduction_context": "Common at Amazon, Google. The 'why reverse?' question separates strong from average \u2014 even good candidates initially try forward.",
+      "really_testing": [
+        "Recognizing forward simulation is wasteful.",
+        "Reversing to walk uphill from oceans.",
+        "Two-set intersection.",
+        "Grid BFS/DFS with multiple starting points."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Mentions reverse approach within 2 min. Codes both BFS/DFS in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Forward first, refactors to reverse when prompted. Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forward only, can't optimize. Or uses > instead of >=."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'cells from which water reaches BOTH oceans'.",
+        "Insight: 'reverse \u2014 from ocean edges, walk uphill'.",
+        "Pacific starting points: row 0 + column 0.",
+        "Atlantic starting points: row m-1 + column n-1.",
+        "DFS from each starting cell, walking to neighbors with >= height; record visited.",
+        "Return [r, c] for cells in both visited sets."
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: 'what if the grid has wormholes (teleporting)' \u2014 adapt with extra edges.",
+      "dont_do": [
+        "Don't forward simulate per cell.",
+        "Don't use > for uphill.",
+        "Don't forget to include all edge cells as starts.",
+        "Don't combine the two visited sets into one."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Reverse DFS from Ocean Edges",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def pacificAtlantic(heights):\n    if not heights or not heights[0]:\n        return []\n    m, n = len(heights), len(heights[0])\n    pacific = set()\n    atlantic = set()\n    \n    def dfs(r, c, visited):\n        visited.add((r, c))\n        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in visited and heights[nr][nc] >= heights[r][c]:\n                dfs(nr, nc, visited)\n    \n    # Pacific: top row + left column\n    for c in range(n):\n        dfs(0, c, pacific)\n    for r in range(m):\n        dfs(r, 0, pacific)\n    # Atlantic: bottom row + right column\n    for c in range(n):\n        dfs(m - 1, c, atlantic)\n    for r in range(m):\n        dfs(r, n - 1, atlantic)\n    \n    return [[r, c] for r in range(m) for c in range(n) if (r, c) in pacific and (r, c) in atlantic]",
+        "explanation": "Reverse simulation. Two DFS walks: one from every Pacific-edge cell (top row + left column), one from every Atlantic-edge cell (bottom row + right column). At each step, walk to neighbors with height >= current (uphill in reverse). Mark visited. Cells in both sets can drain to both oceans \u2192 answer. Each cell visited O(1) times per DFS \u2192 O(m * n) total."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "course-schedule",
+      "clone-graph"
+    ]
+  },
+  {
+    "id": "max-area-of-island",
+    "title": "Max Area of Island",
+    "leetcode_url": "https://leetcode.com/problems/max-area-of-island/",
+    "leetcode_id": 695,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs",
+      "grid"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n binary matrix grid, an island is a group of 1's (representing land) connected 4-directionally. The area of an island is the number of cells with value 1. Return the maximum area of an island. If there is no island, return 0.",
+    "constraints": [
+      "m == grid.length, n == grid[i].length",
+      "1 <= m, n <= 50",
+      "grid[i][j] is 0 or 1."
+    ],
+    "examples": [
+      {
+        "input": "grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]",
+        "output": "6",
+        "explanation": "Largest island has 6 cells."
+      },
+      {
+        "input": "grid = [[0,0,0,0,0,0,0,0]]",
+        "output": "0",
+        "explanation": "No islands."
+      }
+    ],
+    "function_name": "maxAreaOfIsland",
+    "function_signature": "def maxAreaOfIsland(grid):",
+    "starter_code": "def maxAreaOfIsland(grid):\n    # Return the area of the largest 4-connected component of 1s. 0 if none.\n    pass",
+    "test_cases": [
+      {
+        "label": "complex grid",
+        "args": [
+          [
+            [
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "no islands",
+        "args": [
+          [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single cell island",
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all land",
+        "args": [
+          [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "two equal islands",
+        "args": [
+          [
+            [
+              1,
+              1,
+              0,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Same skeleton as Number of Islands, but instead of just counting islands we ALSO count the area of each. For every '1' cell that isn't visited, start DFS and count cells. Track max area. Mutate to 0 to mark visited (or use a set).",
+      "clarifying_questions": [
+        {
+          "question": "4-directional only?",
+          "why": "Yes per spec. Diagonal '1's are separate islands."
+        },
+        {
+          "question": "Empty grid possible?",
+          "why": "Per constraints, m, n >= 1. Defensive check is cheap."
+        },
+        {
+          "question": "Should I mutate input?",
+          "why": "Usually fine. Confirm with interviewer. Otherwise use a visited set."
+        },
+        {
+          "question": "Return 0 if no islands?",
+          "why": "Yes per spec. Initial max_area = 0 handles this naturally."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "Recursive is shorter. Iterative BFS safer for deep grids."
+        }
+      ],
+      "think_out_loud": "Standard flood-fill with a count. DFS returns the size of the connected component. For each unvisited '1', call DFS and update max. Mutate visited cells to 0 to avoid revisits.",
+      "edge_cases": [
+        {
+          "category": "No islands",
+          "details": "Return 0. max_area stays at initial value."
+        },
+        {
+          "category": "Single cell island",
+          "details": "DFS returns 1. max_area = 1."
+        },
+        {
+          "category": "Single big island",
+          "details": "DFS reaches all cells once. Returns total count."
+        },
+        {
+          "category": "Multiple equal-area islands",
+          "details": "Algorithm tracks max; ties are fine."
+        },
+        {
+          "category": "Diagonal '1's",
+          "details": "Separate islands due to 4-directional rule."
+        }
+      ],
+      "common_mistakes": [
+        "Not mutating (or marking visited) \u2014 infinite recursion.",
+        "DFS returning bool instead of int \u2014 can't get area.",
+        "Forgetting to update max_area for each DFS call.",
+        "Off-by-one on bounds.",
+        "8-directional traversal."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Variant of Number of Islands. Tests adapting a familiar pattern to slightly different output.",
+      "introduction_context": "Common at Amazon, Microsoft. Often used as a Number of Islands follow-up \u2014 'now return the largest area'.",
+      "really_testing": [
+        "Adapting DFS to return cell count.",
+        "Tracking max across multiple DFS calls.",
+        "Visited marking (mutate or set).",
+        "Edge cases (empty, single cell)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes DFS returning area in 5-7 min. Handles edges."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct with one self-fix."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Confused between count and area. Or returns wrong thing from DFS."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive flood-fill structure."
+        }
+      ],
+      "playbook": [
+        "Restate: 'largest 4-connected component of 1s'.",
+        "Pitch DFS returning count.",
+        "Code: def dfs(r, c): if bounds_check_fail or grid[r][c] != 1: return 0. grid[r][c] = 0. return 1 + dfs(r+1,c) + dfs(r-1,c) + dfs(r,c+1) + dfs(r,c-1). max_area = 0. for r,c: if grid[r][c] == 1: max_area = max(max_area, dfs(r, c)). return max_area.",
+        "Walk small example: each DFS returns area; track max. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-8 min. Follow-up: 'island perimeter' (LC 463) \u2014 count edges between land and water.",
+      "dont_do": [
+        "Don't forget visited marking.",
+        "Don't return bool from DFS \u2014 need int.",
+        "Don't 8-directional.",
+        "Don't reset max_area mid-loop."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS Flood-Fill Returning Area",
+        "time": "O(m * n)",
+        "space": "O(m * n) recursion worst case",
+        "code": "def maxAreaOfIsland(grid):\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    \n    def dfs(r, c):\n        if r < 0 or r >= m or c < 0 or c >= n or grid[r][c] != 1:\n            return 0\n        grid[r][c] = 0  # mark visited by sinking\n        return 1 + dfs(r + 1, c) + dfs(r - 1, c) + dfs(r, c + 1) + dfs(r, c - 1)\n    \n    max_area = 0\n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == 1:\n                max_area = max(max_area, dfs(r, c))\n    return max_area",
+        "explanation": "DFS variant of flood-fill that returns the count of cells visited. For each unvisited '1' cell, run DFS \u2014 its return value is the area of that island. Track the maximum. Mutate cells to 0 to mark visited and avoid double-counting. O(m * n) \u2014 each cell visited once."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "course-schedule",
+      "pacific-atlantic-water-flow"
+    ]
   }
 ]
