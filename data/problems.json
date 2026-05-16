@@ -24697,5 +24697,558 @@
       "gas-station",
       "merge-intervals"
     ]
+  },
+  {
+    "id": "merge-triplets-to-form-target-triplet",
+    "title": "Merge Triplets to Form Target Triplet",
+    "leetcode_url": "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/",
+    "leetcode_id": 1899,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "array"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given triplets and a target triplet, you may take any pair of triplets [a,b,c] and [d,e,f] and update them both to [max(a,d), max(b,e), max(c,f)]. Return True if you can reach the target.",
+    "constraints": [
+      "1 <= triplets.length <= 10^5",
+      "triplets[i].length == target.length == 3",
+      "1 <= triplets[i][j], target[j] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "triplets = [[2,5,3],[1,8,4],[1,7,5]], target = [2,7,5]",
+        "output": "True",
+        "explanation": "Merge [2,5,3] and [1,7,5] \u2192 [2,7,5]."
+      }
+    ],
+    "function_name": "mergeTriplets",
+    "function_signature": "def mergeTriplets(triplets, target):",
+    "starter_code": "def mergeTriplets(triplets, target):\n    # Filter to triplets where every component is <= target's corresponding.\n    # Check that for each of 3 positions, at least one kept triplet matches target.\n    pass",
+    "test_cases": [
+      {
+        "label": "reachable",
+        "args": [
+          [
+            [
+              2,
+              5,
+              3
+            ],
+            [
+              1,
+              8,
+              4
+            ],
+            [
+              1,
+              7,
+              5
+            ]
+          ],
+          [
+            2,
+            7,
+            5
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "unreachable comp too big",
+        "args": [
+          [
+            [
+              3,
+              4,
+              5
+            ],
+            [
+              4,
+              5,
+              6
+            ]
+          ],
+          [
+            3,
+            2,
+            5
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "exact triplet",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single component missing",
+        "args": [
+          [
+            [
+              1,
+              1,
+              1
+            ]
+          ],
+          [
+            2,
+            1,
+            1
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two key insights: (1) any triplet with a component > target[i] is unusable \u2014 it would push the merged result above target. (2) Among USABLE triplets, we just need to find one matching target[0], one matching target[1], one matching target[2] (could be the same triplet).",
+      "clarifying_questions": [
+        {
+          "question": "Multiple merges OK?",
+          "why": "Yes \u2014 any number."
+        },
+        {
+          "question": "Order matters?",
+          "why": "No \u2014 merging is commutative on max."
+        },
+        {
+          "question": "Can one triplet satisfy all three positions?",
+          "why": "Yes \u2014 that's the simplest case."
+        }
+      ],
+      "think_out_loud": "Filter useful triplets (none > target). Among them, accumulate which positions matched. If all three positions reached, True.",
+      "edge_cases": [
+        {
+          "category": "Exact triplet present",
+          "details": "Trivially True."
+        },
+        {
+          "category": "All components > target somewhere",
+          "details": "Some position unreachable \u2192 False."
+        },
+        {
+          "category": "Need multiple triplets",
+          "details": "Algorithm finds them by tracking positions."
+        }
+      ],
+      "common_mistakes": [
+        "Trying to enumerate merges.",
+        "Not filtering triplets > target.",
+        "Confusing 'all 3' vs 'at least 3'."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy filter + track.",
+      "introduction_context": "Amazon, Microsoft.",
+      "really_testing": [
+        "Identifying useful triplets.",
+        "Positional tracking."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Filter+track in 6 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct after one bug fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses filtering."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "good = set(). for t in triplets: if all(t[i] <= target[i] for i in range(3)): for i in range(3): if t[i] == target[i]: good.add(i). return len(good) == 3."
+      ],
+      "playbook_meta": "Total time: 6-10 min.",
+      "dont_do": [
+        "Don't enumerate merges.",
+        "Don't keep triplets with components > target."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Filter + Position Tracking",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def mergeTriplets(triplets, target):\n    good = set()\n    for t in triplets:\n        if t[0] > target[0] or t[1] > target[1] or t[2] > target[2]:\n            continue\n        for i in range(3):\n            if t[i] == target[i]:\n                good.add(i)\n    return len(good) == 3",
+        "explanation": "Skip any triplet that exceeds target in any component (would poison the max merge). For usable triplets, track which target positions they match. If all 3 positions covered, the target is reachable."
+      }
+    ],
+    "related_problem_ids": [
+      "jump-game",
+      "gas-station"
+    ]
+  },
+  {
+    "id": "partition-labels",
+    "title": "Partition Labels",
+    "leetcode_url": "https://leetcode.com/problems/partition-labels/",
+    "leetcode_id": 763,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "two-pointers",
+      "string"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given a string s. Partition s into as many parts as possible so that each letter appears in at most one part. Return the lengths of each part.",
+    "constraints": [
+      "1 <= s.length <= 500",
+      "s consists of lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"ababcbacadefegdehijhklij\"",
+        "output": "[9,7,8]",
+        "explanation": "Three parts."
+      }
+    ],
+    "function_name": "partitionLabels",
+    "function_signature": "def partitionLabels(s):",
+    "starter_code": "def partitionLabels(s):\n    # Find last occurrence of each letter. Greedy: extend current partition's end until i reaches it.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          "ababcbacadefegdehijhklij"
+        ],
+        "expected": "[9, 7, 8]"
+      },
+      {
+        "label": "single char",
+        "args": [
+          "a"
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "all distinct",
+        "args": [
+          "abc"
+        ],
+        "expected": "[1, 1, 1]"
+      },
+      {
+        "label": "all same",
+        "args": [
+          "aaa"
+        ],
+        "expected": "[3]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Precompute the LAST index of each character. Walk s; maintain current partition's [start, end]. For each i, extend end = max(end, last[s[i]]). When i == end, record the partition length and reset.",
+      "clarifying_questions": [
+        {
+          "question": "Each letter in only one part?",
+          "why": "Yes per spec \u2014 non-overlapping intervals of occurrences."
+        },
+        {
+          "question": "Maximize part count?",
+          "why": "Yes \u2014 as many parts as possible."
+        },
+        {
+          "question": "Output type?",
+          "why": "List of part lengths."
+        }
+      ],
+      "think_out_loud": "For partition starting at start, must include every occurrence of every letter that appears in [start, ...]. So end = max last[s[i]] for i in current partition. When i reaches end, close it.",
+      "edge_cases": [
+        {
+          "category": "Single char",
+          "details": "One partition of size 1."
+        },
+        {
+          "category": "All distinct",
+          "details": "n partitions of size 1."
+        },
+        {
+          "category": "All same",
+          "details": "1 partition of size n."
+        }
+      ],
+      "common_mistakes": [
+        "Not pre-computing last positions.",
+        "Forgetting to reset start.",
+        "Off-by-one on partition length."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy interval-merge classic.",
+      "introduction_context": "Amazon, Meta.",
+      "really_testing": [
+        "Last-occurrence precompute.",
+        "Greedy extension."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Can't track partition end."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "last = {ch: i for i, ch in enumerate(s)}. start, end = 0, 0. result = []. for i, ch in enumerate(s): end = max(end, last[ch]). if i == end: result.append(end-start+1); start = i+1. return result."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't iterate looking forward.",
+        "Don't forget to update start."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Last-Occurrence + Greedy",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def partitionLabels(s):\n    last = {ch: i for i, ch in enumerate(s)}\n    start = end = 0\n    result = []\n    for i, ch in enumerate(s):\n        end = max(end, last[ch])\n        if i == end:\n            result.append(end - start + 1)\n            start = i + 1\n    return result",
+        "explanation": "Precompute the last index of each character. As we scan, the current partition must extend to at least the last occurrence of every character we've seen. When i reaches end, the partition is complete."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-intervals",
+      "jump-game",
+      "gas-station"
+    ]
+  },
+  {
+    "id": "valid-parenthesis-string",
+    "title": "Valid Parenthesis String",
+    "leetcode_url": "https://leetcode.com/problems/valid-parenthesis-string/",
+    "leetcode_id": 678,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "string",
+      "stack"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a string s containing '(', ')', and '*', return True if s is valid. '*' can be treated as '(', ')', or empty.",
+    "constraints": [
+      "1 <= s.length <= 100",
+      "s[i] is '(', ')', or '*'."
+    ],
+    "examples": [
+      {
+        "input": "s = \"()\"",
+        "output": "True",
+        "explanation": "Trivially balanced."
+      },
+      {
+        "input": "s = \"(*)\"",
+        "output": "True",
+        "explanation": "* as empty."
+      },
+      {
+        "input": "s = \"(*))\"",
+        "output": "True",
+        "explanation": "* as '('."
+      }
+    ],
+    "function_name": "checkValidString",
+    "function_signature": "def checkValidString(s):",
+    "starter_code": "def checkValidString(s):\n    # Track min and max open-paren count. * gives range; balance must stay >= 0; max must reach 0.\n    pass",
+    "test_cases": [
+      {
+        "label": "()",
+        "args": [
+          "()"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "(*)",
+        "args": [
+          "(*)"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "(*))",
+        "args": [
+          "(*))"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "all stars",
+        "args": [
+          "****"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "imbalanced",
+        "args": [
+          "((*"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "complex true",
+        "args": [
+          "(((***)))"
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Track [min_open, max_open]: the range of possible open-paren counts. '(' increments both. ')' decrements both. '*' decrements min, increments max. If max < 0, impossible. If min < 0, clamp to 0 (any prefix making min < 0 was unbalanced \u2014 but we treat * as ')' in those). At end, min == 0 means we can balance.",
+      "clarifying_questions": [
+        {
+          "question": "* flexible \u2014 any of 3?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Order matters?",
+          "why": "Yes \u2014 must be balanced at every prefix."
+        },
+        {
+          "question": "Stack approach?",
+          "why": "Works but more complex. Greedy two-counter is cleaner."
+        }
+      ],
+      "think_out_loud": "Two counters track the range of possible open-counts under any * interpretation. Greedy: ensure max never goes negative; clamp min to 0 (handle unbalanceable but possibly-OK prefixes). At end, min == 0 must hold.",
+      "edge_cases": [
+        {
+          "category": "All stars",
+          "details": "True \u2014 pair them as () or empty."
+        },
+        {
+          "category": "More ) than ( without *",
+          "details": "max goes negative early."
+        },
+        {
+          "category": "Single (",
+          "details": "False."
+        }
+      ],
+      "common_mistakes": [
+        "Only counting *s as ()' shifts.",
+        "Forgetting to clamp min.",
+        "Not checking max >= 0 each step."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy range-tracking.",
+      "introduction_context": "Common at Amazon, Bloomberg.",
+      "really_testing": [
+        "Range tracking for ambiguous chars.",
+        "Clamping logic."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Range trick in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DP solution; correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Single counter; can't handle *."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "min_open, max_open = 0, 0.",
+        "for c in s: if c == '(': min_open+=1; max_open+=1. elif c == ')': min_open-=1; max_open-=1. else: min_open-=1; max_open+=1.",
+        "if max_open < 0: return False. min_open = max(min_open, 0).",
+        "return min_open == 0."
+      ],
+      "playbook_meta": "Total time: 6-10 min.",
+      "dont_do": [
+        "Don't single-counter.",
+        "Don't forget to clamp min."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min/Max Open Counters",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def checkValidString(s):\n    min_open = max_open = 0\n    for c in s:\n        if c == '(':\n            min_open += 1\n            max_open += 1\n        elif c == ')':\n            min_open -= 1\n            max_open -= 1\n        else:  # '*'\n            min_open -= 1  # treat as ')'\n            max_open += 1  # treat as '('\n        if max_open < 0:\n            return False\n        if min_open < 0:\n            min_open = 0  # invalid '-' interpretations clamped\n    return min_open == 0",
+        "explanation": "Range tracking. min_open and max_open bound the possible 'currently open' count under all * interpretations. If max < 0, even the most optimistic interpretation has too many ')'. Clamp min to 0 (illegal prefixes pruned). At end, min must be 0 (we can interpret to balance)."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "generate-parentheses",
+      "jump-game"
+    ]
   }
 ]
