@@ -11970,5 +11970,735 @@
       "binary-tree-maximum-path-sum",
       "diameter-of-binary-tree"
     ]
+  },
+  {
+    "id": "kth-smallest-element-in-a-bst",
+    "title": "Kth Smallest Element in a BST",
+    "leetcode_url": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
+    "leetcode_id": 230,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "bst",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a BST and an integer k, return the kth smallest value (1-indexed) among all node values.",
+    "constraints": [
+      "Number of nodes is n.",
+      "1 <= k <= n <= 10^4",
+      "0 <= Node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "values = [3,1,4,None,2], k = 1",
+        "output": "1",
+        "explanation": "In-order traversal: 1, 2, 3, 4. 1st smallest is 1."
+      },
+      {
+        "input": "values = [5,3,6,2,4,None,None,1], k = 3",
+        "output": "3",
+        "explanation": "In-order: 1, 2, 3, 4, 5, 6. 3rd smallest is 3."
+      }
+    ],
+    "function_name": "kthSmallest",
+    "function_signature": "def kthSmallest(values, k):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef kthSmallest(values, k):\n    # Pretend the signature is kthSmallest(root: TreeNode, k: int) -> int.\n    root = build_tree(values)\n    \n    # Your code: in-order traversal of a BST visits values in sorted order.\n    # Stop at the kth visit and return that value.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "k=1",
+        "args": [
+          [
+            3,
+            1,
+            4,
+            null,
+            2
+          ],
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "k=3",
+        "args": [
+          [
+            5,
+            3,
+            6,
+            2,
+            4,
+            null,
+            null,
+            1
+          ],
+          3
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "k=last",
+        "args": [
+          [
+            5,
+            3,
+            6,
+            2,
+            4,
+            null,
+            null,
+            1
+          ],
+          6
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "single node k=1",
+        "args": [
+          [
+            42
+          ],
+          1
+        ],
+        "expected": "42"
+      },
+      {
+        "label": "balanced [4,2,6,1,3,5,7] k=4",
+        "args": [
+          [
+            4,
+            2,
+            6,
+            1,
+            3,
+            5,
+            7
+          ],
+          4
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "skewed left",
+        "args": [
+          [
+            3,
+            2,
+            null,
+            1
+          ],
+          1
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Key insight: in-order traversal of a BST visits node values in sorted ascending order. So do an in-order walk and stop at the kth value. Iterative version uses a stack and short-circuits at k \u2014 O(h + k) time, O(h) space.",
+      "clarifying_questions": [
+        {
+          "question": "Is k 1-indexed or 0-indexed?",
+          "why": "1-indexed per spec (k=1 means smallest, k=n means largest). Critical detail."
+        },
+        {
+          "question": "Tree always valid BST?",
+          "why": "Yes per spec. Don't have to handle bad input."
+        },
+        {
+          "question": "Can the tree be modified?",
+          "why": "Spec doesn't say not to, but the in-order approach doesn't need to."
+        },
+        {
+          "question": "What if we need to do many queries? (LC follow-up)",
+          "why": "Augment nodes with subtree sizes; each query becomes O(h). Mention as a follow-up if the interviewer asks."
+        },
+        {
+          "question": "Recursive in-order or iterative?",
+          "why": "Iterative is preferable \u2014 short-circuits at k. Recursive must traverse fully unless you use a counter outside scope."
+        }
+      ],
+      "think_out_loud": "BST property + in-order = sorted sequence. Iterative in-order with a stack: push left descendants, pop when no more left, that's the next smallest value; then move to right subtree of popped node. Decrement k on each pop; return when k hits 0.",
+      "edge_cases": [
+        {
+          "category": "k=1",
+          "details": "Leftmost node in the BST. Walk down left until null."
+        },
+        {
+          "category": "k=n (last)",
+          "details": "Rightmost node. Walk through all."
+        },
+        {
+          "category": "Single node",
+          "details": "Root is the only value. Return root.val."
+        },
+        {
+          "category": "Skewed tree",
+          "details": "In-order still works; recursion depth is n."
+        },
+        {
+          "category": "Duplicates in tree",
+          "details": "Per spec, no duplicates. But algorithm handles them by including each in the count."
+        }
+      ],
+      "common_mistakes": [
+        "Recursive without early termination \u2014 O(n) when k is small.",
+        "0-indexed vs 1-indexed confusion \u2014 off by one.",
+        "Forgetting to decrement k after the in-order visit.",
+        "Using a min-heap (overkill \u2014 that's for unsorted data; here BST gives us sorting for free).",
+        "Visiting left then current then right but stopping after current (BFS-like) \u2014 misses the recursion structure."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "BST property exploitation. Tests whether you know that in-order traversal of a BST is sorted.",
+      "introduction_context": "Common at Amazon, Microsoft. Quick win if you've seen it; struggle if not.",
+      "really_testing": [
+        "Knowing in-order traversal of a BST yields sorted values.",
+        "Iterative in-order with stack.",
+        "Early termination at k.",
+        "1-indexed counting."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States in-order insight immediately, codes iterative version with early exit in 5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Recursive in-order solution, correct; doesn't add early-exit until prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one on k. Or sorts all values into a list."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive the in-order insight; tries random traversals."
+        }
+      ],
+      "playbook": [
+        "Restate: 'kth smallest in BST, 1-indexed'.",
+        "Insight: 'in-order traversal of BST = sorted sequence'.",
+        "Iterative: 'stack-based in-order, count down k'.",
+        "Code: stack = []; node = root. while stack or node: while node: stack.append(node); node = node.left. node = stack.pop(); k -= 1. if k == 0: return node.val. node = node.right.",
+        "Walk [5,3,6,2,4,N,N,1] k=3: visits 1, 2, 3 \u2192 return 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: 'augment nodes with subtree sizes for O(h) queries'.",
+      "dont_do": [
+        "Don't sort all values \u2014 O(n log n) when O(h + k) is achievable.",
+        "Don't use BFS/level-order \u2014 wrong order.",
+        "Don't forget early termination.",
+        "Don't off-by-one on 1-indexed k."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative In-Order with Early Exit",
+        "time": "O(h + k)",
+        "space": "O(h) for stack",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef kthSmallest(values, k):\n    root = build_tree(values)\n    stack = []\n    node = root\n    while stack or node:\n        while node:\n            stack.append(node)\n            node = node.left\n        node = stack.pop()\n        k -= 1\n        if k == 0:\n            return node.val\n        node = node.right\n    return -1  # unreachable per spec",
+        "explanation": "Iterative in-order traversal. Push left descendants until you can't; pop (this is the next smallest); count down k. When k hits 0, return. Continue into right subtree if not done. O(h + k) \u2014 short-circuits without visiting larger values."
+      },
+      {
+        "name": "Recursive In-Order",
+        "time": "O(n) worst case",
+        "space": "O(h)",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef kthSmallest(values, k):\n    root = build_tree(values)\n    sorted_vals = []\n    \n    def inorder(node):\n        if not node or len(sorted_vals) >= k:\n            return\n        inorder(node.left)\n        sorted_vals.append(node.val)\n        inorder(node.right)\n    \n    inorder(root)\n    return sorted_vals[k - 1]",
+        "explanation": "Recursive in-order collects values up to k. Equivalent correctness. The early-exit check inside inorder() keeps it from traversing more than needed. Less elegant than iterative for showing the early exit, but more readable."
+      }
+    ],
+    "related_problem_ids": [
+      "validate-binary-search-tree",
+      "lowest-common-ancestor-of-a-binary-search-tree",
+      "binary-tree-level-order-traversal"
+    ]
+  },
+  {
+    "id": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "leetcode_url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+    "leetcode_id": 105,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "dfs",
+      "divide-and-conquer"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two arrays preorder and inorder representing the same binary tree, reconstruct the tree. (Test runner returns the level-order serialization of the reconstructed tree.)",
+    "constraints": [
+      "1 <= preorder.length <= 3000",
+      "inorder.length == preorder.length",
+      "-3000 <= preorder[i], inorder[i] <= 3000",
+      "preorder and inorder consist of unique values.",
+      "Both arrays are valid traversals of the same tree."
+    ],
+    "examples": [
+      {
+        "input": "preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]",
+        "output": "[3,9,20,None,None,15,7]",
+        "explanation": "preorder[0]=3 is root. inorder splits [9 | 15,20,7] \u2014 left subtree has 1 node, right has 3. Recurse."
+      },
+      {
+        "input": "preorder = [-1], inorder = [-1]",
+        "output": "[-1]",
+        "explanation": "Single node."
+      }
+    ],
+    "function_name": "buildTree",
+    "function_signature": "def buildTree(preorder, inorder):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef buildTree(preorder, inorder):\n    # Pretend the signature is buildTree(preorder: List[int], inorder: List[int]) -> TreeNode.\n    # Test runner serializes the result back to a level-order list.\n    \n    # Your code: preorder[0] is root. Find it in inorder to split into left/right subtrees. Recurse.\n    root = None  # build the tree\n    \n    return tree_to_list(root)\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            3,
+            9,
+            20,
+            15,
+            7
+          ],
+          [
+            9,
+            3,
+            15,
+            20,
+            7
+          ]
+        ],
+        "expected": "[3, 9, 20, None, None, 15, 7]"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            -1
+          ],
+          [
+            -1
+          ]
+        ],
+        "expected": "[-1]"
+      },
+      {
+        "label": "left-skewed",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "expected": "[1, 2, None, 3]"
+      },
+      {
+        "label": "right-skewed",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "[1, None, 2, None, 3]"
+      },
+      {
+        "label": "balanced 3-level",
+        "args": [
+          [
+            1,
+            2,
+            4,
+            5,
+            3,
+            6,
+            7
+          ],
+          [
+            4,
+            2,
+            5,
+            1,
+            6,
+            3,
+            7
+          ]
+        ],
+        "expected": "[1, 2, 3, 4, 5, 6, 7]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "preorder[0] is the root (preorder visits root first). Find that root's index in inorder \u2014 left of it is the left subtree's in-order, right of it is the right subtree's in-order. The sizes determine how to split preorder for the recursive calls. Use a hash map from value to inorder-index for O(1) lookup.",
+      "clarifying_questions": [
+        {
+          "question": "Are all values unique?",
+          "why": "Yes per spec. Required for the lookup-by-value to be unambiguous."
+        },
+        {
+          "question": "Are preorder and inorder valid for the same tree?",
+          "why": "Yes per spec. So we don't have to detect inconsistency."
+        },
+        {
+          "question": "Can we do this in O(n) or is O(n\u00b2) okay?",
+          "why": "O(n) with a hash map for inorder lookups. O(n\u00b2) is the naive approach (scanning inorder each time). Hash map is the bar."
+        },
+        {
+          "question": "What about constructing from inorder + postorder?",
+          "why": "Same trick, just postorder[-1] is root, and split inorder around it. Worth knowing the pattern generalizes."
+        },
+        {
+          "question": "Empty arrays?",
+          "why": "Per spec, length >= 1. Empty case returns None \u2014 defensive."
+        }
+      ],
+      "think_out_loud": "preorder gives me the root (first element). inorder, split at the root's position, gives me the SIZES of left and right subtrees. So I can split preorder into [root, left_preorder, right_preorder] where left_preorder has the same size as the left part of inorder. Recurse on each half.",
+      "edge_cases": [
+        {
+          "category": "Single node",
+          "details": "preorder = inorder = [x]. Build root with no children. Recursion bottoms out immediately."
+        },
+        {
+          "category": "Left-skewed",
+          "details": "preorder = [1,2,3], inorder = [3,2,1]. Each split has empty right."
+        },
+        {
+          "category": "Right-skewed",
+          "details": "preorder = inorder = [1,2,3]. Each split has empty left."
+        },
+        {
+          "category": "Balanced",
+          "details": "Splits evenly. Classic divide-and-conquer."
+        },
+        {
+          "category": "Duplicate values (out of spec)",
+          "details": "Would break the lookup. Spec guarantees uniqueness."
+        }
+      ],
+      "common_mistakes": [
+        "Linear search inorder each call \u2014 O(n\u00b2). Use hash map.",
+        "Off-by-one in slicing \u2014 confusing inclusive/exclusive indices.",
+        "Not advancing the preorder pointer \u2014 gets stuck on root.",
+        "Re-slicing arrays instead of passing indices \u2014 O(n\u00b2) memory and time.",
+        "Confusing preorder/inorder/postorder relationships."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic divide-and-conquer on trees. The technique generalizes to other traversal-pair constructions.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. The 'root from preorder, sizes from inorder' insight is the test.",
+      "really_testing": [
+        "Knowing how preorder and inorder identify structure.",
+        "Divide-and-conquer recursion on array slices.",
+        "Using a hash map for O(1) value-to-index lookup.",
+        "Passing indices, not slicing, for O(n) overall."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States 'root from pre[0], split inorder' instantly. Uses hash map. Codes in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, possibly with O(n\u00b2) slicing/scanning. Refactors to O(n) when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Confuses preorder and inorder roles. Off-by-one issues."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate how the two traversals relate to structure."
+        }
+      ],
+      "playbook": [
+        "Restate: 'reconstruct tree from preorder + inorder'.",
+        "Insight: 'preorder[0] is root. In inorder, root's index splits left | right subtree.'",
+        "Pitch O(n): 'hash map from value to inorder index'.",
+        "Code: idx_map = {v: i for i, v in enumerate(inorder)}. pre_idx = [0]. def build(lo, hi): if lo > hi: return None. root_val = preorder[pre_idx[0]]; pre_idx[0] += 1. node = TreeNode(root_val); mid = idx_map[root_val]. node.left = build(lo, mid - 1); node.right = build(mid + 1, hi). return node. return build(0, len(inorder) - 1).",
+        "Walk preorder=[3,9,20,15,7] inorder=[9,3,15,20,7]: root 3, inorder mid=1. Left build(0,0): root 9. Right build(2,4): root 20, mid=3. Left build(2,2): root 15. Right build(4,4): root 7. \u2713"
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: 'from inorder + postorder' \u2014 same algorithm, postorder[-1] is root.",
+      "dont_do": [
+        "Don't scan inorder linearly each call.",
+        "Don't slice the arrays \u2014 pass indices.",
+        "Don't forget to advance the preorder pointer.",
+        "Don't confuse which traversal is root-first vs root-middle."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Recursive Divide with Hash Map",
+        "time": "O(n)",
+        "space": "O(n) hash map + O(h) recursion",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef buildTree(preorder, inorder):\n    inorder_idx = {v: i for i, v in enumerate(inorder)}\n    pre_idx = [0]  # mutable container for the preorder cursor\n    \n    def build(lo, hi):\n        if lo > hi:\n            return None\n        root_val = preorder[pre_idx[0]]\n        pre_idx[0] += 1\n        node = TreeNode(root_val)\n        mid = inorder_idx[root_val]\n        node.left = build(lo, mid - 1)\n        node.right = build(mid + 1, hi)\n        return node\n    \n    root = build(0, len(inorder) - 1)\n    return tree_to_list(root)",
+        "explanation": "Classic divide-and-conquer. preorder gives us roots in pre-order (root, left, right). For each subtree, take the next preorder value as root, look up its position in inorder, recurse on left and right halves of the inorder range. The hash map gives O(1) lookups; the preorder cursor advances naturally as we visit. O(n) total."
+      }
+    ],
+    "related_problem_ids": [
+      "binary-tree-level-order-traversal",
+      "validate-binary-search-tree",
+      "same-tree"
+    ]
+  },
+  {
+    "id": "binary-tree-maximum-path-sum",
+    "title": "Binary Tree Maximum Path Sum",
+    "leetcode_url": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+    "leetcode_id": 124,
+    "difficulty": "hard",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a binary tree, return the maximum path sum of any non-empty path. A path is a sequence of nodes where each consecutive pair shares an edge; a path doesn't need to pass through the root. Each node can be used at most once.",
+    "constraints": [
+      "Number of nodes is in [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "values = [1,2,3]",
+        "output": "6",
+        "explanation": "Path 2 \u2192 1 \u2192 3 sums to 6."
+      },
+      {
+        "input": "values = [-10,9,20,None,None,15,7]",
+        "output": "42",
+        "explanation": "Path 15 \u2192 20 \u2192 7 sums to 42. Root -10 hurts; the best path stays in the right subtree."
+      }
+    ],
+    "function_name": "maxPathSum",
+    "function_signature": "def maxPathSum(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef maxPathSum(values):\n    # Pretend the signature is maxPathSum(root: TreeNode) -> int.\n    root = build_tree(values)\n    \n    # Your code: at each node, the best 'through-this-node' path uses left arm + this + right arm.\n    # But the return value to parent is the best single-arm extension (left OR right, not both).\n    # Track the global max separately.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "[1,2,3]",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "negative root",
+        "args": [
+          [
+            -10,
+            9,
+            20,
+            null,
+            null,
+            15,
+            7
+          ]
+        ],
+        "expected": "42"
+      },
+      {
+        "label": "all negatives",
+        "args": [
+          [
+            -3
+          ]
+        ],
+        "expected": "-3"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "skewed positives",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "mixed signs",
+        "args": [
+          [
+            2,
+            -1,
+            3
+          ]
+        ],
+        "expected": "5"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two values at every node. (1) 'max path sum THROUGH this node' = left_arm + node.val + right_arm. Use this to update the global max. (2) 'max ARM extending up from this node to its parent' = node.val + max(left_arm, right_arm). Return THIS to the parent. The arm uses only one side (left or right) because the parent will use the other side or extend further.",
+      "clarifying_questions": [
+        {
+          "question": "Path defined as nodes with shared edges \u2014 same node only once, right?",
+          "why": "Yes. So a path can be a single node, a straight line, or an inverted-V through a top node. Critical for the 'inverted-V vs arm' distinction."
+        },
+        {
+          "question": "Can values be negative?",
+          "why": "Yes. Critical \u2014 if a subtree's max arm is negative, we should treat it as 0 (just don't include it). Use max(arm, 0)."
+        },
+        {
+          "question": "Can the path be empty?",
+          "why": "No. Minimum 1 node. So single-negative-node answers are still that negative value (per all-negatives example)."
+        },
+        {
+          "question": "Why is this Hard?",
+          "why": "The dual-return pattern (use one thing locally, return another to parent) is the trick. Without seeing it, candidates flounder."
+        },
+        {
+          "question": "Does the path have to pass through root?",
+          "why": "No. The optimal path could be entirely in a subtree. That's why we track the max globally, not at root."
+        }
+      ],
+      "think_out_loud": "Classic dual-purpose recursion. At each node, compute the through-path-sum (use both arms) for updating the global max, and the arm-extension (one arm only) to return to the parent. Crucially: clip negative arms to 0 \u2014 if a subtree contributes negatively, omit it.",
+      "edge_cases": [
+        {
+          "category": "Single negative node",
+          "details": "Answer is that negative value (can't omit nodes \u2014 path must be non-empty)."
+        },
+        {
+          "category": "All-positive tree",
+          "details": "Use all branches \u2014 through-path sums work out."
+        },
+        {
+          "category": "Negative root with positive subtrees",
+          "details": "Optimal might not include root. Updating global max at every node catches this."
+        },
+        {
+          "category": "Linear (skewed)",
+          "details": "Sum of positives along the chain. Negative segments get clipped to 0."
+        },
+        {
+          "category": "Path through root",
+          "details": "Both arms positive \u2192 through-sum at root is the answer."
+        }
+      ],
+      "common_mistakes": [
+        "Returning the through-sum to parent \u2014 parent can't use both arms simultaneously.",
+        "Not clipping negative arms to 0 \u2014 wrong answer when subtrees hurt.",
+        "Initializing max to 0 instead of -inf \u2014 wrong on all-negative trees.",
+        "Only updating max at root \u2014 misses paths deeper in the tree.",
+        "Confusing 'depth' with 'sum' \u2014 the recursion looks like depth recursion but the math is different."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The textbook 'dual-return tree DP' problem. Tests whether you can split 'what to use locally' from 'what to return to parent'.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. Often the hardest tree question of the round. Even strong candidates need 15-20 min.",
+      "really_testing": [
+        "Recognizing two distinct quantities per node (through-sum vs arm).",
+        "Clipping negative arms to 0.",
+        "Initializing max to -infinity for all-negative cases.",
+        "Updating global max at every node, not just root."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States the dual-return idea in <2 min. Codes cleanly with negative-arm clipping. 15-18 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Gets there with one hint on the dual-return idea. Correct otherwise."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong return value (sum instead of arm), or forgets to clip negatives."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive the dual quantity. Tries to enumerate all paths."
+        }
+      ],
+      "playbook": [
+        "Restate: 'max path sum, path is any node sequence with shared edges, non-empty'.",
+        "Insight: 'at each node, compute through-path (use both arms) and arm-extension (use one)'.",
+        "Critical: 'clip negative arms to 0'.",
+        "Code: max_sum = [float('-inf')]. def arm(node): if not node: return 0. left = max(arm(node.left), 0). right = max(arm(node.right), 0). max_sum[0] = max(max_sum[0], node.val + left + right). return node.val + max(left, right). arm(root). return max_sum[0].",
+        "Walk [-10, 9, 20, N, N, 15, 7]: at node 20, left=15, right=7, through=42 \u2192 max. arm of 20 = 20 + 15 = 35 returned to -10. At root, left=9, right=35; through=-10+9+35=34. Max remains 42. \u2713"
+      ],
+      "playbook_meta": "Total time: 15-22 min. Follow-up: Path Sum III (count paths with given sum).",
+      "dont_do": [
+        "Don't return through-sum to parent.",
+        "Don't forget negative-arm clipping.",
+        "Don't initialize max to 0 (fails on negatives).",
+        "Don't try to enumerate all paths.",
+        "Don't update max only at root."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Dual-Return DFS (arm + global max)",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef maxPathSum(values):\n    root = build_tree(values)\n    max_sum = [float('-inf')]\n    \n    def arm(node):\n        if not node:\n            return 0\n        left = max(arm(node.left), 0)   # clip negative\n        right = max(arm(node.right), 0) # clip negative\n        # Path THROUGH this node (uses both arms)\n        through = node.val + left + right\n        max_sum[0] = max(max_sum[0], through)\n        # Return: ARM extending up (only one side)\n        return node.val + max(left, right)\n    \n    arm(root)\n    return max_sum[0]",
+        "explanation": "The canonical hard-tree trick. The recursive function returns the best arm (single-side extension) to the parent, while side-effecting a global max with the best through-sum at every node. Clipping negative arms to 0 means we just don't include hurt subtrees. Each node visited once \u2014 O(n)."
+      }
+    ],
+    "related_problem_ids": [
+      "diameter-of-binary-tree",
+      "maximum-depth-of-binary-tree",
+      "count-good-nodes-in-binary-tree"
+    ]
   }
 ]
