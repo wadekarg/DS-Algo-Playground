@@ -878,16 +878,30 @@
     })();
 
     // ── Auto-grow text editor (Google-Docs style) ──────────────
+    // As the user types, height tracks scrollHeight so the textarea expands
+    // downward. Everything below (test cases, related problems) gets pushed
+    // down inside the scrollable editor column.
     (function() {
       var ta = document.querySelector('.text-editor');
       if (!ta) return;
       function resize() {
+        if (ta.offsetParent === null) return; // skip while pane is hidden
         ta.style.height = 'auto';
-        // +2px for border, prevents micro-shake
         ta.style.height = (ta.scrollHeight + 2) + 'px';
       }
       ta.addEventListener('input', resize);
-      // Resize once after layout settles (handles pane being initially hidden)
+
+      // Also resize when the Text Editor tab becomes active (first reveal
+      // gives accurate scrollHeight measurements).
+      var textTab = document.querySelector('.editor-tab[data-pane="text"]');
+      if (textTab) {
+        textTab.addEventListener('click', function() {
+          window.requestAnimationFrame(resize);
+        });
+      }
+      // And on window resize (column width changes → wrap changes → height changes)
+      window.addEventListener('resize', resize);
+      // Initial measurement (in case Text Editor is default)
       window.requestAnimationFrame(resize);
     })();
   </script>
