@@ -12700,5 +12700,674 @@
       "maximum-depth-of-binary-tree",
       "count-good-nodes-in-binary-tree"
     ]
+  },
+  {
+    "id": "serialize-and-deserialize-binary-tree",
+    "title": "Serialize and Deserialize Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+    "leetcode_id": 297,
+    "difficulty": "hard",
+    "patterns": [
+      "tree",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design an algorithm to serialize a binary tree to a string AND deserialize that string back to the original tree. The roundtrip must reconstruct an identical tree. (For testability, the function serializes then deserializes and returns the result tree's level-order list \u2014 should equal the input.)",
+    "constraints": [
+      "Number of nodes is in [0, 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "values = [1,2,3,None,None,4,5]",
+        "output": "[1,2,3,None,None,4,5]",
+        "explanation": "Roundtrip serialization preserves the tree."
+      },
+      {
+        "input": "values = []",
+        "output": "[]",
+        "explanation": "Empty tree serializes to a sentinel, deserializes back to empty."
+      }
+    ],
+    "function_name": "roundtrip",
+    "function_signature": "def roundtrip(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef serialize(root):\n    # Convert tree to a string. Use a sentinel (e.g. '#') for None.\n    pass\n\ndef deserialize(data):\n    # Convert the string back to a tree.\n    pass\n\ndef roundtrip(values):\n    # Test wrapper: serialize then deserialize, return as level-order list.\n    root = build_tree(values)\n    s = serialize(root)\n    rebuilt = deserialize(s)\n    return tree_to_list(rebuilt)\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            null,
+            null,
+            4,
+            5
+          ]
+        ],
+        "expected": "[1, 2, 3, None, None, 4, 5]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "left-skewed",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "[1, 2, None, 3]"
+      },
+      {
+        "label": "balanced",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "[1, 2, 3, 4, 5, 6, 7]"
+      },
+      {
+        "label": "with nulls scattered",
+        "args": [
+          [
+            5,
+            2,
+            3,
+            null,
+            null,
+            2,
+            4,
+            null,
+            6
+          ]
+        ],
+        "expected": "[5, 2, 3, None, None, 2, 4, None, 6]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches: BFS level-order (LeetCode's format) or DFS preorder with null sentinels. DFS preorder is simpler to code: walk the tree, emit each value (or '#' for None), comma-separated. Deserialize by splitting and consuming via a queue, recursively rebuilding.",
+      "clarifying_questions": [
+        {
+          "question": "What format should the serialized string be?",
+          "why": "Up to me \u2014 any format that's unambiguous. Comma-separated preorder with '#' for null is concise and easy. LC's BFS level-order is also fine."
+        },
+        {
+          "question": "Empty tree \u2014 serialize to empty string or sentinel?",
+          "why": "Either, as long as deserialize round-trips. I'll use '#' for null, so an empty tree serializes to '#'."
+        },
+        {
+          "question": "Can values be negative?",
+          "why": "Yes (constraints say -1000 \u2264 val). Use comma separator so '-1' isn't confused with anything."
+        },
+        {
+          "question": "Should structure or values be the focus of the roundtrip?",
+          "why": "Both. The deserialized tree must be identical to the original \u2014 same structure AND same values."
+        },
+        {
+          "question": "BFS or DFS \u2014 preference?",
+          "why": "DFS preorder is shorter. BFS matches LeetCode's display format. Mention both; pick one for the implementation."
+        }
+      ],
+      "think_out_loud": "DFS preorder: serialize visits root, recurse left, recurse right, joining with commas. Use '#' (or 'null') for None children. Deserialize: split the string, use a queue (or iterator); pop one token at a time; if it's '#' return None; otherwise build the node and recursively build left and right. The preorder traversal naturally matches the recursive deserialize.",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "Serializes to a single sentinel '#'. Deserialize sees '#', returns None."
+        },
+        {
+          "category": "Single node",
+          "details": "'5,#,#' (preorder). Deserialize builds 5 with two null children."
+        },
+        {
+          "category": "All None nodes serialized",
+          "details": "Each leaf emits two '#' tokens. The format makes this unambiguous."
+        },
+        {
+          "category": "Negative values",
+          "details": "Just store as string. Re-parse with int(). Comma separator avoids ambiguity."
+        },
+        {
+          "category": "Deep tree",
+          "details": "Recursion depth = h. For n=10^4 skewed, watch stack overflow \u2014 iterative version useful."
+        }
+      ],
+      "common_mistakes": [
+        "Using a delimiter that appears in values (e.g., spaces with negative values).",
+        "Forgetting null sentinels \u2014 structure becomes ambiguous.",
+        "Using only inorder OR postorder traversal \u2014 cannot reconstruct without both (or null markers).",
+        "Forgetting to consume the queue/iterator after a None \u2014 desyncs the parse.",
+        "Serializing with BFS but deserializing with DFS (or vice versa) \u2014 must match."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic tree serialization design problem. Tests whether you can choose a format that round-trips correctly, and implement both directions cleanly.",
+      "introduction_context": "Onsite at Google, Amazon, Meta. Often paired with 'design a tree storage system' open-ended questions.",
+      "really_testing": [
+        "Choosing a format with null markers (preorder + '#' or BFS + 'null').",
+        "Pairing serialize and deserialize so they round-trip.",
+        "Using a queue/iterator to consume tokens during deserialize.",
+        "Handling negatives, empty trees, and deeply nested cases."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Picks preorder + '#' format in <1 min. Codes both directions in 15 min. Walks through serialize/deserialize of an example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Picks a working format; needs help getting one direction right."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Confused by null sentinels. Inconsistent formats between sides."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate a format that round-trips."
+        }
+      ],
+      "playbook": [
+        "Restate: 'tree \u2192 string \u2192 tree, identical'.",
+        "Pitch: 'preorder with # for null, comma-separated'.",
+        "Serialize: def s(node): if not node: return '#'. return f'{node.val},{s(node.left)},{s(node.right)}'.",
+        "Deserialize: tokens = iter(data.split(',')). def d(): t = next(tokens). if t == '#': return None. node = TreeNode(int(t)). node.left = d(); node.right = d(). return node.",
+        "Walk [1,2,3,None,None,4,5]: serialize \u2192 '1,2,#,#,3,4,#,#,5,#,#'. Deserialize consumes in order. \u2713"
+      ],
+      "playbook_meta": "Total time: 15-20 min. Follow-up: Serialize a BST in less space (don't need nulls \u2014 use just preorder).",
+      "dont_do": [
+        "Don't use only inorder \u2014 ambiguous.",
+        "Don't skip null markers \u2014 structure is lost.",
+        "Don't pick a delimiter that values can contain.",
+        "Don't write one half and assume the other will work \u2014 test the roundtrip mentally."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Preorder DFS with Null Sentinel",
+        "time": "O(n) each direction",
+        "space": "O(n) for the string + O(h) recursion",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef tree_to_list(root):\n    if not root:\n        return []\n    result = []\n    queue = [root]\n    while queue:\n        node = queue.pop(0)\n        if node is None:\n            result.append(None)\n        else:\n            result.append(node.val)\n            queue.append(node.left)\n            queue.append(node.right)\n    while result and result[-1] is None:\n        result.pop()\n    return result\n\ndef serialize(root):\n    parts = []\n    def s(node):\n        if not node:\n            parts.append('#')\n            return\n        parts.append(str(node.val))\n        s(node.left)\n        s(node.right)\n    s(root)\n    return ','.join(parts)\n\ndef deserialize(data):\n    tokens = iter(data.split(','))\n    def d():\n        t = next(tokens)\n        if t == '#':\n            return None\n        node = TreeNode(int(t))\n        node.left = d()\n        node.right = d()\n        return node\n    return d()\n\ndef roundtrip(values):\n    root = build_tree(values)\n    s = serialize(root)\n    rebuilt = deserialize(s)\n    return tree_to_list(rebuilt)",
+        "explanation": "DFS preorder with '#' for null. Serialize walks the tree, recording each value and a sentinel for each null. Deserialize uses an iterator over the comma-split tokens; reading one token at a time naturally matches the preorder order. Each direction is O(n)."
+      }
+    ],
+    "related_problem_ids": [
+      "construct-binary-tree-from-preorder-and-inorder-traversal",
+      "binary-tree-level-order-traversal",
+      "invert-binary-tree"
+    ]
+  },
+  {
+    "id": "kth-largest-element-in-a-stream",
+    "title": "Kth Largest Element in a Stream",
+    "leetcode_url": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+    "leetcode_id": 703,
+    "difficulty": "easy",
+    "patterns": [
+      "heap"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design a class to find the kth largest element in a stream. Implement add(val) which returns the kth largest element after adding val.",
+    "constraints": [
+      "1 <= k <= 10^4",
+      "0 <= nums.length <= 10^4",
+      "-10^4 <= nums[i], val <= 10^4",
+      "At most 10^4 calls to add."
+    ],
+    "examples": [
+      {
+        "input": "k = 3, nums = [4,5,8,2]; calls: add(3), add(5), add(10), add(9), add(4)",
+        "output": "[4, 5, 5, 8, 8]",
+        "explanation": "After each add, the 3rd largest element in the running stream."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(k, nums, ops):",
+    "starter_code": "import heapq\n\nclass KthLargest:\n    def __init__(self, k, nums):\n        # Initialize min-heap of size k.\n        pass\n    def add(self, val):\n        # Add val; return the kth largest.\n        pass\n\ndef runOps(k, nums, ops):\n    # Test wrapper: ops is a list of values to add(); returns list of returns.\n    kl = KthLargest(k, nums)\n    return [kl.add(v) for v in ops]\n",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          3,
+          [
+            4,
+            5,
+            8,
+            2
+          ],
+          [
+            3,
+            5,
+            10,
+            9,
+            4
+          ]
+        ],
+        "expected": "[4, 5, 5, 8, 8]"
+      },
+      {
+        "label": "k=1 (max)",
+        "args": [
+          1,
+          [],
+          [
+            1,
+            5,
+            3,
+            10
+          ]
+        ],
+        "expected": "[1, 5, 5, 10]"
+      },
+      {
+        "label": "k=2 small stream",
+        "args": [
+          2,
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": "[2, 3]"
+      },
+      {
+        "label": "single repeated",
+        "args": [
+          1,
+          [
+            5
+          ],
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "[5, 5, 5]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Min-heap of size k. The kth largest is always the heap's minimum (heap[0]). On add: push the new value; if heap size > k, pop the smallest. The remaining k elements are the top k largest seen so far, and the min of those is the kth largest.",
+      "clarifying_questions": [
+        {
+          "question": "k is fixed at construction time?",
+          "why": "Yes per spec. So we can size the heap once."
+        },
+        {
+          "question": "What if fewer than k elements have been seen?",
+          "why": "Per constraints, when add() is called there will always be >= k total elements. Otherwise the answer would be undefined."
+        },
+        {
+          "question": "Why min-heap not max-heap?",
+          "why": "We want fast access to the SMALLEST of the top k \u2014 that's the kth largest. Min-heap's root is exactly that."
+        },
+        {
+          "question": "What if duplicates push the heap above k?",
+          "why": "Push-then-pop-if-bigger handles it. Heap stays at size k always."
+        }
+      ],
+      "think_out_loud": "We need the kth largest after every add. Sorting the full stream each time is O(n log n) per add. Better: a min-heap holding the TOP k values seen so far. The smallest of those (heap[0]) is the kth largest. Add: heappush; if size > k, heappop (drops the smallest). O(log k) per add.",
+      "edge_cases": [
+        {
+          "category": "Empty initial nums",
+          "details": "Heap starts empty. First few adds just fill it."
+        },
+        {
+          "category": "k = 1",
+          "details": "Heap of size 1; tracks the maximum."
+        },
+        {
+          "category": "Repeated values",
+          "details": "Duplicates are allowed \u2014 heap handles them fine."
+        },
+        {
+          "category": "Negative values",
+          "details": "No issue \u2014 heap orders by comparison."
+        },
+        {
+          "category": "Adding a value smaller than current kth",
+          "details": "Pushed onto heap, immediately popped (it's the new smallest). Heap unchanged."
+        }
+      ],
+      "common_mistakes": [
+        "Using a max-heap and removing all but k \u2014 wrong abstraction.",
+        "Sorting the array each add \u2014 O(n log n) per call, TLE.",
+        "Not heapifying nums in __init__ \u2014 start with no order, slow first adds.",
+        "Mixing up 'kth largest' (positional rank) with 'k largest' (set).",
+        "Using a list and bisect \u2014 O(n) inserts."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Heap design problem. Tests whether you reach for the right data structure for 'track top-k under updates'.",
+      "introduction_context": "Common at Amazon, Bloomberg. Often a phone-screen intro to the heap pattern.",
+      "really_testing": [
+        "Recognizing 'top-k under updates' = min-heap of size k.",
+        "Familiarity with Python's heapq module.",
+        "Initializing efficiently from a list.",
+        "O(log k) per add \u2014 not O(n)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pitches min-heap immediately. Codes in 3-5 min. Mentions heapify for init."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct heap solution but doesn't heapify in __init__ \u2014 slow first adds."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Uses sorted list and bisect \u2014 works but O(n) per add."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Sorts the entire array on every add."
+        }
+      ],
+      "playbook": [
+        "Restate: 'kth largest under streaming adds, O(log k) per operation'.",
+        "Pitch: 'min-heap of size k, root is the answer'.",
+        "Code __init__: self.k = k; self.heap = nums; heapq.heapify(self.heap); while len(self.heap) > k: heapq.heappop(self.heap).",
+        "Code add: heapq.heappush(self.heap, val); if len(self.heap) > self.k: heapq.heappop(self.heap). return self.heap[0].",
+        "Walk k=3, nums=[4,5,8,2], add 3: heap=[3,4,5,8]\u2192pop\u2192[4,5,8]. return 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: Kth Largest in Array (LC 215), Top K Frequent.",
+      "dont_do": [
+        "Don't sort each add.",
+        "Don't use max-heap.",
+        "Don't forget to trim to size k in __init__.",
+        "Don't use a sorted list."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min-Heap of Size K",
+        "time": "O(log k) per add; O(n log k) init",
+        "space": "O(k)",
+        "code": "import heapq\n\nclass KthLargest:\n    def __init__(self, k, nums):\n        self.k = k\n        self.heap = list(nums)\n        heapq.heapify(self.heap)\n        # Trim down to size k by popping the smallest until len = k\n        while len(self.heap) > k:\n            heapq.heappop(self.heap)\n    \n    def add(self, val):\n        heapq.heappush(self.heap, val)\n        if len(self.heap) > self.k:\n            heapq.heappop(self.heap)\n        return self.heap[0]\n\ndef runOps(k, nums, ops):\n    kl = KthLargest(k, nums)\n    return [kl.add(v) for v in ops]",
+        "explanation": "Min-heap holds the top k largest values seen so far. The root (heap[0]) is the smallest of those \u2014 i.e., the kth largest overall. Each add: push, then pop if oversized. O(log k) per call. Initialization heapifies nums then pops the smallest until len == k."
+      }
+    ],
+    "related_problem_ids": [
+      "last-stone-weight",
+      "top-k-frequent-elements",
+      "kth-largest-element-in-an-array"
+    ]
+  },
+  {
+    "id": "last-stone-weight",
+    "title": "Last Stone Weight",
+    "leetcode_url": "https://leetcode.com/problems/last-stone-weight/",
+    "leetcode_id": 1046,
+    "difficulty": "easy",
+    "patterns": [
+      "heap"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You have stones with positive integer weights. On each turn, take the two heaviest stones and smash them together. If equal, both destroyed. If different, the smaller is destroyed and the larger becomes (heavier - smaller). Return the weight of the last remaining stone, or 0 if none.",
+    "constraints": [
+      "1 <= stones.length <= 30",
+      "1 <= stones[i] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "stones = [2,7,4,1,8,1]",
+        "output": "1",
+        "explanation": "Smash 8&7 \u2192 1, stones=[2,4,1,1,1]. Smash 4&2 \u2192 2, stones=[2,1,1,1]. Smash 2&1 \u2192 1, stones=[1,1,1]. Smash 1&1 \u2192 0, stones=[1]. Return 1."
+      },
+      {
+        "input": "stones = [1]",
+        "output": "1",
+        "explanation": "Only one stone \u2014 return its weight."
+      }
+    ],
+    "function_name": "lastStoneWeight",
+    "function_signature": "def lastStoneWeight(stones):",
+    "starter_code": "import heapq\n\ndef lastStoneWeight(stones):\n    # Return the weight of the last remaining stone (or 0).\n    # Hint: max-heap. Python's heapq is min-heap; negate the values to simulate max-heap.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          [
+            2,
+            7,
+            4,
+            1,
+            8,
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single stone",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "two equal",
+        "args": [
+          [
+            3,
+            3
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "two different",
+        "args": [
+          [
+            5,
+            3
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            5,
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all equal odd count",
+        "args": [
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "5"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Repeatedly extract the two largest values, smash them, push back the difference (if any). That's a max-heap simulation. Python's heapq is min-heap, so negate values on push and pop.",
+      "clarifying_questions": [
+        {
+          "question": "What if all stones are destroyed?",
+          "why": "Return 0. Spec says 'last remaining or 0 if none'. The algorithm naturally hits empty heap and returns 0."
+        },
+        {
+          "question": "What if only one stone?",
+          "why": "Return its weight directly. Algorithm pops only one, no smash; returns it."
+        },
+        {
+          "question": "Why max-heap?",
+          "why": "Always smashing the TWO HEAVIEST. Max-heap gives both in O(log n)."
+        },
+        {
+          "question": "Why not sort each time?",
+          "why": "O(n log n) per round \u2192 O(n\u00b2 log n) total. Heap is O(n log n) total."
+        },
+        {
+          "question": "Why negate for Python?",
+          "why": "heapq is a min-heap. Negating values converts it to behave as a max-heap. Standard trick."
+        }
+      ],
+      "think_out_loud": "Simulation with max-heap. Negate to use Python's heapq as a max-heap. Loop: while len(heap) >= 2: pop two (heaviest), compute diff = -y - (-x) = x - y if x >= y. If diff != 0, push -diff back. End when 0 or 1 stones remain. Return -heap[0] if heap else 0.",
+      "edge_cases": [
+        {
+          "category": "Single stone",
+          "details": "Return it. While loop never enters."
+        },
+        {
+          "category": "Two equal stones",
+          "details": "Both destroyed. Heap empty. Return 0."
+        },
+        {
+          "category": "Two unequal stones",
+          "details": "One round, return the difference."
+        },
+        {
+          "category": "All equal even count",
+          "details": "Pairs cancel. Heap empties to 0."
+        },
+        {
+          "category": "All equal odd count",
+          "details": "Pairs cancel until 1 stone remains. Return that weight."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to negate values when pushing/popping with heapq.",
+        "Pushing 0 back onto the heap when smash result is 0 \u2014 extra work, sometimes correct but messy.",
+        "Sorting each iteration \u2014 O(n\u00b2 log n).",
+        "Using a list and finding max each round \u2014 O(n) per max = O(n\u00b2).",
+        "Forgetting the final negate when returning the answer."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Beginner-level heap problem. Tests whether you reach for a heap and remember the negate-for-max-heap trick in Python.",
+      "introduction_context": "Common phone screen at Amazon, Microsoft. Quick warmup that filters out candidates who don't know the heap pattern.",
+      "really_testing": [
+        "Recognizing repeated 'get max two' as a heap pattern.",
+        "Python's heapq idioms (negate for max-heap).",
+        "Simulation with a clean loop.",
+        "Final-state handling (0 or 1 stones)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes the max-heap simulation in 3-5 min. Handles edge cases."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, possibly with sorting-based O(n\u00b2 log n) version first."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets to negate; gets min-heap behavior and wrong answers."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive simulation. Or scans for max each round in O(n\u00b2)."
+        }
+      ],
+      "playbook": [
+        "Restate: 'smash heaviest two, repeat, return last (or 0)'.",
+        "Pitch max-heap.",
+        "Code: heap = [-s for s in stones]. heapify(heap). while len(heap) >= 2: y = -heappop(heap); x = -heappop(heap); if y != x: heappush(heap, -(y - x)). return -heap[0] if heap else 0.",
+        "Walk [2,7,4,1,8,1]: heap=[-8,-7,-4,-1,-2,-1]. Pop 8, 7, push -1. Pop 4, 2, push -2. Etc. \u2713"
+      ],
+      "playbook_meta": "Total time: 3-5 min. Follow-up: 'what if there are 10^6 stones' \u2014 same algorithm, O(n log n) handles it.",
+      "dont_do": [
+        "Don't sort each iteration.",
+        "Don't scan for max linearly.",
+        "Don't forget the negate trick in Python.",
+        "Don't push 0 onto the heap (waste)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Max-Heap Simulation",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "import heapq\n\ndef lastStoneWeight(stones):\n    # Python's heapq is min-heap; negate values to simulate max-heap\n    heap = [-s for s in stones]\n    heapq.heapify(heap)\n    \n    while len(heap) >= 2:\n        y = -heapq.heappop(heap)  # heaviest\n        x = -heapq.heappop(heap)  # second heaviest\n        if y != x:\n            heapq.heappush(heap, -(y - x))\n    \n    return -heap[0] if heap else 0",
+        "explanation": "Max-heap simulation. Each round, pop the two largest, smash them, push the difference back if non-zero. Heap operations are O(log n); total work is O(n log n). Python's heapq is a min-heap, so we negate values on the way in and out."
+      }
+    ],
+    "related_problem_ids": [
+      "kth-largest-element-in-a-stream",
+      "top-k-frequent-elements"
+    ]
   }
 ]
