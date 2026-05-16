@@ -26,12 +26,16 @@
      */
 
     /* ── Site sidebar collapse ─────────────────────────────── */
-    /* Single toggle button — fixed at top-left corner of viewport (VSCode/GitHub pattern).
-       z-index 110 keeps it above the sidebar (z-index 100) in both open and collapsed states. */
+    /* Single toggle button that moves based on sidebar state:
+         - Sidebar OPEN:    sits at the right edge of the sidebar
+         - Sidebar CLOSED:  sits in the header to the LEFT of the search bar
+       Direct child of <body> so it escapes the header's stacking context.
+       z-index 110 keeps it above the sidebar (z-index 100). */
     .sidebar-collapse-btn {
       position: fixed;
       top: 14px;
-      left: 12px;
+      /* Default = sidebar open: right edge of the sidebar (8px inset from boundary) */
+      left: calc(var(--sidebar-width) - 44px);
       width: 36px;
       height: 36px;
       border-radius: 8px;
@@ -46,19 +50,23 @@
       font-weight: 600;
       color: var(--text-primary, #1e293b);
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      transition: background 0.15s, border-color 0.15s;
+      transition: left 0.25s ease, background 0.15s, border-color 0.15s;
     }
     .sidebar-collapse-btn:hover {
       background: var(--surface-hover, #f1f5f9);
       border-color: var(--accent-primary, #6366f1);
     }
 
-    /* Collapsed state — hide the sidebar, remove the margin */
+    /* Collapsed state — hide the sidebar, remove the margin, move button to header (left of search) */
     body.sidebar-collapsed .sidebar {
       transform: translateX(-100%);
     }
     body.sidebar-collapsed .main {
       margin-left: 0;
+    }
+    body.sidebar-collapsed .sidebar-collapse-btn {
+      /* Slides into the header area, sits just before the search bar */
+      left: 12px;
     }
     /* The old expand rail is no longer needed — one button handles both states */
     .sidebar-expand-rail { display: none !important; }
