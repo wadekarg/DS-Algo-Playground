@@ -11,198 +11,520 @@
   <link rel="stylesheet" href="../css/practice.css">
   <link rel="stylesheet" href="../css/code-runner.css">
   <style>
-    /* ── Problem page specific layout ─────────────────────── */
-    .problem-page-layout {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-      align-items: start;
+    /* ── Problem page: full-viewport 3-column split layout ─── */
+
+    /*
+     * Layout overview
+     * ───────────────
+     * body already sets display:flex (from layout.css).
+     * The site .sidebar is fixed; .main gets margin-left: var(--sidebar-width).
+     *
+     * Inside .main we override the default single-column .main__content and
+     * introduce a two-pane split: problem-col | editor-col.
+     * When the site sidebar is collapsed (body.sidebar-collapsed), the
+     * .main margin-left drops to 0 and both panes get more room.
+     */
+
+    /* ── Site sidebar collapse ─────────────────────────────── */
+    /* Toggle button — lives inside the header */
+    .sidebar-collapse-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      transition: background var(--transition-speed), color var(--transition-speed);
+      flex-shrink: 0;
     }
-    @media (max-width: 900px) {
-      .problem-page-layout { grid-template-columns: 1fr; }
-      .problem-sidebar { order: -1; }
+    .sidebar-collapse-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
     }
 
-    /* ── Problem header card ───────────────────────────────── */
-    .problem-meta-bar {
+    /* Collapsed state — hide the sidebar, remove the margin */
+    body.sidebar-collapsed .sidebar {
+      transform: translateX(-100%);
+    }
+    body.sidebar-collapsed .main {
+      margin-left: 0;
+    }
+    /* Floating re-expand button that appears when sidebar is hidden */
+    .sidebar-expand-rail {
+      display: none;
+      position: fixed;
+      top: 14px;
+      left: 8px;
+      z-index: 110;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--border-radius-sm);
+      background: var(--bg-sidebar);
+      color: var(--text-sidebar-active);
+      border: none;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: var(--shadow-md);
+    }
+    body.sidebar-collapsed .sidebar-expand-rail {
       display: flex;
+    }
+    /* Hide the in-header collapse btn when sidebar is already hidden */
+    body.sidebar-collapsed .sidebar-collapse-btn {
+      display: none;
+    }
+
+    /* ── Main content: no max-width, no auto-margin, no padding ─ */
+    .main__content--problem {
+      padding: 0;
+      max-width: none;
+      margin: 0;
+      height: calc(100vh - var(--header-height));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Thin top bar for breadcrumbs + title + meta */
+    .problem-topbar {
+      padding: 8px 16px 6px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      flex-shrink: 0;
+    }
+    .problem-topbar .breadcrumbs {
+      margin-bottom: 4px;
+    }
+    .problem-title-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .problem-title-row h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .problem-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+    .problem-ext-links {
+      display: flex;
+      gap: 6px;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
-      margin: 12px 0 16px;
+      margin-left: auto;
     }
-    .problem-links {
-      display: flex;
-      gap: 12px;
-      margin: 0 0 24px;
-      flex-wrap: wrap;
-    }
-    .problem-links a {
-      font-size: 13px;
+    .problem-ext-links a {
+      font-size: 12px;
       font-weight: 500;
-      color: var(--accent-primary, #6366f1);
+      color: var(--accent-primary);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 5px 10px;
+      gap: 3px;
+      padding: 3px 8px;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      transition: background 0.15s, border-color 0.15s;
+      border-radius: 5px;
+      transition: background var(--transition-speed), border-color var(--transition-speed);
+      white-space: nowrap;
     }
-    .problem-links a:hover {
+    .problem-ext-links a:hover {
       background: var(--bg-card);
-      border-color: var(--accent-primary, #6366f1);
+      border-color: var(--accent-primary);
     }
 
-    /* ── Problem statement card ────────────────────────────── */
-    .problem-statement {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 18px 20px;
-      margin-bottom: 24px;
-      line-height: 1.7;
-      font-size: 15px;
-      color: var(--text-primary);
-    }
-    .problem-constraints {
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-color);
-    }
-    .problem-constraints__label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-    .problem-constraints ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-    .problem-constraints li {
-      font-size: 13px;
-      font-family: var(--font-mono, monospace);
-      color: var(--text-secondary);
-      line-height: 1.8;
-    }
-
-    /* ── Examples ──────────────────────────────────────────── */
-    .examples-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-      margin: 16px 0 24px;
-    }
-    .example-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 14px 16px;
-      font-size: 13px;
-    }
-    .example-card__num {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-    .example-card__io {
-      font-family: var(--font-mono, monospace);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-    .example-card__io .io-label {
-      color: var(--text-secondary);
-    }
-    .example-card__io .io-value {
-      color: var(--text-primary);
-      font-weight: 500;
-    }
-    .example-card__explanation {
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    /* ── Try It section ────────────────────────────────────── */
-    .try-it-header {
+    /* ── Split panes ───────────────────────────────────────── */
+    .problem-split {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .try-it-header h2 {
-      margin: 0;
-    }
-    .try-it-note {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-      line-height: 1.5;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
     }
 
-    /* ── Sidebar ───────────────────────────────────────────── */
-    .problem-sidebar {
-      position: sticky;
-      top: 20px;
+    /* Left: problem content (scrollable) */
+    .problem-col {
+      flex: 1 1 55%;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 14px 18px 24px;
+      border-right: 1px solid var(--border-color);
     }
-    .sidebar-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
+
+    /* Right: editor column (also scrollable, sticky-ish) */
+    .editor-col {
+      flex: 0 0 45%;
+      min-width: 340px;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
-      margin-bottom: 16px;
     }
-    .sidebar-card__head {
-      padding: 10px 14px;
-      font-size: 11px;
+
+    /* Make practice-block fill the editor column */
+    .editor-col .practice-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin: 0;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+    /* Taller editor in split view */
+    .editor-col .practice-block__editor-wrap .CodeMirror {
+      height: 340px;
+    }
+    .editor-col .code-runner-panel__editor-wrap .CodeMirror {
+      height: 340px;
+    }
+
+    /* Related problems panel below the editor */
+    .editor-related {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      overflow-y: auto;
+      max-height: 200px;
+    }
+    .editor-related__head {
+      padding: 6px 14px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-secondary);
+      color: var(--text-tertiary);
       background: var(--bg-tertiary);
       border-bottom: 1px solid var(--border-color);
-    }
-    .sidebar-card__body {
-      padding: 10px 0;
     }
     .related-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
-      text-decoration: none;
-      color: var(--text-primary);
-      font-size: 14px;
-      transition: background 0.12s;
+      padding: 6px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-color);
     }
-    .related-item:hover { background: var(--bg-secondary, #f8fafc); }
+    .related-item:last-child { border-bottom: none; }
     .related-item__title { flex: 1; font-weight: 500; }
     .related-item__title a {
-      color: var(--accent-primary, #6366f1);
+      color: var(--accent-primary);
       text-decoration: none;
     }
     .related-item__title a:hover { text-decoration: underline; }
 
-    /* ── Approaches ────────────────────────────────────────── */
-    .approaches-note {
+    /* ── Problem statement card (condensed) ───────────────── */
+    .problem-statement {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      line-height: 1.65;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    .problem-constraints {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+    .problem-constraints__label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .problem-constraints ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+    .problem-constraints li {
+      font-size: 12px;
+      font-family: var(--font-mono, monospace);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── Examples (compact inline format) ─────────────────── */
+    .examples-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .example-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .example-row__num {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 3px;
+    }
+    .example-row__io {
+      font-family: var(--font-mono, monospace);
+      font-size: 12.5px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 20px;
+      line-height: 1.6;
+    }
+    .example-row__io .io-label { color: var(--text-secondary); }
+    .example-row__io .io-value { color: var(--text-primary); font-weight: 500; }
+    .example-row__explanation {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ── Section headers (compact) ─────────────────────────── */
+    .ps-section {
+      margin-bottom: 14px;
+    }
+    .ps-section__title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* ── Interview Tips card ───────────────────────────────── */
+    .interview-tips {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent-secondary);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .interview-tips__toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid transparent;
+      transition: background var(--transition-speed);
+      list-style: none;
+    }
+    .interview-tips__toggle::-webkit-details-marker { display: none; }
+    details.interview-tips[open] .interview-tips__toggle {
+      border-bottom-color: var(--border-color);
+      background: var(--bg-secondary);
+    }
+    .interview-tips__toggle .toggle-icon {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      transition: transform var(--transition-speed);
+      flex-shrink: 0;
+    }
+    details.interview-tips[open] .toggle-icon {
+      transform: rotate(90deg);
+    }
+    .interview-tips__toggle .tip-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(139, 92, 246, 0.12);
+      color: #6d28d9;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .interview-tips__body {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tip-block__head {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .tip-block__text {
       font-size: 13px;
       color: var(--text-secondary);
-      margin-bottom: 12px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .tip-block ul {
+      margin: 4px 0 0;
+      padding-left: 16px;
+    }
+    .tip-block li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── Approaches (condensed) ────────────────────────────── */
+    .approaches-note {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
       font-style: italic;
+    }
+    .walkthrough-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .walkthrough-head {
+      padding: 8px 14px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+    .approach-block {
+      border-top: 1px solid var(--border-color);
+    }
+    .approach-block:first-of-type { border-top: none; }
+    .approach-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      list-style: none;
+      user-select: none;
+    }
+    .approach-summary::-webkit-details-marker { display: none; }
+    .approach-summary::before {
+      content: '▶';
+      font-size: 9px;
+      color: var(--text-tertiary);
+      transition: transform var(--transition-speed);
+      flex-shrink: 0;
+    }
+    details[open] .approach-summary::before { transform: rotate(90deg); }
+    .approach-name { font-weight: 600; flex: 1; }
+    .approach-O-time, .approach-O-space {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .approach-O-good { background: rgba(34, 197, 94, 0.12); color: #166534; }
+    .approach-O-bad  { background: rgba(239, 68, 68, 0.12); color: #991b1b; }
+    .approach-body {
+      padding: 10px 14px 14px;
+      border-top: 1px solid var(--border-color);
+    }
+    .approach-body pre {
+      background: var(--bg-code);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 0 0 8px;
+    }
+    .approach-body .approach-why {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Responsive: narrow viewport → stack vertically ────── */
+    @media (max-width: 1023px) {
+      .main__content--problem {
+        height: auto;
+        overflow: visible;
+      }
+      .problem-split {
+        flex-direction: column;
+        overflow: visible;
+      }
+      .problem-col {
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 14px 18px;
+      }
+      .editor-col {
+        flex: none;
+        min-width: 0;
+        max-width: none;
+        overflow: visible;
+      }
+      .editor-col .practice-block {
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        margin: 14px;
+      }
+      .editor-col .practice-block__editor-wrap .CodeMirror {
+        height: 260px;
+      }
+      .editor-related {
+        max-height: none;
+        overflow: visible;
+        margin: 0 14px 14px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        border-top: 1px solid var(--border-color);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .problem-title-row { flex-direction: column; align-items: flex-start; }
+      .problem-ext-links { margin-left: 0; }
     }
   </style>
 </head>
 <body data-topic="problems">
-  <!-- Sidebar -->
+
+  <!-- Floating re-expand button (shown when sidebar is collapsed) -->
+  <button class="sidebar-expand-rail" id="sidebar-expand-rail" aria-label="Expand navigation" title="Expand navigation">&#9776;</button>
+
+  <!-- Site Navigation Sidebar -->
   <aside class="sidebar">
     <div class="sidebar__header">
       <a href="../index.html" class="sidebar__logo">
@@ -221,9 +543,14 @@
   <!-- Main Content -->
   <div class="main">
     <header class="main__header">
+      <!-- Mobile hamburger (existing, shows on < 1024px) -->
       <button class="hamburger" aria-label="Toggle menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
+
+      <!-- Desktop sidebar collapse toggle (hidden on mobile, handled by hamburger) -->
+      <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse navigation sidebar" title="Collapse sidebar (more space)">&#8249;</button>
+
       <div class="search-container">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" class="search-input" placeholder="Search topics...">
@@ -235,53 +562,56 @@
       </div>
     </header>
 
-    <div class="main__content">
+    <!-- Problem page uses a custom full-height layout, bypassing .main__content defaults -->
+    <div class="main__content--problem">
 
-      <!-- Breadcrumbs -->
-      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
-        <a href="../index.html">Home</a>
-        <span class="breadcrumbs__sep">/</span>
-        <a href="../index.html#problems">Problems</a>
-        <span class="breadcrumbs__sep">/</span>
-        <span>Two Sum</span>
+      <!-- Top bar: breadcrumbs + title + meta pills + external links -->
+      <div class="problem-topbar">
+        <div class="breadcrumbs" style="font-size:12px;">
+          <a href="../index.html">Home</a>
+          <span class="breadcrumbs__sep">/</span>
+          <a href="../index.html#problems">Problems</a>
+          <span class="breadcrumbs__sep">/</span>
+          <span>Two Sum</span>
+        </div>
+        <div class="problem-title-row">
+          <h1>Two Sum</h1>
+          <div class="problem-meta-pills">
+            <span class="pill pill-easy">Easy</span>
+            <span class="pill pill-pattern">Arrays &amp; Hashing</span>
+            <span class="pill pill-pattern">Hash Map</span>
+            <span class="pill pill-blind-75">Blind 75</span>
+            <span class="pill pill-faang-common">FAANG Common</span>
+          </div>
+          <div class="problem-ext-links">
+            <a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              LeetCode
+            </a>
+            <a href="../topics/arrays.html">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              Arrays &amp; Hashing
+            </a>
+            <a href="../index.html#problems">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              All Problems
+            </a>
+          </div>
+        </div>
       </div>
 
-      <!-- Problem title + meta -->
-      <h1 class="topic-header__title" style="margin-bottom:8px;">Two Sum</h1>
-      <div class="problem-meta-bar">
-        <span class="pill pill-easy">Easy</span>
-        <span class="pill pill-pattern">Arrays &amp; Hashing</span>
-        <span class="pill pill-pattern">Hash Map</span>
-        <span class="pill pill-blind-75">Blind 75</span>
-        <span class="pill pill-faang-common">FAANG Common</span>
-      </div>
-      <div class="problem-links">
-        <a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          View on LeetCode
-        </a>
-        <a href="../topics/arrays.html">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-          Arrays &amp; Hashing
-        </a>
-        <a href="../index.html#problems">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Problems
-        </a>
-      </div>
+      <!-- Split panes -->
+      <div class="problem-split">
 
-      <!-- Two-column layout: main content + sidebar -->
-      <div class="problem-page-layout">
-
-        <!-- ── Left: main column ──────────────────────────── -->
-        <div class="problem-main">
+        <!-- ── Left: problem content column ─────────────────── -->
+        <div class="problem-col">
 
           <!-- Problem Statement -->
-          <section class="topic-section">
-            <h2 class="topic-section__title">Problem</h2>
+          <div class="ps-section">
+            <div class="ps-section__title">Problem</div>
             <div class="problem-statement">
               <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return <strong>indices of the two numbers</strong> such that they add up to <code>target</code>.</p>
-              <p style="margin-top:10px;">You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice. You can return the answer in any order.</p>
+              <p style="margin-top:8px;">You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice. You can return the answer in any order.</p>
               <div class="problem-constraints">
                 <div class="problem-constraints__label">Constraints</div>
                 <ul>
@@ -292,75 +622,95 @@
                 </ul>
               </div>
             </div>
-          </section>
+          </div>
 
           <!-- Examples -->
-          <section class="topic-section">
-            <h2 class="topic-section__title">Examples</h2>
-            <div class="examples-grid">
-              <div class="example-card">
-                <div class="example-card__num">Example 1</div>
-                <div class="example-card__io">
-                  <div><span class="io-label">Input: </span><span class="io-value">nums = [2,7,11,15], target = 9</span></div>
-                  <div><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></div>
+          <div class="ps-section">
+            <div class="ps-section__title">Examples</div>
+            <div class="examples-list">
+              <div class="example-row">
+                <div class="example-row__num">Example 1</div>
+                <div class="example-row__io">
+                  <span><span class="io-label">Input: </span><span class="io-value">nums = [2,7,11,15], target = 9</span></span>
+                  <span><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></span>
                 </div>
-                <div class="example-card__explanation">nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].</div>
+                <div class="example-row__explanation">nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].</div>
               </div>
-              <div class="example-card">
-                <div class="example-card__num">Example 2</div>
-                <div class="example-card__io">
-                  <div><span class="io-label">Input: </span><span class="io-value">nums = [3,2,4], target = 6</span></div>
-                  <div><span class="io-label">Output: </span><span class="io-value">[1, 2]</span></div>
+              <div class="example-row">
+                <div class="example-row__num">Example 2</div>
+                <div class="example-row__io">
+                  <span><span class="io-label">Input: </span><span class="io-value">nums = [3,2,4], target = 6</span></span>
+                  <span><span class="io-label">Output: </span><span class="io-value">[1, 2]</span></span>
                 </div>
               </div>
-              <div class="example-card">
-                <div class="example-card__num">Example 3</div>
-                <div class="example-card__io">
-                  <div><span class="io-label">Input: </span><span class="io-value">nums = [3,3], target = 6</span></div>
-                  <div><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></div>
+              <div class="example-row">
+                <div class="example-row__num">Example 3</div>
+                <div class="example-row__io">
+                  <span><span class="io-label">Input: </span><span class="io-value">nums = [3,3], target = 6</span></span>
+                  <span><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></span>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- Try It Yourself -->
-          <section class="topic-section">
-            <div class="try-it-header">
-              <h2 class="topic-section__title" style="margin-bottom:0;">Try It Yourself</h2>
-            </div>
-            <p class="try-it-note">Write your solution below, then click <strong>Run Tests</strong> to check it against all three test cases.</p>
+          <!-- Interview Tips (collapsible, collapsed by default) -->
+          <div class="ps-section">
+            <div class="ps-section__title">Interview Tips</div>
+            <details class="interview-tips">
+              <summary class="interview-tips__toggle">
+                <span class="toggle-icon">&#9654;</span>
+                How to ace this in an interview
+                <span class="tip-badge">Expand</span>
+              </summary>
+              <div class="interview-tips__body">
 
-            <div class="practice-block"
-              data-title="Two Sum"
-              data-difficulty="easy"
-              data-fn="two_sum"
-              data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
-              data-tests='[
-                {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
-                {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
-                {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
-              ]'>
-              <div class="practice-problem">
-                Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
+                <div class="tip-block">
+                  <div class="tip-block__head">&#128483; Talk through it</div>
+                  <p class="tip-block__text">Read the problem aloud. Restate it in your own words. Confirm your understanding with the interviewer before writing any code.</p>
+                </div>
+
+                <div class="tip-block">
+                  <div class="tip-block__head">&#10067; Clarifying questions to ask</div>
+                  <ul>
+                    <li>What is the size of the array? Affects whether O(n&sup2;) is acceptable.</li>
+                    <li>Are there negative numbers? Zeros? Duplicates?</li>
+                    <li>Is exactly one answer guaranteed, or should I handle no-answer / multiple answers?</li>
+                    <li>Can I modify the input array?</li>
+                    <li>Should I return indices or values?</li>
+                  </ul>
+                </div>
+
+                <div class="tip-block">
+                  <div class="tip-block__head">&#129504; Think out loud</div>
+                  <p class="tip-block__text">Start with brute force — nested loops, O(n&sup2;) time. Estimate its complexity and say it. Then explain how to do better: "I can trade space for time using a hash map." State the tradeoff explicitly. Implement the simpler-to-explain approach first, not the cleverest. Test on the given example before touching edge cases.</p>
+                </div>
+
+                <div class="tip-block">
+                  <div class="tip-block__head">&#9888; Common mistakes</div>
+                  <ul>
+                    <li>Using the same element twice (e.g. <code>[3,3], target=6</code> is fine, but don't reuse a single element).</li>
+                    <li>Off-by-one when returning indices — double-check on Example 2.</li>
+                    <li>Hashing the values array instead of tracking <em>indices</em> — you need to return positions, not values.</li>
+                  </ul>
+                </div>
+
               </div>
-            </div>
-          </section>
+            </details>
+          </div>
 
           <!-- Approaches -->
-          <section class="topic-section">
-            <h2 class="topic-section__title">Approaches</h2>
-            <p class="approaches-note">Expand each approach to see the code, complexity, and the reasoning you'd walk through in an interview.</p>
+          <div class="ps-section">
+            <div class="ps-section__title">Approaches</div>
+            <p class="approaches-note">Expand each approach to see the code and the reasoning you'd walk through in an interview.</p>
 
             <div class="walkthrough-card">
-              <div class="walkthrough-head">
-                <span class="walkthrough-title">Solution Walkthroughs</span>
-              </div>
+              <div class="walkthrough-head">Solution Walkthroughs</div>
 
               <!-- Brute Force -->
               <details class="approach-block">
                 <summary class="approach-summary">
                   <span class="approach-name">Brute Force</span>
-                  <span class="approach-O-time approach-O-bad">Time: O(n²)</span>
+                  <span class="approach-O-time approach-O-bad">Time: O(n&sup2;)</span>
                   <span class="approach-O-space approach-O-good">Space: O(1)</span>
                 </summary>
                 <div class="approach-body">
@@ -370,7 +720,7 @@
             if nums[i] + nums[j] == target:
                 return [i, j]</pre>
                   <p class="approach-why">
-                    Check every possible pair. For each element at index <code>i</code>, scan all elements after it to find a complement. This is the first thing you'd say in an interview — it shows you understand the problem before jumping to the optimal approach. Slow, but provably correct. O(n²) time because of the nested loop; O(1) space because you only store loop indices.
+                    Check every possible pair. For each element at index <code>i</code>, scan all elements after it to find a complement. This is the first thing you'd say in an interview — it shows you understand the problem before jumping to the optimal approach. Slow, but provably correct. O(n&sup2;) time because of the nested loop; O(1) space because you only store loop indices.
                   </p>
                 </div>
               </details>
@@ -396,79 +746,59 @@
                 </div>
               </details>
 
-            </div><!-- /.walkthrough-card -->
-          </section>
-
-        </div><!-- /.problem-main -->
-
-        <!-- ── Right: sidebar ─────────────────────────────── -->
-        <aside class="problem-sidebar">
-
-          <!-- Related problems -->
-          <div class="sidebar-card">
-            <div class="sidebar-card__head">Related Problems</div>
-            <div class="sidebar-card__body" id="related-problems-list">
-              <!-- Populated inline below -->
-              <div class="related-item">
-                <span class="pill pill-easy" style="flex-shrink:0;">Easy</span>
-                <span class="related-item__title"><a href="contains-duplicate.html">Contains Duplicate</a></span>
-              </div>
-              <div class="related-item">
-                <span class="pill pill-medium" style="flex-shrink:0;">Med</span>
-                <span class="related-item__title"><a href="group-anagrams.html">Group Anagrams</a></span>
-              </div>
-              <div class="related-item">
-                <span class="pill pill-medium" style="flex-shrink:0;">Med</span>
-                <span class="related-item__title"><a href="longest-consecutive-sequence.html">Longest Consecutive Sequence</a></span>
-              </div>
             </div>
           </div>
 
-          <!-- Topic pages -->
-          <div class="sidebar-card">
-            <div class="sidebar-card__head">Topic Pages</div>
-            <div class="sidebar-card__body">
-              <div class="related-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                <span class="related-item__title"><a href="../topics/arrays.html">Arrays</a></span>
-              </div>
-              <div class="related-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                <span class="related-item__title"><a href="../topics/hash-table.html">Hash Table</a></span>
-              </div>
+        </div><!-- /.problem-col -->
+
+        <!-- ── Right: editor column ──────────────────────────── -->
+        <div class="editor-col">
+
+          <!-- Practice block (editor + test runner) -->
+          <div class="practice-block"
+            data-title="Two Sum"
+            data-difficulty="easy"
+            data-fn="two_sum"
+            data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
+            data-tests='[
+              {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
+              {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
+              {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
+            ]'>
+            <div class="practice-problem">
+              Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
             </div>
           </div>
 
-          <!-- Pattern info -->
-          <div class="sidebar-card">
-            <div class="sidebar-card__head">Pattern</div>
-            <div class="sidebar-card__body" style="padding: 14px;">
-              <span class="pill pill-pattern" style="margin-bottom:8px;display:inline-block;">Hash Map</span>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:0;">
-                Use a hash map to trade space for time. Instead of O(n) search, get O(1) lookup. Classic for "find pair / complement" problems.
-              </p>
+          <!-- Related problems + topic info below editor -->
+          <div class="editor-related">
+            <div class="editor-related__head">Related Problems &amp; Topics</div>
+            <div class="related-item">
+              <span class="pill pill-easy" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Easy</span>
+              <span class="related-item__title"><a href="contains-duplicate.html">Contains Duplicate</a></span>
+            </div>
+            <div class="related-item">
+              <span class="pill pill-medium" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Med</span>
+              <span class="related-item__title"><a href="group-anagrams.html">Group Anagrams</a></span>
+            </div>
+            <div class="related-item">
+              <span class="pill pill-medium" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Med</span>
+              <span class="related-item__title"><a href="longest-consecutive-sequence.html">Longest Consecutive Sequence</a></span>
+            </div>
+            <div class="related-item" style="border-bottom:none;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+              <span class="related-item__title"><a href="../topics/arrays.html">Arrays &amp; Hashing</a></span>
+              &nbsp;|&nbsp;
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+              <span class="related-item__title"><a href="../topics/hash-table.html">Hash Table</a></span>
             </div>
           </div>
 
-          <!-- Frequency info -->
-          <div class="sidebar-card">
-            <div class="sidebar-card__head">Frequency</div>
-            <div class="sidebar-card__body" style="padding: 14px;">
-              <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span class="pill pill-blind-75">Blind 75</span>
-                <span class="pill pill-faang-common">FAANG Common</span>
-              </div>
-              <p style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin:10px 0 0;">
-                One of the most commonly asked interview problems. Often used as a warm-up before harder hash map questions.
-              </p>
-            </div>
-          </div>
+        </div><!-- /.editor-col -->
 
-        </aside>
+      </div><!-- /.problem-split -->
 
-      </div><!-- /.problem-page-layout -->
-
-    </div><!-- /.main__content -->
+    </div><!-- /.main__content--problem -->
   </div><!-- /.main -->
 
   <!-- Scripts — same order as topic pages -->
@@ -481,7 +811,42 @@
   <script src="../js/keyboard.js"></script>
 
   <script>
-    // Inline problem data (prototype — will migrate to problems.json once format approved)
+    // ── Sidebar collapse toggle ──────────────────────────────
+    (function() {
+      var STORAGE_KEY = 'sidebar-collapsed';
+      var body = document.body;
+      var collapseBtn = document.getElementById('sidebar-collapse-btn');
+      var expandRail  = document.getElementById('sidebar-expand-rail');
+
+      function setCollapsed(collapsed) {
+        if (collapsed) {
+          body.classList.add('sidebar-collapsed');
+        } else {
+          body.classList.remove('sidebar-collapsed');
+        }
+        try { localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch(e) {}
+      }
+
+      // Restore persisted state
+      try {
+        if (localStorage.getItem(STORAGE_KEY) === '1') {
+          body.classList.add('sidebar-collapsed');
+        }
+      } catch(e) {}
+
+      if (collapseBtn) {
+        collapseBtn.addEventListener('click', function() {
+          setCollapsed(true);
+        });
+      }
+      if (expandRail) {
+        expandRail.addEventListener('click', function() {
+          setCollapsed(false);
+        });
+      }
+    })();
+
+    // ── Problem data (prototype — will migrate to problems.json) ──
     const problem = {
       id: 'two-sum',
       title: 'Two Sum',
@@ -491,7 +856,7 @@
       patterns: ['hash-map'],
       frequency_tags: ['blind-75', 'faang-common'],
       neetcode_category: 'Arrays & Hashing',
-      summary: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.',
+      summary: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
       constraints: [
         '2 <= nums.length <= 10^4',
         '-10^9 <= nums[i] <= 10^9',
@@ -504,7 +869,6 @@
         { input: 'nums = [3,3], target = 6',        output: '[0, 1]', explanation: '' }
       ],
       starter_code: 'def two_sum(nums, target):\n    # Your code here\n    pass',
-      // NOTE: expected values must match Python repr() output exactly (spaces after commas)
       test_cases: [
         { input: { nums: [2,7,11,15], target: 9 }, expected: '[0, 1]' },
         { input: { nums: [3,2,4],     target: 6 }, expected: '[1, 2]' },
@@ -516,20 +880,20 @@
           time: 'O(n²)',
           space: 'O(1)',
           code: 'def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]',
-          explanation: 'Check every pair. Slow but correct — useful as the obvious first approach you propose in an interview before optimizing.'
+          explanation: 'Check every pair. Slow but correct.'
         },
         {
           name: 'Hash Map',
           time: 'O(n)',
           space: 'O(n)',
           code: 'def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        complement = target - x\n        if complement in seen:\n            return [seen[complement], i]\n        seen[x] = i',
-          explanation: 'For each number, check if its complement (target - x) has already been seen. If yes, we found our pair. If no, store the current number with its index. Single pass, O(n) time at the cost of O(n) space.'
+          explanation: 'Single pass. For each x, check if target-x was seen before. Trade space for time.'
         }
       ],
       related_problem_ids: ['contains-duplicate', 'group-anagrams', 'longest-consecutive-sequence']
     };
 
-    // Init practice blocks (handles the editor + test runner)
+    // Init practice blocks (handles editor + test runner)
     document.addEventListener('DOMContentLoaded', function() {
       if (window.DSA && DSA.practice) {
         DSA.practice.init();
