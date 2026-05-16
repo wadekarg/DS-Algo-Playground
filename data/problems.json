@@ -26489,5 +26489,650 @@
       "merge-intervals",
       "insert-interval"
     ]
+  },
+  {
+    "id": "rotate-image",
+    "title": "Rotate Image",
+    "leetcode_url": "https://leetcode.com/problems/rotate-image/",
+    "leetcode_id": 48,
+    "difficulty": "medium",
+    "patterns": [
+      "matrix",
+      "math"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an n \u00d7 n 2D matrix representing an image. Rotate the image by 90 degrees CLOCKWISE in-place.",
+    "constraints": [
+      "n == matrix.length == matrix[i].length",
+      "1 <= n <= 20",
+      "-1000 <= matrix[i][j] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[1,2,3],[4,5,6],[7,8,9]]",
+        "output": "[[7,4,1],[8,5,2],[9,6,3]]",
+        "explanation": "Rotate 90\u00b0 CW."
+      }
+    ],
+    "function_name": "rotate",
+    "function_signature": "def rotate(matrix):",
+    "starter_code": "def rotate(matrix):\n    # Transpose then reverse each row. O(n^2) in place, returns the matrix.\n    pass",
+    "test_cases": [
+      {
+        "label": "3x3",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": "[[7, 4, 1], [8, 5, 2], [9, 6, 3]]"
+      },
+      {
+        "label": "1x1",
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "[[1]]"
+      },
+      {
+        "label": "2x2",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "[[3, 1], [4, 2]]"
+      },
+      {
+        "label": "4x4",
+        "args": [
+          [
+            [
+              5,
+              1,
+              9,
+              11
+            ],
+            [
+              2,
+              4,
+              8,
+              10
+            ],
+            [
+              13,
+              3,
+              6,
+              7
+            ],
+            [
+              15,
+              14,
+              12,
+              16
+            ]
+          ]
+        ],
+        "expected": "[[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Transpose (swap matrix[i][j] with matrix[j][i] for i < j), then reverse each row. This achieves 90\u00b0 CW rotation in-place with O(1) extra space.",
+      "clarifying_questions": [
+        {
+          "question": "Clockwise or counter-clockwise?",
+          "why": "CW per spec. CCW is reverse each row then transpose."
+        },
+        {
+          "question": "In-place?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "n x n only?",
+          "why": "Yes \u2014 different ranges for rectangular."
+        }
+      ],
+      "think_out_loud": "Two-step: transpose + row-reverse. Transposing via i < j avoids re-swapping.",
+      "edge_cases": [
+        {
+          "category": "1x1",
+          "details": "Unchanged."
+        },
+        {
+          "category": "2x2",
+          "details": "Algorithm works."
+        },
+        {
+          "category": "Large",
+          "details": "O(n\u00b2) handles."
+        }
+      ],
+      "common_mistakes": [
+        "Transposing the full grid (re-swaps).",
+        "Forgetting to reverse rows.",
+        "Allocating O(n\u00b2) new matrix."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic matrix rotation.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "Transpose + reverse trick.",
+        "In-place mutation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Two-step in 5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct, possibly with new-matrix first."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Re-transposes."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "n = len(matrix). for i in range(n): for j in range(i+1, n): swap matrix[i][j] and matrix[j][i].",
+        "for row in matrix: row.reverse()."
+      ],
+      "playbook_meta": "Total time: 4-7 min.",
+      "dont_do": [
+        "Don't transpose all i,j (re-swap).",
+        "Don't allocate new matrix."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Transpose + Reverse",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def rotate(matrix):\n    n = len(matrix)\n    # Transpose\n    for i in range(n):\n        for j in range(i + 1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    # Reverse each row\n    for row in matrix:\n        row.reverse()\n    return matrix",
+        "explanation": "Transpose along the main diagonal, then reverse each row. Equivalent to 90\u00b0 clockwise rotation. In-place, O(1) extra space."
+      }
+    ],
+    "related_problem_ids": [
+      "spiral-matrix",
+      "set-matrix-zeroes",
+      "transpose-matrix"
+    ]
+  },
+  {
+    "id": "spiral-matrix",
+    "title": "Spiral Matrix",
+    "leetcode_url": "https://leetcode.com/problems/spiral-matrix/",
+    "leetcode_id": 54,
+    "difficulty": "medium",
+    "patterns": [
+      "matrix",
+      "simulation"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n matrix, return all elements in spiral order (clockwise starting from top-left).",
+    "constraints": [
+      "1 <= m, n <= 10",
+      "-100 <= matrix[i][j] <= 100"
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[1,2,3],[4,5,6],[7,8,9]]",
+        "output": "[1,2,3,6,9,8,7,4,5]",
+        "explanation": "Spiral CW."
+      }
+    ],
+    "function_name": "spiralOrder",
+    "function_signature": "def spiralOrder(matrix):",
+    "starter_code": "def spiralOrder(matrix):\n    # Maintain four boundaries (top, bottom, left, right). Walk one direction, shrink, repeat.\n    pass",
+    "test_cases": [
+      {
+        "label": "3x3",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": "[1, 2, 3, 6, 9, 8, 7, 4, 5]"
+      },
+      {
+        "label": "3x4",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              5,
+              6,
+              7,
+              8
+            ],
+            [
+              9,
+              10,
+              11,
+              12
+            ]
+          ]
+        ],
+        "expected": "[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]"
+      },
+      {
+        "label": "1x1",
+        "args": [
+          [
+            [
+              5
+            ]
+          ]
+        ],
+        "expected": "[5]"
+      },
+      {
+        "label": "1xN",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "[1, 2, 3]"
+      },
+      {
+        "label": "Nx1",
+        "args": [
+          [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ]
+        ],
+        "expected": "[1, 2, 3]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Maintain four boundaries: top, bottom, left, right. Walk right (top row), then down (right column), then left (bottom row), then up (left column). After each, shrink that boundary. Stop when boundaries cross.",
+      "clarifying_questions": [
+        {
+          "question": "Always start top-left going right?",
+          "why": "Yes."
+        },
+        {
+          "question": "Rectangular matrices?",
+          "why": "Yes."
+        },
+        {
+          "question": "Empty matrix?",
+          "why": "Per spec, length >= 1. Return [] defensively."
+        }
+      ],
+      "think_out_loud": "Four-direction loop with shrinking bounds. Check after each step that bounds haven't crossed.",
+      "edge_cases": [
+        {
+          "category": "1x1",
+          "details": "One element."
+        },
+        {
+          "category": "Single row",
+          "details": "Walk right; done."
+        },
+        {
+          "category": "Single column",
+          "details": "Walk down; done."
+        },
+        {
+          "category": "Rectangle",
+          "details": "Bounds shrink at different rates."
+        }
+      ],
+      "common_mistakes": [
+        "Duplicating elements at corners.",
+        "Forgetting to check bounds after each direction.",
+        "Off-by-one on inclusive ranges."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Simulation classic.",
+      "introduction_context": "Common at Amazon, Microsoft.",
+      "really_testing": [
+        "Boundary management.",
+        "Bounds checking between directions."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Bounds approach in 7-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Visited-set approach; works."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Duplicates or misses corners."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "top, bottom = 0, len(matrix)-1. left, right = 0, len(matrix[0])-1.",
+        "while top <= bottom and left <= right:",
+        "  for c in range(left, right+1): result.append(matrix[top][c]). top += 1.",
+        "  for r in range(top, bottom+1): result.append(matrix[r][right]). right -= 1.",
+        "  if top <= bottom: for c in range(right, left-1, -1): result.append(matrix[bottom][c]). bottom -= 1.",
+        "  if left <= right: for r in range(bottom, top-1, -1): result.append(matrix[r][left]). left += 1."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't skip bounds re-checks.",
+        "Don't duplicate corners."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Four Boundaries",
+        "time": "O(m*n)",
+        "space": "O(1) extra",
+        "code": "def spiralOrder(matrix):\n    result = []\n    if not matrix:\n        return result\n    top, bottom = 0, len(matrix) - 1\n    left, right = 0, len(matrix[0]) - 1\n    while top <= bottom and left <= right:\n        for c in range(left, right + 1):\n            result.append(matrix[top][c])\n        top += 1\n        for r in range(top, bottom + 1):\n            result.append(matrix[r][right])\n        right -= 1\n        if top <= bottom:\n            for c in range(right, left - 1, -1):\n                result.append(matrix[bottom][c])\n            bottom -= 1\n        if left <= right:\n            for r in range(bottom, top - 1, -1):\n                result.append(matrix[r][left])\n            left += 1\n    return result",
+        "explanation": "Boundary-shrinking simulation. After walking each side, check that bounds haven't crossed before continuing \u2014 this handles single rows/columns at the end."
+      }
+    ],
+    "related_problem_ids": [
+      "rotate-image",
+      "set-matrix-zeroes"
+    ]
+  },
+  {
+    "id": "set-matrix-zeroes",
+    "title": "Set Matrix Zeroes",
+    "leetcode_url": "https://leetcode.com/problems/set-matrix-zeroes/",
+    "leetcode_id": 73,
+    "difficulty": "medium",
+    "patterns": [
+      "matrix"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n integer matrix, if an element is 0, set its entire row and column to 0. Do it in place.",
+    "constraints": [
+      "1 <= m, n <= 200",
+      "-2^31 <= matrix[i][j] <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[1,1,1],[1,0,1],[1,1,1]]",
+        "output": "[[1,0,1],[0,0,0],[1,0,1]]",
+        "explanation": "Row 1 and col 1 zeroed."
+      }
+    ],
+    "function_name": "setZeroes",
+    "function_signature": "def setZeroes(matrix):",
+    "starter_code": "def setZeroes(matrix):\n    # Use first row + first column as flags. Track separately whether first row/col themselves had a 0.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              1,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "[[1, 0, 1], [0, 0, 0], [1, 0, 1]]"
+      },
+      {
+        "label": "first row has 0",
+        "args": [
+          [
+            [
+              0,
+              1,
+              2,
+              0
+            ],
+            [
+              3,
+              4,
+              5,
+              2
+            ],
+            [
+              1,
+              3,
+              1,
+              5
+            ]
+          ]
+        ],
+        "expected": "[[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]]"
+      },
+      {
+        "label": "no zeros",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "[[1, 2], [3, 4]]"
+      },
+      {
+        "label": "all zeros",
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "[[0, 0], [0, 0]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "O(1) extra space: use the first row and first column as marker arrays. Pass 1: scan; if matrix[i][j]==0, set matrix[i][0]=0 and matrix[0][j]=0. Track separately whether row 0 or col 0 originally had a 0. Pass 2: based on markers, zero each cell. Pass 3: zero row 0/col 0 if flagged.",
+      "clarifying_questions": [
+        {
+          "question": "In-place?",
+          "why": "Yes."
+        },
+        {
+          "question": "Why not use O(m+n) memory?",
+          "why": "Simpler. The O(1) trick uses first row/col as marker."
+        },
+        {
+          "question": "What about negatives/sentinels?",
+          "why": "Spec says int range; can't use a sentinel value safely."
+        }
+      ],
+      "think_out_loud": "Three-pass with row/col markers. The trick is that we use the matrix itself as auxiliary memory but must remember whether row 0 / col 0 originally had a 0.",
+      "edge_cases": [
+        {
+          "category": "No zeros",
+          "details": "Unchanged."
+        },
+        {
+          "category": "All zeros",
+          "details": "Stays zero."
+        },
+        {
+          "category": "First row/col zero",
+          "details": "Use the separate flags."
+        }
+      ],
+      "common_mistakes": [
+        "O(m+n) sets \u2014 works but wastes space.",
+        "Forgetting to track first row/col flags.",
+        "Order of operations causing premature overwrites."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Famous in-place trick.",
+      "introduction_context": "Onsite at Amazon, Google.",
+      "really_testing": [
+        "In-place markers.",
+        "Order of operations."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "O(1) trick in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "O(m+n) sets; correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Bug overwrites markers."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "Track first_row_zero and first_col_zero.",
+        "Mark zeros in first row/col based on cells.",
+        "Zero cells based on markers (skip row 0 and col 0).",
+        "Zero row 0 / col 0 if originally had zero."
+      ],
+      "playbook_meta": "Total time: 12-18 min.",
+      "dont_do": [
+        "Don't forget the first row/col flags.",
+        "Don't overwrite markers prematurely."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "First Row/Column as Markers",
+        "time": "O(m*n)",
+        "space": "O(1)",
+        "code": "def setZeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    first_row_zero = any(matrix[0][j] == 0 for j in range(n))\n    first_col_zero = any(matrix[i][0] == 0 for i in range(m))\n    \n    # Mark via first row/col\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][j] == 0:\n                matrix[i][0] = 0\n                matrix[0][j] = 0\n    \n    # Zero cells based on markers\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][0] == 0 or matrix[0][j] == 0:\n                matrix[i][j] = 0\n    \n    if first_row_zero:\n        for j in range(n):\n            matrix[0][j] = 0\n    if first_col_zero:\n        for i in range(m):\n            matrix[i][0] = 0\n    \n    return matrix",
+        "explanation": "Use the matrix's first row and column as O(m+n) marker arrays in-place, plus two booleans for the first row/column themselves. Three passes: mark, propagate, finalize first row/col."
+      }
+    ],
+    "related_problem_ids": [
+      "rotate-image",
+      "spiral-matrix"
+    ]
   }
 ]
