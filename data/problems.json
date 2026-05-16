@@ -28233,5 +28233,455 @@
       "counting-bits",
       "missing-number"
     ]
+  },
+  {
+    "id": "counting-bits",
+    "title": "Counting Bits",
+    "leetcode_url": "https://leetcode.com/problems/counting-bits/",
+    "leetcode_id": 338,
+    "difficulty": "easy",
+    "patterns": [
+      "bit-manipulation",
+      "dp"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an integer n, return an array ans of length n+1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.",
+    "constraints": [
+      "0 <= n <= 10^5"
+    ],
+    "examples": [
+      {
+        "input": "n = 2",
+        "output": "[0,1,1]"
+      },
+      {
+        "input": "n = 5",
+        "output": "[0,1,1,2,1,2]"
+      }
+    ],
+    "function_name": "countBits",
+    "function_signature": "def countBits(n):",
+    "starter_code": "def countBits(n):\n    # dp[i] = dp[i >> 1] + (i & 1). O(n) time.\n    pass",
+    "test_cases": [
+      {
+        "label": "n=2",
+        "args": [
+          2
+        ],
+        "expected": "[0, 1, 1]"
+      },
+      {
+        "label": "n=5",
+        "args": [
+          5
+        ],
+        "expected": "[0, 1, 1, 2, 1, 2]"
+      },
+      {
+        "label": "n=0",
+        "args": [
+          0
+        ],
+        "expected": "[0]"
+      },
+      {
+        "label": "n=8",
+        "args": [
+          8
+        ],
+        "expected": "[0, 1, 1, 2, 1, 2, 2, 3, 1]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "DP: dp[i] = dp[i >> 1] + (i & 1). The right-shifted value's bit count plus the last bit. O(n) overall.",
+      "clarifying_questions": [
+        {
+          "question": "Include 0?",
+          "why": "Yes \u2014 ans[0] = 0."
+        },
+        {
+          "question": "O(n) required?",
+          "why": "Yes, ideally \u2014 naive is O(n log n)."
+        }
+      ],
+      "think_out_loud": "Bit count recurrence on i.",
+      "edge_cases": [
+        {
+          "category": "n=0",
+          "details": "[0]."
+        }
+      ],
+      "common_mistakes": [
+        "Calling popcount for each i: O(n log n)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "DP on bit-count.",
+      "introduction_context": "Amazon, Microsoft.",
+      "really_testing": [
+        "Recognize the recurrence."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DP in 3 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Brute force; refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "dp = [0]*(n+1). for i in range(1, n+1): dp[i] = dp[i>>1] + (i&1). return dp."
+      ],
+      "playbook_meta": "Total time: 3-5 min.",
+      "dont_do": [
+        "Don't compute popcount per i without DP."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DP on Right Shift",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def countBits(n):\n    dp = [0] * (n + 1)\n    for i in range(1, n + 1):\n        dp[i] = dp[i >> 1] + (i & 1)\n    return dp",
+        "explanation": "dp[i] = bit count of i = bit count of i>>1 + last bit of i. Each lookup O(1) using prior results."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-1-bits",
+      "single-number"
+    ]
+  },
+  {
+    "id": "reverse-bits",
+    "title": "Reverse Bits",
+    "leetcode_url": "https://leetcode.com/problems/reverse-bits/",
+    "leetcode_id": 190,
+    "difficulty": "easy",
+    "patterns": [
+      "bit-manipulation"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Reverse the bits of a given 32-bit unsigned integer.",
+    "constraints": [
+      "32-bit unsigned int input"
+    ],
+    "examples": [
+      {
+        "input": "n = 43261596 (binary 00000010100101000001111010011100)",
+        "output": "964176192 (00111001011110000010100101000000)"
+      }
+    ],
+    "function_name": "reverseBits",
+    "function_signature": "def reverseBits(n):",
+    "starter_code": "def reverseBits(n):\n    # Shift result left, push n's lowest bit, then shift n right. 32 iterations.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          43261596
+        ],
+        "expected": "964176192"
+      },
+      {
+        "label": "all zeros",
+        "args": [
+          0
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all ones",
+        "args": [
+          4294967295
+        ],
+        "expected": "4294967295"
+      },
+      {
+        "label": "1 to MSB",
+        "args": [
+          1
+        ],
+        "expected": "2147483648"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Iterate 32 times: result = (result << 1) | (n & 1); n >>= 1. Shift result left to make room for the next bit.",
+      "clarifying_questions": [
+        {
+          "question": "32-bit?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Sign handling?",
+          "why": "Unsigned \u2014 treat as 32-bit pattern."
+        }
+      ],
+      "think_out_loud": "Standard bit-reversal loop.",
+      "edge_cases": [
+        {
+          "category": "Symmetric input",
+          "details": "Like 0xAAAAAAAA reverses to 0x55555555."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one on 32 iterations.",
+        "Forgetting to mask result to 32 bits in some languages."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Bit-reversal.",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "Bit shifting fluency."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "3 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "String conversion."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "result = 0. for _ in range(32): result = (result<<1) | (n&1). n >>= 1. return result."
+      ],
+      "playbook_meta": "Total time: 3-5 min.",
+      "dont_do": [
+        "Don't string-convert.",
+        "Don't miss the 32 iter bound."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bit-by-Bit Shift",
+        "time": "O(32)",
+        "space": "O(1)",
+        "code": "def reverseBits(n):\n    result = 0\n    for _ in range(32):\n        result = (result << 1) | (n & 1)\n        n >>= 1\n    return result",
+        "explanation": "32-iteration loop. Each step: shift result left to make space, OR the lowest bit of n, shift n right. After 32 steps, n's bits are reversed into result."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-1-bits",
+      "counting-bits"
+    ]
+  },
+  {
+    "id": "missing-number",
+    "title": "Missing Number",
+    "leetcode_url": "https://leetcode.com/problems/missing-number/",
+    "leetcode_id": 268,
+    "difficulty": "easy",
+    "patterns": [
+      "bit-manipulation",
+      "math"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array nums containing n distinct numbers in the range [0, n], return the only number missing.",
+    "constraints": [
+      "1 <= n <= 10^4",
+      "0 <= nums[i] <= n",
+      "all distinct"
+    ],
+    "examples": [
+      {
+        "input": "nums = [3,0,1]",
+        "output": "2"
+      },
+      {
+        "input": "nums = [9,6,4,2,3,5,7,0,1]",
+        "output": "8"
+      }
+    ],
+    "function_name": "missingNumber",
+    "function_signature": "def missingNumber(nums):",
+    "starter_code": "def missingNumber(nums):\n    # XOR all indices 0..n with all values. Pairs cancel; missing index remains.\n    pass",
+    "test_cases": [
+      {
+        "label": "[3,0,1]",
+        "args": [
+          [
+            3,
+            0,
+            1
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "longer",
+        "args": [
+          [
+            9,
+            6,
+            4,
+            2,
+            3,
+            5,
+            7,
+            0,
+            1
+          ]
+        ],
+        "expected": "8"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "missing 0",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches: (1) Sum formula: n*(n+1)/2 - sum(nums). (2) XOR: XOR all indices 0..n with all nums; missing remains. Both O(n) O(1).",
+      "clarifying_questions": [
+        {
+          "question": "Exactly one missing?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Overflow?",
+          "why": "Python ints unbounded; n=10^4 fine."
+        }
+      ],
+      "think_out_loud": "Either formula or XOR.",
+      "edge_cases": [
+        {
+          "category": "Missing 0",
+          "details": "Algorithm finds it."
+        },
+        {
+          "category": "Single element",
+          "details": "Either 0 or 1."
+        }
+      ],
+      "common_mistakes": [
+        "Sorting: O(n log n) when O(n) is achievable.",
+        "Overflow in formula (in C++/Java)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Sum or XOR trick.",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "O(1) extra space trick."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Either trick in 2 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Hash set."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Sort."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "return n*(n+1)//2 - sum(nums)."
+      ],
+      "playbook_meta": "Total time: 1-3 min.",
+      "dont_do": [
+        "Don't sort.",
+        "Don't use hash set."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sum Formula",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def missingNumber(nums):\n    n = len(nums)\n    return n * (n + 1) // 2 - sum(nums)",
+        "explanation": "Total of [0..n] is n*(n+1)/2. Subtract actual sum to get the missing value."
+      },
+      {
+        "name": "XOR",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def missingNumber(nums):\n    result = len(nums)\n    for i, x in enumerate(nums):\n        result ^= i ^ x\n    return result",
+        "explanation": "XOR all indices and values. Pairs cancel; only the missing index remains."
+      }
+    ],
+    "related_problem_ids": [
+      "single-number",
+      "number-of-1-bits"
+    ]
   }
 ]
