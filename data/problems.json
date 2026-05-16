@@ -10484,5 +10484,775 @@
       "diameter-of-binary-tree",
       "same-tree"
     ]
+  },
+  {
+    "id": "subtree-of-another-tree",
+    "title": "Subtree of Another Tree",
+    "leetcode_url": "https://leetcode.com/problems/subtree-of-another-tree/",
+    "leetcode_id": 572,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the roots of two binary trees root and subRoot, return True if there is a subtree of root with the same structure and node values as subRoot.",
+    "constraints": [
+      "Number of nodes in root is in [1, 2000].",
+      "Number of nodes in subRoot is in [1, 1000].",
+      "-10^4 <= node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "root = [3,4,5,1,2], subRoot = [4,1,2]",
+        "output": "True",
+        "explanation": "The left subtree of root matches subRoot exactly."
+      },
+      {
+        "input": "root = [3,4,5,1,2,None,None,None,None,0], subRoot = [4,1,2]",
+        "output": "False",
+        "explanation": "The subtree at node 4 has an extra '0' below it, so it doesn't match subRoot."
+      }
+    ],
+    "function_name": "isSubtree",
+    "function_signature": "def isSubtree(root_values, sub_values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isSubtree(root_values, sub_values):\n    # Pretend the signature is isSubtree(root: TreeNode, subRoot: TreeNode) -> bool.\n    root = build_tree(root_values)\n    sub = build_tree(sub_values)\n    \n    # Your code: walk root, and at each node check if subtree there is identical to sub.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "match found",
+        "args": [
+          [
+            3,
+            4,
+            5,
+            1,
+            2
+          ],
+          [
+            4,
+            1,
+            2
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "structurally extended",
+        "args": [
+          [
+            3,
+            4,
+            5,
+            1,
+            2,
+            null,
+            null,
+            null,
+            null,
+            0
+          ],
+          [
+            4,
+            1,
+            2
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "identical roots",
+        "args": [
+          [
+            1,
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "no match",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty subRoot",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single node match",
+        "args": [
+          [
+            5
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "right-subtree match",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            3,
+            6,
+            7
+          ]
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two-step recursion. Outer recursion walks every node of root, asking 'does the subtree rooted here equal subRoot?'. Inner check is the standard Same Tree comparison. O(m \u00d7 n) in the worst case where m = |root|, n = |subRoot|. For competitive scenarios there's an O(m + n) trick using KMP on a serialization, but the O(mn) DFS is what's expected.",
+      "clarifying_questions": [
+        {
+          "question": "What if subRoot is empty?",
+          "why": "By convention an empty tree is a subtree of any tree. Return True. Worth confirming."
+        },
+        {
+          "question": "What if root is empty but subRoot isn't?",
+          "why": "False. Recursion's base case (root None, sub not None) handles it."
+        },
+        {
+          "question": "Match means structure AND values exact?",
+          "why": "Yes. Same Tree semantics \u2014 every position must match, including None positions."
+        },
+        {
+          "question": "Can root and subRoot be the same tree?",
+          "why": "Yes. Trivially True. Top-level Same Tree call returns immediately."
+        },
+        {
+          "question": "Any performance concern at n=2000, m=1000?",
+          "why": "O(2 * 10^6) \u2014 fine. No need for the KMP optimization in a basic interview."
+        }
+      ],
+      "think_out_loud": "Two passes work together: walk every node of root, and at each one ask 'is the subtree rooted here Same as subRoot?'. The Same Tree comparison is a separate helper. Recursion: isSubtree(root, sub) = same(root, sub) OR isSubtree(root.left, sub) OR isSubtree(root.right, sub). Base: if root is None return sub is None.",
+      "edge_cases": [
+        {
+          "category": "Empty subRoot",
+          "details": "True \u2014 empty matches everywhere."
+        },
+        {
+          "category": "Empty root, non-empty subRoot",
+          "details": "False."
+        },
+        {
+          "category": "Identical trees",
+          "details": "True at the outermost Same Tree call."
+        },
+        {
+          "category": "Subtree present deeper",
+          "details": "Outer recursion descends into both children until Same Tree matches."
+        },
+        {
+          "category": "Values match but structure extended",
+          "details": "False \u2014 Same Tree catches the extra null vs node."
+        }
+      ],
+      "common_mistakes": [
+        "Comparing by values only \u2014 misses structural differences.",
+        "Skipping the base case for Same Tree (both None case).",
+        "Trying to find subRoot using just values \u2014 fails when values repeat.",
+        "Forgetting to recurse into BOTH children of root (only checking left).",
+        "Confusing 'subtree' with 'sub-set of nodes' \u2014 they're different (subtree must be a full subtree)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Tree recursion with a helper. Tests composing two recursive functions cleanly.",
+      "introduction_context": "Phone screen at Amazon, Bloomberg. Often follows Same Tree directly \u2014 interviewer says 'and now find this as a subtree'.",
+      "really_testing": [
+        "Composing isSameTree as a helper inside a larger recursion.",
+        "Understanding 'subtree' means structure AND values match exactly.",
+        "Base case discipline (both None, one None, etc.)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Reaches for Same Tree as helper instantly. Codes both in 5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one base-case bug self-fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Compares by values only or forgets one base case."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive the two-recursion structure."
+        }
+      ],
+      "playbook": [
+        "Restate: 'is subRoot identical to some subtree of root?'",
+        "Decompose: 'helper isSame(a, b); main isSubtree(root, sub) = isSame OR recurse left OR recurse right'.",
+        "Code: def isSame(a, b): if not a and not b: return True. if not a or not b: return False. return a.val == b.val and isSame(a.left, b.left) and isSame(a.right, b.right). def isSubtree(root, sub): if not sub: return True. if not root: return False. return isSame(root, sub) or isSubtree(root.left, sub) or isSubtree(root.right, sub).",
+        "Walk root=[3,4,5,1,2] sub=[4,1,2]: at root.left=4, isSame(4-subtree, sub) \u2192 True. Return True. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: 'O(m+n)?' \u2014 serialize and use KMP.",
+      "dont_do": [
+        "Don't compare by values only.",
+        "Don't forget either base case.",
+        "Don't recurse only on left or only on right.",
+        "Don't write a 'maybe a subtree' check that returns True for partial matches."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two-Recursion DFS",
+        "time": "O(m * n) worst case",
+        "space": "O(h_root) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isSubtree(root_values, sub_values):\n    root = build_tree(root_values)\n    sub = build_tree(sub_values)\n    \n    def isSame(a, b):\n        if not a and not b:\n            return True\n        if not a or not b:\n            return False\n        return a.val == b.val and isSame(a.left, b.left) and isSame(a.right, b.right)\n    \n    def check(node):\n        if not sub:\n            return True\n        if not node:\n            return False\n        return isSame(node, sub) or check(node.left) or check(node.right)\n    \n    return check(root)",
+        "explanation": "Two recursions working together. isSame is the standard Same Tree check. check walks every node of root, asking if the subtree there matches sub. Worst case O(m \u00d7 n) because we might do a full Same Tree comparison at every node of root, but usually much less due to short-circuiting on first mismatch."
+      }
+    ],
+    "related_problem_ids": [
+      "same-tree",
+      "invert-binary-tree",
+      "maximum-depth-of-binary-tree"
+    ]
+  },
+  {
+    "id": "lowest-common-ancestor-of-a-binary-search-tree",
+    "title": "Lowest Common Ancestor of a Binary Search Tree",
+    "leetcode_url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+    "leetcode_id": 235,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "bst"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a binary search tree (BST) and two nodes p and q (given by value), return the lowest common ancestor (LCA) of those two nodes \u2014 the deepest node that is an ancestor of both.",
+    "constraints": [
+      "Number of nodes is in [2, 10^5].",
+      "-10^9 <= Node.val <= 10^9",
+      "All Node.val are unique.",
+      "p != q. Both p and q exist in the BST."
+    ],
+    "examples": [
+      {
+        "input": "root = [6,2,8,0,4,7,9,None,None,3,5], p = 2, q = 8",
+        "output": "6",
+        "explanation": "Root 6 is the LCA \u2014 2 is in the left subtree, 8 in the right."
+      },
+      {
+        "input": "root = [6,2,8,0,4,7,9,None,None,3,5], p = 2, q = 4",
+        "output": "2",
+        "explanation": "2 is an ancestor of 4 (and trivially of itself). LCA = 2."
+      }
+    ],
+    "function_name": "lowestCommonAncestor",
+    "function_signature": "def lowestCommonAncestor(values, p, q):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef lowestCommonAncestor(values, p, q):\n    # Pretend the signature is lowestCommonAncestor(root, p: TreeNode, q: TreeNode) -> TreeNode.\n    # Here p and q are passed by their values.\n    # Return the LCA node's value.\n    root = build_tree(values)\n    \n    # Your code: navigate the BST. If p and q both < node, go left. If both > node, go right.\n    # Otherwise this node is the LCA.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "LCA at root",
+        "args": [
+          [
+            6,
+            2,
+            8,
+            0,
+            4,
+            7,
+            9,
+            null,
+            null,
+            3,
+            5
+          ],
+          2,
+          8
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "LCA is ancestor (p)",
+        "args": [
+          [
+            6,
+            2,
+            8,
+            0,
+            4,
+            7,
+            9,
+            null,
+            null,
+            3,
+            5
+          ],
+          2,
+          4
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "two-node tree",
+        "args": [
+          [
+            2,
+            1
+          ],
+          1,
+          2
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "right subtree LCA",
+        "args": [
+          [
+            6,
+            2,
+            8,
+            0,
+            4,
+            7,
+            9
+          ],
+          7,
+          9
+        ],
+        "expected": "8"
+      },
+      {
+        "label": "p == ancestor of q deep",
+        "args": [
+          [
+            6,
+            2,
+            8,
+            0,
+            4,
+            7,
+            9,
+            null,
+            null,
+            3,
+            5
+          ],
+          4,
+          5
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "BST property is the trick. Walk from root. If both p.val and q.val are LESS than current node, LCA is in the left subtree \u2192 go left. If both GREATER, go right. Otherwise \u2014 they split here, so this node IS the LCA. O(h) time, O(1) extra space iteratively.",
+      "clarifying_questions": [
+        {
+          "question": "Is the tree guaranteed to be a BST?",
+          "why": "Yes \u2014 this is the BST variant. Don't confuse with the general binary tree version (LC 236), which can't use the ordering trick."
+        },
+        {
+          "question": "Are p and q guaranteed to exist?",
+          "why": "Yes, per spec. So we don't have to handle 'not found'."
+        },
+        {
+          "question": "Can a node be an ancestor of itself?",
+          "why": "Yes. If p == q's ancestor, LCA = p. If p == q (not in this problem but worth confirming), LCA = p."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "Iterative is cleaner (no stack), but recursive is fine. Both are O(h) time."
+        },
+        {
+          "question": "Why is this Medium, not Easy?",
+          "why": "Because students who don't know the BST trick try to do the general algorithm (track paths, etc.), which is much more complex. Recognizing the BST shortcut is the test."
+        }
+      ],
+      "think_out_loud": "BST navigation. Compare both target values against the current node. If both smaller \u2192 answer is to the left. If both larger \u2192 answer is to the right. If they straddle (one smaller, one larger, or one equals current) \u2192 current node is the LCA (the split point). Iterative implementation: while node: if both < val: node = node.left. elif both > val: node = node.right. else: return node.",
+      "edge_cases": [
+        {
+          "category": "One of p, q is an ancestor of the other",
+          "details": "Algorithm returns the ancestor. The split happens exactly there."
+        },
+        {
+          "category": "p or q equals root",
+          "details": "Root is the LCA. Algorithm returns root immediately."
+        },
+        {
+          "category": "Both in left subtree",
+          "details": "Walk left. Recurses until split."
+        },
+        {
+          "category": "Both in right subtree",
+          "details": "Walk right. Recurses until split."
+        },
+        {
+          "category": "Two-node tree",
+          "details": "Root is LCA of root and its only child."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting the BST property and writing the general (LC 236) algorithm \u2014 works but overkill.",
+        "Using > and < without handling equality \u2014 equals means 'this is the ancestor itself'.",
+        "Not normalizing (min, max) of p and q \u2014 easy to handle both orderings with comparisons directly.",
+        "Recursing past the LCA \u2014 failing to stop when the values straddle.",
+        "Comparing nodes by identity when the problem gives values \u2014 make sure to compare values."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "BST navigation classic. The interviewer is watching for whether you exploit the BST ordering \u2014 solving this without it is much harder.",
+      "introduction_context": "Common at Amazon, Meta, Microsoft. Often a warm-up before LCA of a general binary tree (LC 236).",
+      "really_testing": [
+        "Recognizing BST property as the shortcut.",
+        "Understanding 'split point' = LCA.",
+        "Clean iterative loop with three branches (both <, both >, otherwise).",
+        "Comfort comparing values, not node identities."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Uses BST property in 1 min, codes the iterative loop in 3-5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Recursive solution; correct but doesn't initially exploit BST. Refactors when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Writes general LCA algorithm; can't simplify even with hints."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working LCA. Or tries to walk from leaves up."
+        }
+      ],
+      "playbook": [
+        "Restate: 'lowest common ancestor in a BST'.",
+        "Insight: 'BST split point = LCA'.",
+        "Code: node = root. while node: if p < node.val and q < node.val: node = node.left. elif p > node.val and q > node.val: node = node.right. else: return node.val.",
+        "Walk [6,2,8,...] with p=2, q=8: 2 < 6 and 8 > 6 \u2192 split at root. Return 6. \u2713",
+        "Walk p=7, q=9: both > 6 \u2192 go right to 8. Both > 8? 7 < 8, so split. Return 8. \u2713"
+      ],
+      "playbook_meta": "Total time: 3-5 min. Follow-up: LCA in a general binary tree (LC 236) \u2014 completely different algorithm (post-order traversal, return non-None on either side).",
+      "dont_do": [
+        "Don't write the general algorithm \u2014 BST shortcut is the point.",
+        "Don't forget to handle 'p == current' (use OR equals).",
+        "Don't compare nodes by identity \u2014 use values.",
+        "Don't ascend (walk up) \u2014 that requires parent pointers."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative BST Navigation",
+        "time": "O(h) \u2014 tree height",
+        "space": "O(1)",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef lowestCommonAncestor(values, p, q):\n    root = build_tree(values)\n    node = root\n    while node:\n        if p < node.val and q < node.val:\n            node = node.left\n        elif p > node.val and q > node.val:\n            node = node.right\n        else:\n            # Values straddle the current node (or one equals it) \u2192 LCA\n            return node.val\n    return None",
+        "explanation": "The canonical BST solution. Walk down from root. If both targets are smaller than the current node, the LCA must be in the left subtree. If both are larger, go right. Otherwise the targets split at this node (or one equals it) \u2014 this is the LCA. O(h) time, O(1) extra space. Iterative beats recursive because there's no recursion stack."
+      },
+      {
+        "name": "Recursive",
+        "time": "O(h)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef lowestCommonAncestor(values, p, q):\n    root = build_tree(values)\n    \n    def lca(node):\n        if p < node.val and q < node.val:\n            return lca(node.left)\n        if p > node.val and q > node.val:\n            return lca(node.right)\n        return node\n    \n    return lca(root).val",
+        "explanation": "Same idea recursively. Cleaner to read but uses O(h) stack space. Equivalent correctness."
+      }
+    ],
+    "related_problem_ids": [
+      "validate-binary-search-tree",
+      "same-tree",
+      "maximum-depth-of-binary-tree"
+    ]
+  },
+  {
+    "id": "binary-tree-level-order-traversal",
+    "title": "Binary Tree Level Order Traversal",
+    "leetcode_url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+    "leetcode_id": 102,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "bfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a binary tree, return the level order traversal of its nodes' values \u2014 i.e., a list of lists, one per level from top to bottom.",
+    "constraints": [
+      "Number of nodes is in [0, 2000].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "values = [3,9,20,None,None,15,7]",
+        "output": "[[3],[9,20],[15,7]]",
+        "explanation": "Three levels: root, then 9 and 20, then 15 and 7."
+      },
+      {
+        "input": "values = [1]",
+        "output": "[[1]]",
+        "explanation": "Single node, single level."
+      },
+      {
+        "input": "values = []",
+        "output": "[]",
+        "explanation": "Empty tree \u2014 empty result."
+      }
+    ],
+    "function_name": "levelOrder",
+    "function_signature": "def levelOrder(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef levelOrder(values):\n    # Pretend the signature is levelOrder(root: TreeNode) -> List[List[int]].\n    root = build_tree(values)\n    \n    # Your code: BFS by level. For each level, collect values; descend together.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic [3,9,20,N,N,15,7]",
+        "args": [
+          [
+            3,
+            9,
+            20,
+            null,
+            null,
+            15,
+            7
+          ]
+        ],
+        "expected": "[[3], [9, 20], [15, 7]]"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[[1]]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "skewed left",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "[[1], [2], [3]]"
+      },
+      {
+        "label": "balanced 3 levels",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "[[1], [2, 3], [4, 5, 6, 7]]"
+      },
+      {
+        "label": "sparse with nulls",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            null,
+            4,
+            null,
+            5
+          ]
+        ],
+        "expected": "[[1], [2, 3], [4, 5]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Classic BFS. Use a queue (deque). On each outer-loop iteration, snapshot the current queue size \u2014 that's how many nodes are at this level. Pop exactly that many, collect their values into a level list, enqueue their children. Repeat until queue is empty.",
+      "clarifying_questions": [
+        {
+          "question": "Empty tree \u2014 return empty list or list with empty inner list?",
+          "why": "Empty list []. Trivial case but worth confirming."
+        },
+        {
+          "question": "Level ordering \u2014 top to bottom or bottom to top?",
+          "why": "Top to bottom (spec). LC 107 asks for bottom to top with the same algorithm + reverse."
+        },
+        {
+          "question": "Left to right within each level?",
+          "why": "Yes. Standard BFS order \u2014 pop in FIFO order naturally produces left-to-right."
+        },
+        {
+          "question": "Can I use DFS with a level counter?",
+          "why": "Yes \u2014 recurse, passing the level depth, append to result[level]. Slightly more code but works and impresses with the alternative."
+        },
+        {
+          "question": "Space concerns?",
+          "why": "Queue can hold up to a full level \u2014 width of the widest level. Worst case n/2 for a balanced tree."
+        }
+      ],
+      "think_out_loud": "Standard BFS by levels. Three-line trick: 'for _ in range(len(queue)):' processes exactly one level. Each iteration pops a node, appends its value to the current level's list, enqueues children. Outer loop continues while queue is non-empty.",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "Return []. Outer loop never enters."
+        },
+        {
+          "category": "Single node",
+          "details": "[[root.val]]. One level."
+        },
+        {
+          "category": "Skewed tree",
+          "details": "n levels, each with 1 node. Algorithm still works."
+        },
+        {
+          "category": "Wide tree",
+          "details": "Few levels, many nodes per level. Queue grows to max level width."
+        },
+        {
+          "category": "Sparse with nulls",
+          "details": "Just skip enqueueing None children. Levels naturally contain only existing nodes."
+        }
+      ],
+      "common_mistakes": [
+        "Not snapshotting queue size before the inner loop \u2014 children get added and confused with current level.",
+        "Using a regular list (pop(0)) \u2014 O(n) per pop = O(n\u00b2) total. Use deque.popleft().",
+        "Enqueueing None children \u2014 extra checks needed; cleaner to filter at enqueue time.",
+        "Forgetting the outer 'while queue' termination.",
+        "Returning a flat list instead of list-of-lists."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The canonical BFS-on-a-tree problem. Essential pattern \u2014 many tree problems reduce to this.",
+      "introduction_context": "Common at Amazon, Meta, Google. Solving it cleanly is the foundation for related problems: Right Side View, Zigzag Order, Average of Levels.",
+      "really_testing": [
+        "BFS implementation with a queue.",
+        "The 'snapshot size = level count' technique.",
+        "Using deque, not list, for O(1) pops.",
+        "Producing list-of-lists output structure."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes the 7-line BFS in 4-5 min. Uses deque correctly."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct with minor cleanup (uses list.pop(0), refactors when noted)."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy queue management. Or DFS without proper level tracking."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot implement BFS at all."
+        }
+      ],
+      "playbook": [
+        "Restate: 'list of lists, top-to-bottom, left-to-right'.",
+        "Pitch BFS with deque.",
+        "Code: from collections import deque. if not root: return []. queue = deque([root]); result = []. while queue: level = []. for _ in range(len(queue)): node = queue.popleft(); level.append(node.val); if node.left: queue.append(node.left); if node.right: queue.append(node.right). result.append(level). return result.",
+        "Walk [3,9,20,N,N,15,7]: Q=[3]. Level=[3], add 9,20. Q=[9,20]. Level=[9,20], add 15,7. Q=[15,7]. Level=[15,7]. Done. \u2713"
+      ],
+      "playbook_meta": "Total time: 4-7 min. Follow-up: Zigzag (LC 103), Right Side View (LC 199), Average of Levels (LC 637) \u2014 all use this same pattern.",
+      "dont_do": [
+        "Don't use list.pop(0) \u2014 quadratic.",
+        "Don't enqueue None children.",
+        "Don't snapshot len(queue) inside the loop where it changes.",
+        "Don't write recursive DFS unless asked \u2014 BFS is the natural answer."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "BFS with Queue (snapshot size)",
+        "time": "O(n)",
+        "space": "O(w) \u2014 max level width",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\nfrom collections import deque\n\ndef levelOrder(values):\n    root = build_tree(values)\n    if not root:\n        return []\n    \n    queue = deque([root])\n    result = []\n    while queue:\n        level = []\n        for _ in range(len(queue)):  # snapshot size = exactly this level's count\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result",
+        "explanation": "The canonical BFS-by-level pattern. The for-loop with len(queue) snapshot ensures we process exactly one level per outer iteration. Each node is enqueued and dequeued once \u2192 O(n). Queue grows up to the widest level."
+      },
+      {
+        "name": "DFS with Level Counter",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef levelOrder(values):\n    root = build_tree(values)\n    result = []\n    \n    def dfs(node, depth):\n        if not node:\n            return\n        if depth == len(result):\n            result.append([])\n        result[depth].append(node.val)\n        dfs(node.left, depth + 1)\n        dfs(node.right, depth + 1)\n    \n    dfs(root, 0)\n    return result",
+        "explanation": "Alternative DFS approach. Recurse with the current depth as an extra argument. The result list grows as new depths are encountered. Same O(n) complexity, less natural for level-order but valid. Worth mentioning as an option."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-depth-of-binary-tree",
+      "binary-tree-right-side-view",
+      "invert-binary-tree"
+    ]
   }
 ]
