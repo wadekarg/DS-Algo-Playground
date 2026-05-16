@@ -1533,35 +1533,260 @@
     "id": "longest-consecutive-sequence",
     "title": "Longest Consecutive Sequence",
     "leetcode_url": "https://leetcode.com/problems/longest-consecutive-sequence/",
+    "leetcode_id": 128,
     "difficulty": "medium",
-    "patterns": [
-      "hash-map"
-    ],
-    "topics": [
-      "arrays",
-      "hash-table"
-    ],
+
+    "patterns": ["hash-map"],
+    "topics": ["arrays", "hash-table"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": [
-      "blind-75"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence. You must write an algorithm that runs in O(n) time.",
+
+    "constraints": [
+      "0 <= nums.length <= 10^5",
+      "-10^9 <= nums[i] <= 10^9"
+    ],
+
+    "examples": [
+      { "input": "nums = [100,4,200,1,3,2]", "output": "4", "explanation": "The longest consecutive sequence is [1,2,3,4]. Length 4." },
+      { "input": "nums = [0,3,7,2,5,8,4,6,0,1]", "output": "9", "explanation": "The longest consecutive sequence is [0,1,2,3,4,5,6,7,8]. Length 9." }
+    ],
+
+    "function_name": "longest_consecutive",
+    "function_signature": "def longest_consecutive(nums):",
+    "starter_code": "def longest_consecutive(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic example", "args": [[100,4,200,1,3,2]], "expected": "4" },
+      { "label": "long consecutive run", "args": [[0,3,7,2,5,8,4,6,0,1]], "expected": "9" },
+      { "label": "empty input", "args": [[]], "expected": "0" },
+      { "label": "single element", "args": [[1]], "expected": "1" },
+      { "label": "all duplicates", "args": [[5,5,5,5]], "expected": "1" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "The 'must be O(n)' constraint rules out sort. The trick: put nums in a hash set, then walk only from SEQUENCE STARTS — numbers where (num - 1) is NOT in the set. From each start, count forward (num+1, num+2, ...) while they're in the set. This guarantees O(n) total because each number is visited at most twice (once as a candidate start, once during a forward walk).",
+
+      "clarifying_questions": [
+        { "question": "Does the algorithm need to be strictly O(n)?", "why": "Spec says yes. That rules out sort O(n log n). Confirms you need the hash-set-with-start-detection trick." },
+        { "question": "Can the array have duplicates?", "why": "Yes per constraints. Duplicates don't affect the longest sequence (the set dedupes naturally). Confirm so you handle [5,5,5,5] correctly." },
+        { "question": "Can values be negative or zero?", "why": "Per constraints, yes (-10^9 to 10^9). Hash works fine for any int. Worth confirming you're not assuming positives." },
+        { "question": "Empty array?", "why": "Returns 0. Trivial but worth confirming." },
+        { "question": "Single-element array?", "why": "Returns 1. The sequence of length 1 is just that element." }
+      ],
+
+      "think_out_loud": "Sort and scan is O(n log n) — too slow per spec. Naive set + walk-forward from EVERY number is O(n²) worst case (input [1,2,3,...,n] makes you walk from each number). The fix: only walk forward from numbers that DON'T have a predecessor in the set. These are sequence starts. Walking forward from a start is O(length of sequence). Across all starts, the total work is exactly the sum of all sequence lengths = n. So O(n).",
+
+      "edge_cases": [
+        { "category": "Empty array", "details": "[] → 0. Set is empty, no iterations, max stays at 0." },
+        { "category": "Single element", "details": "[5] → 1. {5} has no predecessor (4 not in set), so 5 is a start. Walk forward: 6 not in set. Length 1." },
+        { "category": "Many duplicates", "details": "[5,5,5,5] → 1. Set is {5}. Same as single element case." },
+        { "category": "Already consecutive", "details": "[1,2,3,4,5] → 5. Only 1 is a start. Walk forward through 2,3,4,5. Length 5. Numbers 2,3,4,5 are NOT starts (their predecessors are in set), so skipped." },
+        { "category": "Disjoint sequences", "details": "[100, 4, 200, 1, 3, 2] → 4. Starts: 100 (length 1), 1 (length 4), 200 (length 1). Max = 4." }
+      ],
+
+      "common_mistakes": [
+        "Walking forward from every number → O(n²) worst case. The start-detection check is what makes it O(n).",
+        "Forgetting to check if num is a start (num-1 not in set) before walking forward.",
+        "Sorting the array — works correctly but fails the O(n) spec requirement.",
+        "Using a list for set membership — O(n) lookup makes the whole thing O(n²).",
+        "Off-by-one when counting the sequence length (e.g., starting count at 0 instead of 1)."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Longest consecutive sequence. Given an unsorted array, find the longest run of consecutive integers — must be O(n).",
+      "introduction_context": "The 'must be O(n)' constraint is the entire interview. Sorting is the obvious O(n log n) answer; the trick is the hash-set-with-start-detection that brings it to O(n). Classic FAANG question.",
+
+      "really_testing": [
+        "Reading constraints — recognizing the O(n) hint that rules out sort.",
+        "Pattern recognition: 'consecutive integers' → 'hash set + neighbor lookup'.",
+        "The cleverness moment: realizing naive set-walk is O(n²), then finding the start-detection fix.",
+        "Articulating WHY start-detection achieves O(n) (each number visited at most twice)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Notes 'must be O(n)' immediately. Proposes hash set with start-detection. Articulates the amortized analysis (each number walked at most twice). Codes cleanly. ~10 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches set-based approach. Initial version may be naive O(n²); catches the issue after testing or hint. Final version is O(n)." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Sorts the array (fails O(n) spec). Or naive set walk from every number without realizing it's O(n²)." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't reach O(n) even with hints. Doesn't recognize the hash set pattern." }
+      ],
+
+      "playbook": [
+        "Restate the problem. Highlight 'must be O(n)' — that's the constraint that shapes the approach.",
+        "State sort and scan: O(n log n), correct but fails the spec.",
+        "State naive set + walk forward from every number — works but O(n²) worst case on [1,2,3,...,n].",
+        "Derive the fix: 'Only walk forward from sequence STARTS — numbers where num-1 is NOT in the set.' This guarantees each number is touched at most twice.",
+        "Code: put nums in set. For each num in set: if num-1 not in set, walk forward (num+1, num+2, ...) while in set, track length. Update max.",
+        "Test on [100,4,200,1,3,2]: starts are 100, 1, 200. Walks produce lengths 1, 4, 1. Max = 4.",
+        "Articulate the O(n) argument: 'Each number is walked through at most twice — once as a potential start (constant check), once during a forward walk from its sequence's start.'"
+      ],
+      "playbook_meta": "Total time: 10-15 min. The start-detection trick is the interview moment. Common follow-ups: longest consecutive sequence in a stream, or 2D version (longest path in grid).",
+
+      "dont_do": [
+        "Don't sort when the spec says O(n). Read constraints carefully.",
+        "Don't walk forward from every number — O(n²) on the right input.",
+        "Don't use a list for set operations — O(n) lookup defeats the algorithm.",
+        "Don't forget to skip numbers that aren't sequence starts.",
+        "Don't return 0 instead of 1 for a single-element input — off-by-one."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort and Scan",
+        "time": "O(n log n)",
+        "space": "O(1) or O(n) depending on sort",
+        "code": "def longest_consecutive(nums):\n    if not nums:\n        return 0\n    nums = sorted(set(nums))\n    best = cur = 1\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i-1] + 1:\n            cur += 1\n            best = max(best, cur)\n        else:\n            cur = 1\n    return best",
+        "explanation": "Sort the (deduped) array, then scan looking for runs of consecutive integers. Correct but O(n log n) — fails the spec's O(n) requirement."
+      },
+      {
+        "name": "Hash Set with Start-Detection",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def longest_consecutive(nums):\n    s = set(nums)\n    best = 0\n    for num in s:\n        # Only start counting from sequence starts\n        if num - 1 not in s:\n            current = num\n            length = 1\n            while current + 1 in s:\n                current += 1\n                length += 1\n            best = max(best, length)\n    return best",
+        "explanation": "Put nums in a set for O(1) lookups. For each unique number, check if it's a sequence start (num-1 not in set). If yes, walk forward counting consecutive numbers. The amortized cost is O(n): each number is touched at most twice — once when checked as a candidate start, once when walked through during forward scan from its sequence's start. Numbers that aren't starts are dismissed in O(1)."
+      }
+    ],
+
+    "related_problem_ids": ["contains-duplicate", "two-sum", "valid-anagram"]
   },
   {
     "id": "trapping-rain-water",
     "title": "Trapping Rain Water",
     "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
+    "leetcode_id": 42,
     "difficulty": "hard",
-    "patterns": [
-      "two-pointers"
-    ],
-    "topics": [
-      "arrays",
-      "two-pointers"
-    ],
+
+    "patterns": ["two-pointers"],
+    "topics": ["arrays", "two-pointers"],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": [
-      "faang-common"
-    ]
+    "frequency_tags": ["faang-common", "neetcode-150"],
+
+    "summary": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+
+    "examples": [
+      { "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]", "output": "6", "explanation": "The elevation map traps 6 units of water in the dips between bars." },
+      { "input": "height = [4,2,0,3,2,5]", "output": "9", "explanation": "Water trapped: at index 1 (2 units), index 2 (3 units), index 3 (2 units), index 4 (2 units) = 9." }
+    ],
+
+    "function_name": "trap",
+    "function_signature": "def trap(height):",
+    "starter_code": "def trap(height):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic example", "args": [[0,1,0,2,1,0,1,3,2,1,2,1]], "expected": "6" },
+      { "label": "asymmetric map", "args": [[4,2,0,3,2,5]], "expected": "9" },
+      { "label": "single bar — no water", "args": [[0]], "expected": "0" },
+      { "label": "two equal bars — no dip", "args": [[5,5]], "expected": "0" },
+      { "label": "U-shape", "args": [[3,0,0,3]], "expected": "6" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Key insight: water at position i = min(maxLeft, maxRight) - height[i]. Where maxLeft is the tallest bar to the LEFT of i (inclusive) and maxRight is the tallest to the RIGHT. Brute force computes these maxes per-position in O(n²). Precomputed prefix/suffix-max arrays make it O(n) time + O(n) space. The senior answer is the two-pointer O(1) space approach.",
+
+      "clarifying_questions": [
+        { "question": "How is water trapped — is it that 'water sits in dips bounded by taller bars on both sides'?", "why": "Yes. Confirms the model. Without this clarification, candidates sometimes confuse this with 'sum of heights' or other interpretations." },
+        { "question": "Can heights be zero?", "why": "Yes (0 <= h). A zero-height position can still trap water if both sides have taller bars." },
+        { "question": "What's the size of n?", "why": "Up to 2×10^4. O(n²) brute force is borderline (4×10^8 ops). O(n) is safer." },
+        { "question": "Are there overflow concerns on the total?", "why": "Max heights 10^5, n=2×10^4, so max water ≤ 10^5 × 2×10^4 = 2×10^9. Just over int32 range. Worth flagging if language is type-strict." },
+        { "question": "Single-element or empty array — what's the answer?", "why": "0 — can't trap water with fewer than 3 bars (need walls on both sides)." }
+      ],
+
+      "think_out_loud": "State the formula: water_at_i = min(maxLeft, maxRight) - height[i] (clamped to ≥ 0). Brute force: for each i, scan left and right for the max. O(n²). Better: precompute maxLeft[] and maxRight[] arrays in two passes. O(n) time, O(n) space. Best: two pointers. Maintain leftMax and rightMax scalars. Move whichever pointer has the SMALLER side max — because the smaller side determines the water level (the larger side has 'extra' height that doesn't affect the bottleneck).",
+
+      "edge_cases": [
+        { "category": "Fewer than 3 bars", "details": "[0], [5], [5,5] → 0. Need at least 3 bars to trap any water." },
+        { "category": "Monotonic", "details": "[1,2,3,4,5] → 0. No dip. Strictly increasing or decreasing traps nothing." },
+        { "category": "Symmetric U", "details": "[3,0,0,3] → 6. Both walls are 3, dip is 2 wide, water level is 3, total = 3 × 2 = 6." },
+        { "category": "Tall walls, deep dip", "details": "[100, 1, 100] → 99. Single low position bounded by tall walls." },
+        { "category": "Asymmetric", "details": "[4,2,0,3,2,5] → 9. Right wall (5) is taller than left wall (4). Water level on the left side is limited by 4, not 5." }
+      ],
+
+      "common_mistakes": [
+        "Forgetting that the height of the current bar SUBTRACTS from the water level (water = min - height, not just min).",
+        "Adding negative water — when current height exceeds the smaller max, water contribution is 0, not negative.",
+        "Two-pointer: moving the WRONG side (always move the smaller-max side, not the smaller-current-height side).",
+        "Trying to use a single-pass scan without thinking about left/right maxes — fundamentally wrong.",
+        "Off-by-one on the maxLeft/maxRight arrays (e.g., including height[i] in maxLeft[i] when it shouldn't be)."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Hard. Given an elevation map of bar heights, compute the total water trapped after rain.",
+      "introduction_context": "Classic FAANG hard. The two-pointer O(1) space approach separates strong candidates from average. Often follows Container With Most Water — both are about pointers from both ends, but Trapping Rain Water is harder because you're computing cumulative water, not max area.",
+
+      "really_testing": [
+        "Can you derive the water_at_i = min(maxLeft, maxRight) - height[i] formula?",
+        "Can you reach the prefix/suffix max O(n) solution?",
+        "Can you derive the two-pointer O(1) space optimization?",
+        "Can you ARTICULATE why moving the smaller-max side is correct?"
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Derives the water formula. Reaches two-pointer O(1) space. Articulates the 'move the smaller side' proof. Tests on edge cases. ~20 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches prefix/suffix max approach in O(n) space. Recognizes the two-pointer optimization with a nudge." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Stuck at O(n²) brute force. Or buggy formula (e.g., water = max instead of min)." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't derive the water formula. Doesn't recognize the maxes-from-both-sides insight." }
+      ],
+
+      "playbook": [
+        "Restate. Confirm 'water at each position depends on the tallest bars to its left and right'.",
+        "Derive the formula aloud: water_at_i = min(maxLeft, maxRight) - height[i], clamped to ≥ 0.",
+        "State brute force O(n²): for each i, scan both sides for the max. Don't code it.",
+        "Propose prefix/suffix max arrays. O(n) time, O(n) space. Walk through example.",
+        "Optimize to two pointers. Articulate: 'Maintain leftMax and rightMax scalars. Move whichever pointer has the smaller max — because the smaller side is the bottleneck for the current position'.",
+        "Code carefully. Initialize l=0, r=n-1, leftMax=0, rightMax=0. While l<r: if height[l]<height[r], it means leftMax is potentially the bottleneck; update leftMax with height[l], add (leftMax-height[l]) to total, advance l. Else similarly for right.",
+        "Test on [0,1,0,2,1,0,1,3,2,1,2,1] → 6.",
+        "Test on [4,2,0,3,2,5] → 9."
+      ],
+      "playbook_meta": "Total time: 15-20 min. This is a hard problem — getting to the O(n) prefix/suffix is already a Hire. Two-pointer O(1) is Strong Hire territory.",
+
+      "dont_do": [
+        "Don't use water = max - height. It's MIN of the two sides, not max.",
+        "Don't subtract height[i] from the larger max — you'd get incorrect water at positions where the smaller side is the bottleneck.",
+        "Don't move both pointers each step in the two-pointer approach.",
+        "Don't move the pointer with the smaller CURRENT HEIGHT — move the one with the smaller MAX-SO-FAR.",
+        "Don't add negative water when height[i] exceeds the smaller max — clamp to 0."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(1)",
+        "code": "def trap(height):\n    n = len(height)\n    total = 0\n    for i in range(n):\n        left_max = max(height[:i+1])\n        right_max = max(height[i:])\n        total += max(0, min(left_max, right_max) - height[i])\n    return total",
+        "explanation": "For each position, scan left and right to find the maxes. Water at i = min(maxLeft, maxRight) - height[i] (clamped to ≥ 0). Quadratic — won't scale."
+      },
+      {
+        "name": "Prefix and Suffix Max Arrays",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def trap(height):\n    n = len(height)\n    if n == 0:\n        return 0\n    left_max = [0] * n\n    right_max = [0] * n\n    left_max[0] = height[0]\n    for i in range(1, n):\n        left_max[i] = max(left_max[i-1], height[i])\n    right_max[n-1] = height[n-1]\n    for i in range(n-2, -1, -1):\n        right_max[i] = max(right_max[i+1], height[i])\n    total = 0\n    for i in range(n):\n        total += max(0, min(left_max[i], right_max[i]) - height[i])\n    return total",
+        "explanation": "Precompute the running maxes from both directions in two passes. Then for each position, water = min(maxes) - height[i], clamped. Three linear passes total. O(n) time, O(n) extra space."
+      },
+      {
+        "name": "Two Pointers (O(1) space)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def trap(height):\n    if not height:\n        return 0\n    left, right = 0, len(height) - 1\n    left_max = right_max = 0\n    total = 0\n    while left < right:\n        if height[left] < height[right]:\n            # Left side is the bottleneck for this step\n            if height[left] >= left_max:\n                left_max = height[left]\n            else:\n                total += left_max - height[left]\n            left += 1\n        else:\n            # Right side is the bottleneck\n            if height[right] >= right_max:\n                right_max = height[right]\n            else:\n                total += right_max - height[right]\n            right -= 1\n    return total",
+        "explanation": "Maintain left_max and right_max as running scalars. At each step, compare height[left] and height[right]. The SMALLER side guarantees its max is the bottleneck for the current position (because the other side has a larger barrier somewhere to its outside). Update that side's max if the current height beats it; otherwise, add (max - height) water. Move that side's pointer inward. O(n) time, O(1) extra space."
+      }
+    ],
+
+    "related_problem_ids": ["container-with-most-water", "3sum", "valid-palindrome"]
   },
   {
     "id": "first-missing-positive",
@@ -2650,18 +2875,137 @@
     "id": "search-in-rotated-sorted-array",
     "title": "Search in Rotated Sorted Array",
     "leetcode_url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+    "leetcode_id": 33,
     "difficulty": "medium",
-    "patterns": [
-      "binary-search"
-    ],
-    "topics": [
-      "binary-search"
-    ],
+
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
     "neetcode_category": "Binary Search",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "There is an integer array nums sorted in ascending order (with distinct values). Prior to being passed, nums is possibly rotated at an unknown pivot index k. Given the array nums after the rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums. You must write an algorithm with O(log n) runtime complexity.",
+
+    "constraints": [
+      "1 <= nums.length <= 5000",
+      "-10^4 <= nums[i] <= 10^4",
+      "All values of nums are unique.",
+      "nums is guaranteed to be rotated at some pivot.",
+      "-10^4 <= target <= 10^4"
+    ],
+
+    "examples": [
+      { "input": "nums = [4,5,6,7,0,1,2], target = 0", "output": "4", "explanation": "0 exists at index 4." },
+      { "input": "nums = [4,5,6,7,0,1,2], target = 3", "output": "-1", "explanation": "3 is not in nums." },
+      { "input": "nums = [1], target = 0", "output": "-1", "explanation": "Single element, target not present." }
+    ],
+
+    "function_name": "search",
+    "function_signature": "def search(nums, target):",
+    "starter_code": "def search(nums, target):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "target in right half (post-pivot)", "args": [[4,5,6,7,0,1,2], 0], "expected": "4" },
+      { "label": "target absent", "args": [[4,5,6,7,0,1,2], 3], "expected": "-1" },
+      { "label": "single element absent", "args": [[1], 0], "expected": "-1" },
+      { "label": "no rotation, target at end", "args": [[1,3], 3], "expected": "1" },
+      { "label": "rotated, target at second position", "args": [[3,1], 1], "expected": "1" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "The array is sorted, then rotated at some unknown pivot. The KEY insight: at any midpoint, ONE side (left of mid OR right of mid) is fully sorted in ascending order. You can detect which side is sorted by comparing nums[left] to nums[mid]. Once you know the sorted side, check if target falls in that range. If yes, search there. If no, search the other (rotated) side.",
+
+      "clarifying_questions": [
+        { "question": "Are there duplicates in the array?", "why": "Spec says unique. THIS IS CRITICAL — duplicates change the algorithm fundamentally (cannot reliably detect the sorted side; needs the 'Search in Rotated Sorted Array II' variant)." },
+        { "question": "Is the rotation guaranteed (non-zero pivot)?", "why": "Spec says 'possibly rotated' and 'guaranteed to be rotated at some pivot'. If pivot=0, the array is just sorted normally — our algorithm should handle that too." },
+        { "question": "What's the size of n?", "why": "Up to 5000. O(n) linear scan would actually pass, but the spec says O(log n) — must do modified binary search." },
+        { "question": "Should I return -1 or some other sentinel if not found?", "why": "Spec says -1. Confirm — variants sometimes return the insertion position." },
+        { "question": "Can the rotation point coincide with target?", "why": "Yes. E.g., nums = [4,5,6,7,0,1,2], target=7 → return 3. The pivot is between 7 and 0, but 7 is still findable." }
+      ],
+
+      "think_out_loud": "State the invariant: at any binary-search midpoint, ONE side is fully sorted. Specifically: nums[left] <= nums[mid] means the left half is sorted; otherwise, the right half is sorted. Once I know which side is sorted, I check if target is in that side's range. If yes, search there. If no, search the OTHER half (the rotated one). Each iteration halves the search space → O(log n).",
+
+      "edge_cases": [
+        { "category": "Single element present", "details": "[1], target=1 → 0." },
+        { "category": "Single element absent", "details": "[1], target=0 → -1." },
+        { "category": "No rotation (pivot=0)", "details": "[1,2,3], target=2 → 1. The 'left half sorted' branch handles this naturally." },
+        { "category": "Target at pivot boundary", "details": "[4,5,6,7,0,1,2], target=7 → 3 or target=0 → 4. Both straddle the pivot — algorithm must handle." },
+        { "category": "Target less than first element of left-sorted half", "details": "[4,5,6,7,0,1,2], target=2. nums[left]=4, nums[mid]=7. Left half [4,5,6,7] is sorted. target=2 is NOT in [4,7], so search right half [0,1,2]." }
+      ],
+
+      "common_mistakes": [
+        "Using <= vs < incorrectly when checking 'is left half sorted' — must be nums[left] <= nums[mid].",
+        "Forgetting to compare target to the RANGE (e.g., nums[left] <= target < nums[mid]) before searching that half.",
+        "Treating the right half as sorted without checking — sometimes BOTH halves can have a complex layout when n is small.",
+        "Off-by-one in mid update: must use left = mid + 1 or right = mid - 1 (not left = mid).",
+        "Using recursion without a base case — infinite loop when target isn't found."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Modified binary search. Array is sorted ascending then rotated at unknown pivot. Find target in O(log n).",
+      "introduction_context": "Classic FAANG question testing whether you can adapt binary search to a non-standard sorted structure. Very common at Google, Meta, Amazon.",
+
+      "really_testing": [
+        "Recognition that this is a modified binary search problem.",
+        "Discovery of the invariant: 'one half is always sorted'.",
+        "Implementation discipline (off-by-one, range comparisons, bracket semantics).",
+        "Awareness that duplicates would change the algorithm — proves you read constraints."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Recognizes modified binary search. Articulates 'one half is sorted' invariant. Codes correctly first try. Tests on edge cases including target straddling the pivot. ~15 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches the algorithm with one or two hints. Initial version has a small bug that's fixed on testing. Total time ~20 min." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Linear scans (defeats the O(log n) requirement). Or tries to find pivot first then binary-search (works but two-pass). Or buggy half-detection." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't reach O(log n). Doesn't recognize that the binary-search pattern is adaptable." }
+      ],
+
+      "playbook": [
+        "Restate. Confirm: unique values, definitely rotated (pivot may be 0), return -1 on miss.",
+        "State linear scan O(n) and acknowledge it doesn't meet O(log n) spec.",
+        "Propose modified binary search. Highlight the key invariant: 'at any midpoint, one half is sorted in ascending order.'",
+        "Code: left=0, right=n-1. While left<=right: mid=(left+right)//2; if nums[mid]==target return mid.",
+        "Detect which half is sorted: if nums[left] <= nums[mid], left half is sorted. Else right half is sorted.",
+        "Check if target is in the sorted half's range. If yes, recurse there. If no, recurse other half.",
+        "Walk through [4,5,6,7,0,1,2] target=0: mid=3 (nums=7), nums[left]=4<=7 → left half sorted ([4,7]). target=0 not in [4,7] → go right. left=4, right=6, mid=5 (nums=1), nums[left]=0<=1 → left half [0,1] sorted. target=0 in [0,1] → go left. left=4, right=4, mid=4 (nums=0) → found!"
+      ],
+      "playbook_meta": "Total time: 12-18 min. Common follow-ups: Search in Rotated Sorted Array II (with duplicates), Find Minimum in Rotated Sorted Array.",
+
+      "dont_do": [
+        "Don't linear scan when O(log n) is required.",
+        "Don't find the pivot first then binary-search — works but two-pass when one-pass suffices.",
+        "Don't use nums[left] < nums[mid] (strict) — use <= to handle left == mid correctly.",
+        "Don't forget to clamp range checks: target must be both ≥ nums[left] AND < nums[mid] to be in the left half.",
+        "Don't assume nums[left] is the smallest element — after rotation, it might be the largest of the left half but not globally."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Linear Scan",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def search(nums, target):\n    for i, x in enumerate(nums):\n        if x == target:\n            return i\n    return -1",
+        "explanation": "Linear scan. Correct but ignores the structure of the input and fails the O(log n) requirement."
+      },
+      {
+        "name": "Modified Binary Search",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "code": "def search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if nums[mid] == target:\n            return mid\n        # Determine which half is sorted\n        if nums[left] <= nums[mid]:\n            # Left half is sorted\n            if nums[left] <= target < nums[mid]:\n                right = mid - 1\n            else:\n                left = mid + 1\n        else:\n            # Right half is sorted\n            if nums[mid] < target <= nums[right]:\n                left = mid + 1\n            else:\n                right = mid - 1\n    return -1",
+        "explanation": "Adapted binary search. At each midpoint, one half is fully sorted — we can tell by comparing nums[left] to nums[mid]. Check if target falls in the sorted half's range; if yes, recurse there; if not, recurse the other half. Each iteration halves the search space → O(log n)."
+      },
+      {
+        "name": "Find Pivot Then Binary Search (Two-Pass)",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "code": "def search(nums, target):\n    n = len(nums)\n    # First pass: find pivot (index of smallest element)\n    left, right = 0, n - 1\n    while left < right:\n        mid = left + (right - left) // 2\n        if nums[mid] > nums[right]:\n            left = mid + 1\n        else:\n            right = mid\n    pivot = left\n    # Second pass: standard binary search in the correct half\n    if target >= nums[pivot] and target <= nums[n-1]:\n        left, right = pivot, n - 1\n    else:\n        left, right = 0, pivot - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+        "explanation": "Two-pass: first find the pivot index (start of the rotated sequence), then standard binary-search the appropriate half. Cleaner separation of concerns but two passes instead of one. Same asymptotic complexity. Useful if you can't fit the one-pass invariant in your head."
+      }
+    ],
+
+    "related_problem_ids": ["binary-search", "find-minimum-in-rotated-sorted-array", "koko-eating-bananas"]
   },
   {
     "id": "find-minimum-in-rotated-sorted-array",
