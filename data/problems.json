@@ -3,10 +3,154 @@
     "id": "two-sum",
     "title": "Two Sum",
     "leetcode_url": "https://leetcode.com/problems/two-sum/",
+    "leetcode_id": 1,
     "difficulty": "easy",
+
     "patterns": ["hash-map"],
     "topics": ["arrays", "hash-table"],
-    "frequency_tags": ["blind-75", "faang-common"],
+    "neetcode_category": "Arrays & Hashing",
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
+
+    "constraints": [
+      "2 <= nums.length <= 10^4",
+      "-10^9 <= nums[i] <= 10^9",
+      "-10^9 <= target <= 10^9",
+      "Only one valid answer exists."
+    ],
+
+    "examples": [
+      {
+        "input": "nums = [2,7,11,15], target = 9",
+        "output": "[0,1]",
+        "explanation": "nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1]."
+      },
+      {
+        "input": "nums = [3,2,4], target = 6",
+        "output": "[1,2]",
+        "explanation": ""
+      },
+      {
+        "input": "nums = [3,3], target = 6",
+        "output": "[0,1]",
+        "explanation": ""
+      }
+    ],
+
+    "function_name": "two_sum",
+    "function_signature": "def two_sum(nums, target):",
+    "starter_code": "def two_sum(nums, target):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "basic example", "args": [[2,7,11,15], 9], "expected": "[0, 1]" },
+      { "label": "different positions", "args": [[3,2,4], 6], "expected": "[1, 2]" },
+      { "label": "same value twice", "args": [[3,3], 6], "expected": "[0, 1]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Read the problem aloud. Restate it in your own words. Then start asking clarifying questions BEFORE you write a line of code. This signals seniority and prevents 5 minutes of wrong-direction work.",
+
+      "clarifying_questions": [
+        {
+          "question": "What's the size of the array?",
+          "why": "Determines acceptable complexity. n ≤ 10⁴ → O(n²) brute force is OK. n ≤ 10⁶ → need O(n) or O(n log n). The constraint dictates the algorithm."
+        },
+        {
+          "question": "Are negative numbers, zeros, or duplicates allowed?",
+          "why": "Negatives are fine for hash-map (any int can be a key) but break some range-based tricks. Zeros mean a value can be its own complement (target=0, value=0). Duplicates mean the same value can appear at different indices — the answer might pair two equal numbers (e.g., [3,3] target 6)."
+        },
+        {
+          "question": "Is exactly one valid answer guaranteed, or could there be zero / many?",
+          "why": "If guaranteed unique, you can return on the first match. If multiple are valid, the question changes (\"any one\" vs \"all pairs\"). If none guaranteed, you need a sentinel return value — usually an empty list or [-1, -1]."
+        },
+        {
+          "question": "Can I modify the input array?",
+          "why": "Some algorithms (sort-then-two-pointer) mutate. Interviewers may expect immutability for code-cleanliness reasons. Always ask — costs nothing, prevents wasted work if they say \"no\"."
+        },
+        {
+          "question": "What should I return — indices, values, or a boolean?",
+          "why": "Two Sum returns indices, but the variants don't. \"Two Sum II\" returns 1-indexed positions. \"Two Sum IV — Input is a BST\" returns a boolean. Misreading the return spec is a classic interview face-plant."
+        }
+      ],
+
+      "think_out_loud": "Start with brute force. Estimate its complexity. Then explain how to do better. State your tradeoff (extra space for time). Implement the simpler-to-explain version, not the cleverest. Test on the given example first.",
+
+      "edge_cases": [
+        { "category": "Minimum-size input", "details": "Constraint says n ≥ 2. Test [1,2] with target 3 — does it return [0,1]?" },
+        { "category": "Duplicates (same value, different indices)", "details": "Test [3,3] with target 6 — your hash map must NOT block the second 3 from finding the first. Most off-by-one bugs hide here." },
+        { "category": "Negative numbers and zero", "details": "Test [-1, 1, 0] with target 0. Does complement = target - x work when target is 0 or negative? It should — but verify." },
+        { "category": "Solution at the boundaries", "details": "What if the answer is the first two elements ([1,2,...] target 3) or the last two ([...,9,10] target 19)? Walk through both mentally." },
+        { "category": "Same element twice (not allowed)", "details": "Constraint says \"may not use the same element twice.\" A hash map naturally enforces this if you check the map BEFORE inserting the current value. Confirm your ordering." },
+        { "category": "No-answer case", "details": "Problem says exactly one solution is guaranteed, so this shouldn't happen. But if asked to extend the problem to handle \"no answer\", what would you return? Knowing the answer signals seniority." }
+      ],
+
+      "common_mistakes": [
+        "Forgetting that the same element can't be used twice — using nums[i] + nums[i].",
+        "Off-by-one when returning indices — returning the value instead of the index.",
+        "Hashing the array as a value lookup but losing track of original indices.",
+        "Returning [seen[complement], i] vs [i, seen[complement]] — the order doesn't matter per the spec, but be intentional about it."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Here's a warm-up. Given an array of integers and a target, return the indices of the two numbers that add up to target. Each input has exactly one solution, and you can't use the same element twice.",
+      "introduction_context": "Often the first question in a 45-min loop, or a warm-up before a harder follow-up (3Sum, 4Sum, Two Sum II).",
+
+      "really_testing": [
+        "Can you turn a vague prompt into a clear contract by asking the right clarifying questions?",
+        "Do you instinctively think in complexity tradeoffs (brute force → optimization)?",
+        "Can you write clean code under mild pressure (naming, structure, no off-by-ones)?",
+        "Do you test your own code on the given example without being asked?",
+        "Can you narrate your thought process — \"think out loud\"?"
+      ],
+
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Asked 3+ clarifying Qs without prompting. Stated brute force first, immediately proposed hash-map optimization. Walked through the example before AND after coding. Clean code with semantic names. Discussed edge cases (duplicates, negatives) unprompted. Total time: ~10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reached the optimal O(n) solution. May have skipped 1 clarifying question or 1 edge case. Code is correct but might have a minor stylistic issue. Total time: 15-20 min."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Jumped to coding without asking questions. Confused indices vs values mid-solution. Needed a nudge to think about the hash map. Tested only after being asked."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Couldn't reach O(n) even with hints. Couldn't trace through an example. Wrote buggy code and didn't recognize the bugs when reading their own code. Stayed silent for long stretches."
+        }
+      ],
+
+      "playbook": [
+        "Restate the problem in your own words. (\"I need indices i, j with nums[i] + nums[j] = target, can't reuse the same index. Right?\")",
+        "Ask 2-3 clarifying questions from the list in Interview Tips above. Don't ask 10 — interviewers find that excessive.",
+        "Propose brute force out loud. \"Simplest: check every pair. O(n²) time, O(1) space.\" Don't write it — just state it.",
+        "State the optimization. \"I think we can do O(n) with a hash map. Tradeoff: O(n) extra space.\"",
+        "Walk through ONE example before coding. Show how the hash map fills up and detects the pair. This proves to the interviewer you actually understand it.",
+        "Code cleanly. Variable names: seen, complement. Not d, x, tmp.",
+        "Test on the given example AFTER coding. Walk through it. Confirm output matches expected.",
+        "Mention edge cases you'd handle if pushed: duplicates (e.g., [3,3]), no-answer (return what?), large n. Interviewer may probe one."
+      ],
+      "playbook_meta": "Total time: 10-15 min for a strong run. Finish faster and they'll ask a follow-up (3Sum, sorted array variant, return all pairs, etc.) — be ready.",
+
+      "dont_do": [
+        "Don't code immediately. A pause to think is mature, not weak.",
+        "Don't overoptimize prematurely. Don't try sorting + binary search — go straight to hash map.",
+        "Don't return values instead of indices. Read the spec twice.",
+        "Don't forget the \"same element\" rule. nums[i] + nums[i] is NOT valid.",
+        "Don't go silent when stuck. Narrate your thinking — interviewers can't help you if they don't know where you are.",
+        "Don't argue with the interviewer. If they say \"what if there are duplicates?\", explore it. They're checking how you handle pushback."
+      ]
+    },
+
     "has_walkthrough": true,
     "approaches": [
       {
@@ -14,16 +158,18 @@
         "time": "O(n²)",
         "space": "O(1)",
         "code": "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]",
-        "explanation": "Check every pair. Slow but correct. Useful as the obvious first approach in an interview."
+        "explanation": "Check every pair. Slow but correct — useful as the obvious first approach you propose in an interview before optimizing."
       },
       {
         "name": "Hash Map",
         "time": "O(n)",
         "space": "O(n)",
-        "code": "def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        if target - x in seen:\n            return [seen[target-x], i]\n        seen[x] = i",
-        "explanation": "Trade O(n) space for O(n) time. Single pass: for each element, ask the hash map if its complement was already seen."
+        "code": "def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        complement = target - x\n        if complement in seen:\n            return [seen[complement], i]\n        seen[x] = i",
+        "explanation": "For each number, check if its complement (target - x) has already been seen. If yes, we found our pair. If no, store the current number with its index. Single pass, O(n) time at the cost of O(n) space."
       }
-    ]
+    ],
+
+    "related_problem_ids": ["contains-duplicate", "group-anagrams", "longest-consecutive-sequence"]
   },
   {
     "id": "contains-duplicate",
