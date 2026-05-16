@@ -109,7 +109,7 @@ function renderTopbar(prob) {
     <div class="breadcrumbs" style="font-size:12px;">
       <a href="../index.html">Home</a>
       <span class="breadcrumbs__sep">/</span>
-      <a href="../index.html#problems">Problems</a>
+      <a href="../problems.html">Problems</a>
       <span class="breadcrumbs__sep">/</span>
       <span>${_esc(prob.title)}</span>
     </div>
@@ -127,13 +127,48 @@ function renderTopbar(prob) {
           LeetCode
         </a>
         ${topicLinkHtml}
-        <a href="../index.html#problems">
+        <a href="../problems.html">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
           All Problems
         </a>
       </div>
     </div>
+    <div class="problem-progress-row" data-problem-id="${_esc(prob.id)}">
+      <span class="problem-progress-label">My status:</span>
+      <button class="progress-chip" data-status="unattempted" title="Mark as not yet attempted">
+        <span class="progress-chip__dot dot-unattempted"></span> Unattempted
+      </button>
+      <button class="progress-chip" data-status="attempted" title="In progress / partially solved">
+        <span class="progress-chip__dot dot-attempted"></span> Attempted
+      </button>
+      <button class="progress-chip" data-status="solved" title="Fully solved on my own">
+        <span class="progress-chip__dot dot-solved"></span> Solved
+      </button>
+    </div>
   `;
+
+  _wireProgressChips(prob.id);
+}
+
+function _wireProgressChips(problemId) {
+  var row = document.querySelector('.problem-progress-row[data-problem-id="' + problemId + '"]');
+  if (!row || !window.DSA || !window.DSA.problemProgress) return;
+
+  var current = window.DSA.problemProgress.getStatus(problemId);
+  function paint(status) {
+    row.querySelectorAll('.progress-chip').forEach(function(c) {
+      c.classList.toggle('active', c.dataset.status === status);
+    });
+  }
+  paint(current);
+
+  row.addEventListener('click', function(e) {
+    var chip = e.target.closest('.progress-chip');
+    if (!chip) return;
+    var newStatus = chip.dataset.status;
+    window.DSA.problemProgress.setStatus(problemId, newStatus);
+    paint(newStatus);
+  });
 }
 
 /**

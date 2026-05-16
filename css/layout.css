@@ -92,6 +92,38 @@ body {
   color: var(--text-inverse);
 }
 
+/* Problems section in sidebar */
+.sidebar__subcat {
+  padding: 6px var(--space-lg) 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+  margin-top: 6px;
+}
+.sidebar__link--problem {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: calc(var(--space-lg) + 4px);
+  font-size: 12px;
+}
+.sidebar__link--problem .problem-status-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}
+.sidebar__link__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.sidebar__link--problems-index {
+  font-weight: 600;
+}
+
 .sidebar__footer {
   padding: var(--space-md) var(--space-lg);
   border-top: 1px solid rgba(255,255,255,0.1);

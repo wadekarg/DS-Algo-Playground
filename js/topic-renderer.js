@@ -215,8 +215,13 @@ function renderCuratedProblems(topicId) {
     const walkthroughBadge = prob.has_walkthrough
       ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
       : '';
+    const status = (window.DSA && DSA.problemProgress)
+      ? DSA.problemProgress.getStatus(prob.id) : 'unattempted';
+    const statusTitle = status === 'solved' ? 'Solved' :
+                        status === 'attempted' ? 'Attempted' : 'Not yet attempted';
     return `
       <div class="problem-row">
+        <span class="problem-status-dot ${status}" title="${statusTitle}"></span>
         <span class="problem-title">${titleLink}</span>
         <span class="pill pill-${prob.difficulty}">${prob.difficulty}</span>
         ${patternPills}

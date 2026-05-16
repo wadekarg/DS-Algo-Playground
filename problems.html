@@ -177,7 +177,10 @@
         <h1>Problems</h1>
         <p class="problems-hero__lede">NeetCode-style curated interview problems. Each problem has a Python editor, interview tips, and a FAANG-grading rubric.</p>
         <p class="problems-stats">
-          <span id="problems-count">&hellip;</span> problems &middot; <span id="walkthroughs-count">&hellip;</span> with full walkthroughs
+          <span id="problems-count">&hellip;</span> problems &middot;
+          <span id="walkthroughs-count">&hellip;</span> with full walkthroughs &middot;
+          <span class="problem-status-dot solved"></span> <span id="solved-count">0</span> solved &middot;
+          <span class="problem-status-dot attempted"></span> <span id="attempted-count">0</span> attempted
         </p>
       </section>
 
@@ -229,6 +232,7 @@
   <script src="js/sidebar-nav.js"></script>
   <script src="js/search.js"></script>
   <script src="js/progress.js"></script>
+  <script src="js/problem-progress.js"></script>
   <script src="js/keyboard.js"></script>
 
   <script>
@@ -282,14 +286,25 @@
       const walkthroughIcon = p.has_walkthrough
         ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
         : '';
+      const status = (DSA.problemProgress && DSA.problemProgress.getStatus(p.id)) || 'unattempted';
+      const statusTitle = status === 'solved' ? 'Solved' :
+                          status === 'attempted' ? 'Attempted' : 'Not yet attempted';
       return `
         <a class="problem-index-row" href="problems/${esc(p.id)}.html">
+          <span class="problem-status-dot ${esc(status)}" title="${statusTitle}"></span>
           <span class="problem-index-row__title">${esc(p.title)}</span>
           <span class="pill pill-${esc(p.difficulty)}">${esc(p.difficulty)}</span>
           ${tags}
           ${walkthroughIcon}
         </a>
       `;
+    }
+
+    function refreshStatusCounts() {
+      if (!window.DSA || !DSA.problemProgress) return;
+      const c = DSA.problemProgress.counts();
+      document.getElementById('solved-count').textContent = c.solved;
+      document.getElementById('attempted-count').textContent = c.attempted;
     }
 
     function renderGroups() {
@@ -368,6 +383,13 @@
 
       wireFilters();
       renderGroups();
+      refreshStatusCounts();
+
+      // If user toggles status on a per-problem page (other tab) or comes back, refresh.
+      window.addEventListener('storage', () => {
+        renderGroups();
+        refreshStatusCounts();
+      });
     }
 
     loadAndRender();
