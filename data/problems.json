@@ -29168,5 +29168,511 @@
       "linked-list-cycle",
       "merge-two-sorted-lists"
     ]
+  },
+  {
+    "id": "merge-two-sorted-lists",
+    "title": "Merge Two Sorted Lists",
+    "leetcode_url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+    "leetcode_id": 21,
+    "difficulty": "easy",
+    "patterns": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Merge two sorted linked lists into one sorted list. Splice nodes; return the head.",
+    "constraints": [
+      "0 <= n, m <= 50",
+      "-100 <= values <= 100",
+      "Both sorted ascending."
+    ],
+    "examples": [
+      {
+        "input": "l1 = [1,2,4], l2 = [1,3,4]",
+        "output": "[1,1,2,3,4,4]"
+      }
+    ],
+    "function_name": "mergeTwoLists",
+    "function_signature": "def mergeTwoLists(v1, v2):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef mergeTwoLists(v1, v2):\n    l1 = build_list(v1)\n    l2 = build_list(v2)\n    # Dummy head; walk both lists, attach smaller; advance.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            2,
+            4
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        "expected": "[1, 1, 2, 3, 4, 4]"
+      },
+      {
+        "label": "both empty",
+        "args": [
+          [],
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "one empty",
+        "args": [
+          [
+            1,
+            2
+          ],
+          []
+        ],
+        "expected": "[1, 2]"
+      },
+      {
+        "label": "interleave",
+        "args": [
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            2,
+            4,
+            6
+          ]
+        ],
+        "expected": "[1, 2, 3, 4, 5, 6]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Dummy head simplifies. Walk both lists with pointers; attach the smaller node; advance. Attach the remainder of whichever list isn't exhausted.",
+      "clarifying_questions": [
+        {
+          "question": "Mutate input or build new?",
+          "why": "Mutate (splice) \u2014 saves memory."
+        }
+      ],
+      "think_out_loud": "Standard merge.",
+      "edge_cases": [
+        {
+          "category": "Both empty",
+          "details": "None."
+        },
+        {
+          "category": "One empty",
+          "details": "Other."
+        }
+      ],
+      "common_mistakes": [
+        "Building new nodes (wastes memory).",
+        "Off-by-one or losing remainder."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Merge two sorted (LL form).",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "Dummy head pattern.",
+        "Two-pointer merge."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "3 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "dummy = ListNode(). tail = dummy. while l1 and l2: if l1.val <= l2.val: tail.next=l1; l1=l1.next. else: tail.next=l2; l2=l2.next. tail=tail.next. tail.next = l1 or l2. return dummy.next."
+      ],
+      "playbook_meta": "Total time: 3-5 min.",
+      "dont_do": [
+        "Don't allocate new nodes.",
+        "Don't forget remainder."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Dummy Head + Splice",
+        "time": "O(n+m)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef mergeTwoLists(v1, v2):\n    l1 = build_list(v1)\n    l2 = build_list(v2)\n    dummy = ListNode()\n    tail = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            tail.next = l1\n            l1 = l1.next\n        else:\n            tail.next = l2\n            l2 = l2.next\n        tail = tail.next\n    tail.next = l1 if l1 else l2\n    return list_to_values(dummy.next)",
+        "explanation": "Dummy head simplifies edge cases. Walk both lists, splice smaller node. Attach remainder at end."
+      }
+    ],
+    "related_problem_ids": [
+      "reverse-linked-list",
+      "merge-k-sorted-lists"
+    ]
+  },
+  {
+    "id": "remove-nth-node-from-end-of-list",
+    "title": "Remove Nth Node From End of List",
+    "leetcode_url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+    "leetcode_id": 19,
+    "difficulty": "medium",
+    "patterns": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given the head of a linked list, remove the nth node from the end and return the modified head. Do it in one pass.",
+    "constraints": [
+      "1 <= list.length <= 30",
+      "1 <= n <= list.length"
+    ],
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5], n = 2",
+        "output": "[1,2,3,5]"
+      },
+      {
+        "input": "head = [1], n = 1",
+        "output": "[]"
+      }
+    ],
+    "function_name": "removeNthFromEnd",
+    "function_signature": "def removeNthFromEnd(values, n):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef removeNthFromEnd(values, n):\n    head = build_list(values)\n    # Two pointers, n apart. When fast reaches end, slow is at the node BEFORE target. Use dummy head.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "n=2 from [1..5]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          2
+        ],
+        "expected": "[1, 2, 3, 5]"
+      },
+      {
+        "label": "single, n=1",
+        "args": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "remove head",
+        "args": [
+          [
+            1,
+            2
+          ],
+          2
+        ],
+        "expected": "[2]"
+      },
+      {
+        "label": "remove tail",
+        "args": [
+          [
+            1,
+            2
+          ],
+          1
+        ],
+        "expected": "[1]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two pointers separated by n+1. Use dummy head. Advance fast by n+1; then advance both until fast is None. slow now points to the node BEFORE target. Splice past.",
+      "clarifying_questions": [
+        {
+          "question": "1-indexed n?",
+          "why": "Yes \u2014 n=1 means tail."
+        },
+        {
+          "question": "One pass?",
+          "why": "Yes via two-pointer."
+        }
+      ],
+      "think_out_loud": "Spacing trick.",
+      "edge_cases": [
+        {
+          "category": "Remove head",
+          "details": "Dummy handles."
+        },
+        {
+          "category": "Single node n=1",
+          "details": "Empty list."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one on n vs n+1.",
+        "Not using dummy (head removal breaks)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Two-pointer LL classic.",
+      "introduction_context": "Common at Amazon, Meta.",
+      "really_testing": [
+        "Two-pointer offset.",
+        "Dummy head idiom."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Length-first approach."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "dummy = ListNode(0, head). fast = slow = dummy. for _ in range(n+1): fast = fast.next. while fast: fast = fast.next; slow = slow.next. slow.next = slow.next.next. return dummy.next."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't skip dummy.",
+        "Don't use two passes if asked for one."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two Pointers with Dummy",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef removeNthFromEnd(values, n):\n    head = build_list(values)\n    dummy = ListNode(0, head)\n    fast = slow = dummy\n    for _ in range(n + 1):\n        fast = fast.next\n    while fast:\n        fast = fast.next\n        slow = slow.next\n    slow.next = slow.next.next\n    return list_to_values(dummy.next)",
+        "explanation": "Dummy head simplifies head-removal. Fast leads by n+1. When fast hits None, slow is just before the target. Splice past."
+      }
+    ],
+    "related_problem_ids": [
+      "reverse-linked-list",
+      "linked-list-cycle"
+    ]
+  },
+  {
+    "id": "add-two-numbers",
+    "title": "Add Two Numbers",
+    "leetcode_url": "https://leetcode.com/problems/add-two-numbers/",
+    "leetcode_id": 2,
+    "difficulty": "medium",
+    "patterns": [
+      "linked-list",
+      "math"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in REVERSE order; each node contains a single digit. Add the two numbers and return the sum as a linked list.",
+    "constraints": [
+      "1 <= n, m <= 100",
+      "0 <= Node.val <= 9",
+      "No leading zeros except 0."
+    ],
+    "examples": [
+      {
+        "input": "l1 = [2,4,3], l2 = [5,6,4]  (represents 342 + 465)",
+        "output": "[7,0,8]",
+        "explanation": "807."
+      }
+    ],
+    "function_name": "addTwoNumbers",
+    "function_signature": "def addTwoNumbers(v1, v2):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef addTwoNumbers(v1, v2):\n    l1 = build_list(v1)\n    l2 = build_list(v2)\n    # Walk both with carry. Build result via dummy head.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            2,
+            4,
+            3
+          ],
+          [
+            5,
+            6,
+            4
+          ]
+        ],
+        "expected": "[7, 0, 8]"
+      },
+      {
+        "label": "different lengths",
+        "args": [
+          [
+            9,
+            9
+          ],
+          [
+            1
+          ]
+        ],
+        "expected": "[0, 0, 1]"
+      },
+      {
+        "label": "all zeros",
+        "args": [
+          [
+            0
+          ],
+          [
+            0
+          ]
+        ],
+        "expected": "[0]"
+      },
+      {
+        "label": "trailing carry",
+        "args": [
+          [
+            9,
+            9,
+            9
+          ],
+          [
+            1
+          ]
+        ],
+        "expected": "[0, 0, 0, 1]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Walk both lists with carry. Sum = l1.val + l2.val + carry. New digit = sum % 10. Carry = sum // 10. Build via dummy head.",
+      "clarifying_questions": [
+        {
+          "question": "Digits in reverse order?",
+          "why": "Yes \u2014 least significant first. Simplifies adding."
+        }
+      ],
+      "think_out_loud": "Standard digit-by-digit add.",
+      "edge_cases": [
+        {
+          "category": "Different lengths",
+          "details": "Pad with 0."
+        },
+        {
+          "category": "Trailing carry",
+          "details": "Append node for final carry."
+        },
+        {
+          "category": "Both zero",
+          "details": "[0]."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting carry at end.",
+        "Off-by-one."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Big-int add as LL.",
+      "introduction_context": "Common at Amazon, Meta.",
+      "really_testing": [
+        "Carry handling.",
+        "Dummy head."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets final carry."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "dummy = ListNode(). tail = dummy. carry = 0. while l1 or l2 or carry: s = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry. carry, d = divmod(s, 10). tail.next = ListNode(d); tail = tail.next. if l1: l1 = l1.next. if l2: l2 = l2.next. return dummy.next."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't forget final carry.",
+        "Don't pad strings (mixed semantics)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Walk + Carry",
+        "time": "O(max(n,m))",
+        "space": "O(max(n,m))",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef addTwoNumbers(v1, v2):\n    l1 = build_list(v1)\n    l2 = build_list(v2)\n    dummy = ListNode()\n    tail = dummy\n    carry = 0\n    while l1 or l2 or carry:\n        s = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry\n        carry, d = divmod(s, 10)\n        tail.next = ListNode(d)\n        tail = tail.next\n        if l1: l1 = l1.next\n        if l2: l2 = l2.next\n    return list_to_values(dummy.next)",
+        "explanation": "Walk both lists with carry, building output via dummy head. The 'or carry' in the while keeps the loop going for a final overflow node."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-two-sorted-lists",
+      "reverse-linked-list"
+    ]
   }
 ]
