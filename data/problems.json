@@ -175,11 +175,133 @@
     "id": "contains-duplicate",
     "title": "Contains Duplicate",
     "leetcode_url": "https://leetcode.com/problems/contains-duplicate/",
+    "leetcode_id": 217,
     "difficulty": "easy",
+
     "patterns": ["hash-map"],
     "topics": ["arrays", "hash-table"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
+
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^9 <= nums[i] <= 10^9"
+    ],
+
+    "examples": [
+      { "input": "nums = [1,2,3,1]", "output": "true", "explanation": "1 appears twice." },
+      { "input": "nums = [1,2,3,4]", "output": "false", "explanation": "All elements are distinct." },
+      { "input": "nums = [1,1,1,3,3,4,3,2,4,2]", "output": "true", "explanation": "Many duplicates." }
+    ],
+
+    "function_name": "contains_duplicate",
+    "function_signature": "def contains_duplicate(nums):",
+    "starter_code": "def contains_duplicate(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "duplicate present", "args": [[1,2,3,1]], "expected": "True" },
+      { "label": "all distinct", "args": [[1,2,3,4]], "expected": "False" },
+      { "label": "many duplicates", "args": [[1,1,1,3,3,4,3,2,4,2]], "expected": "True" },
+      { "label": "single element", "args": [[1]], "expected": "False" },
+      { "label": "duplicate at end of large array", "args": [[1,2,3,4,5,6,7,8,9,1]], "expected": "True" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Easy warm-up — but use it to establish good habits. Restate, ask a clarifying question or two, propose the obvious O(n) hash-set approach, code it, test it. This is interview-style scaffolding for harder questions to come.",
+
+      "clarifying_questions": [
+        { "question": "How big can n be?", "why": "n=10^5 means O(n²) brute force is too slow (10^10 ops). Need at least O(n log n) sort, ideally O(n) hash set." },
+        { "question": "Should I just detect duplicates or count how many?", "why": "Spec returns bool. Variants ask for the duplicate value, the count, or all duplicates. Always read carefully." },
+        { "question": "Can I use extra memory, or is O(1) space a requirement?", "why": "If O(1) space, you're forced to sort first (O(n log n)) and check adjacent. Otherwise, hash set is the clean answer." },
+        { "question": "Are negative numbers or zeros possible?", "why": "Yes per constraints. Still works as hash keys, but worth confirming so you handle edge values like 0 and INT_MIN correctly." },
+        { "question": "Can the input be modified?", "why": "If yes, you can sort in place. If no, you need extra space or a copy to sort." }
+      ],
+
+      "think_out_loud": "State brute force out loud — O(n²) pairs. Won't pass n=10^5. Propose hash set: walk through array, return True the moment a value is re-encountered. O(n) time, O(n) space. The early-return matters when the duplicate appears near the start of a big array.",
+
+      "edge_cases": [
+        { "category": "Single element", "details": "[1] → false. n=1 means no possible duplicate. Confirm your loop handles this." },
+        { "category": "All distinct", "details": "[1,2,3,4,5] → false. Function returns false only after fully scanning — don't early-return false incorrectly." },
+        { "category": "Many duplicates", "details": "[1,1,1,1] → true on the second 1. Early termination matters." },
+        { "category": "Duplicate at the very end", "details": "[1,2,3,...,n,1] → true only when you hit the last element. Worst case for early-termination." },
+        { "category": "Large array, no dup", "details": "Stress test: n=10^5 distinct values. Pure brute force is 10^10 ops — times out. Confirm your O(n) handles it." }
+      ],
+
+      "common_mistakes": [
+        "Using a list instead of a set to check membership → `if x in list` is O(n), making total O(n²).",
+        "Returning len(set(nums)) != len(nums) — correct but loses the early-termination benefit on huge inputs with early duplicates.",
+        "Forgetting that the function returns bool, not the duplicate value.",
+        "Off-by-one or wrong loop bounds in a brute force attempt."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Easy warm-up. Given an array, return true if any value appears more than once.",
+      "introduction_context": "Usually a 5-10 minute warm-up before a harder follow-up. Common follow-ups: Contains Duplicate II (within k indices), Longest Consecutive Sequence (uses a hash set in a clever way), or Two Sum (related hash-map pattern).",
+
+      "really_testing": [
+        "Comfort with hash sets as a default O(n) tool for membership/duplicate detection.",
+        "Awareness of time/space tradeoffs (hash set vs sort-and-scan).",
+        "Can you reach the right tool without overthinking the easy problem?",
+        "Do you write the early-return that matters for large inputs?"
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Immediately reaches hash set with early return. States the time/space tradeoff out loud. Mentions sort + adjacent-scan as the O(1)-space alternative when probed. Codes cleanly in 3-5 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches hash set, possibly after stating brute force first. Clean code. May miss the early-return optimization but handles correctness." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Stuck at O(n²) brute force, or confused about set membership being O(1). Or returns wrong answer on edge cases." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't solve in 15+ minutes. Or made the code unreasonably complex for an easy problem." }
+      ],
+
+      "playbook": [
+        "Restate the problem aloud — 'return true if any value appears more than once'.",
+        "Ask about n size and space constraints. Listen for the answer; it shapes your approach.",
+        "State brute force out loud: 'Nested loop, O(n²). Won't scale.' Don't code it.",
+        "Propose hash set: 'Single pass, add to set, return true on collision. O(n) time, O(n) space.'",
+        "Code it. Use a `for x in nums` loop, check `if x in seen`, return True, else add.",
+        "Test on the early-duplicate case ([1,1,...]) and the no-duplicate case ([1,2,...,n]).",
+        "If asked: mention sort + adjacent-scan as the O(1)-space alternative. O(n log n) but no extra memory."
+      ],
+      "playbook_meta": "Total time: 5-8 min for a strong run. The interview's real signal is whether you propose the right solution immediately or fumble.",
+
+      "dont_do": [
+        "Don't actually code brute force — just state it and move on. Wastes interview time.",
+        "Don't use `len(set(nums)) != len(nums)` for huge arrays — it loses early termination.",
+        "Don't use a list for membership checks — it's O(n) per check.",
+        "Don't overthink an easy problem. Hash set is the canonical answer.",
+        "Don't forget to return False at the end if the loop completes."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(1)",
+        "code": "def contains_duplicate(nums):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] == nums[j]:\n                return True\n    return False",
+        "explanation": "Check every pair. Correct but quadratic — won't scale to n=10^5. Only useful as the obvious 'first thought' to state before optimizing."
+      },
+      {
+        "name": "Hash Set",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def contains_duplicate(nums):\n    seen = set()\n    for x in nums:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False",
+        "explanation": "Walk through the array once. For each value, check if it's been seen before (O(1) average with a hash set). If yes, return True immediately — early termination saves time on inputs where the duplicate appears early. If we finish the loop, all values are distinct."
+      },
+      {
+        "name": "Sort + Adjacent Scan (O(1) space)",
+        "time": "O(n log n)",
+        "space": "O(1) extra (if in-place sort allowed)",
+        "code": "def contains_duplicate(nums):\n    nums.sort()\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i-1]:\n            return True\n    return False",
+        "explanation": "When extra space isn't allowed, sort the array first — duplicates become adjacent. Then scan for any two consecutive equal values. O(n log n) time from the sort, O(1) extra space (in-place sort). Mention this when interviewer asks 'can you do it without extra space?'"
+      }
+    ],
+
+    "related_problem_ids": ["two-sum", "valid-anagram", "longest-consecutive-sequence", "group-anagrams"]
   },
   {
     "id": "best-time-to-buy-and-sell-stock",
@@ -592,11 +714,135 @@
     "id": "valid-anagram",
     "title": "Valid Anagram",
     "leetcode_url": "https://leetcode.com/problems/valid-anagram/",
+    "leetcode_id": 242,
     "difficulty": "easy",
+
     "patterns": ["hash-map"],
     "topics": ["hash-table"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Given two strings s and t, return true if t is an anagram of s, and false otherwise. An anagram is a word or phrase formed by rearranging the letters of another, typically using all the original letters exactly once.",
+
+    "constraints": [
+      "1 <= s.length, t.length <= 5 * 10^4",
+      "s and t consist of lowercase English letters."
+    ],
+
+    "examples": [
+      { "input": "s = \"anagram\", t = \"nagaram\"", "output": "true", "explanation": "Same letters rearranged." },
+      { "input": "s = \"rat\", t = \"car\"", "output": "false", "explanation": "Different letters." }
+    ],
+
+    "function_name": "is_anagram",
+    "function_signature": "def is_anagram(s, t):",
+    "starter_code": "def is_anagram(s, t):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic anagram", "args": ["anagram", "nagaram"], "expected": "True" },
+      { "label": "different letters", "args": ["rat", "car"], "expected": "False" },
+      { "label": "single same char", "args": ["a", "a"], "expected": "True" },
+      { "label": "two char swap", "args": ["ab", "ba"], "expected": "True" },
+      { "label": "different lengths", "args": ["abc", "abcd"], "expected": "False" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Two strings, check if they have the same characters in the same frequencies. Easy problem with a clear optimization path: sort → hash map → array[26]. The interview signal is whether you walk that path or stop at the first thing that works.",
+
+      "clarifying_questions": [
+        { "question": "Are both strings only lowercase English letters?", "why": "Per constraints, yes. This is THE optimization hint — 26 letters means you can use a fixed-size int[26] array for O(1) space instead of a hash map." },
+        { "question": "Should I handle Unicode or special characters?", "why": "Not for this problem. But interviewers often ask this as a follow-up: 'How would you extend to support emoji/Chinese?' — answer is 'switch to hash map'." },
+        { "question": "Is case-sensitivity required? Should I ignore whitespace?", "why": "Spec is clear (lowercase only), but real-world string problems often have these wrinkles. Showing you'd ask in production signals seniority." },
+        { "question": "If the lengths differ, can I return false immediately?", "why": "Yes — different lengths can never be anagrams. Quick early exit avoids needless work." },
+        { "question": "Could the strings be empty?", "why": "Per constraints n >= 1, so no. But defensive: two empty strings would be trivial true." }
+      ],
+
+      "think_out_loud": "State three approaches, ordered by quality: (1) sort both, compare — O(n log n). (2) hash map of frequencies — O(n) time and space. (3) Since input is lowercase letters only, use int[26] array — O(n) time, O(1) space. Then code the best one.",
+
+      "edge_cases": [
+        { "category": "Different lengths", "details": "\"abc\" vs \"abcd\" → false. Always check lengths first as an early exit." },
+        { "category": "Empty strings", "details": "Constraints forbid this. But \"\" and \"\" would technically be anagrams (true)." },
+        { "category": "All same character", "details": "\"aaaa\" and \"aaaa\" → true. Confirms your frequency logic handles repeated chars correctly." },
+        { "category": "Almost-anagram", "details": "\"aabb\" and \"abab\" → true. \"aabb\" and \"abbc\" → false. Make sure your count goes both ways (+1 for s, -1 for t)." },
+        { "category": "Unicode (out of scope but worth knowing)", "details": "If the problem were Unicode, array[26] wouldn't work. Switch to hash map." }
+      ],
+
+      "common_mistakes": [
+        "Using `set(s) == set(t)` — wrong! \"aab\" and \"abb\" both have set {a,b} but aren't anagrams.",
+        "Forgetting the length-check early-exit — wastes work on obviously-different inputs.",
+        "Implementing with O(n²) using .index() lookups — quadratic and unnecessary.",
+        "Using a hash map when an int[26] array would suffice (missing the optimization point).",
+        "Off-by-one in counter logic — incrementing both instead of decrementing one."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Easy classic. Given two strings, return true if one is an anagram of the other.",
+      "introduction_context": "Easy warm-up but the interview signal is in the optimization. Strong candidates state the array[26] O(1)-space trick because the input is bounded to lowercase letters. Often paired with Group Anagrams as a follow-up.",
+
+      "really_testing": [
+        "Recognition that 'anagram' = 'same letter frequencies'.",
+        "Layered optimization awareness: sort (O(n log n)) → hash map (O(n)) → array[26] (O(1) space).",
+        "Reading constraints carefully to spot the array[26] optimization opportunity.",
+        "Clean implementation with proper increment/decrement logic."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asks about character set first. Lays out all three approaches (sort / hash map / array[26]). Implements array[26] for O(1) space. Tests carefully. Mentions Unicode follow-up. ~8 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches hash map. Recognizes the array[26] optimization when prompted. Implements correctly, tests well." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Goes straight to sorting without considering O(n). Or uses `set` (wrong), needs prompting to use frequency counting." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't reach a correct O(n log n) solution. Or implemented with O(n²) using .index()." }
+      ],
+
+      "playbook": [
+        "Restate the problem: 'Same letters, same frequencies'.",
+        "Ask about character set (this is THE optimization hint).",
+        "State sort approach as 'simplest correct': O(n log n).",
+        "Propose hash map: O(n) time and space.",
+        "Optimize further: 'Since lowercase letters only, I can use int[26] for O(1) space.' Score the senior points.",
+        "Add length check as early exit: if len(s) != len(t), return False.",
+        "Code the array[26]: for each char in s, ++count[c-'a']; for each char in t, --count[c-'a']. At end, all zeros.",
+        "Test on classic anagram, different-length, and 'aab' vs 'abb' (set-fooler).",
+        "Mention Unicode/emoji extension if time permits."
+      ],
+      "playbook_meta": "Total time: 7-10 min. Faster if you skip stating sort. The follow-up is usually Group Anagrams (medium) or 'first non-repeating character'.",
+
+      "dont_do": [
+        "Don't use `set(s) == set(t)` — loses frequency information.",
+        "Don't sort when you can avoid it — slower than counting.",
+        "Don't forget the length-check early exit.",
+        "Don't use a hash map when array[26] works — signals you missed the constraint optimization.",
+        "Don't off-by-one with `c - 'a'` indexing — that's the classic C/Java bug."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort and Compare",
+        "time": "O(n log n)",
+        "space": "O(n) (sort makes a copy)",
+        "code": "def is_anagram(s, t):\n    if len(s) != len(t):\n        return False\n    return sorted(s) == sorted(t)",
+        "explanation": "Sort both strings; if they're anagrams, they sort to the same sequence. Simplest correct solution but suboptimal. Useful to state first if you're warming up."
+      },
+      {
+        "name": "Hash Map of Frequencies",
+        "time": "O(n)",
+        "space": "O(k) where k is the size of the alphabet",
+        "code": "def is_anagram(s, t):\n    if len(s) != len(t):\n        return False\n    from collections import Counter\n    return Counter(s) == Counter(t)",
+        "explanation": "Count character frequencies in each string and compare. Generalizes naturally to Unicode (replace Counter with a dict). O(n) time. Best choice when the alphabet is unbounded."
+      },
+      {
+        "name": "Array[26] (O(1) space)",
+        "time": "O(n)",
+        "space": "O(1) — fixed 26-element array",
+        "code": "def is_anagram(s, t):\n    if len(s) != len(t):\n        return False\n    counts = [0] * 26\n    for c in s:\n        counts[ord(c) - ord('a')] += 1\n    for c in t:\n        counts[ord(c) - ord('a')] -= 1\n    return all(c == 0 for c in counts)",
+        "explanation": "Since the alphabet is bounded to 26 lowercase letters, we can use a fixed-size int[26] array. Increment for each char in s, decrement for each char in t. If they're anagrams, the array ends as all zeros. O(n) time AND O(1) space — the senior answer for a constrained alphabet."
+      }
+    ],
+
+    "related_problem_ids": ["valid-palindrome", "group-anagrams", "contains-duplicate"]
   },
   {
     "id": "group-anagrams",
