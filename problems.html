@@ -78,6 +78,64 @@
       font-size: 14px;
       margin-left: auto;
     }
+
+    /* ── Filters ───────────────────────────────────────────────── */
+    .problems-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px 18px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-group__label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-right: 2px;
+    }
+    .filter-chip {
+      padding: 4px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-page, white);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      user-select: none;
+    }
+    .filter-chip:hover { border-color: var(--accent-primary); }
+    .filter-chip.active {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: white;
+    }
+    .filter-summary {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .problems-empty {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body data-topic="problems">
@@ -122,6 +180,25 @@
           <span id="problems-count">&hellip;</span> problems &middot; <span id="walkthroughs-count">&hellip;</span> with full walkthroughs
         </p>
       </section>
+
+      <div class="problems-filters" id="problems-filters">
+        <div class="filter-group" data-filter-group="difficulty">
+          <span class="filter-group__label">Difficulty</span>
+          <button class="filter-chip active" data-filter-value="all">All</button>
+          <button class="filter-chip" data-filter-value="easy">Easy</button>
+          <button class="filter-chip" data-filter-value="medium">Medium</button>
+          <button class="filter-chip" data-filter-value="hard">Hard</button>
+        </div>
+        <div class="filter-group" data-filter-group="tag">
+          <span class="filter-group__label">Tag</span>
+          <button class="filter-chip active" data-filter-value="all">All</button>
+          <button class="filter-chip" data-filter-value="faang-common">FAANG</button>
+          <button class="filter-chip" data-filter-value="blind-75">Blind 75</button>
+          <button class="filter-chip" data-filter-value="neetcode-150">NeetCode 150</button>
+          <button class="filter-chip" data-filter-value="has-walkthrough">📖 Walkthrough</button>
+        </div>
+        <span class="filter-summary" id="filter-summary"></span>
+      </div>
 
       <!-- Dynamic problem groups rendered by inline JS below -->
       <div id="problems-groups"></div>
@@ -188,22 +265,52 @@
         .replace(/"/g, '&quot;');
     }
 
-    async function loadAndRender() {
-      let problems;
-      try {
-        const r = await fetch('data/problems.json');
-        problems = await r.json();
-      } catch (e) {
-        document.getElementById('problems-groups').innerHTML = '<p>Failed to load problems.json.</p>';
+    let _allProblems = [];
+    const _filters = { difficulty: 'all', tag: 'all' };
+
+    function passesFilters(p) {
+      if (_filters.difficulty !== 'all' && p.difficulty !== _filters.difficulty) return false;
+      if (_filters.tag === 'all') return true;
+      if (_filters.tag === 'has-walkthrough') return !!p.has_walkthrough;
+      return (p.frequency_tags || []).includes(_filters.tag);
+    }
+
+    function renderRow(p) {
+      const tags = (p.frequency_tags || [])
+        .map(t => `<span class="pill pill-${esc(t)}">${esc(t.replace(/-/g, ' '))}</span>`)
+        .join('');
+      const walkthroughIcon = p.has_walkthrough
+        ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
+        : '';
+      return `
+        <a class="problem-index-row" href="problems/${esc(p.id)}.html">
+          <span class="problem-index-row__title">${esc(p.title)}</span>
+          <span class="pill pill-${esc(p.difficulty)}">${esc(p.difficulty)}</span>
+          ${tags}
+          ${walkthroughIcon}
+        </a>
+      `;
+    }
+
+    function renderGroups() {
+      const matching = _allProblems.filter(passesFilters);
+
+      // Update summary line
+      const summary = document.getElementById('filter-summary');
+      const noFilters = _filters.difficulty === 'all' && _filters.tag === 'all';
+      summary.textContent = noFilters
+        ? ''
+        : `Showing ${matching.length} of ${_allProblems.length}`;
+
+      if (matching.length === 0) {
+        document.getElementById('problems-groups').innerHTML =
+          '<div class="problems-empty">No problems match these filters.</div>';
         return;
       }
 
-      document.getElementById('problems-count').textContent = problems.length;
-      document.getElementById('walkthroughs-count').textContent = problems.filter(p => p.has_walkthrough).length;
-
-      // Group by neetcode_category (falls back to first topic if missing, then 'Other')
+      // Group filtered problems by neetcode_category
       const groups = {};
-      for (const p of problems) {
+      for (const p of matching) {
         const cat = p.neetcode_category || (p.topics && p.topics[0]) || 'Other';
         if (!groups[cat]) groups[cat] = [];
         groups[cat].push(p);
@@ -219,23 +326,6 @@
       const unknownCats = Object.keys(groups).filter(c => !CATEGORY_ORDER.includes(c)).sort();
       const orderedCats = [...knownCats, ...unknownCats];
 
-      const renderRow = p => {
-        const tags = (p.frequency_tags || [])
-          .map(t => `<span class="pill pill-${esc(t)}">${esc(t.replace(/-/g, ' '))}</span>`)
-          .join('');
-        const walkthroughIcon = p.has_walkthrough
-          ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
-          : '';
-        return `
-          <a class="problem-index-row" href="problems/${esc(p.id)}.html">
-            <span class="problem-index-row__title">${esc(p.title)}</span>
-            <span class="pill pill-${esc(p.difficulty)}">${esc(p.difficulty)}</span>
-            ${tags}
-            ${walkthroughIcon}
-          </a>
-        `;
-      };
-
       const html = orderedCats.map(cat => {
         const rows = groups[cat].map(renderRow).join('');
         return `
@@ -247,6 +337,37 @@
       }).join('');
 
       document.getElementById('problems-groups').innerHTML = html;
+    }
+
+    function wireFilters() {
+      document.getElementById('problems-filters').addEventListener('click', e => {
+        const chip = e.target.closest('.filter-chip');
+        if (!chip) return;
+        const groupEl = chip.closest('.filter-group');
+        const group = groupEl.dataset.filterGroup;
+        const value = chip.dataset.filterValue;
+        if (_filters[group] === value) return;
+        _filters[group] = value;
+        groupEl.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        renderGroups();
+      });
+    }
+
+    async function loadAndRender() {
+      try {
+        const r = await fetch('data/problems.json');
+        _allProblems = await r.json();
+      } catch (e) {
+        document.getElementById('problems-groups').innerHTML = '<p>Failed to load problems.json.</p>';
+        return;
+      }
+
+      document.getElementById('problems-count').textContent = _allProblems.length;
+      document.getElementById('walkthroughs-count').textContent = _allProblems.filter(p => p.has_walkthrough).length;
+
+      wireFilters();
+      renderGroups();
     }
 
     loadAndRender();
