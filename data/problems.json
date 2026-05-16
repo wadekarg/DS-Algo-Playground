@@ -3252,17 +3252,130 @@
     "id": "koko-eating-bananas",
     "title": "Koko Eating Bananas",
     "leetcode_url": "https://leetcode.com/problems/koko-eating-bananas/",
+    "leetcode_id": 875,
     "difficulty": "medium",
-    "patterns": [
-      "binary-search"
-    ],
-    "topics": [
-      "binary-search"
-    ],
+
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
     "neetcode_category": "Binary Search",
-    "frequency_tags": [
-      "faang-common"
-    ]
+    "frequency_tags": ["faang-common", "neetcode-150"],
+
+    "summary": "Koko loves bananas. There are n piles, the ith pile has piles[i] bananas. The guards return in h hours. Koko picks an eating speed k bananas/hour. Each hour she picks a pile and eats k bananas (or the rest if pile < k, then nothing else that hour). Return the MINIMUM k such that she can eat all bananas in h hours.",
+
+    "constraints": [
+      "1 <= piles.length <= 10^4",
+      "piles.length <= h <= 10^9",
+      "1 <= piles[i] <= 10^9"
+    ],
+
+    "examples": [
+      { "input": "piles = [3,6,7,11], h = 8", "output": "4", "explanation": "At speed 4: pile 3 takes 1 hour, pile 6 takes 2 hours, pile 7 takes 2 hours, pile 11 takes 3 hours. Total 8. Speed 3 would take 9 hours — too slow." },
+      { "input": "piles = [30,11,23,4,20], h = 5", "output": "30", "explanation": "Must eat the biggest pile in one hour — that requires speed ≥ 30." },
+      { "input": "piles = [30,11,23,4,20], h = 6", "output": "23", "explanation": "With 6 hours, speed 23 just barely works." }
+    ],
+
+    "function_name": "min_eating_speed",
+    "function_signature": "def min_eating_speed(piles, h):",
+    "starter_code": "def min_eating_speed(piles, h):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "moderate speed needed", "args": [[3,6,7,11], 8], "expected": "4" },
+      { "label": "tight deadline — fastest speed", "args": [[30,11,23,4,20], 5], "expected": "30" },
+      { "label": "more time available", "args": [[30,11,23,4,20], 6], "expected": "23" },
+      { "label": "single pile", "args": [[10], 1], "expected": "10" },
+      { "label": "huge h gives min speed 1", "args": [[1,1,1,1], 100], "expected": "1" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Classic 'binary search on the answer' problem. The answer (speed k) is between 1 and max(piles). For each candidate speed, you can FEASIBILITY-CHECK in O(n) by computing how many hours it takes. Then binary search the smallest k that's feasible. Don't search the array — search the SPACE OF ANSWERS.",
+
+      "clarifying_questions": [
+        { "question": "Is the answer always between 1 and max(piles)?", "why": "Yes. Speed 1 is the slowest (always feasible if h is large enough). max(piles) is the fastest needed (one pile per hour). Confirms the binary search range." },
+        { "question": "Can Koko split piles? I.e., eat from two piles in the same hour?", "why": "No. Spec says each hour she eats from ONE pile. If pile < k, she eats it and stops (doesn't move to another)." },
+        { "question": "Time-per-pile calculation — ceiling division?", "why": "Yes. Pile of 7 at speed 3 takes ceil(7/3) = 3 hours. Use math.ceil or (pile + k - 1) // k." },
+        { "question": "What if h is very large?", "why": "Per constraints, h up to 10^9. Doesn't affect the algorithm — k is bounded by max(piles) ≤ 10^9, log of that is ~30 binary search steps. Each step is O(n). Total O(n log max)." },
+        { "question": "Edge case: h equals number of piles?", "why": "Then Koko must eat each pile in exactly 1 hour. Speed = max(piles) is the answer." }
+      ],
+
+      "think_out_loud": "Brute force: try every speed k from 1 to max(piles). For each, check if total hours ≤ h. O(max × n) — too slow when max is 10^9. Insight: if speed k works, speed k+1 also works (monotonic). So binary search on k. lo=1, hi=max(piles). Mid = (lo+hi)//2. Check feasibility in O(n). If feasible, try smaller (hi = mid). Else need faster (lo = mid+1). Total O(n log max).",
+
+      "edge_cases": [
+        { "category": "h == n (one hour per pile)", "details": "Must eat each pile in 1 hour. Answer = max(piles)." },
+        { "category": "h >> sum(piles)", "details": "Tons of time. Answer = 1 (slowest speed works)." },
+        { "category": "Single pile", "details": "piles=[10], h=1 → 10. piles=[10], h=5 → 2 (ceil(10/2)=5)." },
+        { "category": "Ties — ceiling division gotchas", "details": "pile=6, k=3: ceil(6/3)=2. pile=7, k=3: ceil(7/3)=3, not 2.33. Always round UP." },
+        { "category": "Speed exceeds any pile", "details": "If k > max(piles), each pile takes exactly 1 hour. Same result as k = max(piles)." }
+      ],
+
+      "common_mistakes": [
+        "Using regular division (pile // k) instead of ceiling — undercounts hours.",
+        "Searching the wrong space — trying to binary search on the piles array, not on speed.",
+        "Off-by-one: lo=0 (Koko must eat — speed 0 is impossible) or hi=max+1 (unnecessary).",
+        "While loop termination: lo<hi vs lo<=hi changes how 'answer' is captured.",
+        "Forgetting that ceil(pile/k) = (pile + k - 1) // k in integer arithmetic."
+      ]
+    },
+
+    "faang": {
+      "tier": "B",
+      "introduction": "Binary search on the answer. Find the minimum eating speed Koko needs to finish all bananas in h hours.",
+      "introduction_context": "Tests the 'binary search on a non-array' pattern. Common at FAANG. Sets up Capacity to Ship Packages, Find K-th Smallest, and other 'binary search on monotonic feasibility' problems.",
+
+      "really_testing": [
+        "Recognition that 'find minimum X such that property holds' is binary-search-on-answer.",
+        "Defining the search space correctly (1 to max(piles)).",
+        "Writing a clean feasibility check (O(n) given a speed).",
+        "Ceiling division correctness."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Immediately recognizes binary search on the answer. States the monotonic property (faster speed → less time). Codes feasibility check with ceiling division. Tests carefully. ~12 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches binary search after stating brute force. May need prompting on ceiling division." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Tries linear scan over speeds (O(max × n) — too slow). Or off-by-one in the binary search." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't recognize this as a search-on-answer problem. Tries to apply a totally different approach." }
+      ],
+
+      "playbook": [
+        "Restate the problem. Confirm one-pile-per-hour rule.",
+        "Ask about ceiling vs floor division.",
+        "Recognize: 'find min X such that feasibility(X)' = binary search on the answer space.",
+        "Define search range: lo=1, hi=max(piles).",
+        "Articulate monotonicity: if speed k works (hours ≤ h), so does k+1.",
+        "Write feasibility(k): sum(ceil(p/k) for p in piles) <= h.",
+        "Binary search: while lo < hi: mid = (lo+hi)//2; if feasibility(mid): hi = mid; else: lo = mid+1. Return lo.",
+        "Test on example: piles=[3,6,7,11], h=8. lo=1, hi=11. Binary search finds 4.",
+        "Test edge case: piles=[30,...], h=number_of_piles → max(piles)."
+      ],
+      "playbook_meta": "Total time: 12-15 min. Common follow-ups: Capacity to Ship Packages Within D Days, Split Array Largest Sum.",
+
+      "dont_do": [
+        "Don't use floor division — undercounts hours.",
+        "Don't linear-scan all speeds 1 to max — O(max × n) is way too slow.",
+        "Don't search the wrong space (the piles array, not speed).",
+        "Don't forget to handle the 'no smaller speed works' case — must return some k.",
+        "Don't off-by-one the binary search bounds — use lo<hi for converge-to-answer."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Linear Scan (Brute Force)",
+        "time": "O(max × n)",
+        "space": "O(1)",
+        "code": "def min_eating_speed(piles, h):\n    for k in range(1, max(piles) + 1):\n        hours = sum((p + k - 1) // k for p in piles)\n        if hours <= h:\n            return k\n    return max(piles)",
+        "explanation": "Try every speed from 1 upward. The first feasible speed is the answer. O(max(piles) × n) — too slow when max(piles) is 10^9."
+      },
+      {
+        "name": "Binary Search on Answer",
+        "time": "O(n log max)",
+        "space": "O(1)",
+        "code": "def min_eating_speed(piles, h):\n    def feasible(k):\n        return sum((p + k - 1) // k for p in piles) <= h\n    lo, hi = 1, max(piles)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if feasible(mid):\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo",
+        "explanation": "Binary search on the speed itself. The feasibility check (does speed k finish in ≤ h hours?) is monotonic — if k works, k+1 also works. Standard 'find smallest k where condition holds' binary search. O(log max) iterations, each O(n) for the feasibility check."
+      }
+    ],
+
+    "related_problem_ids": ["binary-search", "search-in-rotated-sorted-array", "find-minimum-in-rotated-sorted-array"]
   },
   {
     "id": "linked-list-cycle",
@@ -3586,15 +3699,124 @@
     "id": "combinations",
     "title": "Combinations",
     "leetcode_url": "https://leetcode.com/problems/combinations/",
+    "leetcode_id": 77,
     "difficulty": "medium",
-    "patterns": [
-      "backtracking"
-    ],
-    "topics": [
-      "backtracking"
-    ],
+
+    "patterns": ["backtracking"],
+    "topics": ["backtracking"],
     "neetcode_category": "Backtracking",
-    "frequency_tags": []
+    "frequency_tags": ["neetcode-150"],
+
+    "summary": "Given two integers n and k, return all possible combinations of k numbers chosen from the range [1, n]. You may return the answer in any order.",
+
+    "constraints": [
+      "1 <= n <= 20",
+      "1 <= k <= n"
+    ],
+
+    "examples": [
+      { "input": "n = 4, k = 2", "output": "[[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]", "explanation": "All C(4,2)=6 size-2 combinations of {1,2,3,4}." },
+      { "input": "n = 1, k = 1", "output": "[[1]]", "explanation": "Only one combination: pick the single element." }
+    ],
+
+    "function_name": "combine",
+    "function_signature": "def combine(n, k):",
+    "starter_code": "def combine(n, k):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "C(4,2)", "args": [4, 2], "expected": "[[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]" },
+      { "label": "C(1,1)", "args": [1, 1], "expected": "[[1]]" },
+      { "label": "C(3,1) — single picks", "args": [3, 1], "expected": "[[1], [2], [3]]" },
+      { "label": "C(3,3) — pick all", "args": [3, 3], "expected": "[[1, 2, 3]]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Subsets-of-size-k variant. Backtracking: at each step, pick the next number from the remaining range. Track the start index to avoid duplicate combinations (since order doesn't matter, only pick increasing sequences).",
+
+      "clarifying_questions": [
+        { "question": "Order within combinations — does it matter?", "why": "Combinations are unordered ([1,2] == [2,1]). To avoid duplicates, generate in increasing order. Confirms the start-index pattern." },
+        { "question": "Output order — does it matter?", "why": "Spec says any order. Saves work." },
+        { "question": "Can the same number appear twice in a combination?", "why": "No — combinations are choices WITHOUT replacement. {1,1,2} isn't valid." },
+        { "question": "What's the upper bound on n?", "why": "n ≤ 20, k ≤ n. C(20,10) = 184756 — feasible. Worth confirming for time budget." },
+        { "question": "Is the empty combination (k=0) possible?", "why": "Per constraints, k ≥ 1. So no. But defensive: k=0 should return [[]]." }
+      ],
+
+      "think_out_loud": "Backtracking, like Subsets but constrained to exact size k. Track a start index (the smallest number we can still pick). At each step, pick a number from [start, n], add to current, recurse with start+1. When current has length k, record it. Pruning: if current has c numbers and you need k-c more, no point continuing if there aren't k-c numbers left in [start, n].",
+
+      "edge_cases": [
+        { "category": "k=1", "details": "n=3, k=1 → [[1], [2], [3]]. Singleton combinations." },
+        { "category": "k=n", "details": "n=3, k=3 → [[1,2,3]]. Only one combination — the full set." },
+        { "category": "k=0 (out of spec)", "details": "[[]] — just the empty combination. Defensive code can handle this." },
+        { "category": "Large k", "details": "n=20, k=10 → 184756 combinations. Pruning helps but exponential growth is fundamental." },
+        { "category": "Pruning savings", "details": "With pruning, recursion stops when remaining numbers < remaining slots. Significant speedup at the limits." }
+      ],
+
+      "common_mistakes": [
+        "Forgetting to copy current[:] when appending (shared-reference bug).",
+        "Not tracking start index — produces duplicates like [1,2] and [2,1].",
+        "Off-by-one on the range (n vs n+1 — must include n).",
+        "Forgetting the pop() after recursion — leaves stale state.",
+        "Not pruning when remaining numbers < remaining slots — works correctly but slower."
+      ]
+    },
+
+    "faang": {
+      "tier": "B",
+      "introduction": "Backtracking variant. Generate all size-k combinations of integers from 1 to n.",
+      "introduction_context": "Cousin of Subsets. Tests the 'start index' technique to avoid duplicates in combinatorial generation.",
+
+      "really_testing": [
+        "Backtracking with constraints (target size k).",
+        "Using start index to avoid duplicate combinations.",
+        "Optional pruning when remaining < required.",
+        "Distinguishing combinations from permutations."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Recognizes as Subsets-of-size-k. Uses start index correctly. Adds pruning. Codes cleanly. ~8 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Backtracking works without pruning. Correct output." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Produces duplicates (missing start index). Or buggy recursion." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't structure the recursion. Confuses with permutations." }
+      ],
+
+      "playbook": [
+        "Restate: 'all size-k combinations from [1, n]'.",
+        "Confirm: combinations (unordered), no replacement.",
+        "Propose backtracking with start index (only increasing sequences).",
+        "Code: result=[]; current=[]; def backtrack(start): if len(current)==k: result.append(current[:]); return; for i in range(start, n+1): current.append(i); backtrack(i+1); current.pop(). backtrack(1).",
+        "Test on C(4,2): produces [1,2],[1,3],[1,4],[2,3],[2,4],[3,4].",
+        "Optional: add pruning — if (k - len(current)) > (n - start + 1), no point continuing."
+      ],
+      "playbook_meta": "Total time: 7-10 min. Follow-up: Combination Sum (with repetition).",
+
+      "dont_do": [
+        "Don't generate permutations of size k — those are larger and duplicate.",
+        "Don't forget the start index — produces duplicates.",
+        "Don't forget current[:] copy.",
+        "Don't forget the +1 on range(start, n+1) — must include n.",
+        "Don't fail to pop after recursion."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking with Start Index",
+        "time": "O(C(n,k) × k)",
+        "space": "O(k) recursion",
+        "code": "def combine(n, k):\n    result = []\n    current = []\n    def backtrack(start):\n        if len(current) == k:\n            result.append(current[:])\n            return\n        for i in range(start, n + 1):\n            current.append(i)\n            backtrack(i + 1)\n            current.pop()\n    backtrack(1)\n    return result",
+        "explanation": "Standard backtracking. The `start` parameter ensures we only pick increasing sequences, avoiding duplicates like [1,2] and [2,1]. When current reaches size k, record a copy. Recursion depth is k; total work is O(C(n,k) × k)."
+      },
+      {
+        "name": "Backtracking with Pruning",
+        "time": "O(C(n,k) × k) but faster in practice",
+        "space": "O(k) recursion",
+        "code": "def combine(n, k):\n    result = []\n    current = []\n    def backtrack(start):\n        if len(current) == k:\n            result.append(current[:])\n            return\n        # Pruning: if remaining slots > remaining numbers, no valid combinations\n        needed = k - len(current)\n        for i in range(start, n - needed + 2):\n            current.append(i)\n            backtrack(i + 1)\n            current.pop()\n    backtrack(1)\n    return result",
+        "explanation": "Same algorithm with one pruning trick: at each level, we only need to consider numbers up to n - needed + 1 (where 'needed' is how many more we must pick). Picking a larger start would leave insufficient numbers to complete the combination. Saves significant work near the leaves."
+      }
+    ],
+
+    "related_problem_ids": ["subsets", "permutations", "combination-sum", "n-queens"]
   },
   {
     "id": "n-queens",
@@ -3616,16 +3838,130 @@
     "id": "word-search",
     "title": "Word Search",
     "leetcode_url": "https://leetcode.com/problems/word-search/",
+    "leetcode_id": 79,
     "difficulty": "medium",
-    "patterns": [
-      "backtracking"
-    ],
-    "topics": [
-      "backtracking"
-    ],
+
+    "patterns": ["backtracking"],
+    "topics": ["backtracking"],
     "neetcode_category": "Backtracking",
-    "frequency_tags": [
-      "faang-common"
-    ]
+    "frequency_tags": ["faang-common", "neetcode-150"],
+
+    "summary": "Given an m x n grid of characters board and a string word, return true if word exists in the grid. The word can be constructed from letters of sequentially adjacent cells (horizontally or vertically neighboring). The same letter cell may not be used more than once.",
+
+    "constraints": [
+      "m == board.length",
+      "n = board[i].length",
+      "1 <= m, n <= 6",
+      "1 <= word.length <= 15",
+      "board and word consist of only lowercase and uppercase English letters."
+    ],
+
+    "examples": [
+      { "input": "board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCCED\"", "output": "true", "explanation": "Path: A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)." },
+      { "input": "board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"SEE\"", "output": "true", "explanation": "Path: S(1,3) → E(2,3) → E(2,2)." },
+      { "input": "board = [[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], word = \"ABCB\"", "output": "false", "explanation": "B(0,1) can only be used once. After A(0,0)→B(0,1)→C(0,2), there's no way back to a different B." }
+    ],
+
+    "function_name": "exist",
+    "function_signature": "def exist(board, word):",
+    "starter_code": "def exist(board, word):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic example — word found", "args": [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCCED"], "expected": "True" },
+      { "label": "shorter word found", "args": [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "SEE"], "expected": "True" },
+      { "label": "can't reuse cell", "args": [[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], "ABCB"], "expected": "False" },
+      { "label": "single cell match", "args": [[["A"]], "A"], "expected": "True" },
+      { "label": "single cell mismatch", "args": [[["A"]], "B"], "expected": "False" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "DFS from every starting cell. For each path, mark visited cells (temporarily replace the char or use a separate set). When the path matches the word, return True. When it fails, backtrack (restore the cell). The 'same letter cell may not be used twice' constraint is what forces backtracking — without it, a simple existence-of-each-letter check would suffice.",
+
+      "clarifying_questions": [
+        { "question": "Can cells be reused?", "why": "Spec explicitly says NO — same cell can't appear twice in a path. This is what makes backtracking necessary." },
+        { "question": "What does 'adjacent' mean — 4 directions or 8?", "why": "Spec says horizontally or vertically — 4 directions (up/down/left/right). Diagonal is excluded." },
+        { "question": "Case sensitive?", "why": "Spec says both cases, treat as distinct. 'A' and 'a' are different." },
+        { "question": "Word length vs grid size?", "why": "Word up to 15, grid up to 6×6=36 cells. If word > 36, return false immediately. Worth confirming for early exit." },
+        { "question": "Is mutating the board OK?", "why": "If yes, you can use the board itself as the visited tracker (temporarily replace cell with '#' during recursion). Saves O(m×n) space. Most interviewers expect this for senior signal." }
+      ],
+
+      "think_out_loud": "Backtracking from each cell. For each (i,j), try to match word[0] there, then recursively try to match word[1] in adjacent cells, etc. Mark visited cells to prevent reuse. Restore on backtrack. Pruning: skip if board[i][j] != word[k] immediately. Worst case O(m × n × 4^L) where L is word length, but typically much less due to pruning.",
+
+      "edge_cases": [
+        { "category": "Single cell match", "details": "board=[['A']], word='A' → true. Match at start, word fully consumed." },
+        { "category": "Single cell mismatch", "details": "board=[['A']], word='B' → false." },
+        { "category": "Word longer than grid", "details": "If word.length > m*n, can't possibly fit (can't reuse cells). Early exit." },
+        { "category": "Word found in reverse direction", "details": "Must search ALL 4 directions, not just forward." },
+        { "category": "Word entirely outside the grid", "details": "Like 'XYZ' on a grid with only 'A's. DFS prunes quickly via the first-char check." }
+      ],
+
+      "common_mistakes": [
+        "Forgetting to mark cell as visited before recursing → infinite loop or wrong answer on cycles.",
+        "Forgetting to UNMARK cell after backtracking → cells stay 'used' across different paths from different starts.",
+        "Using a separate visited set when modifying the board would work — costs extra O(m×n) space.",
+        "Off-by-one on the word index (k vs k+1).",
+        "Not pruning early when board[i][j] != word[k] — runs the recursion needlessly."
+      ]
+    },
+
+    "faang": {
+      "tier": "B",
+      "introduction": "Word Search. Given a grid and a word, can the word be formed by following adjacent cells (no reuse)?",
+      "introduction_context": "Classic 2D backtracking. Common at FAANG. Tests DFS on a grid + state restoration. Often a follow-up: 'Word Search II' generalizes to many words with a Trie.",
+
+      "really_testing": [
+        "DFS on a 2D grid (handle bounds, 4 directions).",
+        "Backtracking discipline (mark, recurse, unmark).",
+        "In-place visited tracking (the senior optimization).",
+        "Pruning at the first character mismatch for performance."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Articulates DFS + backtracking. Uses in-place marking (modify board). Prunes on char mismatch. Clean code. ~12 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches the algorithm with an external visited set. Code correct but uses extra space." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Forgets to unmark cells on backtrack. Or doesn't try all 4 directions. Or buggy bounds." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't structure the recursion. Can't handle grid traversal correctly." }
+      ],
+
+      "playbook": [
+        "Restate: 'Find word in grid by following adjacent cells, no reuse.'",
+        "Confirm: 4-direction adjacency, no cell reuse, case sensitive.",
+        "Propose backtracking DFS from each starting cell.",
+        "Sketch: for each (i,j), call dfs(i,j,0). dfs(i,j,k) returns True if word[k:] starts at (i,j).",
+        "Inside dfs: bounds check, mismatch check, mark, recurse to 4 neighbors with k+1, unmark, return any-success.",
+        "Show in-place marking: temporarily set board[i][j] = '#' (or any non-letter char) during recursion. Restore on backtrack.",
+        "Test on the example. Trace 'ABCCED' to confirm the path.",
+        "Discuss complexity: O(m×n × 4^L) worst case, typically way less due to pruning."
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: Word Search II (multiple words via Trie).",
+
+      "dont_do": [
+        "Don't forget to unmark cells on backtrack — leaves stale state.",
+        "Don't search only 1-2 directions — must try all 4.",
+        "Don't use an extra m×n visited matrix when in-place marking works.",
+        "Don't return early on first cell mismatch without trying the recursion — but DO prune the first char.",
+        "Don't try to be clever with global state — keep recursion pure."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking with Extra Visited Set",
+        "time": "O(m × n × 4^L)",
+        "space": "O(m × n) for visited + O(L) recursion",
+        "code": "def exist(board, word):\n    m, n = len(board), len(board[0])\n    def dfs(i, j, k, visited):\n        if k == len(word):\n            return True\n        if i < 0 or i >= m or j < 0 or j >= n or (i,j) in visited or board[i][j] != word[k]:\n            return False\n        visited.add((i, j))\n        found = (dfs(i+1, j, k+1, visited) or dfs(i-1, j, k+1, visited) or\n                 dfs(i, j+1, k+1, visited) or dfs(i, j-1, k+1, visited))\n        visited.remove((i, j))\n        return found\n    for i in range(m):\n        for j in range(n):\n            if dfs(i, j, 0, set()):\n                return True\n    return False",
+        "explanation": "DFS from each cell. Use a 'visited' set to prevent reuse. Mark on entry, unmark on backtrack. Try all 4 directions. The 4^L term is the recursion fanout; m × n is the number of starting cells. Pruning (the char mismatch check) significantly reduces actual runtime."
+      },
+      {
+        "name": "Backtracking with In-Place Marking",
+        "time": "O(m × n × 4^L)",
+        "space": "O(L) recursion only",
+        "code": "def exist(board, word):\n    m, n = len(board), len(board[0])\n    def dfs(i, j, k):\n        if k == len(word):\n            return True\n        if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != word[k]:\n            return False\n        temp = board[i][j]\n        board[i][j] = '#'  # Mark as visited\n        found = (dfs(i+1, j, k+1) or dfs(i-1, j, k+1) or\n                 dfs(i, j+1, k+1) or dfs(i, j-1, k+1))\n        board[i][j] = temp  # Restore\n        return found\n    for i in range(m):\n        for j in range(n):\n            if dfs(i, j, 0):\n                return True\n    return False",
+        "explanation": "Instead of a separate visited set, temporarily replace each visited cell with a sentinel char (e.g., '#' — anything that can't match a word letter). Restore on backtrack. Saves O(m×n) space. The senior signal — interviewers like seeing the in-place optimization."
+      }
+    ],
+
+    "related_problem_ids": ["subsets", "permutations", "n-queens", "combinations"]
   }
 ]
