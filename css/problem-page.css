@@ -485,6 +485,7 @@
     }
     .approach-body pre {
       background: var(--bg-code);
+      color: var(--text-primary);
       border-radius: 6px;
       padding: 10px 12px;
       font-family: var(--font-mono);
@@ -492,6 +493,7 @@
       line-height: 1.6;
       overflow-x: auto;
       margin: 0 0 8px;
+      white-space: pre;
     }
     .approach-body .approach-why {
       font-size: 13px;
