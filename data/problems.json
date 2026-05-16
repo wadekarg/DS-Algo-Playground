@@ -22098,5 +22098,708 @@
       "house-robber",
       "coin-change"
     ]
+  },
+  {
+    "id": "interleaving-string",
+    "title": "Interleaving String",
+    "leetcode_url": "https://leetcode.com/problems/interleaving-string/",
+    "leetcode_id": 97,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given strings s1, s2, and s3, return True if s3 is formed by an interleaving of s1 and s2. Interleaving means selecting characters from s1 and s2 (in their original order) to form s3.",
+    "constraints": [
+      "0 <= s1.length, s2.length <= 100",
+      "0 <= s3.length <= 200",
+      "s1, s2, and s3 consist of lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbcbcac\"",
+        "output": "True",
+        "explanation": "s3 can be formed by interleaving s1 and s2 (e.g., aa[d]b[bc]c[ac] picks from both)."
+      },
+      {
+        "input": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbbaccc\"",
+        "output": "False",
+        "explanation": "Cannot interleave to produce s3."
+      },
+      {
+        "input": "s1 = \"\", s2 = \"\", s3 = \"\"",
+        "output": "True",
+        "explanation": "Trivially true."
+      }
+    ],
+    "function_name": "isInterleave",
+    "function_signature": "def isInterleave(s1, s2, s3):",
+    "starter_code": "def isInterleave(s1, s2, s3):\n    # 2D DP. dp[i][j] = can s3[:i+j] be formed by interleaving s1[:i] and s2[:j]?\n    # Transition: dp[i][j] = (dp[i-1][j] and s1[i-1] == s3[i+j-1]) or (dp[i][j-1] and s2[j-1] == s3[i+j-1]).\n    pass",
+    "test_cases": [
+      {
+        "label": "classic true",
+        "args": [
+          "aabcc",
+          "dbbca",
+          "aadbbcbcac"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "classic false",
+        "args": [
+          "aabcc",
+          "dbbca",
+          "aadbbbaccc"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "both empty",
+        "args": [
+          "",
+          "",
+          ""
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "wrong length",
+        "args": [
+          "abc",
+          "def",
+          "abcde"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "one empty",
+        "args": [
+          "",
+          "abc",
+          "abc"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "one mismatched",
+        "args": [
+          "a",
+          "b",
+          "ab"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "interleave order",
+        "args": [
+          "a",
+          "b",
+          "ba"
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Classic 2D DP. dp[i][j] = is s3[:i+j] formed by interleaving s1[:i] and s2[:j]? Base: dp[0][0] = True (empty interleave). Transition: dp[i][j] is True if either (a) dp[i-1][j] and s1[i-1] matches s3[i+j-1], or (b) dp[i][j-1] and s2[j-1] matches s3[i+j-1]. Answer: dp[len(s1)][len(s2)].",
+      "clarifying_questions": [
+        {
+          "question": "Length check first?",
+          "why": "If len(s1) + len(s2) != len(s3), immediately False."
+        },
+        {
+          "question": "Characters preserve order within each source?",
+          "why": "Yes \u2014 that's the 'interleaving' definition."
+        },
+        {
+          "question": "Each char of s3 must come from EITHER s1 or s2?",
+          "why": "Yes. Total chars = len(s1) + len(s2). Each consumed once."
+        },
+        {
+          "question": "Empty case?",
+          "why": "All empty \u2192 True. One empty \u2192 s3 must equal the other."
+        },
+        {
+          "question": "Can I do this greedy?",
+          "why": "No \u2014 when both s1's and s2's current char match s3's current, you don't know which to consume. DP handles this branching."
+        }
+      ],
+      "think_out_loud": "2D DP. dp[i][j] tracks whether the FIRST i+j characters of s3 can be formed using first i of s1 and first j of s2. From either dp[i-1][j] (consumed s1's i-th char) or dp[i][j-1] (consumed s2's j-th char). O(m*n) time and space.",
+      "edge_cases": [
+        {
+          "category": "Both empty",
+          "details": "dp[0][0] = True."
+        },
+        {
+          "category": "Mismatched total length",
+          "details": "Return False without DP."
+        },
+        {
+          "category": "Only one source matches",
+          "details": "Algorithm picks the working path."
+        },
+        {
+          "category": "Both source chars match s3",
+          "details": "DP explores both branches; if either works, True."
+        },
+        {
+          "category": "All chars consumed from one source",
+          "details": "Walk only one side of the DP table."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy \u2014 fails when multiple choices look valid.",
+        "Forgetting the length check.",
+        "Off-by-one indexing (s3[i+j] vs s3[i+j-1]).",
+        "Treating as 'is s3 a supersequence of s1+s2' \u2014 different problem.",
+        "Recursion without memo \u2014 exponential."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "String interleaving DP. Common at Amazon, Google.",
+      "introduction_context": "Onsite question \u2014 recognizing the 2D DP and avoiding greedy is the key.",
+      "really_testing": [
+        "Recognizing 2D string DP.",
+        "Defining state correctly.",
+        "Length precheck.",
+        "Avoiding greedy."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DP recurrence in 5 min, codes in 10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization version; converts to bottom-up correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy or buggy DP."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive."
+        }
+      ],
+      "playbook": [
+        "Restate: 'is s3 an interleaving of s1 and s2?'",
+        "Precheck: len(s1) + len(s2) == len(s3).",
+        "DP: 'dp[i][j] = first i+j chars of s3 formable from s1[:i] + s2[:j]'.",
+        "Code: if len(s1)+len(s2) != len(s3): return False. m, n = len(s1), len(s2). dp = [[False]*(n+1) for _ in range(m+1)]. dp[0][0] = True. for i in range(m+1): for j in range(n+1): k = i+j-1. if i>0: dp[i][j] |= dp[i-1][j] and s1[i-1]==s3[k]. if j>0: dp[i][j] |= dp[i][j-1] and s2[j-1]==s3[k]. return dp[m][n]."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't greedy.",
+        "Don't skip length check.",
+        "Don't recurse without memo.",
+        "Don't off-by-one."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up 2D DP",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def isInterleave(s1, s2, s3):\n    m, n = len(s1), len(s2)\n    if m + n != len(s3):\n        return False\n    \n    dp = [[False] * (n + 1) for _ in range(m + 1)]\n    dp[0][0] = True\n    \n    for i in range(m + 1):\n        for j in range(n + 1):\n            k = i + j - 1  # index into s3 if we consumed something\n            if i > 0 and dp[i - 1][j] and s1[i - 1] == s3[k]:\n                dp[i][j] = True\n            if j > 0 and dp[i][j - 1] and s2[j - 1] == s3[k]:\n                dp[i][j] = True\n    return dp[m][n]",
+        "explanation": "dp[i][j] = True iff s3[:i+j] is an interleaving of s1[:i] and s2[:j]. For each cell, either (a) consume s1's i-th char (came from dp[i-1][j]), or (b) consume s2's j-th char (came from dp[i][j-1]). The matched character must equal s3 at the corresponding position. Length precheck saves time on mismatched inputs."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-common-subsequence",
+      "edit-distance",
+      "word-break"
+    ]
+  },
+  {
+    "id": "distinct-subsequences",
+    "title": "Distinct Subsequences",
+    "leetcode_url": "https://leetcode.com/problems/distinct-subsequences/",
+    "leetcode_id": 115,
+    "difficulty": "hard",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two strings s and t, return the number of distinct subsequences of s that equal t.",
+    "constraints": [
+      "1 <= s.length, t.length <= 1000",
+      "Both consist of English letters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"rabbbit\", t = \"rabbit\"",
+        "output": "3",
+        "explanation": "Three ways to extract 'rabbit' from 'rabbbit' (different b's used)."
+      },
+      {
+        "input": "s = \"babgbag\", t = \"bag\"",
+        "output": "5",
+        "explanation": "Five distinct ways to pick 'bag' from 'babgbag'."
+      }
+    ],
+    "function_name": "numDistinct",
+    "function_signature": "def numDistinct(s, t):",
+    "starter_code": "def numDistinct(s, t):\n    # dp[i][j] = number of ways s[:i] forms t[:j].\n    # If s[i-1] == t[j-1]: dp[i][j] = dp[i-1][j-1] + dp[i-1][j] (use this char OR skip it).\n    # Else: dp[i][j] = dp[i-1][j] (must skip this s char).\n    pass",
+    "test_cases": [
+      {
+        "label": "rabbbit / rabbit",
+        "args": [
+          "rabbbit",
+          "rabbit"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "babgbag / bag",
+        "args": [
+          "babgbag",
+          "bag"
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "exact match",
+        "args": [
+          "abc",
+          "abc"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "no match",
+        "args": [
+          "abc",
+          "xyz"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "t longer than s",
+        "args": [
+          "a",
+          "ab"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "empty t",
+        "args": [
+          "abc",
+          ""
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Count-style 2D DP. dp[i][j] = number of distinct subsequences of s[:i] equal to t[:j]. Base: dp[i][0] = 1 for all i (empty t is always achievable). Transition: if s[i-1] == t[j-1], dp[i][j] = dp[i-1][j-1] (use this char) + dp[i-1][j] (skip it). Else: dp[i][j] = dp[i-1][j] (must skip, can't match).",
+      "clarifying_questions": [
+        {
+          "question": "Distinct in what sense \u2014 by index choices?",
+          "why": "Yes. Two subsequences are distinct if they pick different INDEX sets from s, even if they spell the same word."
+        },
+        {
+          "question": "Case-sensitive?",
+          "why": "Spec doesn't normalize. Match exactly."
+        },
+        {
+          "question": "Empty t?",
+          "why": "1 way (empty subsequence). dp[i][0] = 1 for all i."
+        },
+        {
+          "question": "t longer than s?",
+          "why": "0 ways. Algorithm handles \u2014 dp stays 0."
+        },
+        {
+          "question": "Can I do space O(n)?",
+          "why": "Yes \u2014 only need previous row. Roll with one 1D array."
+        }
+      ],
+      "think_out_loud": "Count DP. For each (i, j): if chars match, you can either use s[i-1] (adding dp[i-1][j-1] ways) or skip it (dp[i-1][j]). If they don't match, you must skip \u2014 dp[i-1][j]. Sum the count, return dp[m][n].",
+      "edge_cases": [
+        {
+          "category": "Empty t",
+          "details": "Always 1 way."
+        },
+        {
+          "category": "t longer than s",
+          "details": "0 ways."
+        },
+        {
+          "category": "Identical strings",
+          "details": "1 way."
+        },
+        {
+          "category": "Repeated chars in s",
+          "details": "Each occurrence creates branching \u2014 what makes the count > 1."
+        },
+        {
+          "category": "No matching chars at all",
+          "details": "0."
+        }
+      ],
+      "common_mistakes": [
+        "Confusion between subsequence and substring.",
+        "Wrong recurrence on mismatch (should NOT skip a t char).",
+        "Off-by-one indexing.",
+        "Not initializing dp[i][0] = 1.",
+        "Recursion without memo."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Count-style 2D DP. Tests careful recurrence design.",
+      "introduction_context": "Common at Amazon, Microsoft. Harder than LCS because of the count interpretation.",
+      "really_testing": [
+        "Distinct counting via DP.",
+        "Use-or-skip recurrence.",
+        "Base case dp[i][0] = 1.",
+        "Subsequence interpretation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Recurrence in 5-8 min, codes in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one base-case fix."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses use-or-skip; only counts skips."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count distinct subsequences of s equal to t'.",
+        "Recurrence: 'match \u2192 use+skip; mismatch \u2192 skip only'.",
+        "Code: m, n = len(s), len(t). dp = [[0]*(n+1) for _ in range(m+1)]. for i in range(m+1): dp[i][0] = 1. for i in range(1, m+1): for j in range(1, n+1): dp[i][j] = dp[i-1][j]. if s[i-1] == t[j-1]: dp[i][j] += dp[i-1][j-1]. return dp[m][n].",
+        "Walk 'rabbbit'/'rabbit': dp[7][6] = 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 12-18 min.",
+      "dont_do": [
+        "Don't only count skips \u2014 miss use case.",
+        "Don't init dp[i][0] = 0.",
+        "Don't substring.",
+        "Don't recurse without memo."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up 2D DP",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def numDistinct(s, t):\n    m, n = len(s), len(t)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Base: empty t can be formed from any prefix of s in exactly 1 way (empty subsequence)\n    for i in range(m + 1):\n        dp[i][0] = 1\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            dp[i][j] = dp[i - 1][j]  # always option: skip s[i-1]\n            if s[i - 1] == t[j - 1]:\n                dp[i][j] += dp[i - 1][j - 1]  # OR use s[i-1] to match t[j-1]\n    return dp[m][n]",
+        "explanation": "Count DP. dp[i][j] counts distinct subsequences of s[:i] matching t[:j]. Always have the option to skip s's i-th char (dp[i-1][j]). If chars match, additionally we can use s's i-th to match t's j-th (dp[i-1][j-1]). Base dp[i][0] = 1 since empty t is trivially formable. O(m*n)."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-common-subsequence",
+      "edit-distance",
+      "interleaving-string"
+    ]
+  },
+  {
+    "id": "longest-increasing-path-in-a-matrix",
+    "title": "Longest Increasing Path in a Matrix",
+    "leetcode_url": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/",
+    "leetcode_id": 329,
+    "difficulty": "hard",
+    "patterns": [
+      "dp",
+      "dfs",
+      "memoization",
+      "grid"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n matrix, find the length of the longest strictly increasing path. From each cell, you can move 4-directionally to an adjacent cell. You cannot revisit cells.",
+    "constraints": [
+      "1 <= m, n <= 200",
+      "0 <= matrix[i][j] <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[9,9,4],[6,6,8],[2,1,1]]",
+        "output": "4",
+        "explanation": "Longest path: 1 \u2192 2 \u2192 6 \u2192 9. Length 4."
+      },
+      {
+        "input": "matrix = [[3,4,5],[3,2,6],[2,2,1]]",
+        "output": "4",
+        "explanation": "3 \u2192 4 \u2192 5 \u2192 6. Length 4."
+      }
+    ],
+    "function_name": "longestIncreasingPath",
+    "function_signature": "def longestIncreasingPath(matrix):",
+    "starter_code": "def longestIncreasingPath(matrix):\n    # DFS with memoization. dp[r][c] = longest increasing path STARTING at (r, c).\n    # Recurse into neighbors with strictly greater values.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic 3x3",
+        "args": [
+          [
+            [
+              9,
+              9,
+              4
+            ],
+            [
+              6,
+              6,
+              8
+            ],
+            [
+              2,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "another 3x3",
+        "args": [
+          [
+            [
+              3,
+              4,
+              5
+            ],
+            [
+              3,
+              2,
+              6
+            ],
+            [
+              2,
+              2,
+              1
+            ]
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "single cell",
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all same value",
+        "args": [
+          [
+            [
+              5,
+              5
+            ],
+            [
+              5,
+              5
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "1xN strict increase",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "spiral path full grid",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              6,
+              5,
+              4
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": "9"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "DFS + memoization. dp[r][c] = longest increasing path STARTING at (r, c). For each cell: dp[r][c] = 1 + max(dp[nr][nc]) over neighbors with strictly greater values. Memoize to avoid recomputation. Answer is the max over all cells.",
+      "clarifying_questions": [
+        {
+          "question": "Strictly increasing \u2014 duplicates don't extend?",
+          "why": "Yes per spec. Use strict > for the move check."
+        },
+        {
+          "question": "4-directional?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Path length counted in nodes or edges?",
+          "why": "Nodes per spec. Single cell = length 1."
+        },
+        {
+          "question": "Why is this DP not just DFS?",
+          "why": "Pure DFS revisits subpaths. Memoization makes it O(m*n) since each cell's longest-path-from-here is computed once."
+        },
+        {
+          "question": "Can the matrix have all same values?",
+          "why": "Yes. Longest path = 1 (each cell alone)."
+        }
+      ],
+      "think_out_loud": "DFS with memoization. For each cell, find the longest STRICTLY INCREASING path starting there. Memoize since multiple starts converge to the same subpaths. Take the global max. The graph is acyclic (values strictly increase along edges), so no visited tracking needed \u2014 memoization is sufficient.",
+      "edge_cases": [
+        {
+          "category": "Single cell",
+          "details": "Length 1."
+        },
+        {
+          "category": "All same values",
+          "details": "No strict increase possible. Length 1."
+        },
+        {
+          "category": "Strictly monotonic 1xN",
+          "details": "Length n."
+        },
+        {
+          "category": "Diagonal pattern",
+          "details": "Algorithm handles 4-directional only."
+        },
+        {
+          "category": "Large matrix",
+          "details": "200x200=40k cells. O(m*n) memoized DFS handles easily."
+        }
+      ],
+      "common_mistakes": [
+        "Pure DFS without memo \u2014 exponential.",
+        "Using <= instead of < \u2014 allows equal-value steps.",
+        "Tracking visited within DFS \u2014 unnecessary (strict increase prevents cycles).",
+        "Computing only from corners \u2014 must try every cell as start.",
+        "Counting in edges instead of nodes."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "DFS + memoization on a grid. The classic 'memoized DAG DFS' pattern.",
+      "introduction_context": "Onsite at Amazon, Google, Microsoft. The recognition that the graph is acyclic is the key insight.",
+      "really_testing": [
+        "Recognizing memoized DFS pattern.",
+        "Identifying the implicit DAG (strict-increase prevents cycles).",
+        "Iterating all start cells.",
+        "Strict comparison discipline."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Memoized DFS in 10-12 min. Explains DAG-ness."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DFS with explicit visited; memoization added after prompting."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "DFS without memo; can't see the optimization."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate DFS structure."
+        }
+      ],
+      "playbook": [
+        "Restate: 'longest strictly increasing 4-directional path'.",
+        "Insight: 'strict-increase \u2192 DAG \u2192 memoized DFS works'.",
+        "Code: from functools import lru_cache. m, n = len(matrix), len(matrix[0]). @lru_cache(None). def dfs(r, c): best = 1. for dr,dc in [(1,0),(-1,0),(0,1),(0,-1)]: nr,nc = r+dr,c+dc. if 0<=nr<m and 0<=nc<n and matrix[nr][nc] > matrix[r][c]: best = max(best, 1 + dfs(nr, nc)). return best. return max(dfs(r, c) for r in range(m) for c in range(n)).",
+        "Walk 3x3 example: dfs from each cell, memoized; max over all is 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: count all paths.",
+      "dont_do": [
+        "Don't pure DFS without memo.",
+        "Don't use <= for moves.",
+        "Don't only DFS from corners.",
+        "Don't track visited set \u2014 strict increase prevents revisits."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with Memoization",
+        "time": "O(m * n)",
+        "space": "O(m * n) memo + recursion",
+        "code": "from functools import lru_cache\n\ndef longestIncreasingPath(matrix):\n    if not matrix or not matrix[0]:\n        return 0\n    m, n = len(matrix), len(matrix[0])\n    \n    @lru_cache(maxsize=None)\n    def dfs(r, c):\n        best = 1\n        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                best = max(best, 1 + dfs(nr, nc))\n        return best\n    \n    return max(dfs(r, c) for r in range(m) for c in range(n))",
+        "explanation": "DFS computes longest increasing path STARTING at each cell. Memoization caches each cell's result, so each cell's DFS is computed exactly once. The strict-greater condition ensures no cycles \u2014 the implicit graph is a DAG. Final answer is the max over all starting cells. O(m*n)."
+      }
+    ],
+    "related_problem_ids": [
+      "pacific-atlantic-water-flow",
+      "course-schedule",
+      "longest-increasing-subsequence"
+    ]
   }
 ]
