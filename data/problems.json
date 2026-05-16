@@ -28683,5 +28683,490 @@
       "single-number",
       "number-of-1-bits"
     ]
+  },
+  {
+    "id": "sum-of-two-integers",
+    "title": "Sum of Two Integers",
+    "leetcode_url": "https://leetcode.com/problems/sum-of-two-integers/",
+    "leetcode_id": 371,
+    "difficulty": "medium",
+    "patterns": [
+      "bit-manipulation"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two integers a and b, return their sum WITHOUT using the + or - operators.",
+    "constraints": [
+      "-1000 <= a, b <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "a = 1, b = 2",
+        "output": "3"
+      },
+      {
+        "input": "a = 2, b = 3",
+        "output": "5"
+      }
+    ],
+    "function_name": "getSum",
+    "function_signature": "def getSum(a, b):",
+    "starter_code": "def getSum(a, b):\n    # XOR = sum without carry; AND << 1 = carry. Iterate until carry is 0.\n    # In Python: mask to 32 bits and reinterpret signed.\n    pass",
+    "test_cases": [
+      {
+        "label": "1+2",
+        "args": [
+          1,
+          2
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "2+3",
+        "args": [
+          2,
+          3
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "0+0",
+        "args": [
+          0,
+          0
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "neg + neg",
+        "args": [
+          -1,
+          -1
+        ],
+        "expected": "-2"
+      },
+      {
+        "label": "pos + neg",
+        "args": [
+          5,
+          -3
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "XOR gives sum without carry; AND shifted left gives the carry. Loop until carry is 0. Python complication: integers are unbounded; mask to 32 bits and reinterpret as signed at the end.",
+      "clarifying_questions": [
+        {
+          "question": "Negative numbers?",
+          "why": "Yes \u2014 use 32-bit two's complement mask."
+        },
+        {
+          "question": "Range?",
+          "why": "[-1000, 1000] \u2014 fits 32 bits."
+        }
+      ],
+      "think_out_loud": "Standard XOR+carry bit-adder.",
+      "edge_cases": [
+        {
+          "category": "Both zero",
+          "details": "0."
+        },
+        {
+          "category": "Negatives",
+          "details": "Two's-complement mask handles."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to mask to 32 bits in Python.",
+        "Not reinterpreting as signed."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Bit-adder.",
+      "introduction_context": "Common at Amazon, Microsoft.",
+      "really_testing": [
+        "Bit-level adder logic."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5-8 min with negatives."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Works for positives."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck on negatives."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "mask = 0xFFFFFFFF; MAX = 0x7FFFFFFF.",
+        "while b != 0: a, b = (a^b) & mask, ((a&b) << 1) & mask.",
+        "return a if a <= MAX else ~(a ^ mask)."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't use + or -.",
+        "Don't forget 32-bit reinterpretation."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bit Adder with 32-bit Mask",
+        "time": "O(1) effectively (32 iterations max)",
+        "space": "O(1)",
+        "code": "def getSum(a, b):\n    mask = 0xFFFFFFFF\n    MAX_INT = 0x7FFFFFFF\n    while b != 0:\n        a, b = (a ^ b) & mask, ((a & b) << 1) & mask\n    return a if a <= MAX_INT else ~(a ^ mask)",
+        "explanation": "XOR is sum without carry; AND shifted left is the carry. Iterate until carry is 0. The 32-bit mask handles Python's unbounded ints; final reinterpretation converts to signed when high bit is set."
+      }
+    ],
+    "related_problem_ids": [
+      "single-number",
+      "number-of-1-bits"
+    ]
+  },
+  {
+    "id": "reverse-integer",
+    "title": "Reverse Integer",
+    "leetcode_url": "https://leetcode.com/problems/reverse-integer/",
+    "leetcode_id": 7,
+    "difficulty": "medium",
+    "patterns": [
+      "math"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a signed 32-bit integer, reverse its digits. If reversing causes the value to go outside [-2^31, 2^31 - 1], return 0.",
+    "constraints": [
+      "-2^31 <= x <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "x = 123",
+        "output": "321"
+      },
+      {
+        "input": "x = -123",
+        "output": "-321"
+      },
+      {
+        "input": "x = 120",
+        "output": "21"
+      }
+    ],
+    "function_name": "reverse",
+    "function_signature": "def reverse(x):",
+    "starter_code": "def reverse(x):\n    # Extract digits with % 10, build reversed via *10 + digit. Check overflow before adding.\n    pass",
+    "test_cases": [
+      {
+        "label": "123",
+        "args": [
+          123
+        ],
+        "expected": "321"
+      },
+      {
+        "label": "-123",
+        "args": [
+          -123
+        ],
+        "expected": "-321"
+      },
+      {
+        "label": "120 trailing zero",
+        "args": [
+          120
+        ],
+        "expected": "21"
+      },
+      {
+        "label": "overflow",
+        "args": [
+          1534236469
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "0",
+        "args": [
+          0
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Extract last digit with mod 10, shift result left by *10, add digit. Track sign separately. Check for overflow against 2^31-1 / -2^31.",
+      "clarifying_questions": [
+        {
+          "question": "Sign preserved?",
+          "why": "Yes \u2014 same sign on output."
+        },
+        {
+          "question": "Overflow returns 0?",
+          "why": "Yes per spec."
+        }
+      ],
+      "think_out_loud": "Digit shuffling with overflow check.",
+      "edge_cases": [
+        {
+          "category": "Trailing zeros",
+          "details": "Drop \u2014 120 \u2192 21."
+        },
+        {
+          "category": "Negatives",
+          "details": "Sign handled separately."
+        },
+        {
+          "category": "0",
+          "details": "0."
+        },
+        {
+          "category": "Overflow",
+          "details": "Return 0."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting overflow check.",
+        "Sign-handling bugs."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Digit manipulation.",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "Digit extract.",
+        "Overflow checks."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5-7 min with overflow."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Works for positives."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses overflow."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "sign = -1 if x < 0 else 1. x = abs(x). result = 0.",
+        "while x: result = result*10 + x%10. x //= 10.",
+        "result *= sign. return result if -2**31 <= result <= 2**31-1 else 0."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't ignore overflow.",
+        "Don't string-convert (works but cheaper to use math)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Digit Shuffle with Overflow Check",
+        "time": "O(log x)",
+        "space": "O(1)",
+        "code": "def reverse(x):\n    sign = -1 if x < 0 else 1\n    x = abs(x)\n    result = 0\n    while x:\n        result = result * 10 + x % 10\n        x //= 10\n    result *= sign\n    if result < -2**31 or result > 2**31 - 1:\n        return 0\n    return result",
+        "explanation": "Standard digit shuffling. Sign handled separately by stripping with abs() and reapplying. After building, check against 32-bit signed bounds; return 0 if out of range."
+      }
+    ],
+    "related_problem_ids": [
+      "plus-one",
+      "powx-n"
+    ]
+  },
+  {
+    "id": "reverse-linked-list",
+    "title": "Reverse Linked List",
+    "leetcode_url": "https://leetcode.com/problems/reverse-linked-list/",
+    "leetcode_id": 206,
+    "difficulty": "easy",
+    "patterns": [
+      "linked-list"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given the head of a singly linked list, reverse the list and return its new head.",
+    "constraints": [
+      "0 <= n <= 5000",
+      "-5000 <= Node.val <= 5000"
+    ],
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5]",
+        "output": "[5,4,3,2,1]"
+      },
+      {
+        "input": "head = []",
+        "output": "[]"
+      }
+    ],
+    "function_name": "reverseList",
+    "function_signature": "def reverseList(values):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reverseList(values):\n    head = build_list(values)\n    # Iterative: prev=None, curr=head, while curr: next=curr.next; curr.next=prev; prev=curr; curr=next.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "[1,2,3,4,5]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "[5, 4, 3, 2, 1]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "two",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "[2, 1]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Iterative: three pointers (prev, curr, next). For each node, save next, redirect curr.next to prev, advance. Returns prev at end.",
+      "clarifying_questions": [
+        {
+          "question": "Iterative or recursive?",
+          "why": "Either. Iterative is O(1) extra space."
+        },
+        {
+          "question": "Empty list?",
+          "why": "Return None."
+        }
+      ],
+      "think_out_loud": "Standard iterative pointer reversal.",
+      "edge_cases": [
+        {
+          "category": "Empty",
+          "details": "None."
+        },
+        {
+          "category": "Single",
+          "details": "Same."
+        }
+      ],
+      "common_mistakes": [
+        "Losing the next pointer before saving it.",
+        "Returning curr instead of prev."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Pointer-manipulation classic.",
+      "introduction_context": "Phone screen everywhere.",
+      "really_testing": [
+        "Three-pointer dance."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "2 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Loses pointer."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "prev=None; curr=head. while curr: nxt=curr.next; curr.next=prev; prev=curr; curr=nxt. return prev."
+      ],
+      "playbook_meta": "Total time: 2-4 min.",
+      "dont_do": [
+        "Don't lose next.",
+        "Don't return curr."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative 3-Pointer",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reverseList(values):\n    head = build_list(values)\n    prev = None\n    curr = head\n    while curr:\n        nxt = curr.next\n        curr.next = prev\n        prev = curr\n        curr = nxt\n    return list_to_values(prev)",
+        "explanation": "Three pointers. Save next, rewire curr's link to prev, advance both. prev becomes the new head."
+      }
+    ],
+    "related_problem_ids": [
+      "middle-of-the-linked-list",
+      "linked-list-cycle",
+      "merge-two-sorted-lists"
+    ]
   }
 ]
