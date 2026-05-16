@@ -15,9 +15,9 @@ var DSA = window.DSA || {};
   };
 
   function getBasePath() {
-    // Determine if we are inside topics/ or at root level
+    // Determine if we are inside topics/ or problems/ (any one-deep subdir), else root.
     var path = window.location.pathname;
-    if (path.indexOf('/topics/') !== -1) {
+    if (path.indexOf('/topics/') !== -1 || path.indexOf('/problems/') !== -1) {
       return '../';
     }
     return '';
