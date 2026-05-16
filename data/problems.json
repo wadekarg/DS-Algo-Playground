@@ -4264,7 +4264,7 @@
         "label": "repeats with mismatch counts",
         "args": [
           "aab",
-          "abab"
+          "abb"
         ],
         "expected": "False"
       }
@@ -4309,7 +4309,7 @@
         },
         {
           "category": "Repeated characters in s1",
-          "details": "Count matters \u2014 'aab' needs two a's and one b, so 'abab' (one a, two b's in window of 3) doesn't match."
+          "details": "Count matters \u2014 'aab' needs two a's and one b, so 'abb' (one a, two b's) doesn't match."
         },
         {
           "category": "All characters identical",
@@ -5610,64 +5610,923 @@
     "id": "linked-list-cycle",
     "title": "Linked List Cycle",
     "leetcode_url": "https://leetcode.com/problems/linked-list-cycle/",
+    "leetcode_id": 141,
     "difficulty": "easy",
     "patterns": [
       "fast-slow-pointers"
     ],
     "topics": [
-      "fast-slow-pointers",
-      "linked-lists"
+      "linked-list"
     ],
     "neetcode_category": "Linked List",
     "frequency_tags": [
-      "blind-75"
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the head of a singly linked list, return True if there is a cycle. A cycle means some node in the list points back to an earlier node. Aim for O(1) extra space.",
+    "constraints": [
+      "Number of nodes in the list is in the range [0, 10^4].",
+      "-10^5 <= Node.val <= 10^5",
+      "pos is -1 or a valid index in the list."
+    ],
+    "examples": [
+      {
+        "input": "head = [3,2,0,-4], pos = 1",
+        "output": "True",
+        "explanation": "Tail node connects to the node at index 1 (value 2). Cycle exists."
+      },
+      {
+        "input": "head = [1,2], pos = 0",
+        "output": "True",
+        "explanation": "Tail connects back to head. Two-node cycle."
+      },
+      {
+        "input": "head = [1], pos = -1",
+        "output": "False",
+        "explanation": "Single node, no cycle."
+      }
+    ],
+    "function_name": "hasCycle",
+    "function_signature": "def hasCycle(values, pos):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef hasCycle(values, pos):\n    # The test runner passes plain JSON args, so we build the list here.\n    # Pretend the function signature is hasCycle(head: ListNode) \u2014 that's the interview question.\n    head = build_list(values, pos)\n    \n    # Your code: use Floyd's tortoise-and-hare on `head`. Return True if they meet.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "[3,2,0,-4] pos=1",
+        "args": [
+          [
+            3,
+            2,
+            0,
+            -4
+          ],
+          1
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "[1,2] pos=0",
+        "args": [
+          [
+            1,
+            2
+          ],
+          0
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "[1] pos=-1 (no cycle)",
+        "args": [
+          [
+            1
+          ],
+          -1
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty list",
+        "args": [
+          [],
+          -1
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "long no-cycle",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          -1
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "self-loop",
+        "args": [
+          [
+            7
+          ],
+          0
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Floyd's tortoise-and-hare. Move slow by 1, fast by 2. If they ever meet, there's a cycle. If fast hits None, there isn't. O(n) time, O(1) space. The hash-set version (track visited nodes) is O(n) space \u2014 fine as a warm-up answer.",
+      "clarifying_questions": [
+        {
+          "question": "Can the list be empty?",
+          "why": "Yes \u2014 per constraints, 0 nodes is valid. Return False immediately."
+        },
+        {
+          "question": "Is O(1) extra space required?",
+          "why": "Strongly preferred. The hash-set version is O(n) and works, but Floyd's algorithm is the canonical answer here."
+        },
+        {
+          "question": "Are we allowed to mutate the list?",
+          "why": "Probably not \u2014 original LC asks for non-destructive. Floyd's is non-destructive. Mention this to show you considered the 'mark as visited' trick (which would mutate)."
+        },
+        {
+          "question": "Could the cycle involve the head itself?",
+          "why": "Yes \u2014 a single-node self-loop is valid. Tail points to head is the most common form. Algorithm handles both."
+        },
+        {
+          "question": "Are node values relevant?",
+          "why": "No \u2014 this is a structural property. Algorithm operates on identity (the node object), not values. Don't accidentally compare slow.val == fast.val."
+        }
+      ],
+      "think_out_loud": "If two runners on a track move at different speeds, the faster one eventually laps the slower one \u2014 but only if the track is circular. That's the whole intuition. In code: slow = fast = head. While fast and fast.next: slow = slow.next; fast = fast.next.next. If slow == fast: return True. If fast hits None: return False.",
+      "edge_cases": [
+        {
+          "category": "Empty list",
+          "details": "head is None. Loop condition fails immediately. Return False."
+        },
+        {
+          "category": "Single node, no cycle",
+          "details": "fast.next is None on the first iteration. Loop fails. Return False."
+        },
+        {
+          "category": "Single node, self-loop",
+          "details": "fast.next.next == head == slow on the first iteration. Return True."
+        },
+        {
+          "category": "Cycle includes all nodes",
+          "details": "Standard case. Fast will lap slow within ~n steps."
+        },
+        {
+          "category": "Cycle is just the tail-to-some-earlier-node",
+          "details": "Fast enters the cycle and chases slow inside it. Still O(n)."
+        }
+      ],
+      "common_mistakes": [
+        "Comparing values (slow.val == fast.val) instead of identity (slow is fast) \u2014 wrong on lists with duplicate values.",
+        "Forgetting the 'and fast.next' guard \u2014 NoneType.next on the second step of fast.",
+        "Initializing slow = head, fast = head.next then comparing \u2014 works but introduces edge cases; cleaner to start both at head.",
+        "Using a hash set as the FINAL answer \u2014 works but doesn't show you know Floyd's.",
+        "Marking nodes as visited by mutating .val \u2014 destroys the list and breaks if values are needed downstream."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The canonical introduction to Floyd's tortoise-and-hare. Asked at virtually every FAANG \u2014 usually as a warm-up before Linked List Cycle II.",
+      "introduction_context": "Phone screen and onsite at Amazon, Meta, Google, Microsoft. Failing this is a strong negative signal; solving it cleanly opens the door to the harder cycle problems.",
+      "really_testing": [
+        "Knowing Floyd's algorithm by name and intuition.",
+        "Careful null-check on fast.next before fast.next.next.",
+        "Comparing nodes by identity, not by value.",
+        "Recognizing 'O(n) time, O(1) space' is the bar."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Names Floyd's, explains the 'lap each other' intuition, codes cleanly in 5 min. Handles empty list and self-loop without prompting."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with hash set first, derives Floyd's when prompted. Or codes Floyd's with one small null-check bug they self-correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Floyd's with persistent NoneType crashes. Or compares by value instead of identity."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot describe Floyd's even with strong hints. Or proposes traversing the list 'until you see a repeat value'."
+        }
+      ],
+      "playbook": [
+        "Restate: 'detect a cycle in a singly linked list, ideally O(1) space'.",
+        "Confirm: 'can the list be empty? Should we avoid mutating it?'",
+        "Quick mention: 'hash set works, O(n) space. But Floyd's is O(1) \u2014 let me write that.'",
+        "Code: slow = fast = head. while fast and fast.next: slow = slow.next; fast = fast.next.next; if slow is fast: return True. return False.",
+        "Walk [3,2,0,-4] pos=1: slow=3, fast=3 \u2192 slow=2, fast=0 \u2192 slow=0, fast=2 \u2192 slow=-4, fast=-4 \u2192 match \u2192 True.",
+        "Edge: empty list \u2014 `while fast` is False; return False.",
+        "Edge: [1] pos=-1 \u2014 `while fast and fast.next` fails (head.next is None); return False."
+      ],
+      "playbook_meta": "Total time: 5-8 min. Direct follow-up: Linked List Cycle II (where does the cycle START?). Then Find the Duplicate Number (same trick on an array-as-list).",
+      "dont_do": [
+        "Don't forget the `fast.next` null check.",
+        "Don't compare .val \u2014 identity (`is`) is correct.",
+        "Don't mutate the list as your detection mechanism.",
+        "Don't initialize fast = head.next before the loop \u2014 introduces edge cases; start both at head.",
+        "Don't claim hash set is the optimal answer \u2014 it's not, by space."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Hash Set (warm-up)",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef hasCycle(values, pos):\n    head = build_list(values, pos)\n    seen = set()\n    while head:\n        if head in seen:\n            return True\n        seen.add(head)\n        head = head.next\n    return False",
+        "explanation": "Walk the list, recording every node visited. If you ever see a node you've already recorded, there's a cycle. Correct, easy to explain \u2014 but uses O(n) extra space, which Floyd's avoids."
+      },
+      {
+        "name": "Floyd's Tortoise and Hare",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef hasCycle(values, pos):\n    head = build_list(values, pos)\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False",
+        "explanation": "Two pointers, one moving twice as fast. If there's a cycle, fast will eventually 'lap' slow and they'll land on the same node. If fast walks off the end, no cycle. O(n) time, O(1) space. The textbook answer the interviewer wants."
+      }
+    ],
+    "related_problem_ids": [
+      "linked-list-cycle-ii",
+      "middle-of-the-linked-list",
+      "happy-number"
     ]
   },
   {
     "id": "linked-list-cycle-ii",
     "title": "Linked List Cycle II",
     "leetcode_url": "https://leetcode.com/problems/linked-list-cycle-ii/",
+    "leetcode_id": 142,
     "difficulty": "medium",
     "patterns": [
       "fast-slow-pointers"
     ],
     "topics": [
-      "fast-slow-pointers",
-      "linked-lists"
+      "linked-list"
     ],
     "neetcode_category": "Linked List",
     "frequency_tags": [
-      "faang-common"
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the head of a linked list, return the node where the cycle begins. If there is no cycle, return None. Solve in O(1) extra space. (Here we return the node's value, or None.)",
+    "constraints": [
+      "Number of nodes in the list is in the range [0, 10^4].",
+      "-10^5 <= Node.val <= 10^5",
+      "pos is -1 or a valid index in the list."
+    ],
+    "examples": [
+      {
+        "input": "head = [3,2,0,-4], pos = 1",
+        "output": "2",
+        "explanation": "Cycle begins at index 1 (value 2)."
+      },
+      {
+        "input": "head = [1,2], pos = 0",
+        "output": "1",
+        "explanation": "Cycle begins at the head."
+      },
+      {
+        "input": "head = [1], pos = -1",
+        "output": "None",
+        "explanation": "No cycle."
+      }
+    ],
+    "function_name": "detectCycle",
+    "function_signature": "def detectCycle(values, pos):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef detectCycle(values, pos):\n    # Test runner sends JSON args; we build the list here.\n    # Pretend the signature is detectCycle(head: ListNode).\n    # Return the .val of the node where the cycle begins, or None if no cycle.\n    head = build_list(values, pos)\n    \n    # Your code: phase 1 \u2014 find meeting point with fast/slow.\n    # Phase 2 \u2014 reset one pointer to head, walk both at 1; they meet at the cycle entry.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "[3,2,0,-4] pos=1 -> 2",
+        "args": [
+          [
+            3,
+            2,
+            0,
+            -4
+          ],
+          1
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "[1,2] pos=0 -> 1",
+        "args": [
+          [
+            1,
+            2
+          ],
+          0
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "[1] pos=-1 -> None",
+        "args": [
+          [
+            1
+          ],
+          -1
+        ],
+        "expected": "None"
+      },
+      {
+        "label": "empty -> None",
+        "args": [
+          [],
+          -1
+        ],
+        "expected": "None"
+      },
+      {
+        "label": "no cycle, multi-node",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          -1
+        ],
+        "expected": "None"
+      },
+      {
+        "label": "self-loop -> 7",
+        "args": [
+          [
+            7
+          ],
+          0
+        ],
+        "expected": "7"
+      },
+      {
+        "label": "cycle at tail",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          4
+        ],
+        "expected": "5"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two-phase Floyd's. Phase 1: tortoise-and-hare to detect a cycle AND find the meeting point inside it. Phase 2: reset one pointer to head; advance both pointers at the same speed; they meet exactly at the cycle entrance. The math says so \u2014 see the playbook for the derivation.",
+      "clarifying_questions": [
+        {
+          "question": "What should I return if there's no cycle?",
+          "why": "None (or the value None in our wrapper). Confirms the no-cycle case is part of the contract."
+        },
+        {
+          "question": "O(1) space required?",
+          "why": "Yes \u2014 that's the point. Hash-set version is O(n). Floyd's two-phase is O(1)."
+        },
+        {
+          "question": "Is the cycle guaranteed to include the tail?",
+          "why": "Yes, by construction. The tail's next is the cycle entry. Affirms the structure."
+        },
+        {
+          "question": "Self-loop on the head \u2014 does the algorithm work?",
+          "why": "Yes. Phase 1 has slow=fast=head immediately after the first step. Phase 2 returns head. Worth confirming the corner case."
+        },
+        {
+          "question": "Why does the two-phase algorithm even work?",
+          "why": "Showing you can sketch the proof (or admit you've memorized it) is a strong-hire signal. See playbook for the math."
+        }
+      ],
+      "think_out_loud": "I'll do it in two phases. Phase 1: standard Floyd's to find ANY meeting point in the cycle. If fast hits None, return None. Phase 2: with slow at the meeting point, put a new pointer at head. Move both one step at a time. They'll meet at the cycle's entrance. Why: let L = distance head\u2192entrance, C = cycle length, k = distance entrance\u2192meet. Slow walks L+k. Fast walks 2(L+k). The difference (L+k) must be a multiple of C, so L+k = mC. Therefore L = mC - k, which is the distance from meet back around to entrance.",
+      "edge_cases": [
+        {
+          "category": "No cycle",
+          "details": "Phase 1's loop exits when fast hits None. Return None."
+        },
+        {
+          "category": "Empty list",
+          "details": "head is None; phase 1 loop never starts. Return None."
+        },
+        {
+          "category": "Self-loop on head",
+          "details": "Phase 1: slow=head, fast=head, one step \u2192 slow=head, fast=head; they meet. Phase 2: ptr=head, slow=head; they're already equal. Return head."
+        },
+        {
+          "category": "Cycle that includes all nodes",
+          "details": "Cycle entrance is head. The algorithm still finds it correctly."
+        },
+        {
+          "category": "Long tail before short cycle",
+          "details": "Phase 1 takes longer; phase 2 returns the right node. O(n) overall."
+        }
+      ],
+      "common_mistakes": [
+        "Returning slow at the end of phase 1 \u2014 that's just a meeting point, not the entrance.",
+        "Skipping phase 2 and returning the meet point as 'good enough' \u2014 wrong unless the cycle entrance happens to coincide.",
+        "Forgetting to handle 'no cycle' \u2014 slow == fast never happens, but the loop must terminate cleanly.",
+        "Comparing by value instead of identity \u2014 fails on lists with duplicate values.",
+        "Off-by-one when initializing fast = head.next \u2014 start both pointers at head."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The 'find the cycle entrance' variant of Floyd's. Tests whether you know the two-phase trick \u2014 and bonus points if you can sketch the proof.",
+      "introduction_context": "Direct follow-up to Linked List Cycle. Onsite question at Google, Meta, Microsoft. Failing to articulate phase 2 is the most common stumble.",
+      "really_testing": [
+        "Whether you know phase 2 exists (most people only remember phase 1).",
+        "Math intuition: L = mC - k.",
+        "Clean, bug-free Floyd's code with proper null checks.",
+        "Edge cases: empty list, self-loop on head, no cycle."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Names the two-phase algorithm. Sketches the L+k = mC math. Codes both phases cleanly in 10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Recalls phase 2 exists; codes it correctly. Doesn't derive the math but applies it."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck after detecting the cycle. Returns the meeting point as the answer."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot complete Floyd's detection. Or solves with O(n) hash and doesn't recognize the O(1) is reachable."
+        }
+      ],
+      "playbook": [
+        "Restate: 'return the node where the cycle begins (or None)'.",
+        "Pitch the two-phase: 'phase 1 = Floyd's to find a meeting point; phase 2 = walk one pointer from head and one from meet at speed 1; they meet at the entrance'.",
+        "Phase 1 code: slow = fast = head. while fast and fast.next: slow = slow.next; fast = fast.next.next; if slow is fast: break. else: return None.",
+        "Phase 2 code: ptr = head. while ptr is not slow: ptr = ptr.next; slow = slow.next. return ptr.",
+        "Math: L = head\u2192entrance, C = cycle len, k = entrance\u2192meet. Slow steps = L+k. Fast = 2(L+k). Fast laps slow some m times: L+k = mC. So L = mC-k, meaning from head and from meet, walking L steps each, both land on entrance.",
+        "Walk on [3,2,0,-4] pos=1: phase 1 meet inside cycle. Phase 2 from head=3 and from meet, both meet at node value 2.",
+        "Edge: no cycle \u2014 phase 1 exits via the while condition; return None."
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Find the Duplicate Number (LC 287) \u2014 same algorithm on an array, mind-blow moment for the interviewer if you spot it.",
+      "dont_do": [
+        "Don't skip phase 2 \u2014 meeting point != entrance.",
+        "Don't return slow.val before phase 2 \u2014 wrong on most cases.",
+        "Don't forget the 'no cycle' early return.",
+        "Don't compare nodes by value.",
+        "Don't try to count the cycle length and use that \u2014 works but uses extra steps and obscures the elegance."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two-Phase Floyd's",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef detectCycle(values, pos):\n    head = build_list(values, pos)\n    if not head:\n        return None\n    \n    # Phase 1: find meeting point\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            break\n    else:\n        return None  # loop ended without break -> no cycle\n    if fast is None or fast.next is None:\n        return None\n    \n    # Phase 2: walk from head and from meeting point in lockstep\n    ptr = head\n    while ptr is not slow:\n        ptr = ptr.next\n        slow = slow.next\n    return ptr.val",
+        "explanation": "Phase 1 detects a cycle (Floyd's tortoise-and-hare) and lands slow somewhere inside the cycle. Phase 2 exploits the geometry: walking head\u2192entrance is the same number of steps as walking from the meeting point back around to the entrance. So putting a fresh pointer at head and advancing both at speed 1 makes them collide at the entrance. O(n) time, O(1) space."
+      },
+      {
+        "name": "Hash Set (warm-up)",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef detectCycle(values, pos):\n    head = build_list(values, pos)\n    seen = set()\n    node = head\n    while node:\n        if node in seen:\n            return node.val\n        seen.add(node)\n        node = node.next\n    return None",
+        "explanation": "Walk the list, recording each node. The first node already in the set is the cycle entry. Correct but uses O(n) space. Useful as a warm-up; the interviewer is looking for the O(1) version."
+      }
+    ],
+    "related_problem_ids": [
+      "linked-list-cycle",
+      "middle-of-the-linked-list",
+      "happy-number"
     ]
   },
   {
     "id": "middle-of-the-linked-list",
     "title": "Middle of the Linked List",
     "leetcode_url": "https://leetcode.com/problems/middle-of-the-linked-list/",
+    "leetcode_id": 876,
     "difficulty": "easy",
     "patterns": [
       "fast-slow-pointers"
     ],
     "topics": [
-      "fast-slow-pointers",
-      "linked-lists"
+      "linked-list"
     ],
     "neetcode_category": "Linked List",
-    "frequency_tags": []
+    "frequency_tags": [
+      "faang-common"
+    ],
+    "summary": "Given the head of a singly linked list, return the middle node. If there are two middle nodes (even length), return the second one. (Here we return the middle node's value to make it testable.)",
+    "constraints": [
+      "Number of nodes in the list is in [1, 100].",
+      "1 <= Node.val <= 100"
+    ],
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5]",
+        "output": "3",
+        "explanation": "Five nodes; the middle is index 2 (value 3)."
+      },
+      {
+        "input": "head = [1,2,3,4,5,6]",
+        "output": "4",
+        "explanation": "Six nodes; two middles (3 and 4). Return the second, value 4."
+      }
+    ],
+    "function_name": "middleNode",
+    "function_signature": "def middleNode(values):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef middleNode(values):\n    # Test runner sends JSON; we build the list here.\n    # Pretend the signature is middleNode(head: ListNode) -> ListNode.\n    # Return the .val of the middle node (or the SECOND middle when length is even).\n    head = build_list(values)\n    \n    # Your code: fast/slow. When fast reaches the end, slow is the middle.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "[1,2,3,4,5] -> 3",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "[1,2,3,4,5,6] -> 4 (second middle)",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": "7"
+      },
+      {
+        "label": "two nodes -> second",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "three nodes -> middle",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Fast/slow pointers. Slow moves 1, fast moves 2. When fast reaches the end (or runs off it), slow is at the middle. For even length, slow naturally lands on the SECOND middle \u2014 which is what the problem asks for.",
+      "clarifying_questions": [
+        {
+          "question": "If even length, do I return the first or second middle?",
+          "why": "Spec says the second. The naive fast/slow loop naturally returns the second middle, so we just confirm rather than tweak the algorithm."
+        },
+        {
+          "question": "One pass or two passes allowed?",
+          "why": "Two-pass (count length, then walk to the middle) works and is O(n). Single-pass with fast/slow is more elegant and what the interviewer is looking for."
+        },
+        {
+          "question": "Can the list be empty?",
+          "why": "Per constraints, length >= 1. Worth a sentence to confirm."
+        },
+        {
+          "question": "Do I need to handle modifications?",
+          "why": "No \u2014 read-only. Algorithm is non-destructive."
+        },
+        {
+          "question": "What should I return \u2014 node or value?",
+          "why": "LC asks for the node. Confirm whether the interviewer wants the node or .val. In our test wrapper we return .val."
+        }
+      ],
+      "think_out_loud": "Two pointers from head. Slow += 1, fast += 2. Stop when fast.next is None (odd length, fast at last) or fast is None (even length, fast walked off). Both cases leave slow at the middle. For [1,2,3,4,5]: slow walks 1\u21922\u21923, fast walks 1\u21923\u21925 (then stops). Slow = 3. For [1,2,3,4,5,6]: slow walks 1\u21922\u21923\u21924, fast walks 1\u21923\u21925\u2192None. Slow = 4 (the second middle). Done.",
+      "edge_cases": [
+        {
+          "category": "Single node",
+          "details": "Slow = fast = head. fast.next is None \u2192 loop doesn't execute. Return head's value."
+        },
+        {
+          "category": "Two nodes",
+          "details": "After one step: slow at 2, fast at None. Loop exits. Return value of slow = second node. \u2713"
+        },
+        {
+          "category": "Odd length",
+          "details": "Standard middle. Easy."
+        },
+        {
+          "category": "Even length",
+          "details": "Spec wants the second middle, fast/slow naturally produces it. Worth verifying once mentally."
+        },
+        {
+          "category": "Long list",
+          "details": "Just O(n). No special handling \u2014 same code path."
+        }
+      ],
+      "common_mistakes": [
+        "Returning the FIRST middle on even length \u2014 usually a side effect of initializing slow=head, fast=head.next.",
+        "Wrong loop condition: `while fast and fast.next` is correct; `while fast.next and fast.next.next` returns the first middle on even.",
+        "Counting length first and walking n//2 \u2014 works but two passes; less elegant.",
+        "Forgetting that one-node lists are valid \u2014 must return without entering the loop.",
+        "Trying to use Floyd's cycle-style 'meet' logic \u2014 wrong pattern, no cycle here."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "An 'easy' question testing the fast/slow pointer pattern. Asked as a warm-up before the harder cycle problems.",
+      "introduction_context": "Phone screen filler at Amazon, Microsoft, Bloomberg. Often paired with 'now use this idea to detect a cycle' as a setup question.",
+      "really_testing": [
+        "Whether you reach for fast/slow rather than count-then-walk.",
+        "Loop-condition discipline for the second-middle case.",
+        "Comfort with single-pass linked-list traversal.",
+        "Confirming the second-middle rule before coding."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes fast/slow in 2-4 min. Asks 'first or second middle?' before coding. Verifies on an even-length example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Two-pass solution, then refactors to fast/slow when prompted. Correct final answer."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Returns first middle on even (off-by-one). Or buggy fast/slow with NoneType crashes."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't articulate any single-pass approach. Or builds a Python list of all nodes then indexes."
+        }
+      ],
+      "playbook": [
+        "Restate: 'middle node, second middle if even length'.",
+        "Confirm: 'second middle on even \u2014 right?' Yes.",
+        "Pitch fast/slow: 'slow steps 1, fast steps 2 \u2014 when fast walks off, slow is at the middle'.",
+        "Code: slow = fast = head. while fast and fast.next: slow = slow.next; fast = fast.next.next. return slow.",
+        "Walk odd: [1,2,3,4,5] \u2192 slow ends at 3. Walk even: [1,2,3,4,5,6] \u2192 slow ends at 4. \u2705",
+        "Edge: [1] \u2192 loop doesn't run; return head. [1,2] \u2192 slow advances once; return second.",
+        "Done in 3 min \u2014 interviewer probably moves on to cycle detection."
+      ],
+      "playbook_meta": "Total time: 3-5 min. Direct follow-up: Linked List Cycle (extend slow/fast to detect a cycle).",
+      "dont_do": [
+        "Don't count length then walk \u2014 works but two passes.",
+        "Don't initialize fast = head.next \u2014 produces first middle on even.",
+        "Don't convert to a list and index \u2014 defeats the linked-list practice.",
+        "Don't use recursion \u2014 overkill for O(1) space.",
+        "Don't forget the single-node edge case (loop doesn't execute)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Fast and Slow Pointers (one pass)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef middleNode(values):\n    head = build_list(values)\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n    return slow.val",
+        "explanation": "Classic fast/slow. Slow moves 1, fast moves 2. When fast reaches None (even length) or fast.next is None (odd length), slow sits at the middle. For even lengths, slow naturally lands on the SECOND middle \u2014 exactly what the spec wants. Beautiful one-loop solution."
+      },
+      {
+        "name": "Two Pass (count then walk)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values, pos=-1):\n    \"\"\"Build a linked list from values. If pos >= 0, the tail's next points to nodes[pos] (cycle).\"\"\"\n    if not values:\n        return None\n    nodes = [ListNode(v) for v in values]\n    for i in range(len(nodes) - 1):\n        nodes[i].next = nodes[i + 1]\n    if 0 <= pos < len(nodes):\n        nodes[-1].next = nodes[pos]\n    return nodes[0]\n\ndef middleNode(values):\n    head = build_list(values)\n    n = 0\n    node = head\n    while node:\n        n += 1\n        node = node.next\n    target = n // 2  # 0-indexed: second middle for even length\n    node = head\n    for _ in range(target):\n        node = node.next\n    return node.val",
+        "explanation": "Walk the list once to count nodes, then walk again to position target = n // 2 (0-indexed). Correct but two passes. Show this only if you mention 'I could do this in one pass with fast/slow' \u2014 that's the version they want."
+      }
+    ],
+    "related_problem_ids": [
+      "linked-list-cycle",
+      "linked-list-cycle-ii",
+      "happy-number"
+    ]
   },
   {
     "id": "happy-number",
     "title": "Happy Number",
     "leetcode_url": "https://leetcode.com/problems/happy-number/",
+    "leetcode_id": 202,
     "difficulty": "easy",
     "patterns": [
-      "fast-slow-pointers"
+      "fast-slow-pointers",
+      "hash-set"
     ],
     "topics": [
-      "fast-slow-pointers"
+      "math"
     ],
     "neetcode_category": "Linked List",
-    "frequency_tags": []
+    "frequency_tags": [
+      "faang-common"
+    ],
+    "summary": "A number is 'happy' if repeatedly replacing it with the sum of the squares of its digits eventually reaches 1. Otherwise the sequence loops endlessly. Given n, return True if n is happy.",
+    "constraints": [
+      "1 <= n <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "n = 19",
+        "output": "True",
+        "explanation": "1\u00b2 + 9\u00b2 = 82 \u2192 8\u00b2 + 2\u00b2 = 68 \u2192 6\u00b2 + 8\u00b2 = 100 \u2192 1\u00b2 + 0\u00b2 + 0\u00b2 = 1. Happy."
+      },
+      {
+        "input": "n = 2",
+        "output": "False",
+        "explanation": "Sequence: 2 \u2192 4 \u2192 16 \u2192 37 \u2192 58 \u2192 89 \u2192 145 \u2192 42 \u2192 20 \u2192 4 (loops). Not happy."
+      }
+    ],
+    "function_name": "isHappy",
+    "function_signature": "def isHappy(n):",
+    "starter_code": "def isHappy(n):\n    # Return True if repeatedly summing squared digits leads to 1.\n    # Otherwise (sequence cycles), return False.\n    pass",
+    "test_cases": [
+      {
+        "label": "19 -> True",
+        "args": [
+          19
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "2 -> False",
+        "args": [
+          2
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "1 -> True (already happy)",
+        "args": [
+          1
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "7 -> True",
+        "args": [
+          7
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "4 -> False",
+        "args": [
+          4
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "100 -> True",
+        "args": [
+          100
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "The sequence either reaches 1 (happy) or enters a cycle. So it's literally a cycle-detection problem on an integer sequence. Two equally valid approaches: a hash set (track every value seen) or Floyd's fast/slow on the sequence. Both are O(log n) per step (digit count) and the sequence has bounded length.",
+      "clarifying_questions": [
+        {
+          "question": "What counts as 'happy' exactly \u2014 must reach 1, or just stop?",
+          "why": "Must reach 1. Anything else means a cycle. Pinning this down avoids off-by-one panic on n=1."
+        },
+        {
+          "question": "Is n bounded?",
+          "why": "Yes, up to 2^31 - 1. The sequence stays manageable \u2014 values quickly drop to small ranges because squaring digits collapses big numbers fast."
+        },
+        {
+          "question": "Should I use a hash set or Floyd's?",
+          "why": "Either is fine. Floyd's gets a brownie point for O(1) extra space. Hash set is easier to write \u2014 use that as a safe first answer."
+        },
+        {
+          "question": "Are negatives or zero possible?",
+          "why": "Per constraints n >= 1. So no. Worth confirming so you don't waste time handling them."
+        },
+        {
+          "question": "Why is the sequence guaranteed to cycle if not happy?",
+          "why": "Because squared-digit-sum of a k-digit number is at most 81*k, which is much smaller than the number itself for k > 3. The sequence is bounded \u2192 must cycle by pigeonhole."
+        }
+      ],
+      "think_out_loud": "Two interpretations. (1) Cycle on a stream of integers \u2014 Floyd's applies. Slow = squared_sum(slow), fast = squared_sum(squared_sum(fast)). They meet either at 1 (happy) or somewhere in a cycle (not happy). (2) Hash set: keep applying squared_sum, return True if you hit 1, False if you hit a value already in the set. Both work; pick the one you're confident writing.",
+      "edge_cases": [
+        {
+          "category": "n = 1",
+          "details": "Already 1. Return True immediately (or the algorithm handles it on iteration 0)."
+        },
+        {
+          "category": "Small unhappy numbers",
+          "details": "2, 3, 4, 5, 6, 8, 9 are all unhappy. The classic cycle is 4 \u2192 16 \u2192 37 \u2192 58 \u2192 89 \u2192 145 \u2192 42 \u2192 20 \u2192 4."
+        },
+        {
+          "category": "Large numbers",
+          "details": "Even 10^9 collapses within a few steps \u2014 max squared-digit-sum is 9\u00b2 * 10 = 810. Sequence quickly enters the [1, 800] range."
+        },
+        {
+          "category": "Number ending in 0",
+          "details": "100 \u2192 1 \u2192 done. The 0 contributes nothing to the squared sum."
+        },
+        {
+          "category": "Single-digit input",
+          "details": "1 and 7 are happy; 2, 3, 4, 5, 6, 8, 9 are not. Worth memorizing if you want to sound impressive."
+        }
+      ],
+      "common_mistakes": [
+        "Infinite loop: forgetting the cycle-detection mechanism (no set, no Floyd's) \u2014 code never returns.",
+        "Treating the digit-sum as just sum-of-digits (not squared) \u2014 different problem.",
+        "Confusing 'happy' with 'reaches a single digit' \u2014 must specifically reach 1.",
+        "Buggy digit extraction \u2014 use `while n: digit = n % 10; total += digit*digit; n //= 10`.",
+        "Returning early on n == 0 \u2014 out of spec; n >= 1 guaranteed, but 0 would loop forever anyway."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Cycle detection on a number sequence. Tests whether you can map an abstract problem onto the fast/slow or hash-set pattern.",
+      "introduction_context": "Asked at Amazon, Bloomberg, sometimes as a 'soft' phone screen \u2014 easy to set up, has multiple acceptable solutions, lets the interviewer probe complexity tradeoffs.",
+      "really_testing": [
+        "Recognizing 'either reaches 1 or cycles' as cycle-detection.",
+        "Clean digit extraction.",
+        "Choosing between hash set (O(n) space, easy) and Floyd's (O(1) space, slightly trickier).",
+        "Why the sequence is bounded (so the cycle MUST happen)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Reframes as cycle detection in seconds. Codes Floyd's cleanly. Or codes hash set then mentions O(1) Floyd's variant. Argues bounded-sequence."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with hash set. Doesn't reach Floyd's without prompting. Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Solves but can't articulate why termination is guaranteed. Or buggy digit extraction."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Code loops forever on unhappy numbers. Or fails to compute squared-digit-sum correctly."
+        }
+      ],
+      "playbook": [
+        "Restate: 'apply squared-digit-sum repeatedly; True if reaches 1, False if loops forever'.",
+        "Insight: 'this either reaches 1 or cycles \u2014 it's cycle detection on a stream'.",
+        "Helper: def sq(n): total = 0; while n: total += (n % 10) ** 2; n //= 10. return total.",
+        "Hash-set version: seen = set(); while n != 1 and n not in seen: seen.add(n); n = sq(n). return n == 1.",
+        "Floyd's version: slow = n; fast = sq(n). while fast != 1 and slow != fast: slow = sq(slow); fast = sq(sq(fast)). return fast == 1.",
+        "Walk 19: 19 \u2192 82 \u2192 68 \u2192 100 \u2192 1. True.",
+        "Walk 2: 2 \u2192 4 \u2192 16 \u2192 37 \u2192 58 \u2192 89 \u2192 145 \u2192 42 \u2192 20 \u2192 4. Cycle. False."
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: 'why is termination guaranteed?' Answer: squared-digit-sum of k-digit number \u2264 81k, so sequence is bounded; pigeonhole gives a cycle.",
+      "dont_do": [
+        "Don't write code without a termination mechanism \u2014 infinite loop on unhappy inputs.",
+        "Don't sum digits without squaring \u2014 different problem.",
+        "Don't use string conversion if you can avoid it \u2014 `str(n)` works but `n % 10` and `n //= 10` is faster and shows comfort with arithmetic.",
+        "Don't claim the sequence is unbounded \u2014 it's not, and that's why this problem is finite.",
+        "Don't forget to handle n=1 (trivially happy)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Hash Set",
+        "time": "O(log n) per step, bounded total steps",
+        "space": "O(log n)",
+        "code": "def isHappy(n):\n    def sq(x):\n        total = 0\n        while x:\n            total += (x % 10) ** 2\n            x //= 10\n        return total\n    seen = set()\n    while n != 1 and n not in seen:\n        seen.add(n)\n        n = sq(n)\n    return n == 1",
+        "explanation": "Apply squared-digit-sum repeatedly. Track every value in a set. If we hit 1, happy. If we re-encounter a value, cycle \u2192 not happy. The sequence is bounded by the math (large numbers collapse fast), so this terminates. Clean and easy to get right under pressure."
+      },
+      {
+        "name": "Floyd's on the Sequence",
+        "time": "O(log n) per step, bounded total steps",
+        "space": "O(1)",
+        "code": "def isHappy(n):\n    def sq(x):\n        total = 0\n        while x:\n            total += (x % 10) ** 2\n            x //= 10\n        return total\n    slow = n\n    fast = sq(n)\n    while fast != 1 and slow != fast:\n        slow = sq(slow)\n        fast = sq(sq(fast))\n    return fast == 1",
+        "explanation": "Same idea as Linked List Cycle, but applied to a stream of integers. Slow advances one step (one application of sq); fast advances two. If the stream reaches 1, fast hits 1 first. If it cycles, slow and fast eventually meet at some value \u2260 1. O(1) extra space \u2014 the textbook trick to drop the hash set."
+      }
+    ],
+    "related_problem_ids": [
+      "linked-list-cycle",
+      "linked-list-cycle-ii",
+      "middle-of-the-linked-list"
+    ]
   },
   {
     "id": "subsets",
