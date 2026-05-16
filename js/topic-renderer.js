@@ -209,12 +209,19 @@ function renderCuratedProblems(topicId) {
     const patternPills = (prob.patterns || []).map(p =>
       `<span class="pill pill-pattern">${patternTitle(p)}</span>`
     ).join('');
+    const titleLink = prob.has_walkthrough
+      ? `<a href="../problems/${prob.id}.html">${prob.title}</a>`
+      : `<a href="${prob.leetcode_url}" target="_blank" rel="noopener">${prob.title}</a>`;
+    const walkthroughBadge = prob.has_walkthrough
+      ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
+      : '';
     return `
       <div class="problem-row">
-        <span class="problem-title"><a href="${prob.leetcode_url}" target="_blank" rel="noopener">${prob.title}</a></span>
+        <span class="problem-title">${titleLink}</span>
         <span class="pill pill-${prob.difficulty}">${prob.difficulty}</span>
         ${patternPills}
         ${freqPills}
+        ${walkthroughBadge}
       </div>
     `;
   };
