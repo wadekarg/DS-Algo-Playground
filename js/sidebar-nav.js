@@ -246,6 +246,55 @@ var DSA = window.DSA || {};
 
     nav.innerHTML = html;
     wireCollapse();
+    wireScrollPersistence();
+    restoreScroll();
+  }
+
+  // Persist sidebar scroll across page navigations so the user doesn't lose
+  // their place after clicking a problem link.
+  var SCROLL_KEY = 'dsa-sidebar-scroll';
+
+  function findScrollElement() {
+    // The scrollable element may be the <nav>, the <aside class="sidebar">, or
+    // some ancestor. Pick whichever actually overflows.
+    var nav = document.getElementById('sidebar-nav');
+    if (!nav) return null;
+    var el = nav;
+    while (el) {
+      if (el.scrollHeight > el.clientHeight + 1) {
+        return el;
+      }
+      if (el.tagName && el.tagName.toLowerCase() === 'aside') break;
+      el = el.parentElement;
+    }
+    return nav;  // fallback even if not currently scrollable
+  }
+
+  function wireScrollPersistence() {
+    var nav = document.getElementById('sidebar-nav');
+    if (!nav || nav.dataset.scrollWired === '1') return;
+    nav.dataset.scrollWired = '1';
+    nav.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+      var scrollEl = findScrollElement();
+      if (scrollEl) {
+        try { sessionStorage.setItem(SCROLL_KEY, String(scrollEl.scrollTop)); } catch (err) {}
+      }
+    });
+  }
+
+  function restoreScroll() {
+    var raw;
+    try { raw = sessionStorage.getItem(SCROLL_KEY); } catch (err) { return; }
+    if (raw === null) return;
+    var target = parseInt(raw, 10);
+    if (isNaN(target) || target <= 0) return;
+    // Defer to next frame so layout has settled.
+    requestAnimationFrame(function() {
+      var scrollEl = findScrollElement();
+      if (scrollEl) scrollEl.scrollTop = target;
+    });
   }
 
   function fetchJson(url, cb) {
