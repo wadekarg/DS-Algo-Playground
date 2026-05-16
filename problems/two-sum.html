@@ -563,6 +563,79 @@
       .problem-title-row { flex-direction: column; align-items: flex-start; }
       .problem-ext-links { margin-left: 0; }
     }
+
+    /* ── Editor tabs ───────────────────────────────────────── */
+    .editor-tabs {
+      display: flex;
+      gap: 0;
+      flex-shrink: 0;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .editor-tab {
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .editor-tab:hover { color: var(--text-primary); }
+    .editor-tab.active {
+      color: var(--accent-primary, #6366f1);
+      border-bottom-color: var(--accent-primary, #6366f1);
+    }
+
+    /* ── Editor panes ──────────────────────────────────────── */
+    .editor-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+    .editor-pane[hidden] { display: none; }
+    .editor-pane__note {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid #f59e0b;
+      padding: 8px 12px;
+      margin: 10px 12px 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── Plain text editor ─────────────────────────────────── */
+    .text-editor {
+      flex: 1;
+      width: 100%;
+      min-height: 340px;
+      padding: 14px;
+      font-family: var(--font-mono, 'Menlo', 'Monaco', monospace);
+      font-size: 13.5px;
+      line-height: 1.5;
+      background: var(--bg-card, white);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      resize: vertical;
+      tab-size: 4;
+      -moz-tab-size: 4;
+      outline: none;
+      transition: border-color 0.15s;
+      box-sizing: border-box;
+      margin: 0 12px;
+      width: calc(100% - 24px);
+    }
+    .text-editor:focus {
+      border-color: var(--accent-primary, #6366f1);
+    }
+    .text-editor__hint {
+      flex-shrink: 0;
+      margin: 6px 12px 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
   </style>
 </head>
 <body data-topic="problems">
@@ -913,20 +986,40 @@
         <!-- ── Right: editor column ──────────────────────────── -->
         <div class="editor-col">
 
-          <!-- Practice block (editor + test runner) -->
-          <div class="practice-block"
-            data-title="Two Sum"
-            data-difficulty="easy"
-            data-fn="two_sum"
-            data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
-            data-tests='[
-              {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
-              {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
-              {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
-            ]'>
-            <div class="practice-problem">
-              Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
+          <!-- Tabs strip -->
+          <div class="editor-tabs" role="tablist">
+            <button class="editor-tab active" data-pane="code" role="tab" aria-selected="true">🐍 Code Editor</button>
+            <button class="editor-tab" data-pane="text" role="tab" aria-selected="false">📝 Text Editor</button>
+          </div>
+
+          <!-- Pane 1: existing code editor (practice-block) -->
+          <div class="editor-pane active" data-pane="code">
+            <div class="practice-block"
+              data-title="Two Sum"
+              data-difficulty="easy"
+              data-fn="two_sum"
+              data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
+              data-tests='[
+                {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
+                {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
+                {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
+              ]'>
+              <div class="practice-problem">
+                Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
+              </div>
             </div>
+          </div>
+
+          <!-- Pane 2: plain text editor -->
+          <div class="editor-pane" data-pane="text" hidden>
+            <p class="editor-pane__note">
+              💡 In a real FAANG interview, you often write code in a plain-text doc (Google Docs, CoderPad's plain mode). No syntax highlighting, no autocomplete, no tests. Practice clean code without IDE crutches.
+            </p>
+            <textarea class="text-editor" spellcheck="false" placeholder="Write your solution here as if in a shared doc...">def two_sum(nums, target):
+    # Your code here
+    pass
+</textarea>
+            <div class="text-editor__hint">No syntax highlighting. No autocomplete. No run button. Just you, the prompt, and the cursor.</div>
           </div>
 
           <!-- Related problems + topic info below editor -->
@@ -1065,6 +1158,32 @@
         DSA.practice.init();
       }
     });
+  </script>
+
+  <script>
+    // ── Editor tab switching ─────────────────────────────────
+    (function() {
+      var tabs = document.querySelectorAll('.editor-tab');
+      var panes = document.querySelectorAll('.editor-pane');
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var target = tab.dataset.pane;
+          tabs.forEach(function(t) {
+            var isActive = t === tab;
+            t.classList.toggle('active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+          panes.forEach(function(p) {
+            if (p.dataset.pane === target) {
+              p.hidden = false;
+            } else {
+              p.hidden = true;
+            }
+          });
+        });
+      });
+    })();
   </script>
 </body>
 </html>
