@@ -31754,5 +31754,512 @@
       "binary-search",
       "find-minimum-in-rotated-sorted-array"
     ]
+  },
+  {
+    "id": "sliding-window-maximum",
+    "title": "Sliding Window Maximum",
+    "leetcode_url": "https://leetcode.com/problems/sliding-window-maximum/",
+    "leetcode_id": 239,
+    "difficulty": "hard",
+    "patterns": [
+      "sliding-window",
+      "monotonic-deque"
+    ],
+    "topics": [
+      "sliding-window"
+    ],
+    "neetcode_category": "Sliding Window",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array nums and a window size k, return an array of the max of each sliding window.",
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4",
+      "1 <= k <= nums.length"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3",
+        "output": "[3,3,5,5,6,7]"
+      }
+    ],
+    "function_name": "maxSlidingWindow",
+    "function_signature": "def maxSlidingWindow(nums, k):",
+    "starter_code": "from collections import deque\n\ndef maxSlidingWindow(nums, k):\n    # Monotonic decreasing deque of indices. Pop expired (out of window) and smaller from back.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            3,
+            -1,
+            -3,
+            5,
+            3,
+            6,
+            7
+          ],
+          3
+        ],
+        "expected": "[3, 3, 5, 5, 6, 7]"
+      },
+      {
+        "label": "k=1",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          1
+        ],
+        "expected": "[1, 2, 3]"
+      },
+      {
+        "label": "k=n",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          3
+        ],
+        "expected": "[3]"
+      },
+      {
+        "label": "decreasing",
+        "args": [
+          [
+            5,
+            4,
+            3,
+            2,
+            1
+          ],
+          2
+        ],
+        "expected": "[5, 4, 3, 2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Monotonic decreasing deque of INDICES. Before adding i: pop expired (index < i-k+1) from front; pop smaller-or-equal from back. Add i. Front of deque is the current window's max.",
+      "clarifying_questions": [
+        {
+          "question": "Output starts when window full?",
+          "why": "Yes \u2014 n-k+1 results."
+        },
+        {
+          "question": "Why deque not max-heap?",
+          "why": "Heap is O(log n) per op; deque is amortized O(1)."
+        }
+      ],
+      "think_out_loud": "Monotonic deque pattern.",
+      "edge_cases": [
+        {
+          "category": "k=1",
+          "details": "Identity."
+        },
+        {
+          "category": "k=n",
+          "details": "Single max."
+        }
+      ],
+      "common_mistakes": [
+        "Storing values not indices.",
+        "Forgetting to pop expired from front."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Monotonic deque classic.",
+      "introduction_context": "Onsite at Amazon, Google.",
+      "really_testing": [
+        "Deque maintenance.",
+        "O(n) total."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Heap O(n log k)."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "O(nk) brute."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "dq = deque(). result = []. for i, x in enumerate(nums): while dq and dq[0] < i-k+1: dq.popleft(). while dq and nums[dq[-1]] <= x: dq.pop(). dq.append(i). if i >= k-1: result.append(nums[dq[0]]). return result."
+      ],
+      "playbook_meta": "Total time: 12-18 min.",
+      "dont_do": [
+        "Don't store values.",
+        "Don't use heap (slower)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Monotonic Deque",
+        "time": "O(n)",
+        "space": "O(k)",
+        "code": "from collections import deque\n\ndef maxSlidingWindow(nums, k):\n    dq = deque()\n    result = []\n    for i, x in enumerate(nums):\n        while dq and dq[0] < i - k + 1:\n            dq.popleft()\n        while dq and nums[dq[-1]] <= x:\n            dq.pop()\n        dq.append(i)\n        if i >= k - 1:\n            result.append(nums[dq[0]])\n    return result",
+        "explanation": "Deque holds indices with strictly decreasing values. Pop expired indices from front; pop smaller-or-equal from back. Front is always the current window's max."
+      }
+    ],
+    "related_problem_ids": [
+      "daily-temperatures",
+      "longest-substring-without-repeating-characters"
+    ]
+  },
+  {
+    "id": "longest-repeating-character-replacement",
+    "title": "Longest Repeating Character Replacement",
+    "leetcode_url": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+    "leetcode_id": 424,
+    "difficulty": "medium",
+    "patterns": [
+      "sliding-window",
+      "hash-map"
+    ],
+    "topics": [
+      "sliding-window"
+    ],
+    "neetcode_category": "Sliding Window",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given a string s and integer k, you can change AT MOST k characters to any other letter. Return the length of the longest substring with all identical characters after at most k changes.",
+    "constraints": [
+      "1 <= s.length <= 10^5",
+      "0 <= k <= s.length",
+      "s uppercase English"
+    ],
+    "examples": [
+      {
+        "input": "s = \"ABAB\", k = 2",
+        "output": "4",
+        "explanation": "Change both A \u2192 B or both B \u2192 A."
+      },
+      {
+        "input": "s = \"AABABBA\", k = 1",
+        "output": "4"
+      }
+    ],
+    "function_name": "characterReplacement",
+    "function_signature": "def characterReplacement(s, k):",
+    "starter_code": "from collections import Counter\n\ndef characterReplacement(s, k):\n    # Sliding window. window valid if (window_size - max_freq) <= k.\n    # When window grows beyond valid, shrink left (no need to update max_freq down \u2014 we keep the historical max).\n    pass",
+    "test_cases": [
+      {
+        "label": "ABAB k=2",
+        "args": [
+          "ABAB",
+          2
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "AABABBA k=1",
+        "args": [
+          "AABABBA",
+          1
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "k=0 single",
+        "args": [
+          "A",
+          0
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "k=full",
+        "args": [
+          "ABCD",
+          4
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "all same",
+        "args": [
+          "AAAA",
+          0
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Sliding window with character counter. Window valid iff (window_size - max_freq_in_window) <= k. Grow right. When invalid, shrink left (decrement count). Trick: we don't need to update max_freq downward \u2014 the answer only grows when max_freq does.",
+      "clarifying_questions": [
+        {
+          "question": "Substring, not subsequence?",
+          "why": "Yes \u2014 contiguous."
+        },
+        {
+          "question": "Replace ANY letter?",
+          "why": "Yes."
+        }
+      ],
+      "think_out_loud": "Track window count + running max_freq. Shrink only on invalid; don't decrease max_freq.",
+      "edge_cases": [
+        {
+          "category": "k=0",
+          "details": "Longest run of one letter."
+        },
+        {
+          "category": "All distinct",
+          "details": "Bounded by k+1."
+        }
+      ],
+      "common_mistakes": [
+        "Recomputing max_freq each shrink.",
+        "Off-by-one on window size."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Sliding window + counter.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "Window invariant.",
+        "Max-freq simplification."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Bug in invariant."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "counts = {}. max_freq = 0. left = 0. ans = 0. for right, ch in enumerate(s): counts[ch] = counts.get(ch, 0) + 1. max_freq = max(max_freq, counts[ch]). while (right - left + 1) - max_freq > k: counts[s[left]] -= 1; left += 1. ans = max(ans, right - left + 1). return ans."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't recompute max_freq.",
+        "Don't shrink prematurely."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sliding Window with Max-Freq",
+        "time": "O(n)",
+        "space": "O(26)",
+        "code": "def characterReplacement(s, k):\n    counts = {}\n    max_freq = 0\n    left = 0\n    ans = 0\n    for right, ch in enumerate(s):\n        counts[ch] = counts.get(ch, 0) + 1\n        max_freq = max(max_freq, counts[ch])\n        while (right - left + 1) - max_freq > k:\n            counts[s[left]] -= 1\n            left += 1\n        ans = max(ans, right - left + 1)\n    return ans",
+        "explanation": "Window is valid when changing the non-majority characters (count - max_freq) is at most k. Grow right; shrink left when invalid. Note: max_freq doesn't need to be decremented during shrink \u2014 the answer can only improve when max_freq grows."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-substring-without-repeating-characters",
+      "minimum-window-substring",
+      "permutation-in-string"
+    ]
+  },
+  {
+    "id": "reconstruct-itinerary",
+    "title": "Reconstruct Itinerary",
+    "leetcode_url": "https://leetcode.com/problems/reconstruct-itinerary/",
+    "leetcode_id": 332,
+    "difficulty": "hard",
+    "patterns": [
+      "graph",
+      "dfs",
+      "eulerian-path"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Advanced Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a list of airline tickets (from, to), reconstruct the itinerary starting from 'JFK'. Use all tickets exactly once. If multiple valid itineraries, return the lexicographically smallest.",
+    "constraints": [
+      "1 <= tickets.length <= 300",
+      "tickets[i].length == 2",
+      "Valid itinerary guaranteed to exist."
+    ],
+    "examples": [
+      {
+        "input": "tickets = [['MUC','LHR'],['JFK','MUC'],['SFO','SJC'],['LHR','SFO']]",
+        "output": "['JFK','MUC','LHR','SFO','SJC']"
+      }
+    ],
+    "function_name": "findItinerary",
+    "function_signature": "def findItinerary(tickets):",
+    "starter_code": "from collections import defaultdict\nimport heapq\n\ndef findItinerary(tickets):\n    # Eulerian path via Hierholzer. Min-heap per source for lex order.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "MUC",
+              "LHR"
+            ],
+            [
+              "JFK",
+              "MUC"
+            ],
+            [
+              "SFO",
+              "SJC"
+            ],
+            [
+              "LHR",
+              "SFO"
+            ]
+          ]
+        ],
+        "expected": "['JFK', 'MUC', 'LHR', 'SFO', 'SJC']"
+      },
+      {
+        "label": "JFK twice",
+        "args": [
+          [
+            [
+              "JFK",
+              "SFO"
+            ],
+            [
+              "JFK",
+              "ATL"
+            ],
+            [
+              "SFO",
+              "ATL"
+            ],
+            [
+              "ATL",
+              "JFK"
+            ],
+            [
+              "ATL",
+              "SFO"
+            ]
+          ]
+        ],
+        "expected": "['JFK', 'ATL', 'JFK', 'SFO', 'ATL', 'SFO']"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Hierholzer's algorithm. Build adjacency as min-heap per source (lex order). DFS: while heap[u] non-empty, pop smallest and recurse. Append u to result on return. Reverse at end.",
+      "clarifying_questions": [
+        {
+          "question": "Use every ticket once?",
+          "why": "Yes \u2014 Eulerian path."
+        },
+        {
+          "question": "Multiple valid orders \u2014 which?",
+          "why": "Lex smallest."
+        }
+      ],
+      "think_out_loud": "Eulerian path + lex order.",
+      "edge_cases": [
+        {
+          "category": "Single ticket",
+          "details": "[from, to]."
+        },
+        {
+          "category": "Cycle through JFK",
+          "details": "Hierholzer handles."
+        }
+      ],
+      "common_mistakes": [
+        "Naive DFS \u2014 can get stuck without trying all routes.",
+        "Wrong order without min-heap."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Eulerian path with lex tie-breaking.",
+      "introduction_context": "Onsite at Google, Bloomberg.",
+      "really_testing": [
+        "Hierholzer pattern.",
+        "Min-heap usage."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Knows Hierholzer; 15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DFS with backtracking."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck on lex order."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "graph = defaultdict(list). for u, v in tickets: heappush(graph[u], v). result = []. def dfs(u): while graph[u]: dfs(heappop(graph[u])). result.append(u). dfs('JFK'). return result[::-1]."
+      ],
+      "playbook_meta": "Total time: 15-22 min.",
+      "dont_do": [
+        "Don't use plain sorted list (re-sort cost).",
+        "Don't try permutations."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Hierholzer + Min-Heap",
+        "time": "O(E log E)",
+        "space": "O(E)",
+        "code": "from collections import defaultdict\nimport heapq\n\ndef findItinerary(tickets):\n    graph = defaultdict(list)\n    for u, v in tickets:\n        heapq.heappush(graph[u], v)\n    result = []\n    def dfs(u):\n        while graph[u]:\n            dfs(heapq.heappop(graph[u]))\n        result.append(u)\n    dfs('JFK')\n    return result[::-1]",
+        "explanation": "Hierholzer's Eulerian-path algorithm. Each source's destinations live in a min-heap so we always take the lex-smallest next edge. Append nodes in post-order, then reverse for the correct itinerary."
+      }
+    ],
+    "related_problem_ids": [
+      "course-schedule",
+      "course-schedule-ii",
+      "clone-graph"
+    ]
   }
 ]
