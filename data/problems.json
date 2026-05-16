@@ -29674,5 +29674,514 @@
       "merge-two-sorted-lists",
       "reverse-linked-list"
     ]
+  },
+  {
+    "id": "reorder-list",
+    "title": "Reorder List",
+    "leetcode_url": "https://leetcode.com/problems/reorder-list/",
+    "leetcode_id": 143,
+    "difficulty": "medium",
+    "patterns": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the head of a singly linked list L0 \u2192 L1 \u2192 ... \u2192 Ln-1 \u2192 Ln, reorder it to L0 \u2192 Ln \u2192 L1 \u2192 Ln-1 \u2192 L2 \u2192 Ln-2 \u2192 ...",
+    "constraints": [
+      "1 <= n <= 5 * 10^4",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5]",
+        "output": "[1,5,2,4,3]"
+      }
+    ],
+    "function_name": "reorderList",
+    "function_signature": "def reorderList(values):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reorderList(values):\n    head = build_list(values)\n    # 1) Find middle (slow/fast). 2) Reverse second half. 3) Interleave.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "odd",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "[1, 5, 2, 4, 3]"
+      },
+      {
+        "label": "even",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": "[1, 4, 2, 3]"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "two",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "[1, 2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Three phases: find middle (slow/fast), reverse the second half, then weave first half with reversed second half.",
+      "clarifying_questions": [
+        {
+          "question": "Mutate in place?",
+          "why": "Yes \u2014 pointer rewiring."
+        }
+      ],
+      "think_out_loud": "Combine three classic LL techniques.",
+      "edge_cases": [
+        {
+          "category": "1 or 2 nodes",
+          "details": "Trivial."
+        },
+        {
+          "category": "Even vs odd",
+          "details": "Second-half length differs."
+        }
+      ],
+      "common_mistakes": [
+        "Cycles after rewiring (forgot to disconnect).",
+        "Off-by-one on middle."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Three-phase pointer dance.",
+      "introduction_context": "Common at Amazon, Meta.",
+      "really_testing": [
+        "Combining find-middle + reverse + merge."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Three phases in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Uses extra array; correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Cycles or off-by-one."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't combine."
+        }
+      ],
+      "playbook": [
+        "Find mid via slow/fast.",
+        "Reverse second half (3-pointer).",
+        "Weave first and reversed-second."
+      ],
+      "playbook_meta": "Total time: 12-18 min.",
+      "dont_do": [
+        "Don't create cycles.",
+        "Don't use O(n) extra arrays if asked for O(1)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Find Middle + Reverse + Weave",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reorderList(values):\n    head = build_list(values)\n    if not head or not head.next: return list_to_values(head)\n    # 1) Find middle\n    slow = fast = head\n    while fast.next and fast.next.next:\n        slow = slow.next; fast = fast.next.next\n    # 2) Reverse second half\n    prev = None; curr = slow.next\n    slow.next = None\n    while curr:\n        nxt = curr.next; curr.next = prev; prev = curr; curr = nxt\n    # 3) Weave\n    first, second = head, prev\n    while second:\n        t1, t2 = first.next, second.next\n        first.next = second; second.next = t1\n        first, second = t1, t2\n    return list_to_values(head)",
+        "explanation": "Three classic LL techniques combined. Slow/fast finds middle. Three-pointer reverses second half. Weave alternates between heads."
+      }
+    ],
+    "related_problem_ids": [
+      "reverse-linked-list",
+      "middle-of-the-linked-list",
+      "merge-two-sorted-lists"
+    ]
+  },
+  {
+    "id": "copy-list-with-random-pointer",
+    "title": "Copy List with Random Pointer",
+    "leetcode_url": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+    "leetcode_id": 138,
+    "difficulty": "medium",
+    "patterns": [
+      "linked-list",
+      "hash-map"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "A linked list where each node has a 'next' and a 'random' pointer (could point to any node or None). Make a DEEP copy. (Test interface: input is [[val, random_index], ...]; output is the same shape.)",
+    "constraints": [
+      "0 <= n <= 1000",
+      "-10^4 <= val <= 10^4",
+      "random_index in [0, n-1] or null"
+    ],
+    "examples": [
+      {
+        "input": "[[7,None],[13,0],[11,4],[10,2],[1,0]]",
+        "output": "[[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]"
+      }
+    ],
+    "function_name": "copyRandomList",
+    "function_signature": "def copyRandomList(nodes):",
+    "starter_code": "class Node:\n    def __init__(self, val=0, next=None, random=None):\n        self.val = val; self.next = next; self.random = random\n\ndef copyRandomList(nodes):\n    # Build original from input. Use a hash map old_node -> new_node. First pass create nodes;\n    # second pass wire next and random via the map. Serialize result back.\n    if not nodes: return []\n    originals = [Node(v[0]) for v in nodes]\n    for i, (v, rnd) in enumerate(nodes):\n        if i+1 < len(originals): originals[i].next = originals[i+1]\n        if rnd is not None: originals[i].random = originals[rnd]\n    head = originals[0]\n    # Your code: clone via dict.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              7,
+              null
+            ],
+            [
+              13,
+              0
+            ],
+            [
+              11,
+              4
+            ],
+            [
+              10,
+              2
+            ],
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "expected": "[[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single no random",
+        "args": [
+          [
+            [
+              3,
+              null
+            ]
+          ]
+        ],
+        "expected": "[[3, None]]"
+      },
+      {
+        "label": "single self random",
+        "args": [
+          [
+            [
+              3,
+              0
+            ]
+          ]
+        ],
+        "expected": "[[3, 0]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Hash map old \u2192 new. First pass: create clones. Second pass: wire next and random via the map.",
+      "clarifying_questions": [
+        {
+          "question": "Deep copy?",
+          "why": "Yes \u2014 independent nodes."
+        },
+        {
+          "question": "Random can be None?",
+          "why": "Yes."
+        }
+      ],
+      "think_out_loud": "Two passes with a dict.",
+      "edge_cases": [
+        {
+          "category": "Empty",
+          "details": "Return []."
+        },
+        {
+          "category": "Self-random",
+          "details": "Map handles."
+        },
+        {
+          "category": "Cycles via random",
+          "details": "Map prevents loops."
+        }
+      ],
+      "common_mistakes": [
+        "Single-pass without map: random may point to uncloned node.",
+        "Forgetting to handle None random."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Deep copy with random pointers.",
+      "introduction_context": "Onsite at Amazon, Meta, Google.",
+      "really_testing": [
+        "Two-pass with hash map.",
+        "Random-pointer aware."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Single-pass bug."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "seen = {}. Pass 1: create new nodes for each old. Pass 2: wire next and random via map. return seen[head]."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't try single-pass without weaving trick.",
+        "Don't shallow-copy random."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two-Pass with Hash Map",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "class Node:\n    def __init__(self, val=0, next=None, random=None):\n        self.val = val; self.next = next; self.random = random\n\ndef copyRandomList(nodes):\n    if not nodes:\n        return []\n    originals = [Node(v[0]) for v in nodes]\n    for i, (v, rnd) in enumerate(nodes):\n        if i + 1 < len(originals):\n            originals[i].next = originals[i + 1]\n        if rnd is not None:\n            originals[i].random = originals[rnd]\n    head = originals[0]\n    \n    # Pass 1: create clones, store in map\n    seen = {}\n    curr = head\n    while curr:\n        seen[curr] = Node(curr.val)\n        curr = curr.next\n    \n    # Pass 2: wire next and random\n    curr = head\n    while curr:\n        if curr.next:\n            seen[curr].next = seen[curr.next]\n        if curr.random:\n            seen[curr].random = seen[curr.random]\n        curr = curr.next\n    \n    # Serialize\n    cloned = []\n    nodes_to_index = {n: i for i, n in enumerate(originals)}\n    cloned_root = seen[head]\n    curr = cloned_root\n    while curr:\n        rnd_idx = None\n        if curr.random:\n            for old, new in seen.items():\n                if new is curr.random:\n                    rnd_idx = nodes_to_index[old]; break\n        cloned.append([curr.val, rnd_idx])\n        curr = curr.next\n    return cloned",
+        "explanation": "Two passes with old \u2192 new map. First creates clones; second wires next/random. The map lets random pointers reference already-created clones."
+      }
+    ],
+    "related_problem_ids": [
+      "reverse-linked-list",
+      "merge-two-sorted-lists",
+      "linked-list-cycle"
+    ]
+  },
+  {
+    "id": "find-the-duplicate-number",
+    "title": "Find the Duplicate Number",
+    "leetcode_url": "https://leetcode.com/problems/find-the-duplicate-number/",
+    "leetcode_id": 287,
+    "difficulty": "medium",
+    "patterns": [
+      "fast-slow-pointers",
+      "binary-search"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array nums of n+1 integers where each integer is in [1, n], there is exactly one duplicated value. Find it without modifying the array and using O(1) extra space.",
+    "constraints": [
+      "1 <= n <= 10^5",
+      "nums.length == n + 1",
+      "1 <= nums[i] <= n"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,3,4,2,2]",
+        "output": "2"
+      },
+      {
+        "input": "nums = [3,1,3,4,2]",
+        "output": "3"
+      }
+    ],
+    "function_name": "findDuplicate",
+    "function_signature": "def findDuplicate(nums):",
+    "starter_code": "def findDuplicate(nums):\n    # Floyd's tortoise-and-hare on i -> nums[i]. Cycle entrance = duplicate.\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,3,4,2,2]",
+        "args": [
+          [
+            1,
+            3,
+            4,
+            2,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "[3,1,3,4,2]",
+        "args": [
+          [
+            3,
+            1,
+            3,
+            4,
+            2
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "size 2",
+        "args": [
+          [
+            1,
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "size 3",
+        "args": [
+          [
+            2,
+            2,
+            2
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Treat the array as a function f(i) = nums[i]. Walking i \u2192 nums[i] creates a sequence; the duplicate creates a cycle. Floyd's cycle detection: phase 1 finds meeting point; phase 2 (one pointer from 0) finds cycle entrance = duplicate.",
+      "clarifying_questions": [
+        {
+          "question": "O(1) space?",
+          "why": "Yes \u2014 that's the whole point."
+        },
+        {
+          "question": "Modify array?",
+          "why": "No per spec."
+        }
+      ],
+      "think_out_loud": "Linked list cycle II on the implicit graph.",
+      "edge_cases": [
+        {
+          "category": "Size 2 [1,1]",
+          "details": "Tiny cycle."
+        },
+        {
+          "category": "Multiple of same duplicate",
+          "details": "Algorithm finds the duplicate value."
+        }
+      ],
+      "common_mistakes": [
+        "Hash set: O(n) space.",
+        "Sorting: modifies array.",
+        "Wrong phase 2 setup."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Floyd's on an implicit graph.",
+      "introduction_context": "Onsite at Amazon, Google, Meta.",
+      "really_testing": [
+        "Recognize implicit cycle.",
+        "Floyd's two-phase."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Hash set; refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Sort approach."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "slow = fast = nums[0]. Phase 1: slow=nums[slow], fast=nums[nums[fast]] until equal. Phase 2: slow2 = nums[0]; while slow2 != slow: slow = nums[slow]; slow2 = nums[slow2]. return slow."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't sort.",
+        "Don't use hash set if asked for O(1)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Floyd's on Implicit Graph",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def findDuplicate(nums):\n    slow = fast = nums[0]\n    # Phase 1\n    while True:\n        slow = nums[slow]\n        fast = nums[nums[fast]]\n        if slow == fast:\n            break\n    # Phase 2\n    slow2 = nums[0]\n    while slow2 != slow:\n        slow = nums[slow]\n        slow2 = nums[slow2]\n    return slow",
+        "explanation": "View i \u2192 nums[i] as a function defining a 'linked list'. With n+1 values in [1, n], there must be a cycle, and its entrance is the duplicate. Two-phase Floyd's finds it in O(n) time, O(1) space."
+      }
+    ],
+    "related_problem_ids": [
+      "linked-list-cycle",
+      "linked-list-cycle-ii",
+      "happy-number"
+    ]
   }
 ]
