@@ -68,6 +68,10 @@
       /* Slides into the header area, sits just before the search bar */
       left: 12px;
     }
+    /* When collapsed, push header content right to make room for the toggle button */
+    body.sidebar-collapsed .main__header {
+      padding-left: 60px;
+    }
     /* The old expand rail is no longer needed — one button handles both states */
     .sidebar-expand-rail { display: none !important; }
 
