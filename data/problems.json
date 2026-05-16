@@ -5,21 +5,26 @@
     "leetcode_url": "https://leetcode.com/problems/two-sum/",
     "leetcode_id": 1,
     "difficulty": "easy",
-
-    "patterns": ["hash-map"],
-    "topics": ["arrays", "hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "arrays",
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
-
+    "frequency_tags": [
+      "blind-75",
+      "faang-common",
+      "neetcode-150"
+    ],
     "summary": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
-
     "constraints": [
       "2 <= nums.length <= 10^4",
       "-10^9 <= nums[i] <= 10^9",
       "-10^9 <= target <= 10^9",
       "Only one valid answer exists."
     ],
-
     "examples": [
       {
         "input": "nums = [2,7,11,15], target = 9",
@@ -37,75 +42,116 @@
         "explanation": ""
       }
     ],
-
     "function_name": "two_sum",
     "function_signature": "def two_sum(nums, target):",
     "starter_code": "def two_sum(nums, target):\n    # Your code here\n    pass",
-
     "test_cases": [
-      { "label": "basic example", "args": [[2,7,11,15], 9], "expected": "[0, 1]" },
-      { "label": "different positions", "args": [[3,2,4], 6], "expected": "[1, 2]" },
-      { "label": "same value twice", "args": [[3,3], 6], "expected": "[0, 1]" }
+      {
+        "label": "basic example",
+        "args": [
+          [
+            2,
+            7,
+            11,
+            15
+          ],
+          9
+        ],
+        "expected": "[0, 1]"
+      },
+      {
+        "label": "different positions",
+        "args": [
+          [
+            3,
+            2,
+            4
+          ],
+          6
+        ],
+        "expected": "[1, 2]"
+      },
+      {
+        "label": "same value twice",
+        "args": [
+          [
+            3,
+            3
+          ],
+          6
+        ],
+        "expected": "[0, 1]"
+      }
     ],
-
     "interview_tips": {
       "talk_through_it": "Read the problem aloud. Restate it in your own words. Then start asking clarifying questions BEFORE you write a line of code. This signals seniority and prevents 5 minutes of wrong-direction work.",
-
       "clarifying_questions": [
         {
           "question": "What's the size of the array?",
-          "why": "Determines acceptable complexity. n ≤ 10⁴ → O(n²) brute force is OK. n ≤ 10⁶ → need O(n) or O(n log n). The constraint dictates the algorithm."
+          "why": "Determines acceptable complexity. n \u2264 10\u2074 \u2192 O(n\u00b2) brute force is OK. n \u2264 10\u2076 \u2192 need O(n) or O(n log n). The constraint dictates the algorithm."
         },
         {
           "question": "Are negative numbers, zeros, or duplicates allowed?",
-          "why": "Negatives are fine for hash-map (any int can be a key) but break some range-based tricks. Zeros mean a value can be its own complement (target=0, value=0). Duplicates mean the same value can appear at different indices — the answer might pair two equal numbers (e.g., [3,3] target 6)."
+          "why": "Negatives are fine for hash-map (any int can be a key) but break some range-based tricks. Zeros mean a value can be its own complement (target=0, value=0). Duplicates mean the same value can appear at different indices \u2014 the answer might pair two equal numbers (e.g., [3,3] target 6)."
         },
         {
           "question": "Is exactly one valid answer guaranteed, or could there be zero / many?",
-          "why": "If guaranteed unique, you can return on the first match. If multiple are valid, the question changes (\"any one\" vs \"all pairs\"). If none guaranteed, you need a sentinel return value — usually an empty list or [-1, -1]."
+          "why": "If guaranteed unique, you can return on the first match. If multiple are valid, the question changes (\"any one\" vs \"all pairs\"). If none guaranteed, you need a sentinel return value \u2014 usually an empty list or [-1, -1]."
         },
         {
           "question": "Can I modify the input array?",
-          "why": "Some algorithms (sort-then-two-pointer) mutate. Interviewers may expect immutability for code-cleanliness reasons. Always ask — costs nothing, prevents wasted work if they say \"no\"."
+          "why": "Some algorithms (sort-then-two-pointer) mutate. Interviewers may expect immutability for code-cleanliness reasons. Always ask \u2014 costs nothing, prevents wasted work if they say \"no\"."
         },
         {
-          "question": "What should I return — indices, values, or a boolean?",
-          "why": "Two Sum returns indices, but the variants don't. \"Two Sum II\" returns 1-indexed positions. \"Two Sum IV — Input is a BST\" returns a boolean. Misreading the return spec is a classic interview face-plant."
+          "question": "What should I return \u2014 indices, values, or a boolean?",
+          "why": "Two Sum returns indices, but the variants don't. \"Two Sum II\" returns 1-indexed positions. \"Two Sum IV \u2014 Input is a BST\" returns a boolean. Misreading the return spec is a classic interview face-plant."
         }
       ],
-
       "think_out_loud": "Start with brute force. Estimate its complexity. Then explain how to do better. State your tradeoff (extra space for time). Implement the simpler-to-explain version, not the cleverest. Test on the given example first.",
-
       "edge_cases": [
-        { "category": "Minimum-size input", "details": "Constraint says n ≥ 2. Test [1,2] with target 3 — does it return [0,1]?" },
-        { "category": "Duplicates (same value, different indices)", "details": "Test [3,3] with target 6 — your hash map must NOT block the second 3 from finding the first. Most off-by-one bugs hide here." },
-        { "category": "Negative numbers and zero", "details": "Test [-1, 1, 0] with target 0. Does complement = target - x work when target is 0 or negative? It should — but verify." },
-        { "category": "Solution at the boundaries", "details": "What if the answer is the first two elements ([1,2,...] target 3) or the last two ([...,9,10] target 19)? Walk through both mentally." },
-        { "category": "Same element twice (not allowed)", "details": "Constraint says \"may not use the same element twice.\" A hash map naturally enforces this if you check the map BEFORE inserting the current value. Confirm your ordering." },
-        { "category": "No-answer case", "details": "Problem says exactly one solution is guaranteed, so this shouldn't happen. But if asked to extend the problem to handle \"no answer\", what would you return? Knowing the answer signals seniority." }
+        {
+          "category": "Minimum-size input",
+          "details": "Constraint says n \u2265 2. Test [1,2] with target 3 \u2014 does it return [0,1]?"
+        },
+        {
+          "category": "Duplicates (same value, different indices)",
+          "details": "Test [3,3] with target 6 \u2014 your hash map must NOT block the second 3 from finding the first. Most off-by-one bugs hide here."
+        },
+        {
+          "category": "Negative numbers and zero",
+          "details": "Test [-1, 1, 0] with target 0. Does complement = target - x work when target is 0 or negative? It should \u2014 but verify."
+        },
+        {
+          "category": "Solution at the boundaries",
+          "details": "What if the answer is the first two elements ([1,2,...] target 3) or the last two ([...,9,10] target 19)? Walk through both mentally."
+        },
+        {
+          "category": "Same element twice (not allowed)",
+          "details": "Constraint says \"may not use the same element twice.\" A hash map naturally enforces this if you check the map BEFORE inserting the current value. Confirm your ordering."
+        },
+        {
+          "category": "No-answer case",
+          "details": "Problem says exactly one solution is guaranteed, so this shouldn't happen. But if asked to extend the problem to handle \"no answer\", what would you return? Knowing the answer signals seniority."
+        }
       ],
-
       "common_mistakes": [
-        "Forgetting that the same element can't be used twice — using nums[i] + nums[i].",
-        "Off-by-one when returning indices — returning the value instead of the index.",
+        "Forgetting that the same element can't be used twice \u2014 using nums[i] + nums[i].",
+        "Off-by-one when returning indices \u2014 returning the value instead of the index.",
         "Hashing the array as a value lookup but losing track of original indices.",
-        "Returning [seen[complement], i] vs [i, seen[complement]] — the order doesn't matter per the spec, but be intentional about it."
+        "Returning [seen[complement], i] vs [i, seen[complement]] \u2014 the order doesn't matter per the spec, but be intentional about it."
       ]
     },
-
     "faang": {
       "tier": "A",
       "introduction": "Here's a warm-up. Given an array of integers and a target, return the indices of the two numbers that add up to target. Each input has exactly one solution, and you can't use the same element twice.",
       "introduction_context": "Often the first question in a 45-min loop, or a warm-up before a harder follow-up (3Sum, 4Sum, Two Sum II).",
-
       "really_testing": [
         "Can you turn a vague prompt into a clear contract by asking the right clarifying questions?",
-        "Do you instinctively think in complexity tradeoffs (brute force → optimization)?",
+        "Do you instinctively think in complexity tradeoffs (brute force \u2192 optimization)?",
         "Can you write clean code under mild pressure (naming, structure, no off-by-ones)?",
         "Do you test your own code on the given example without being asked?",
-        "Can you narrate your thought process — \"think out loud\"?"
+        "Can you narrate your thought process \u2014 \"think out loud\"?"
       ],
-
       "rubric": [
         {
           "tier": "Strong Hire",
@@ -128,37 +174,34 @@
           "criteria": "Couldn't reach O(n) even with hints. Couldn't trace through an example. Wrote buggy code and didn't recognize the bugs when reading their own code. Stayed silent for long stretches."
         }
       ],
-
       "playbook": [
         "Restate the problem in your own words. (\"I need indices i, j with nums[i] + nums[j] = target, can't reuse the same index. Right?\")",
-        "Ask 2-3 clarifying questions from the list in Interview Tips above. Don't ask 10 — interviewers find that excessive.",
-        "Propose brute force out loud. \"Simplest: check every pair. O(n²) time, O(1) space.\" Don't write it — just state it.",
+        "Ask 2-3 clarifying questions from the list in Interview Tips above. Don't ask 10 \u2014 interviewers find that excessive.",
+        "Propose brute force out loud. \"Simplest: check every pair. O(n\u00b2) time, O(1) space.\" Don't write it \u2014 just state it.",
         "State the optimization. \"I think we can do O(n) with a hash map. Tradeoff: O(n) extra space.\"",
         "Walk through ONE example before coding. Show how the hash map fills up and detects the pair. This proves to the interviewer you actually understand it.",
         "Code cleanly. Variable names: seen, complement. Not d, x, tmp.",
         "Test on the given example AFTER coding. Walk through it. Confirm output matches expected.",
         "Mention edge cases you'd handle if pushed: duplicates (e.g., [3,3]), no-answer (return what?), large n. Interviewer may probe one."
       ],
-      "playbook_meta": "Total time: 10-15 min for a strong run. Finish faster and they'll ask a follow-up (3Sum, sorted array variant, return all pairs, etc.) — be ready.",
-
+      "playbook_meta": "Total time: 10-15 min for a strong run. Finish faster and they'll ask a follow-up (3Sum, sorted array variant, return all pairs, etc.) \u2014 be ready.",
       "dont_do": [
         "Don't code immediately. A pause to think is mature, not weak.",
-        "Don't overoptimize prematurely. Don't try sorting + binary search — go straight to hash map.",
+        "Don't overoptimize prematurely. Don't try sorting + binary search \u2014 go straight to hash map.",
         "Don't return values instead of indices. Read the spec twice.",
         "Don't forget the \"same element\" rule. nums[i] + nums[i] is NOT valid.",
-        "Don't go silent when stuck. Narrate your thinking — interviewers can't help you if they don't know where you are.",
+        "Don't go silent when stuck. Narrate your thinking \u2014 interviewers can't help you if they don't know where you are.",
         "Don't argue with the interviewer. If they say \"what if there are duplicates?\", explore it. They're checking how you handle pushback."
       ]
     },
-
     "has_walkthrough": true,
     "approaches": [
       {
         "name": "Brute Force",
-        "time": "O(n²)",
+        "time": "O(n\u00b2)",
         "space": "O(1)",
         "code": "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]",
-        "explanation": "Check every pair. Slow but correct — useful as the obvious first approach you propose in an interview before optimizing."
+        "explanation": "Check every pair. Slow but correct \u2014 useful as the obvious first approach you propose in an interview before optimizing."
       },
       {
         "name": "Hash Map",
@@ -168,8 +211,11 @@
         "explanation": "For each number, check if its complement (target - x) has already been seen. If yes, we found our pair. If no, store the current number with its index. Single pass, O(n) time at the cost of O(n) space."
       }
     ],
-
-    "related_problem_ids": ["contains-duplicate", "group-anagrams", "longest-consecutive-sequence"]
+    "related_problem_ids": [
+      "contains-duplicate",
+      "group-anagrams",
+      "longest-consecutive-sequence"
+    ]
   },
   {
     "id": "contains-duplicate",
@@ -177,141 +223,476 @@
     "leetcode_url": "https://leetcode.com/problems/contains-duplicate/",
     "leetcode_id": 217,
     "difficulty": "easy",
-
-    "patterns": ["hash-map"],
-    "topics": ["arrays", "hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "arrays",
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "neetcode-150"],
-
+    "frequency_tags": [
+      "blind-75",
+      "neetcode-150"
+    ],
     "summary": "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.",
-
     "constraints": [
       "1 <= nums.length <= 10^5",
       "-10^9 <= nums[i] <= 10^9"
     ],
-
     "examples": [
-      { "input": "nums = [1,2,3,1]", "output": "true", "explanation": "1 appears twice." },
-      { "input": "nums = [1,2,3,4]", "output": "false", "explanation": "All elements are distinct." },
-      { "input": "nums = [1,1,1,3,3,4,3,2,4,2]", "output": "true", "explanation": "Many duplicates." }
+      {
+        "input": "nums = [1,2,3,1]",
+        "output": "true",
+        "explanation": "1 appears twice."
+      },
+      {
+        "input": "nums = [1,2,3,4]",
+        "output": "false",
+        "explanation": "All elements are distinct."
+      },
+      {
+        "input": "nums = [1,1,1,3,3,4,3,2,4,2]",
+        "output": "true",
+        "explanation": "Many duplicates."
+      }
     ],
-
     "function_name": "contains_duplicate",
     "function_signature": "def contains_duplicate(nums):",
     "starter_code": "def contains_duplicate(nums):\n    # Your code here\n    pass",
-
     "test_cases": [
-      { "label": "duplicate present", "args": [[1,2,3,1]], "expected": "True" },
-      { "label": "all distinct", "args": [[1,2,3,4]], "expected": "False" },
-      { "label": "many duplicates", "args": [[1,1,1,3,3,4,3,2,4,2]], "expected": "True" },
-      { "label": "single element", "args": [[1]], "expected": "False" },
-      { "label": "duplicate at end of large array", "args": [[1,2,3,4,5,6,7,8,9,1]], "expected": "True" }
+      {
+        "label": "duplicate present",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "all distinct",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "many duplicates",
+        "args": [
+          [
+            1,
+            1,
+            1,
+            3,
+            3,
+            4,
+            3,
+            2,
+            4,
+            2
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single element",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "duplicate at end of large array",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            1
+          ]
+        ],
+        "expected": "True"
+      }
     ],
-
     "interview_tips": {
-      "talk_through_it": "Easy warm-up — but use it to establish good habits. Restate, ask a clarifying question or two, propose the obvious O(n) hash-set approach, code it, test it. This is interview-style scaffolding for harder questions to come.",
-
+      "talk_through_it": "Easy warm-up \u2014 but use it to establish good habits. Restate, ask a clarifying question or two, propose the obvious O(n) hash-set approach, code it, test it. This is interview-style scaffolding for harder questions to come.",
       "clarifying_questions": [
-        { "question": "How big can n be?", "why": "n=10^5 means O(n²) brute force is too slow (10^10 ops). Need at least O(n log n) sort, ideally O(n) hash set." },
-        { "question": "Should I just detect duplicates or count how many?", "why": "Spec returns bool. Variants ask for the duplicate value, the count, or all duplicates. Always read carefully." },
-        { "question": "Can I use extra memory, or is O(1) space a requirement?", "why": "If O(1) space, you're forced to sort first (O(n log n)) and check adjacent. Otherwise, hash set is the clean answer." },
-        { "question": "Are negative numbers or zeros possible?", "why": "Yes per constraints. Still works as hash keys, but worth confirming so you handle edge values like 0 and INT_MIN correctly." },
-        { "question": "Can the input be modified?", "why": "If yes, you can sort in place. If no, you need extra space or a copy to sort." }
+        {
+          "question": "How big can n be?",
+          "why": "n=10^5 means O(n\u00b2) brute force is too slow (10^10 ops). Need at least O(n log n) sort, ideally O(n) hash set."
+        },
+        {
+          "question": "Should I just detect duplicates or count how many?",
+          "why": "Spec returns bool. Variants ask for the duplicate value, the count, or all duplicates. Always read carefully."
+        },
+        {
+          "question": "Can I use extra memory, or is O(1) space a requirement?",
+          "why": "If O(1) space, you're forced to sort first (O(n log n)) and check adjacent. Otherwise, hash set is the clean answer."
+        },
+        {
+          "question": "Are negative numbers or zeros possible?",
+          "why": "Yes per constraints. Still works as hash keys, but worth confirming so you handle edge values like 0 and INT_MIN correctly."
+        },
+        {
+          "question": "Can the input be modified?",
+          "why": "If yes, you can sort in place. If no, you need extra space or a copy to sort."
+        }
       ],
-
-      "think_out_loud": "State brute force out loud — O(n²) pairs. Won't pass n=10^5. Propose hash set: walk through array, return True the moment a value is re-encountered. O(n) time, O(n) space. The early-return matters when the duplicate appears near the start of a big array.",
-
+      "think_out_loud": "State brute force out loud \u2014 O(n\u00b2) pairs. Won't pass n=10^5. Propose hash set: walk through array, return True the moment a value is re-encountered. O(n) time, O(n) space. The early-return matters when the duplicate appears near the start of a big array.",
       "edge_cases": [
-        { "category": "Single element", "details": "[1] → false. n=1 means no possible duplicate. Confirm your loop handles this." },
-        { "category": "All distinct", "details": "[1,2,3,4,5] → false. Function returns false only after fully scanning — don't early-return false incorrectly." },
-        { "category": "Many duplicates", "details": "[1,1,1,1] → true on the second 1. Early termination matters." },
-        { "category": "Duplicate at the very end", "details": "[1,2,3,...,n,1] → true only when you hit the last element. Worst case for early-termination." },
-        { "category": "Large array, no dup", "details": "Stress test: n=10^5 distinct values. Pure brute force is 10^10 ops — times out. Confirm your O(n) handles it." }
+        {
+          "category": "Single element",
+          "details": "[1] \u2192 false. n=1 means no possible duplicate. Confirm your loop handles this."
+        },
+        {
+          "category": "All distinct",
+          "details": "[1,2,3,4,5] \u2192 false. Function returns false only after fully scanning \u2014 don't early-return false incorrectly."
+        },
+        {
+          "category": "Many duplicates",
+          "details": "[1,1,1,1] \u2192 true on the second 1. Early termination matters."
+        },
+        {
+          "category": "Duplicate at the very end",
+          "details": "[1,2,3,...,n,1] \u2192 true only when you hit the last element. Worst case for early-termination."
+        },
+        {
+          "category": "Large array, no dup",
+          "details": "Stress test: n=10^5 distinct values. Pure brute force is 10^10 ops \u2014 times out. Confirm your O(n) handles it."
+        }
       ],
-
       "common_mistakes": [
-        "Using a list instead of a set to check membership → `if x in list` is O(n), making total O(n²).",
-        "Returning len(set(nums)) != len(nums) — correct but loses the early-termination benefit on huge inputs with early duplicates.",
+        "Using a list instead of a set to check membership \u2192 `if x in list` is O(n), making total O(n\u00b2).",
+        "Returning len(set(nums)) != len(nums) \u2014 correct but loses the early-termination benefit on huge inputs with early duplicates.",
         "Forgetting that the function returns bool, not the duplicate value.",
         "Off-by-one or wrong loop bounds in a brute force attempt."
       ]
     },
-
     "faang": {
       "tier": "A",
       "introduction": "Easy warm-up. Given an array, return true if any value appears more than once.",
       "introduction_context": "Usually a 5-10 minute warm-up before a harder follow-up. Common follow-ups: Contains Duplicate II (within k indices), Longest Consecutive Sequence (uses a hash set in a clever way), or Two Sum (related hash-map pattern).",
-
       "really_testing": [
         "Comfort with hash sets as a default O(n) tool for membership/duplicate detection.",
         "Awareness of time/space tradeoffs (hash set vs sort-and-scan).",
         "Can you reach the right tool without overthinking the easy problem?",
         "Do you write the early-return that matters for large inputs?"
       ],
-
       "rubric": [
-        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Immediately reaches hash set with early return. States the time/space tradeoff out loud. Mentions sort + adjacent-scan as the O(1)-space alternative when probed. Codes cleanly in 3-5 min." },
-        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches hash set, possibly after stating brute force first. Clean code. May miss the early-return optimization but handles correctness." },
-        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Stuck at O(n²) brute force, or confused about set membership being O(1). Or returns wrong answer on edge cases." },
-        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't solve in 15+ minutes. Or made the code unreasonably complex for an easy problem." }
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Immediately reaches hash set with early return. States the time/space tradeoff out loud. Mentions sort + adjacent-scan as the O(1)-space alternative when probed. Codes cleanly in 3-5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches hash set, possibly after stating brute force first. Clean code. May miss the early-return optimization but handles correctness."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck at O(n\u00b2) brute force, or confused about set membership being O(1). Or returns wrong answer on edge cases."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Couldn't solve in 15+ minutes. Or made the code unreasonably complex for an easy problem."
+        }
       ],
-
       "playbook": [
-        "Restate the problem aloud — 'return true if any value appears more than once'.",
+        "Restate the problem aloud \u2014 'return true if any value appears more than once'.",
         "Ask about n size and space constraints. Listen for the answer; it shapes your approach.",
-        "State brute force out loud: 'Nested loop, O(n²). Won't scale.' Don't code it.",
+        "State brute force out loud: 'Nested loop, O(n\u00b2). Won't scale.' Don't code it.",
         "Propose hash set: 'Single pass, add to set, return true on collision. O(n) time, O(n) space.'",
         "Code it. Use a `for x in nums` loop, check `if x in seen`, return True, else add.",
         "Test on the early-duplicate case ([1,1,...]) and the no-duplicate case ([1,2,...,n]).",
         "If asked: mention sort + adjacent-scan as the O(1)-space alternative. O(n log n) but no extra memory."
       ],
       "playbook_meta": "Total time: 5-8 min for a strong run. The interview's real signal is whether you propose the right solution immediately or fumble.",
-
       "dont_do": [
-        "Don't actually code brute force — just state it and move on. Wastes interview time.",
-        "Don't use `len(set(nums)) != len(nums)` for huge arrays — it loses early termination.",
-        "Don't use a list for membership checks — it's O(n) per check.",
+        "Don't actually code brute force \u2014 just state it and move on. Wastes interview time.",
+        "Don't use `len(set(nums)) != len(nums)` for huge arrays \u2014 it loses early termination.",
+        "Don't use a list for membership checks \u2014 it's O(n) per check.",
         "Don't overthink an easy problem. Hash set is the canonical answer.",
         "Don't forget to return False at the end if the loop completes."
       ]
     },
-
     "has_walkthrough": true,
     "approaches": [
       {
         "name": "Brute Force",
-        "time": "O(n²)",
+        "time": "O(n\u00b2)",
         "space": "O(1)",
         "code": "def contains_duplicate(nums):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] == nums[j]:\n                return True\n    return False",
-        "explanation": "Check every pair. Correct but quadratic — won't scale to n=10^5. Only useful as the obvious 'first thought' to state before optimizing."
+        "explanation": "Check every pair. Correct but quadratic \u2014 won't scale to n=10^5. Only useful as the obvious 'first thought' to state before optimizing."
       },
       {
         "name": "Hash Set",
         "time": "O(n)",
         "space": "O(n)",
         "code": "def contains_duplicate(nums):\n    seen = set()\n    for x in nums:\n        if x in seen:\n            return True\n        seen.add(x)\n    return False",
-        "explanation": "Walk through the array once. For each value, check if it's been seen before (O(1) average with a hash set). If yes, return True immediately — early termination saves time on inputs where the duplicate appears early. If we finish the loop, all values are distinct."
+        "explanation": "Walk through the array once. For each value, check if it's been seen before (O(1) average with a hash set). If yes, return True immediately \u2014 early termination saves time on inputs where the duplicate appears early. If we finish the loop, all values are distinct."
       },
       {
         "name": "Sort + Adjacent Scan (O(1) space)",
         "time": "O(n log n)",
         "space": "O(1) extra (if in-place sort allowed)",
         "code": "def contains_duplicate(nums):\n    nums.sort()\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i-1]:\n            return True\n    return False",
-        "explanation": "When extra space isn't allowed, sort the array first — duplicates become adjacent. Then scan for any two consecutive equal values. O(n log n) time from the sort, O(1) extra space (in-place sort). Mention this when interviewer asks 'can you do it without extra space?'"
+        "explanation": "When extra space isn't allowed, sort the array first \u2014 duplicates become adjacent. Then scan for any two consecutive equal values. O(n log n) time from the sort, O(1) extra space (in-place sort). Mention this when interviewer asks 'can you do it without extra space?'"
       }
     ],
-
-    "related_problem_ids": ["two-sum", "valid-anagram", "longest-consecutive-sequence", "group-anagrams"]
+    "related_problem_ids": [
+      "two-sum",
+      "valid-anagram",
+      "longest-consecutive-sequence",
+      "group-anagrams"
+    ]
   },
   {
     "id": "best-time-to-buy-and-sell-stock",
     "title": "Best Time to Buy and Sell Stock",
     "leetcode_url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+    "leetcode_id": 121,
     "difficulty": "easy",
-    "patterns": ["kadane"],
-    "topics": ["arrays"],
+    "patterns": [
+      "kadane"
+    ],
+    "topics": [
+      "arrays",
+      "dynamic-programming"
+    ],
     "neetcode_category": "Dynamic Programming",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an array prices where prices[i] is the price of a given stock on the ith day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.",
+    "constraints": [
+      "1 <= prices.length <= 10^5",
+      "0 <= prices[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "prices = [7,1,5,3,6,4]",
+        "output": "5",
+        "explanation": "Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5."
+      },
+      {
+        "input": "prices = [7,6,4,3,1]",
+        "output": "0",
+        "explanation": "Prices are decreasing \u2014 no profitable transaction. Return 0."
+      }
+    ],
+    "function_name": "max_profit",
+    "function_signature": "def max_profit(prices):",
+    "starter_code": "def max_profit(prices):\n    # Your code here\n    pass",
+    "test_cases": [
+      {
+        "label": "classic profit case",
+        "args": [
+          [
+            7,
+            1,
+            5,
+            3,
+            6,
+            4
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "decreasing \u2014 no profit",
+        "args": [
+          [
+            7,
+            6,
+            4,
+            3,
+            1
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "two days",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "profit after dip",
+        "args": [
+          [
+            2,
+            1,
+            4
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single day \u2014 can't transact",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Track min-so-far and max-profit-so-far as you scan once. The key insight: today's max profit is today's price minus the minimum I've seen up to today. Walk through one example before coding \u2014 interviewers love seeing you trace the algorithm.",
+      "clarifying_questions": [
+        {
+          "question": "How many transactions am I allowed?",
+          "why": "Spec says ONE. The 'II', 'III', 'IV' variants allow multiple \u2014 completely different algorithms. Always confirm."
+        },
+        {
+          "question": "Can I buy and sell on the same day?",
+          "why": "Spec says 'different day in the future'. So no. The constraint forces single-pass logic."
+        },
+        {
+          "question": "What if no profit is possible (prices strictly decreasing)?",
+          "why": "Return 0 \u2014 NOT a negative number. Common bug: returning the smallest possible loss."
+        },
+        {
+          "question": "Can prices be negative or zero?",
+          "why": "Per constraints, 0 <= prices[i] <= 10^4. No negatives. But knowing the bounds confirms an int doesn't overflow."
+        },
+        {
+          "question": "What's the size of n?",
+          "why": "10^5. O(n\u00b2) brute force times out. Need O(n)."
+        }
+      ],
+      "think_out_loud": "Brute force: try every (buy_day, sell_day) pair where sell_day > buy_day. O(n\u00b2). Better: as I scan, I keep track of the lowest price seen so far. At each day, the max profit I could realize is today's_price minus that min. Track the best across all days. Single pass, O(n) time, O(1) space.",
+      "edge_cases": [
+        {
+          "category": "Single day",
+          "details": "[5] \u2192 0. Can't buy AND sell with one day. Confirm your loop handles n=1."
+        },
+        {
+          "category": "Strictly decreasing",
+          "details": "[7,6,4,3,1] \u2192 0. The min keeps decreasing, but the profit (today - min) never becomes positive."
+        },
+        {
+          "category": "All same price",
+          "details": "[5,5,5] \u2192 0. Profit on each day is 0, not negative."
+        },
+        {
+          "category": "Profit at end",
+          "details": "[3,2,1,2,3,4] \u2192 3. Buy at 1, sell at 4. Your min should land on 1 before seeing 4."
+        },
+        {
+          "category": "Quick dip then recover",
+          "details": "[5,1,5,1,5] \u2192 4. Min stays at 1, max profit is 5-1=4."
+        }
+      ],
+      "common_mistakes": [
+        "Returning a negative number when prices decrease \u2014 should return 0 per spec.",
+        "Updating min_price AFTER computing the profit for today \u2014 off-by-one. Compute profit FIRST, then maybe update min.",
+        "Trying to apply Kadane's directly \u2014 related but distinct (Kadane is for sums of subarrays, this is for max gap forward).",
+        "Sorting the prices \u2014 destroys the time order; you'd lose 'buy before sell' meaning.",
+        "Off-by-one initializing min_price (using prices[0] vs INT_MAX). Both work but mixing them is confusing."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Stock problem. Given an array of daily prices, find the max profit from one buy-sell pair (sell after buy).",
+      "introduction_context": "Universal warm-up at FAANG. Tests the O(n\u00b2) \u2192 O(n) single-pass optimization. Sets up follow-ups in 'II' (multiple transactions), 'III' (at most 2), 'IV' (at most k).",
+      "really_testing": [
+        "Single-pass thinking: 'as I scan, what's the min I've seen and the best profit so far?'",
+        "Recognition that this is forward-only (sell after buy \u2014 can't sort).",
+        "Returning 0 when no profit possible (not negative).",
+        "Articulating the recurrence ('today's profit = today's price - min seen so far')."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Immediately states brute force O(n\u00b2) then derives O(n) single-pass tracking. Initializes correctly. Tests on the decreasing array to confirm 0 return. Clean code. ~7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches O(n) after stating brute force. Handles the no-profit case correctly. May miss one edge case until prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck at O(n\u00b2). Or returns a negative number on decreasing input. Or tries to sort."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't reach O(n) with hints. Sells before buys. Returns wrong answer with no recognition."
+        }
+      ],
+      "playbook": [
+        "Restate the problem aloud \u2014 'find max profit from ONE buy-sell pair, sell must be after buy'.",
+        "Ask: 'How many transactions?' \u2014 confirms it's one.",
+        "Ask: 'What if no profit is possible?' \u2014 confirms return 0.",
+        "State brute force out loud: nested loop over all (buy, sell) pairs. O(n\u00b2).",
+        "Derive O(n): 'As I walk through, I track the minimum price I've seen so far. At each day, the best profit I could realize selling today is today's price minus that min.'",
+        "Initialize: min_price = prices[0], best_profit = 0.",
+        "Code carefully: walk prices, update best_profit = max(best_profit, p - min_price), then min_price = min(min_price, p).",
+        "Test on [7,6,4,3,1] \u2192 should return 0 (decreasing).",
+        "Test on [7,1,5,3,6,4] \u2192 should return 5 (buy at 1, sell at 6)."
+      ],
+      "playbook_meta": "Total time: 7-10 min. Follow-up almost always is II (multiple transactions) or III (at most 2). Be ready to discuss DP for those.",
+      "dont_do": [
+        "Don't use Kadane's directly \u2014 wrong tool. Kadane's max-subarray-sum is for contiguous subarrays, not for max gap.",
+        "Don't return negative on decreasing input. Spec says return 0.",
+        "Don't sort the array \u2014 destroys time order. You CANNOT sell before you buy.",
+        "Don't track 'max so far' and subtract \u2014 leads to selling-before-buying bugs.",
+        "Don't initialize best_profit = negative infinity. Initialize to 0."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def max_profit(prices):\n    best = 0\n    for i in range(len(prices)):\n        for j in range(i+1, len(prices)):\n            best = max(best, prices[j] - prices[i])\n    return best",
+        "explanation": "Try every (buy_day, sell_day) pair where sell_day > buy_day. Take the max profit (or 0 if none positive). Correct but quadratic \u2014 won't pass for n=10^5."
+      },
+      {
+        "name": "Single-Pass Min + Max Profit",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def max_profit(prices):\n    min_price = prices[0]\n    best = 0\n    for p in prices[1:]:\n        best = max(best, p - min_price)\n        min_price = min(min_price, p)\n    return best",
+        "explanation": "Walk through prices once. Track the minimum price seen so far. At each day, the max profit if I sold today is current_price - min_price. Track the best across all days. The key: compute profit FIRST using the OLD min, THEN update the min for tomorrow. O(n) time, O(1) space \u2014 optimal."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-subarray",
+      "two-sum",
+      "container-with-most-water"
+    ]
   },
   {
     "id": "maximum-subarray",
@@ -319,19 +700,24 @@
     "leetcode_url": "https://leetcode.com/problems/maximum-subarray/",
     "leetcode_id": 53,
     "difficulty": "medium",
-
-    "patterns": ["kadane"],
-    "topics": ["arrays", "dynamic-programming"],
+    "patterns": [
+      "kadane"
+    ],
+    "topics": [
+      "arrays",
+      "dynamic-programming"
+    ],
     "neetcode_category": "Dynamic Programming",
-    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
-
+    "frequency_tags": [
+      "blind-75",
+      "faang-common",
+      "neetcode-150"
+    ],
     "summary": "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.",
-
     "constraints": [
       "1 <= nums.length <= 10^5",
       "-10^4 <= nums[i] <= 10^4"
     ],
-
     "examples": [
       {
         "input": "nums = [-2,1,-3,4,-1,2,1,-5,4]",
@@ -349,22 +735,73 @@
         "explanation": "The entire array sums to 23."
       }
     ],
-
     "function_name": "max_subarray",
     "function_signature": "def max_subarray(nums):",
     "starter_code": "def max_subarray(nums):\n    # Your code here\n    pass",
-
     "test_cases": [
-      { "label": "mixed positives and negatives", "args": [[-2,1,-3,4,-1,2,1,-5,4]], "expected": "6" },
-      { "label": "single positive element", "args": [[1]], "expected": "1" },
-      { "label": "all positives — sum the whole array", "args": [[5,4,-1,7,8]], "expected": "23" },
-      { "label": "all negatives — return the least negative", "args": [[-3,-2,-5,-1]], "expected": "-1" },
-      { "label": "single negative", "args": [[-7]], "expected": "-7" }
+      {
+        "label": "mixed positives and negatives",
+        "args": [
+          [
+            -2,
+            1,
+            -3,
+            4,
+            -1,
+            2,
+            1,
+            -5,
+            4
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "single positive element",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all positives \u2014 sum the whole array",
+        "args": [
+          [
+            5,
+            4,
+            -1,
+            7,
+            8
+          ]
+        ],
+        "expected": "23"
+      },
+      {
+        "label": "all negatives \u2014 return the least negative",
+        "args": [
+          [
+            -3,
+            -2,
+            -5,
+            -1
+          ]
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "single negative",
+        "args": [
+          [
+            -7
+          ]
+        ],
+        "expected": "-7"
+      }
     ],
-
     "interview_tips": {
-      "talk_through_it": "Read the problem carefully — 'contiguous' is the key word. Subsequences don't count, only consecutive elements. Restate in your own words. The trick is to recognize this as a DP-friendly problem before you start coding.",
-
+      "talk_through_it": "Read the problem carefully \u2014 'contiguous' is the key word. Subsequences don't count, only consecutive elements. Restate in your own words. The trick is to recognize this as a DP-friendly problem before you start coding.",
       "clarifying_questions": [
         {
           "question": "Can the array contain all negative numbers?",
@@ -372,102 +809,127 @@
         },
         {
           "question": "Should I return the sum, or the actual subarray (with indices)?",
-          "why": "Spec says sum. Variants ('Maximum Subarray II') ask for the indices or the subarray itself. Always confirm — code structure changes."
+          "why": "Spec says sum. Variants ('Maximum Subarray II') ask for the indices or the subarray itself. Always confirm \u2014 code structure changes."
         },
         {
           "question": "Does 'at least one number' mean the answer can't be the empty subarray (sum 0)?",
-          "why": "Yes — you must include at least one number. This matters for all-negative inputs: you return the max negative, NOT zero."
+          "why": "Yes \u2014 you must include at least one number. This matters for all-negative inputs: you return the max negative, NOT zero."
         },
         {
           "question": "Are integer overflows a concern?",
-          "why": "n=10^5 and |val|=10^4 → worst-case sum is 10^9, fits in int32 (max 2.1×10^9). Worth checking in languages with strict types (Java, C++)."
+          "why": "n=10^5 and |val|=10^4 \u2192 worst-case sum is 10^9, fits in int32 (max 2.1\u00d710^9). Worth checking in languages with strict types (Java, C++)."
         },
         {
           "question": "Should the result use the original indices? Should I preserve input?",
-          "why": "Most variants don't mutate. Confirm — but Kadane's doesn't need mutation anyway."
+          "why": "Most variants don't mutate. Confirm \u2014 but Kadane's doesn't need mutation anyway."
         }
       ],
-
-      "think_out_loud": "State brute force first: try every (i,j) pair as subarray endpoints. O(n²) or O(n³) depending on whether you precompute sums. Then derive Kadane's: 'At each index, I have a choice: extend the previous subarray, or start fresh here. The decision is — extend if the running sum is positive, else start fresh.' This phrasing IS the DP recurrence.",
-
+      "think_out_loud": "State brute force first: try every (i,j) pair as subarray endpoints. O(n\u00b2) or O(n\u00b3) depending on whether you precompute sums. Then derive Kadane's: 'At each index, I have a choice: extend the previous subarray, or start fresh here. The decision is \u2014 extend if the running sum is positive, else start fresh.' This phrasing IS the DP recurrence.",
       "edge_cases": [
-        { "category": "All negative array", "details": "[-3,-2,-5,-1] → -1 (the max single element). The most common failure: returning 0 because best = 0 initialization." },
-        { "category": "Single element", "details": "[5] → 5. [-3] → -3. Base case for any recurrence." },
-        { "category": "All positive — sum the whole thing", "details": "[1,2,3] → 6. Kadane's still works: never restart, just keep extending." },
-        { "category": "One huge negative", "details": "[5, -100, 5] → 5. Restart after the -100 because cur+(-100) is far below the next value." },
-        { "category": "Alternating", "details": "[1,-1,1,-1,1] → 1. Verify Kadane handles oscillation correctly." }
+        {
+          "category": "All negative array",
+          "details": "[-3,-2,-5,-1] \u2192 -1 (the max single element). The most common failure: returning 0 because best = 0 initialization."
+        },
+        {
+          "category": "Single element",
+          "details": "[5] \u2192 5. [-3] \u2192 -3. Base case for any recurrence."
+        },
+        {
+          "category": "All positive \u2014 sum the whole thing",
+          "details": "[1,2,3] \u2192 6. Kadane's still works: never restart, just keep extending."
+        },
+        {
+          "category": "One huge negative",
+          "details": "[5, -100, 5] \u2192 5. Restart after the -100 because cur+(-100) is far below the next value."
+        },
+        {
+          "category": "Alternating",
+          "details": "[1,-1,1,-1,1] \u2192 1. Verify Kadane handles oscillation correctly."
+        }
       ],
-
       "common_mistakes": [
         "Initializing best = 0 or cur = 0 instead of nums[0]. Breaks all-negatives case (returns 0, wrong).",
-        "Forgetting the 'at least one number' constraint — interpreting empty subarray as valid with sum 0.",
+        "Forgetting the 'at least one number' constraint \u2014 interpreting empty subarray as valid with sum 0.",
         "Off-by-one on the loop (iterating from i=0 vs i=1).",
-        "Confusing 'running sum' with 'best sum' — updating the wrong variable when comparing.",
-        "Trying to use sliding window — but sliding window requires a non-negative invariant. Doesn't fit here."
+        "Confusing 'running sum' with 'best sum' \u2014 updating the wrong variable when comparing.",
+        "Trying to use sliding window \u2014 but sliding window requires a non-negative invariant. Doesn't fit here."
       ]
     },
-
     "faang": {
       "tier": "A",
       "introduction": "Classic dynamic-programming-style problem. Given an integer array, find the contiguous subarray with the largest sum.",
       "introduction_context": "Almost universally asked. Tests whether you can derive Kadane's algorithm (the 'extend or restart' decision) or recognize it. Common in 45-min loops and screens.",
-
       "really_testing": [
-        "Can you go from O(n²) brute force to O(n) Kadane's by yourself, or only when prompted?",
+        "Can you go from O(n\u00b2) brute force to O(n) Kadane's by yourself, or only when prompted?",
         "Can you articulate the DP recurrence ('extend the running sum or start fresh')?",
         "Do you initialize correctly for the all-negative case?",
         "Can you trace through a mixed example confidently?",
         "Are you systematic about edge cases?"
       ],
-
       "rubric": [
-        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asked the all-negative question unprompted. States brute force O(n²) without coding it. Derives Kadane's by articulating the 'extend vs restart' decision out loud. Initializes correctly (best = cur = nums[0]). Traces through example. Handles all-negatives in their first attempt. Total time: ~10 min." },
-        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches Kadane's after some thought. May need a nudge on the recurrence. Catches the all-negative initialization issue when probed. Code is correct." },
-        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Initializes best = 0 and returns 0 for all-negatives. Needed a hint to derive Kadane's. Or stuck at O(n²) prefix-sum approach without seeing the O(n) optimization." },
-        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't derive O(n) even with hints. Can't articulate the 'extend or restart' decision. Returns wrong answer on all-negatives and doesn't recognize the bug." }
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Asked the all-negative question unprompted. States brute force O(n\u00b2) without coding it. Derives Kadane's by articulating the 'extend vs restart' decision out loud. Initializes correctly (best = cur = nums[0]). Traces through example. Handles all-negatives in their first attempt. Total time: ~10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches Kadane's after some thought. May need a nudge on the recurrence. Catches the all-negative initialization issue when probed. Code is correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Initializes best = 0 and returns 0 for all-negatives. Needed a hint to derive Kadane's. Or stuck at O(n\u00b2) prefix-sum approach without seeing the O(n) optimization."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Couldn't derive O(n) even with hints. Can't articulate the 'extend or restart' decision. Returns wrong answer on all-negatives and doesn't recognize the bug."
+        }
       ],
-
       "playbook": [
         "Restate the problem aloud, emphasizing 'contiguous'.",
         "Ask the all-negative question. Confirm 'at least one number' means you can't return 0.",
-        "State brute force O(n²): try every start/end pair. Don't code it.",
+        "State brute force O(n\u00b2): try every start/end pair. Don't code it.",
         "Derive Kadane: 'At each index, I choose to extend the running subarray or start fresh. The decision is: if the previous running sum is positive, extending helps; if negative, start fresh.'",
         "State the recurrence: cur = max(x, cur + x); best = max(best, cur). This IS Kadane's.",
         "Walk through the example [-2,1,-3,4,-1,2,1,-5,4] step by step. Show cur and best at each index.",
         "Code carefully: initialize best = cur = nums[0]. Iterate from index 1.",
         "Test on all-negative case [-3,-2,-5,-1] explicitly. Confirm output is -1, not 0."
       ],
-      "playbook_meta": "Total time: 8-12 min for a strong run. Faster if you immediately recognize Kadane's. Common follow-ups: return the subarray (track indices), max product subarray (different — sign flips matter), 2D max submatrix.",
-
+      "playbook_meta": "Total time: 8-12 min for a strong run. Faster if you immediately recognize Kadane's. Common follow-ups: return the subarray (track indices), max product subarray (different \u2014 sign flips matter), 2D max submatrix.",
       "dont_do": [
         "Don't initialize best = 0 or cur = 0. Breaks all-negatives.",
         "Don't return 0 if no positives found. Violates 'at least one number'.",
-        "Don't sort the array. Loses contiguity — fatal.",
+        "Don't sort the array. Loses contiguity \u2014 fatal.",
         "Don't use a sliding window. Sliding window needs a non-negative invariant; this doesn't have one.",
-        "Don't reach for prefix sums first. They give O(n²), not O(n). Kadane is strictly better.",
-        "Don't go silent while deriving Kadane. Narrate the 'extend or restart' decision out loud — that's the signal interviewers want."
+        "Don't reach for prefix sums first. They give O(n\u00b2), not O(n). Kadane is strictly better.",
+        "Don't go silent while deriving Kadane. Narrate the 'extend or restart' decision out loud \u2014 that's the signal interviewers want."
       ]
     },
-
     "has_walkthrough": true,
     "approaches": [
       {
         "name": "Brute Force",
-        "time": "O(n²)",
+        "time": "O(n\u00b2)",
         "space": "O(1)",
         "code": "def max_subarray(nums):\n    best = nums[0]\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            best = max(best, s)\n    return best",
-        "explanation": "Try every starting index, sum forward. Track the best sum encountered. Correct but O(n²) — won't pass n=10^5 in interview time."
+        "explanation": "Try every starting index, sum forward. Track the best sum encountered. Correct but O(n\u00b2) \u2014 won't pass n=10^5 in interview time."
       },
       {
         "name": "Kadane's Algorithm",
         "time": "O(n)",
         "space": "O(1)",
         "code": "def max_subarray(nums):\n    best = cur = nums[0]\n    for x in nums[1:]:\n        cur = max(x, cur + x)\n        best = max(best, cur)\n    return best",
-        "explanation": "At each index, decide: extend the previous subarray (cur + x) or start fresh from here (x). Take the max — this is the DP recurrence. Track the global best separately. The key insight: if the previous sum is negative, it can only hurt us, so we start fresh."
+        "explanation": "At each index, decide: extend the previous subarray (cur + x) or start fresh from here (x). Take the max \u2014 this is the DP recurrence. Track the global best separately. The key insight: if the previous sum is negative, it can only hurt us, so we start fresh."
       }
     ],
-
-    "related_problem_ids": ["best-time-to-buy-and-sell-stock", "subarray-sum-equals-k", "two-sum"]
+    "related_problem_ids": [
+      "best-time-to-buy-and-sell-stock",
+      "subarray-sum-equals-k",
+      "two-sum"
+    ]
   },
   {
     "id": "3sum",
@@ -475,19 +937,24 @@
     "leetcode_url": "https://leetcode.com/problems/3sum/",
     "leetcode_id": 15,
     "difficulty": "medium",
-
-    "patterns": ["two-pointers"],
-    "topics": ["arrays", "two-pointers"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "arrays",
+      "two-pointers"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
-
+    "frequency_tags": [
+      "blind-75",
+      "faang-common",
+      "neetcode-150"
+    ],
     "summary": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i, j, k are distinct indices and nums[i] + nums[j] + nums[k] == 0. The solution set must not contain duplicate triplets.",
-
     "constraints": [
       "3 <= nums.length <= 3000",
       "-10^5 <= nums[i] <= 10^5"
     ],
-
     "examples": [
       {
         "input": "nums = [-1,0,1,2,-1,-4]",
@@ -505,29 +972,69 @@
         "explanation": "The only possible triplet sums to zero."
       }
     ],
-
     "function_name": "three_sum",
     "function_signature": "def three_sum(nums):",
     "starter_code": "def three_sum(nums):\n    # Your code here\n    pass",
-
     "test_cases": [
-      { "label": "classic case with duplicates", "args": [[-1,0,1,2,-1,-4]], "expected": "[[-1, -1, 2], [-1, 0, 1]]" },
-      { "label": "no triplet sums to zero", "args": [[0,1,1]], "expected": "[]" },
-      { "label": "all zeros", "args": [[0,0,0]], "expected": "[[0, 0, 0]]" },
-      { "label": "all negatives — no answer", "args": [[-3,-2,-5,-1]], "expected": "[]" }
+      {
+        "label": "classic case with duplicates",
+        "args": [
+          [
+            -1,
+            0,
+            1,
+            2,
+            -1,
+            -4
+          ]
+        ],
+        "expected": "[[-1, -1, 2], [-1, 0, 1]]"
+      },
+      {
+        "label": "no triplet sums to zero",
+        "args": [
+          [
+            0,
+            1,
+            1
+          ]
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "all zeros",
+        "args": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": "[[0, 0, 0]]"
+      },
+      {
+        "label": "all negatives \u2014 no answer",
+        "args": [
+          [
+            -3,
+            -2,
+            -5,
+            -1
+          ]
+        ],
+        "expected": "[]"
+      }
     ],
-
     "interview_tips": {
-      "talk_through_it": "Read the problem carefully — especially 'distinct indices' and 'no duplicate triplets'. Restate it in your own words before coding. Duplicate handling is the entire interview here — it's what separates Strong Hire from Lean No-Hire.",
-
+      "talk_through_it": "Read the problem carefully \u2014 especially 'distinct indices' and 'no duplicate triplets'. Restate it in your own words before coding. Duplicate handling is the entire interview here \u2014 it's what separates Strong Hire from Lean No-Hire.",
       "clarifying_questions": [
         {
-          "question": "What does 'no duplicate triplets' mean — distinct by value or by index?",
-          "why": "By value. [-1,-1,2] counts once even if multiple -1s exist in the input. Critical to confirm — interviewers will explicitly say 'no duplicates' and watch whether you remember to dedupe."
+          "question": "What does 'no duplicate triplets' mean \u2014 distinct by value or by index?",
+          "why": "By value. [-1,-1,2] counts once even if multiple -1s exist in the input. Critical to confirm \u2014 interviewers will explicitly say 'no duplicates' and watch whether you remember to dedupe."
         },
         {
           "question": "Can I sort the input array?",
-          "why": "Sorting unlocks the O(n²) two-pointer approach. Without it, you're stuck with O(n²) hash-set deduplication that's slower in practice. Most candidates skip this question and burn 5 minutes."
+          "why": "Sorting unlocks the O(n\u00b2) two-pointer approach. Without it, you're stuck with O(n\u00b2) hash-set deduplication that's slower in practice. Most candidates skip this question and burn 5 minutes."
         },
         {
           "question": "Are negative numbers allowed? What if all values are positive?",
@@ -535,168 +1042,448 @@
         },
         {
           "question": "What's the size of nums?",
-          "why": "n ≤ 3000 means O(n²) = 9M ops, totally fine. If n were 10^5, O(n²) would time out and you'd need a smarter approach (rare for 3Sum)."
+          "why": "n \u2264 3000 means O(n\u00b2) = 9M ops, totally fine. If n were 10^5, O(n\u00b2) would time out and you'd need a smarter approach (rare for 3Sum)."
         },
         {
-          "question": "What's the expected output format — list of lists, set of tuples?",
+          "question": "What's the expected output format \u2014 list of lists, set of tuples?",
           "why": "Spec says list of lists. Ordering within triplets matters for grading. Confirm before assuming."
         }
       ],
-
-      "think_out_loud": "Start with brute force: three nested loops, O(n³). State it but don't code it — too slow. Then propose: sort the array, then for each index i, use two pointers (left=i+1, right=n-1) to find pairs summing to -nums[i]. This makes it O(n²) plus the sort. The key insight: sorting unlocks the two-pointer pattern.",
-
+      "think_out_loud": "Start with brute force: three nested loops, O(n\u00b3). State it but don't code it \u2014 too slow. Then propose: sort the array, then for each index i, use two pointers (left=i+1, right=n-1) to find pairs summing to -nums[i]. This makes it O(n\u00b2) plus the sort. The key insight: sorting unlocks the two-pointer pattern.",
       "edge_cases": [
-        { "category": "All zeros", "details": "[0,0,0] → [[0,0,0]]. Just one triplet, all zeros. Make sure your dup-skip doesn't accidentally remove this." },
-        { "category": "Fewer than 3 elements", "details": "Constraint says n ≥ 3, but defensive code returns []. Show you considered it." },
-        { "category": "All positive or all negative", "details": "Can't sum to zero unless all zeros. Optional early exit after sorting." },
-        { "category": "Many duplicates", "details": "[-1,-1,-1,-1,2,2,2] — the two-pointer dup-skip is critical. Both the outer i AND inner left/right must skip duplicates." },
-        { "category": "Empty array", "details": "Return []. Constraint forbids this but be safe." }
+        {
+          "category": "All zeros",
+          "details": "[0,0,0] \u2192 [[0,0,0]]. Just one triplet, all zeros. Make sure your dup-skip doesn't accidentally remove this."
+        },
+        {
+          "category": "Fewer than 3 elements",
+          "details": "Constraint says n \u2265 3, but defensive code returns []. Show you considered it."
+        },
+        {
+          "category": "All positive or all negative",
+          "details": "Can't sum to zero unless all zeros. Optional early exit after sorting."
+        },
+        {
+          "category": "Many duplicates",
+          "details": "[-1,-1,-1,-1,2,2,2] \u2014 the two-pointer dup-skip is critical. Both the outer i AND inner left/right must skip duplicates."
+        },
+        {
+          "category": "Empty array",
+          "details": "Return []. Constraint forbids this but be safe."
+        }
       ],
-
       "common_mistakes": [
-        "Not skipping duplicates on the outer i — produces duplicate triplets in output.",
-        "Not skipping duplicates on inner left/right after finding a triplet — produces e.g. [-1,-1,2] twice when input has [-1,-1,-1,2].",
-        "Using a hash set to dedupe instead of sorted skip — works but O(n²) space and slower in practice. Signals weaker pattern recognition.",
+        "Not skipping duplicates on the outer i \u2014 produces duplicate triplets in output.",
+        "Not skipping duplicates on inner left/right after finding a triplet \u2014 produces e.g. [-1,-1,2] twice when input has [-1,-1,-1,2].",
+        "Using a hash set to dedupe instead of sorted skip \u2014 works but O(n\u00b2) space and slower in practice. Signals weaker pattern recognition.",
         "Off-by-one on initial left/right pointers (should be i+1 and n-1).",
         "Modifying the input array (sorting) without asking permission first."
       ]
     },
-
     "faang": {
       "tier": "A",
       "introduction": "OK, you've done Two Sum. Let's level up. Given an integer array, find all unique triplets that sum to zero. No duplicate triplets allowed.",
-      "introduction_context": "Almost always comes after Two Sum or as a standalone medium. Tests pattern recognition (sort + two-pointer) and the dup-skip detail — the SINGLE thing that fails most candidates.",
-
+      "introduction_context": "Almost always comes after Two Sum or as a standalone medium. Tests pattern recognition (sort + two-pointer) and the dup-skip detail \u2014 the SINGLE thing that fails most candidates.",
       "really_testing": [
         "Can you recognize the 'sorted array + two pointers' pattern as a generalization of Two Sum?",
         "Can you handle duplicate-skipping correctly on first attempt?",
         "Do you propose the sort+two-pointer approach over hash-set dedup (the inferior alternative)?",
         "Are you systematic about edge cases (empty, all zeros, all negatives)?"
       ],
-
       "rubric": [
-        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asked 'can I sort?' unprompted. Stated brute force O(n³) without coding it. Implemented sort + two-pointer with dup-skip on BOTH outer i and inner left/right correctly on first try. Traced through the duplicates example. Total time: ~15 min." },
-        { "tier": "Hire", "color": "#84cc16", "criteria": "Reached the optimal O(n²) sort + two-pointer. May have missed the inner dup-skip initially but caught it after a nudge or while testing. Clean code." },
-        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Reached the optimal algorithm but used a hash set to dedupe (slower, signals weak pattern recognition). Or got the algorithm right but produced duplicate triplets in output and didn't notice until interviewer pointed it out." },
-        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Stuck at O(n³) brute force. Couldn't see how to leverage sorting. Got confused by duplicate handling. Produced wrong output and couldn't debug." }
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Asked 'can I sort?' unprompted. Stated brute force O(n\u00b3) without coding it. Implemented sort + two-pointer with dup-skip on BOTH outer i and inner left/right correctly on first try. Traced through the duplicates example. Total time: ~15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reached the optimal O(n\u00b2) sort + two-pointer. May have missed the inner dup-skip initially but caught it after a nudge or while testing. Clean code."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Reached the optimal algorithm but used a hash set to dedupe (slower, signals weak pattern recognition). Or got the algorithm right but produced duplicate triplets in output and didn't notice until interviewer pointed it out."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck at O(n\u00b3) brute force. Couldn't see how to leverage sorting. Got confused by duplicate handling. Produced wrong output and couldn't debug."
+        }
       ],
-
       "playbook": [
         "Restate aloud, emphasizing 'unique triplets' and 'distinct indices'.",
-        "Ask: 'Can I sort the input?' — this is THE question. If interviewer says no, you're heading toward hash-set dedup (slower). Most will say yes.",
-        "Propose brute force out loud: 'Three nested loops, O(n³). Won't pass for n=3000.' Don't code it.",
-        "State the optimization: 'Sort the array O(n log n), then for each i, use two pointers left=i+1, right=n-1 to find pairs summing to -nums[i]. Total O(n²).' ",
-        "Walk through the example [-1,0,1,2,-1,-4] after sorting → [-4,-1,-1,0,1,2]. Show two-pointer movement and dup-skip on i.",
+        "Ask: 'Can I sort the input?' \u2014 this is THE question. If interviewer says no, you're heading toward hash-set dedup (slower). Most will say yes.",
+        "Propose brute force out loud: 'Three nested loops, O(n\u00b3). Won't pass for n=3000.' Don't code it.",
+        "State the optimization: 'Sort the array O(n log n), then for each i, use two pointers left=i+1, right=n-1 to find pairs summing to -nums[i]. Total O(n\u00b2).' ",
+        "Walk through the example [-1,0,1,2,-1,-4] after sorting \u2192 [-4,-1,-1,0,1,2]. Show two-pointer movement and dup-skip on i.",
         "Code: outer loop with `if i > 0 and nums[i] == nums[i-1]: continue` (skip dup i). Inner two-pointer with dup-skip on left AND right after each match.",
         "Test on the duplicates example. Confirm output has each triplet exactly once.",
         "Mention edge cases: all zeros [[0,0,0]] (test that the code handles 0+0+0), all negatives (no answer, returns [])."
       ],
       "playbook_meta": "Total time: 15-20 min for a strong run. Faster if you nail dup-skip on first try. The follow-up is often '4Sum' or 'find all triplets with sum closest to target'.",
-
       "dont_do": [
-        "Don't use a hash set to dedupe — signals weak pattern recognition. Sort + skip is the textbook answer.",
+        "Don't use a hash set to dedupe \u2014 signals weak pattern recognition. Sort + skip is the textbook answer.",
         "Don't forget to skip duplicates on the OUTER i. THE most common 3Sum bug.",
         "Don't forget to skip duplicates on inner left/right AFTER finding a triplet. Subtle but critical.",
-        "Don't code brute force first — interviewers know it's O(n³). Just state and move on.",
-        "Don't sort the input without asking — some interviews care about input immutability.",
-        "Don't use return early on first found triplet — find ALL of them."
+        "Don't code brute force first \u2014 interviewers know it's O(n\u00b3). Just state and move on.",
+        "Don't sort the input without asking \u2014 some interviews care about input immutability.",
+        "Don't use return early on first found triplet \u2014 find ALL of them."
       ]
     },
-
     "has_walkthrough": true,
     "approaches": [
       {
         "name": "Brute Force",
-        "time": "O(n³)",
+        "time": "O(n\u00b3)",
         "space": "O(1) extra (not counting output)",
         "code": "def three_sum(nums):\n    n = len(nums)\n    result = set()\n    for i in range(n):\n        for j in range(i+1, n):\n            for k in range(j+1, n):\n                if nums[i] + nums[j] + nums[k] == 0:\n                    triplet = tuple(sorted([nums[i], nums[j], nums[k]]))\n                    result.add(triplet)\n    return [list(t) for t in result]",
-        "explanation": "Three nested loops, check every possible triplet. Use a set of sorted tuples to dedupe. Correct but O(n³) — won't pass n=3000 in interview time limits."
+        "explanation": "Three nested loops, check every possible triplet. Use a set of sorted tuples to dedupe. Correct but O(n\u00b3) \u2014 won't pass n=3000 in interview time limits."
       },
       {
         "name": "Sort + Two Pointers",
-        "time": "O(n²)",
+        "time": "O(n\u00b2)",
         "space": "O(1) extra (or O(n) if sort is not in-place)",
         "code": "def three_sum(nums):\n    nums.sort()\n    n = len(nums)\n    result = []\n    for i in range(n - 2):\n        # Skip duplicate i\n        if i > 0 and nums[i] == nums[i-1]:\n            continue\n        left, right = i + 1, n - 1\n        while left < right:\n            s = nums[i] + nums[left] + nums[right]\n            if s == 0:\n                result.append([nums[i], nums[left], nums[right]])\n                # Skip duplicates on left\n                while left < right and nums[left] == nums[left+1]:\n                    left += 1\n                # Skip duplicates on right\n                while left < right and nums[right] == nums[right-1]:\n                    right -= 1\n                left += 1\n                right -= 1\n            elif s < 0:\n                left += 1\n            else:\n                right -= 1\n    return result",
         "explanation": "Sort the array first. For each index i, use two pointers (left=i+1, right=n-1) and squeeze them toward each other based on whether their sum with nums[i] is too small or too large. The duplicate-skip logic (on outer i AND on inner left/right after finding a triplet) is what prevents duplicate triplets in the output. The sorted order makes this cleaner than hash-set dedup."
       }
     ],
-
-    "related_problem_ids": ["two-sum", "container-with-most-water", "trapping-rain-water"]
+    "related_problem_ids": [
+      "two-sum",
+      "container-with-most-water",
+      "trapping-rain-water"
+    ]
   },
   {
     "id": "container-with-most-water",
     "title": "Container With Most Water",
     "leetcode_url": "https://leetcode.com/problems/container-with-most-water/",
+    "leetcode_id": 11,
     "difficulty": "medium",
-    "patterns": ["two-pointers"],
-    "topics": ["arrays", "two-pointers"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "arrays",
+      "two-pointers"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75",
+      "neetcode-150"
+    ],
+    "summary": "You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]). Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
+    "constraints": [
+      "n == height.length",
+      "2 <= n <= 10^5",
+      "0 <= height[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "height = [1,8,6,2,5,4,8,3,7]",
+        "output": "49",
+        "explanation": "Lines at indices 1 (height 8) and 8 (height 7) \u2014 width = 7, min height = 7, area = 49."
+      },
+      {
+        "input": "height = [1,1]",
+        "output": "1",
+        "explanation": "Width = 1, height = 1, area = 1."
+      }
+    ],
+    "function_name": "max_area",
+    "function_signature": "def max_area(height):",
+    "starter_code": "def max_area(height):\n    # Your code here\n    pass",
+    "test_cases": [
+      {
+        "label": "classic case",
+        "args": [
+          [
+            1,
+            8,
+            6,
+            2,
+            5,
+            4,
+            8,
+            3,
+            7
+          ]
+        ],
+        "expected": "49"
+      },
+      {
+        "label": "two equal lines",
+        "args": [
+          [
+            1,
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "matching ends",
+        "args": [
+          [
+            4,
+            3,
+            2,
+            1,
+            4
+          ]
+        ],
+        "expected": "16"
+      },
+      {
+        "label": "peak in middle",
+        "args": [
+          [
+            1,
+            2,
+            1
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Visualize the heights as vertical lines on a chart. Water level between two lines is limited by the SHORTER one. Area = min(h[i], h[j]) * (j - i). Brute force tries every pair \u2014 O(n\u00b2). Two-pointer approach starts at both ends and squeezes inward.",
+      "clarifying_questions": [
+        {
+          "question": "What's the formula for water held between two lines?",
+          "why": "min(heights) \u00d7 width. Confirm before coding \u2014 interviewers want to hear you state it. The min is because the taller line spills over the shorter one."
+        },
+        {
+          "question": "Can heights be zero?",
+          "why": "Yes per constraints (0 <= h <= 10^4). A zero-height line holds no water on its own but doesn't prevent it being the 'taller' partner \u2014 though min(0, anything) = 0, so it never contributes."
+        },
+        {
+          "question": "How big can n be?",
+          "why": "10^5. O(n\u00b2) too slow. Must reach O(n)."
+        },
+        {
+          "question": "Are heights bounded?",
+          "why": "Up to 10^4. Width up to 10^5. Max area = 10^9, fits in int32."
+        },
+        {
+          "question": "Do indices count from 0 or 1 for the width calculation?",
+          "why": "Doesn't matter for the answer (width is right-left), but worth confirming if the problem statement is ambiguous."
+        }
+      ],
+      "think_out_loud": "Start with brute force: try every pair, compute area, track max. O(n\u00b2). State this but DON'T code it. Now derive two-pointer: place L at 0, R at n-1. Compute the area. Then ask: 'Which pointer should I move inward?' Answer: always move the SMALLER height. Why? The shorter line is the bottleneck. Moving the taller one inward can only decrease the width without raising the bottleneck \u2014 can NEVER improve. Moving the shorter one inward might find a taller line that raises the bottleneck.",
+      "edge_cases": [
+        {
+          "category": "Two equal lines",
+          "details": "[3,3] \u2192 area = 3 (width 1, height 3). Confirm the simplest case."
+        },
+        {
+          "category": "Matching at ends",
+          "details": "[4,3,2,1,4] \u2192 16 (width 4, min height 4). Two-pointer immediately gives this because L=0, R=4 are both 4."
+        },
+        {
+          "category": "Mountain",
+          "details": "[1,2,3,4,5] \u2192 4 (width 4, min(1,5)=1, area 4). The shorter end is the bottleneck."
+        },
+        {
+          "category": "All zeros",
+          "details": "[0,0,0,0] \u2192 0. Confirm the min logic returns 0."
+        },
+        {
+          "category": "Single peak",
+          "details": "[1,8,1,1,8,1] \u2192 24 (the two 8s, width 3). Two-pointer finds this."
+        }
+      ],
+      "common_mistakes": [
+        "Moving BOTH pointers each step \u2014 incorrect; can skip optimal pairs.",
+        "Moving the LARGER pointer instead of the smaller \u2014 provably can never improve.",
+        "Greedily picking the two highest lines \u2014 misses cases where width matters more.",
+        "Off-by-one on width: it's right - left, NOT right - left + 1 (we're measuring distance, not count).",
+        "Stopping early when areas seem to decrease \u2014 the max may still be ahead."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Two-pointers classic. Given heights as vertical lines, find two that hold the most water.",
+      "introduction_context": "Often paired with 3Sum as a two-pointer essentials check. Tests both pattern recognition AND the greedy proof (why move the smaller pointer).",
+      "really_testing": [
+        "Recognition of the two-pointer-from-ends pattern.",
+        "Can you ARTICULATE why moving the smaller pointer is correct?",
+        "Comfort with the area formula (width \u00d7 min, not max).",
+        "Edge case handling (zeros, equal heights, mountain shapes)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States brute force without coding. Proposes two-pointer immediately. Articulates the greedy proof: 'moving the taller inward can only decrease width without raising the bottleneck, so we should always move the shorter.' Codes cleanly. ~10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches two-pointer with some derivation. Code correct. May not fully justify the greedy choice without prompting."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck at O(n\u00b2). Or implements two-pointer but moves the wrong pointer. Or computes area with width = right - left + 1."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't reach O(n). Confused about which pointer to move. Wrong area formula."
+        }
+      ],
+      "playbook": [
+        "Restate: 'Find two lines that hold the most water'.",
+        "State the area formula aloud: width \u00d7 min(heights). Confirm this is correct.",
+        "Brute force out loud: every pair, O(n\u00b2). Don't code it.",
+        "Propose two pointers from both ends.",
+        "BEFORE coding, articulate the greedy proof: 'Moving the smaller pointer is correct because the smaller height is the bottleneck. The taller line is wasted height. Moving the taller inward can only shrink the width while keeping the same bottleneck, so it can never improve. Moving the shorter inward might find a taller new partner that raises the bottleneck.'",
+        "Code: L=0, R=n-1, best=0. While L<R: area = min * width; update best; move whichever pointer has the smaller height.",
+        "Walk through [1,8,6,2,5,4,8,3,7]: L=0(1), R=8(7), area=8. Move L (1<7). L=1(8), area = min(8,7)*7=49 \u2014 found it. Continue to verify no better pair exists.",
+        "Test on [4,3,2,1,4] \u2192 confirm 16."
+      ],
+      "playbook_meta": "Total time: 10-15 min. The greedy proof articulation is the senior signal. Follow-ups: trapping rain water (harder variant), max subarray (DP).",
+      "dont_do": [
+        "Don't greedily pick the two highest lines \u2014 width matters.",
+        "Don't move both pointers each step.",
+        "Don't move the LARGER pointer \u2014 it provably can't improve.",
+        "Don't forget to articulate WHY moving the smaller pointer is correct. Without the proof, you sound like you memorized it.",
+        "Don't use width = right - left + 1 \u2014 width is the DISTANCE between lines, not the inclusive index count."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def max_area(height):\n    best = 0\n    n = len(height)\n    for i in range(n):\n        for j in range(i+1, n):\n            area = min(height[i], height[j]) * (j - i)\n            best = max(best, area)\n    return best",
+        "explanation": "Try every pair of lines. For each, compute area = min(heights) \u00d7 width. Track the best. Quadratic \u2014 won't pass n=10^5."
+      },
+      {
+        "name": "Two Pointers",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def max_area(height):\n    left, right = 0, len(height) - 1\n    best = 0\n    while left < right:\n        area = min(height[left], height[right]) * (right - left)\n        best = max(best, area)\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return best",
+        "explanation": "Start with pointers at both ends. The area is bottlenecked by the shorter line. Greedy insight: moving the taller pointer inward can ONLY decrease width without raising the bottleneck \u2014 can never improve. Moving the shorter pointer inward MIGHT find a taller new partner that raises the bottleneck. So always move the smaller. Each step eliminates one line from consideration (the shorter one paired with the longer one is now off the table). O(n) total."
+      }
+    ],
+    "related_problem_ids": [
+      "3sum",
+      "trapping-rain-water",
+      "two-sum",
+      "valid-palindrome"
+    ]
   },
   {
     "id": "product-of-array-except-self",
     "title": "Product of Array Except Self",
     "leetcode_url": "https://leetcode.com/problems/product-of-array-except-self/",
     "difficulty": "medium",
-    "patterns": ["prefix-sum"],
-    "topics": ["arrays", "prefix-sum"],
+    "patterns": [
+      "prefix-sum"
+    ],
+    "topics": [
+      "arrays",
+      "prefix-sum"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "rotate-array",
     "title": "Rotate Array",
     "leetcode_url": "https://leetcode.com/problems/rotate-array/",
     "difficulty": "medium",
-    "patterns": ["two-pointers"],
-    "topics": ["arrays"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "arrays"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "longest-consecutive-sequence",
     "title": "Longest Consecutive Sequence",
     "leetcode_url": "https://leetcode.com/problems/longest-consecutive-sequence/",
     "difficulty": "medium",
-    "patterns": ["hash-map"],
-    "topics": ["arrays", "hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "arrays",
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "trapping-rain-water",
     "title": "Trapping Rain Water",
     "leetcode_url": "https://leetcode.com/problems/trapping-rain-water/",
     "difficulty": "hard",
-    "patterns": ["two-pointers"],
-    "topics": ["arrays", "two-pointers"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "arrays",
+      "two-pointers"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "first-missing-positive",
     "title": "First Missing Positive",
     "leetcode_url": "https://leetcode.com/problems/first-missing-positive/",
     "difficulty": "hard",
-    "patterns": ["hash-map"],
-    "topics": ["arrays"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "arrays"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "subarray-sum-equals-k",
     "title": "Subarray Sum Equals K",
     "leetcode_url": "https://leetcode.com/problems/subarray-sum-equals-k/",
     "difficulty": "medium",
-    "patterns": ["prefix-sum", "hash-map"],
-    "topics": ["arrays", "prefix-sum", "hash-table"],
+    "patterns": [
+      "prefix-sum",
+      "hash-map"
+    ],
+    "topics": [
+      "arrays",
+      "prefix-sum",
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["faang-common"],
+    "frequency_tags": [
+      "faang-common"
+    ],
     "has_walkthrough": true,
     "approaches": [
       {
         "name": "Brute Force",
-        "time": "O(n²)",
+        "time": "O(n\u00b2)",
         "space": "O(1)",
         "code": "def subarray_sum(nums, k):\n    count = 0\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            if s == k:\n                count += 1\n    return count",
         "explanation": "Try every starting index, sum forward, check each running total. Correct but quadratic."
@@ -716,85 +1503,166 @@
     "leetcode_url": "https://leetcode.com/problems/valid-anagram/",
     "leetcode_id": 242,
     "difficulty": "easy",
-
-    "patterns": ["hash-map"],
-    "topics": ["hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "neetcode-150"],
-
+    "frequency_tags": [
+      "blind-75",
+      "neetcode-150"
+    ],
     "summary": "Given two strings s and t, return true if t is an anagram of s, and false otherwise. An anagram is a word or phrase formed by rearranging the letters of another, typically using all the original letters exactly once.",
-
     "constraints": [
       "1 <= s.length, t.length <= 5 * 10^4",
       "s and t consist of lowercase English letters."
     ],
-
     "examples": [
-      { "input": "s = \"anagram\", t = \"nagaram\"", "output": "true", "explanation": "Same letters rearranged." },
-      { "input": "s = \"rat\", t = \"car\"", "output": "false", "explanation": "Different letters." }
+      {
+        "input": "s = \"anagram\", t = \"nagaram\"",
+        "output": "true",
+        "explanation": "Same letters rearranged."
+      },
+      {
+        "input": "s = \"rat\", t = \"car\"",
+        "output": "false",
+        "explanation": "Different letters."
+      }
     ],
-
     "function_name": "is_anagram",
     "function_signature": "def is_anagram(s, t):",
     "starter_code": "def is_anagram(s, t):\n    # Your code here\n    pass",
-
     "test_cases": [
-      { "label": "classic anagram", "args": ["anagram", "nagaram"], "expected": "True" },
-      { "label": "different letters", "args": ["rat", "car"], "expected": "False" },
-      { "label": "single same char", "args": ["a", "a"], "expected": "True" },
-      { "label": "two char swap", "args": ["ab", "ba"], "expected": "True" },
-      { "label": "different lengths", "args": ["abc", "abcd"], "expected": "False" }
+      {
+        "label": "classic anagram",
+        "args": [
+          "anagram",
+          "nagaram"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "different letters",
+        "args": [
+          "rat",
+          "car"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single same char",
+        "args": [
+          "a",
+          "a"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "two char swap",
+        "args": [
+          "ab",
+          "ba"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "different lengths",
+        "args": [
+          "abc",
+          "abcd"
+        ],
+        "expected": "False"
+      }
     ],
-
     "interview_tips": {
-      "talk_through_it": "Two strings, check if they have the same characters in the same frequencies. Easy problem with a clear optimization path: sort → hash map → array[26]. The interview signal is whether you walk that path or stop at the first thing that works.",
-
+      "talk_through_it": "Two strings, check if they have the same characters in the same frequencies. Easy problem with a clear optimization path: sort \u2192 hash map \u2192 array[26]. The interview signal is whether you walk that path or stop at the first thing that works.",
       "clarifying_questions": [
-        { "question": "Are both strings only lowercase English letters?", "why": "Per constraints, yes. This is THE optimization hint — 26 letters means you can use a fixed-size int[26] array for O(1) space instead of a hash map." },
-        { "question": "Should I handle Unicode or special characters?", "why": "Not for this problem. But interviewers often ask this as a follow-up: 'How would you extend to support emoji/Chinese?' — answer is 'switch to hash map'." },
-        { "question": "Is case-sensitivity required? Should I ignore whitespace?", "why": "Spec is clear (lowercase only), but real-world string problems often have these wrinkles. Showing you'd ask in production signals seniority." },
-        { "question": "If the lengths differ, can I return false immediately?", "why": "Yes — different lengths can never be anagrams. Quick early exit avoids needless work." },
-        { "question": "Could the strings be empty?", "why": "Per constraints n >= 1, so no. But defensive: two empty strings would be trivial true." }
+        {
+          "question": "Are both strings only lowercase English letters?",
+          "why": "Per constraints, yes. This is THE optimization hint \u2014 26 letters means you can use a fixed-size int[26] array for O(1) space instead of a hash map."
+        },
+        {
+          "question": "Should I handle Unicode or special characters?",
+          "why": "Not for this problem. But interviewers often ask this as a follow-up: 'How would you extend to support emoji/Chinese?' \u2014 answer is 'switch to hash map'."
+        },
+        {
+          "question": "Is case-sensitivity required? Should I ignore whitespace?",
+          "why": "Spec is clear (lowercase only), but real-world string problems often have these wrinkles. Showing you'd ask in production signals seniority."
+        },
+        {
+          "question": "If the lengths differ, can I return false immediately?",
+          "why": "Yes \u2014 different lengths can never be anagrams. Quick early exit avoids needless work."
+        },
+        {
+          "question": "Could the strings be empty?",
+          "why": "Per constraints n >= 1, so no. But defensive: two empty strings would be trivial true."
+        }
       ],
-
-      "think_out_loud": "State three approaches, ordered by quality: (1) sort both, compare — O(n log n). (2) hash map of frequencies — O(n) time and space. (3) Since input is lowercase letters only, use int[26] array — O(n) time, O(1) space. Then code the best one.",
-
+      "think_out_loud": "State three approaches, ordered by quality: (1) sort both, compare \u2014 O(n log n). (2) hash map of frequencies \u2014 O(n) time and space. (3) Since input is lowercase letters only, use int[26] array \u2014 O(n) time, O(1) space. Then code the best one.",
       "edge_cases": [
-        { "category": "Different lengths", "details": "\"abc\" vs \"abcd\" → false. Always check lengths first as an early exit." },
-        { "category": "Empty strings", "details": "Constraints forbid this. But \"\" and \"\" would technically be anagrams (true)." },
-        { "category": "All same character", "details": "\"aaaa\" and \"aaaa\" → true. Confirms your frequency logic handles repeated chars correctly." },
-        { "category": "Almost-anagram", "details": "\"aabb\" and \"abab\" → true. \"aabb\" and \"abbc\" → false. Make sure your count goes both ways (+1 for s, -1 for t)." },
-        { "category": "Unicode (out of scope but worth knowing)", "details": "If the problem were Unicode, array[26] wouldn't work. Switch to hash map." }
+        {
+          "category": "Different lengths",
+          "details": "\"abc\" vs \"abcd\" \u2192 false. Always check lengths first as an early exit."
+        },
+        {
+          "category": "Empty strings",
+          "details": "Constraints forbid this. But \"\" and \"\" would technically be anagrams (true)."
+        },
+        {
+          "category": "All same character",
+          "details": "\"aaaa\" and \"aaaa\" \u2192 true. Confirms your frequency logic handles repeated chars correctly."
+        },
+        {
+          "category": "Almost-anagram",
+          "details": "\"aabb\" and \"abab\" \u2192 true. \"aabb\" and \"abbc\" \u2192 false. Make sure your count goes both ways (+1 for s, -1 for t)."
+        },
+        {
+          "category": "Unicode (out of scope but worth knowing)",
+          "details": "If the problem were Unicode, array[26] wouldn't work. Switch to hash map."
+        }
       ],
-
       "common_mistakes": [
-        "Using `set(s) == set(t)` — wrong! \"aab\" and \"abb\" both have set {a,b} but aren't anagrams.",
-        "Forgetting the length-check early-exit — wastes work on obviously-different inputs.",
-        "Implementing with O(n²) using .index() lookups — quadratic and unnecessary.",
+        "Using `set(s) == set(t)` \u2014 wrong! \"aab\" and \"abb\" both have set {a,b} but aren't anagrams.",
+        "Forgetting the length-check early-exit \u2014 wastes work on obviously-different inputs.",
+        "Implementing with O(n\u00b2) using .index() lookups \u2014 quadratic and unnecessary.",
         "Using a hash map when an int[26] array would suffice (missing the optimization point).",
-        "Off-by-one in counter logic — incrementing both instead of decrementing one."
+        "Off-by-one in counter logic \u2014 incrementing both instead of decrementing one."
       ]
     },
-
     "faang": {
       "tier": "A",
       "introduction": "Easy classic. Given two strings, return true if one is an anagram of the other.",
       "introduction_context": "Easy warm-up but the interview signal is in the optimization. Strong candidates state the array[26] O(1)-space trick because the input is bounded to lowercase letters. Often paired with Group Anagrams as a follow-up.",
-
       "really_testing": [
         "Recognition that 'anagram' = 'same letter frequencies'.",
-        "Layered optimization awareness: sort (O(n log n)) → hash map (O(n)) → array[26] (O(1) space).",
+        "Layered optimization awareness: sort (O(n log n)) \u2192 hash map (O(n)) \u2192 array[26] (O(1) space).",
         "Reading constraints carefully to spot the array[26] optimization opportunity.",
         "Clean implementation with proper increment/decrement logic."
       ],
-
       "rubric": [
-        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asks about character set first. Lays out all three approaches (sort / hash map / array[26]). Implements array[26] for O(1) space. Tests carefully. Mentions Unicode follow-up. ~8 min." },
-        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches hash map. Recognizes the array[26] optimization when prompted. Implements correctly, tests well." },
-        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Goes straight to sorting without considering O(n). Or uses `set` (wrong), needs prompting to use frequency counting." },
-        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't reach a correct O(n log n) solution. Or implemented with O(n²) using .index()." }
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Asks about character set first. Lays out all three approaches (sort / hash map / array[26]). Implements array[26] for O(1) space. Tests carefully. Mentions Unicode follow-up. ~8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches hash map. Recognizes the array[26] optimization when prompted. Implements correctly, tests well."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Goes straight to sorting without considering O(n). Or uses `set` (wrong), needs prompting to use frequency counting."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Couldn't reach a correct O(n log n) solution. Or implemented with O(n\u00b2) using .index()."
+        }
       ],
-
       "playbook": [
         "Restate the problem: 'Same letters, same frequencies'.",
         "Ask about character set (this is THE optimization hint).",
@@ -807,16 +1675,14 @@
         "Mention Unicode/emoji extension if time permits."
       ],
       "playbook_meta": "Total time: 7-10 min. Faster if you skip stating sort. The follow-up is usually Group Anagrams (medium) or 'first non-repeating character'.",
-
       "dont_do": [
-        "Don't use `set(s) == set(t)` — loses frequency information.",
-        "Don't sort when you can avoid it — slower than counting.",
+        "Don't use `set(s) == set(t)` \u2014 loses frequency information.",
+        "Don't sort when you can avoid it \u2014 slower than counting.",
         "Don't forget the length-check early exit.",
-        "Don't use a hash map when array[26] works — signals you missed the constraint optimization.",
-        "Don't off-by-one with `c - 'a'` indexing — that's the classic C/Java bug."
+        "Don't use a hash map when array[26] works \u2014 signals you missed the constraint optimization.",
+        "Don't off-by-one with `c - 'a'` indexing \u2014 that's the classic C/Java bug."
       ]
     },
-
     "has_walkthrough": true,
     "approaches": [
       {
@@ -836,81 +1702,330 @@
       {
         "name": "Array[26] (O(1) space)",
         "time": "O(n)",
-        "space": "O(1) — fixed 26-element array",
+        "space": "O(1) \u2014 fixed 26-element array",
         "code": "def is_anagram(s, t):\n    if len(s) != len(t):\n        return False\n    counts = [0] * 26\n    for c in s:\n        counts[ord(c) - ord('a')] += 1\n    for c in t:\n        counts[ord(c) - ord('a')] -= 1\n    return all(c == 0 for c in counts)",
-        "explanation": "Since the alphabet is bounded to 26 lowercase letters, we can use a fixed-size int[26] array. Increment for each char in s, decrement for each char in t. If they're anagrams, the array ends as all zeros. O(n) time AND O(1) space — the senior answer for a constrained alphabet."
+        "explanation": "Since the alphabet is bounded to 26 lowercase letters, we can use a fixed-size int[26] array. Increment for each char in s, decrement for each char in t. If they're anagrams, the array ends as all zeros. O(n) time AND O(1) space \u2014 the senior answer for a constrained alphabet."
       }
     ],
-
-    "related_problem_ids": ["valid-palindrome", "group-anagrams", "contains-duplicate"]
+    "related_problem_ids": [
+      "valid-palindrome",
+      "group-anagrams",
+      "contains-duplicate"
+    ]
   },
   {
     "id": "group-anagrams",
     "title": "Group Anagrams",
     "leetcode_url": "https://leetcode.com/problems/group-anagrams/",
     "difficulty": "medium",
-    "patterns": ["hash-map"],
-    "topics": ["hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "top-k-frequent-elements",
     "title": "Top K Frequent Elements",
     "leetcode_url": "https://leetcode.com/problems/top-k-frequent-elements/",
     "difficulty": "medium",
-    "patterns": ["hash-map"],
-    "topics": ["hash-table"],
+    "patterns": [
+      "hash-map"
+    ],
+    "topics": [
+      "hash-table"
+    ],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "valid-palindrome",
     "title": "Valid Palindrome",
     "leetcode_url": "https://leetcode.com/problems/valid-palindrome/",
+    "leetcode_id": 125,
     "difficulty": "easy",
-    "patterns": ["two-pointers"],
-    "topics": ["two-pointers"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "two-pointers"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75",
+      "neetcode-150"
+    ],
+    "summary": "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Given a string s, return true if it is a palindrome, or false otherwise.",
+    "constraints": [
+      "1 <= s.length <= 2 * 10^5",
+      "s consists only of printable ASCII characters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"A man, a plan, a canal: Panama\"",
+        "output": "true",
+        "explanation": "After cleaning: 'amanaplanacanalpanama' \u2014 reads the same forward and backward."
+      },
+      {
+        "input": "s = \"race a car\"",
+        "output": "false",
+        "explanation": "After cleaning: 'raceacar' \u2014 'r' and 'r' match, 'a' and 'a' match, but 'c' and 'a' don't."
+      },
+      {
+        "input": "s = \" \"",
+        "output": "true",
+        "explanation": "After cleaning: empty string. An empty string is considered a palindrome."
+      }
+    ],
+    "function_name": "is_palindrome",
+    "function_signature": "def is_palindrome(s):",
+    "starter_code": "def is_palindrome(s):\n    # Your code here\n    pass",
+    "test_cases": [
+      {
+        "label": "classic palindrome with punctuation",
+        "args": [
+          "A man, a plan, a canal: Panama"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "not a palindrome",
+        "args": [
+          "race a car"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty after cleaning",
+        "args": [
+          " "
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "two-char palindrome",
+        "args": [
+          "aa"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "two-char non-palindrome",
+        "args": [
+          "ab"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "digit vs letter (case-trap)",
+        "args": [
+          "0P"
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two-pointer from both ends. Skip non-alphanumeric on each side. Lowercase-compare. The trap: '0P' looks like 'op' if you're sloppy with case-folding \u2014 but '0' is a digit, 'p' is a letter. They're different.",
+      "clarifying_questions": [
+        {
+          "question": "Are letters case-sensitive?",
+          "why": "Spec says ignore case. Lowercase 'A' and lowercase 'a' compare equal. Be explicit about which side you fold."
+        },
+        {
+          "question": "Are digits considered alphanumeric?",
+          "why": "Yes. 'A1A' \u2192 palindrome. '01' \u2192 not (different chars). Confirm before coding."
+        },
+        {
+          "question": "What's a 'non-alphanumeric' character?",
+          "why": "Punctuation, spaces, symbols. They should be SKIPPED, not treated as fail-matches. ' ' between letters doesn't break the palindrome."
+        },
+        {
+          "question": "Empty string after cleaning?",
+          "why": "Per spec, an empty string IS a palindrome (vacuous true). Important edge case."
+        },
+        {
+          "question": "ASCII only or Unicode?",
+          "why": "Spec says printable ASCII. Unicode would complicate (multi-byte characters). Stay simple."
+        }
+      ],
+      "think_out_loud": "Two approaches: (1) filter the string to keep only alphanumerics and lowercase, then compare to its reverse \u2014 O(n) space. (2) Two pointers in-place from both ends, skipping non-alphanumerics on both sides \u2014 O(1) space. The in-place version is the senior answer.",
+      "edge_cases": [
+        {
+          "category": "Empty after cleaning",
+          "details": "' ' (just space) \u2192 true. Same for '!!!' (only punctuation). Pointers immediately cross."
+        },
+        {
+          "category": "Single character",
+          "details": "'a' \u2192 true. Single char is always a palindrome."
+        },
+        {
+          "category": "Digit vs letter at same position",
+          "details": "'0P' \u2192 after cleaning '0p'. '0' != 'p' \u2192 false. The case-fold trap: don't accidentally compare uppercase-letter to digit."
+        },
+        {
+          "category": "Numbers only",
+          "details": "'12321' \u2192 true. Confirms digits work as palindrome chars."
+        },
+        {
+          "category": "Pure punctuation",
+          "details": "'!!!' \u2192 cleans to empty \u2192 true."
+        }
+      ],
+      "common_mistakes": [
+        "Only skipping non-alphanumeric on ONE pointer (the other tries to compare punctuation).",
+        "Forgetting case-folding before comparison \u2014 'Aa' fails when it should pass.",
+        "Off-by-one when pointers cross \u2014 comparing too far.",
+        "Using regex to clean (works but slow and uses extra memory).",
+        "Returning False on first non-letter \u2014 wrong. Just skip non-alphanumerics; don't fail on them."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic string two-pointer problem. Given a string, return true if it's a palindrome (ignoring case and non-alphanumeric chars).",
+      "introduction_context": "Easy difficulty but the senior signal is the in-place O(1) space approach. Sets up follow-ups like 'Valid Palindrome II' (allow one mismatch) or 'Longest Palindromic Substring'.",
+      "really_testing": [
+        "Two-pointer-from-ends pattern recognition.",
+        "Space optimization: filter-then-compare vs in-place pointers.",
+        "Edge case handling: empty cleaned string, case folding, the '0P' digit-letter trap.",
+        "Clean code with proper alphanumeric checks and case folding."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Proposes in-place two-pointer immediately. Skips non-alphanumeric on BOTH sides. Handles case correctly. Tests on '0P' and pure punctuation. ~6 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Implements filter-then-compare correctly. Reaches in-place with a small nudge. Tests well."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy two-pointer (only skips on one side, or off-by-one). Fails the '0P' trap. Forgets case-folding."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't reach a correct solution. Mishandles non-alphanumeric. Doesn't recognize two-pointer pattern."
+        }
+      ],
+      "playbook": [
+        "Restate: 'Palindrome \u2014 same forward and backward \u2014 ignoring case and non-alphanumeric.'",
+        "Ask: 'Are digits alphanumeric?' (yes) and 'Empty string after cleaning?' (yes, palindrome).",
+        "State two approaches: filter-then-compare (O(n) space) and two-pointer in-place (O(1) space).",
+        "Pick the in-place. Senior interviewers expect it.",
+        "Code: left=0, right=len-1. While left<right: skip non-alphanumerics on left (advance left); skip non-alphanumerics on right (retreat right); if s[left].lower() != s[right].lower(), return False; advance both.",
+        "Trace through 'A man, a plan, a canal: Panama' for one or two steps to demonstrate.",
+        "Test on '0P' \u2014 confirms case-folding doesn't accidentally match digit with letter.",
+        "Test on ' ' \u2014 confirms empty-after-cleaning works."
+      ],
+      "playbook_meta": "Total time: 6-8 min for a strong run. Common follow-up: Valid Palindrome II (allow 1 mismatch \u2014 DP-flavored).",
+      "dont_do": [
+        "Don't forget to skip non-alphanumeric on BOTH pointers \u2014 common bug.",
+        "Don't forget case-folding before comparison.",
+        "Don't return False on a non-letter character \u2014 that's just a skip, not a fail.",
+        "Don't use regex if you can avoid it \u2014 slower and not the senior signal.",
+        "Don't compare a non-alphanumeric to another character \u2014 skip it first."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Filter and Compare",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def is_palindrome(s):\n    cleaned = [c.lower() for c in s if c.isalnum()]\n    return cleaned == cleaned[::-1]",
+        "explanation": "Build a filtered, lowercased list of alphanumeric characters. Compare to its reverse. Simple to write and correct, but uses O(n) extra space."
+      },
+      {
+        "name": "Two Pointers In-Place",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def is_palindrome(s):\n    left, right = 0, len(s) - 1\n    while left < right:\n        while left < right and not s[left].isalnum():\n            left += 1\n        while left < right and not s[right].isalnum():\n            right -= 1\n        if s[left].lower() != s[right].lower():\n            return False\n        left += 1\n        right -= 1\n    return True",
+        "explanation": "Two pointers from the ends. Skip non-alphanumerics on each side independently. Lowercase-compare. If any pair mismatches, fail. If pointers cross without failure, success. O(1) extra space \u2014 the senior answer."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-anagram",
+      "container-with-most-water",
+      "two-sum"
+    ]
   },
   {
     "id": "remove-duplicates-from-sorted-array",
     "title": "Remove Duplicates from Sorted Array",
     "leetcode_url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
     "difficulty": "easy",
-    "patterns": ["two-pointers"],
-    "topics": ["two-pointers", "arrays"],
+    "patterns": [
+      "two-pointers"
+    ],
+    "topics": [
+      "two-pointers",
+      "arrays"
+    ],
     "neetcode_category": "Two Pointers",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "longest-substring-without-repeating-characters",
     "title": "Longest Substring Without Repeating Characters",
     "leetcode_url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
     "difficulty": "medium",
-    "patterns": ["sliding-window", "hash-map"],
-    "topics": ["sliding-window", "hash-table"],
+    "patterns": [
+      "sliding-window",
+      "hash-map"
+    ],
+    "topics": [
+      "sliding-window",
+      "hash-table"
+    ],
     "neetcode_category": "Sliding Window",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "minimum-window-substring",
     "title": "Minimum Window Substring",
     "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
     "difficulty": "hard",
-    "patterns": ["sliding-window"],
-    "topics": ["sliding-window"],
+    "patterns": [
+      "sliding-window"
+    ],
+    "topics": [
+      "sliding-window"
+    ],
     "neetcode_category": "Sliding Window",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "permutation-in-string",
     "title": "Permutation in String",
     "leetcode_url": "https://leetcode.com/problems/permutation-in-string/",
     "difficulty": "medium",
-    "patterns": ["sliding-window"],
-    "topics": ["sliding-window"],
+    "patterns": [
+      "sliding-window"
+    ],
+    "topics": [
+      "sliding-window"
+    ],
     "neetcode_category": "Sliding Window",
     "frequency_tags": []
   },
@@ -919,8 +2034,12 @@
     "title": "Maximum Average Subarray I",
     "leetcode_url": "https://leetcode.com/problems/maximum-average-subarray-i/",
     "difficulty": "easy",
-    "patterns": ["sliding-window"],
-    "topics": ["sliding-window"],
+    "patterns": [
+      "sliding-window"
+    ],
+    "topics": [
+      "sliding-window"
+    ],
     "neetcode_category": "Sliding Window",
     "frequency_tags": []
   },
@@ -929,69 +2048,112 @@
     "title": "Binary Search",
     "leetcode_url": "https://leetcode.com/problems/binary-search/",
     "difficulty": "easy",
-    "patterns": ["binary-search"],
-    "topics": ["binary-search"],
+    "patterns": [
+      "binary-search"
+    ],
+    "topics": [
+      "binary-search"
+    ],
     "neetcode_category": "Binary Search",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "search-in-rotated-sorted-array",
     "title": "Search in Rotated Sorted Array",
     "leetcode_url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
     "difficulty": "medium",
-    "patterns": ["binary-search"],
-    "topics": ["binary-search"],
+    "patterns": [
+      "binary-search"
+    ],
+    "topics": [
+      "binary-search"
+    ],
     "neetcode_category": "Binary Search",
-    "frequency_tags": ["blind-75", "faang-common"]
+    "frequency_tags": [
+      "blind-75",
+      "faang-common"
+    ]
   },
   {
     "id": "find-minimum-in-rotated-sorted-array",
     "title": "Find Minimum in Rotated Sorted Array",
     "leetcode_url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
     "difficulty": "medium",
-    "patterns": ["binary-search"],
-    "topics": ["binary-search"],
+    "patterns": [
+      "binary-search"
+    ],
+    "topics": [
+      "binary-search"
+    ],
     "neetcode_category": "Binary Search",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "koko-eating-bananas",
     "title": "Koko Eating Bananas",
     "leetcode_url": "https://leetcode.com/problems/koko-eating-bananas/",
     "difficulty": "medium",
-    "patterns": ["binary-search"],
-    "topics": ["binary-search"],
+    "patterns": [
+      "binary-search"
+    ],
+    "topics": [
+      "binary-search"
+    ],
     "neetcode_category": "Binary Search",
-    "frequency_tags": ["faang-common"]
-  }
-  ,
+    "frequency_tags": [
+      "faang-common"
+    ]
+  },
   {
     "id": "linked-list-cycle",
     "title": "Linked List Cycle",
     "leetcode_url": "https://leetcode.com/problems/linked-list-cycle/",
     "difficulty": "easy",
-    "patterns": ["fast-slow-pointers"],
-    "topics": ["fast-slow-pointers", "linked-lists"],
+    "patterns": [
+      "fast-slow-pointers"
+    ],
+    "topics": [
+      "fast-slow-pointers",
+      "linked-lists"
+    ],
     "neetcode_category": "Linked List",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "linked-list-cycle-ii",
     "title": "Linked List Cycle II",
     "leetcode_url": "https://leetcode.com/problems/linked-list-cycle-ii/",
     "difficulty": "medium",
-    "patterns": ["fast-slow-pointers"],
-    "topics": ["fast-slow-pointers", "linked-lists"],
+    "patterns": [
+      "fast-slow-pointers"
+    ],
+    "topics": [
+      "fast-slow-pointers",
+      "linked-lists"
+    ],
     "neetcode_category": "Linked List",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "middle-of-the-linked-list",
     "title": "Middle of the Linked List",
     "leetcode_url": "https://leetcode.com/problems/middle-of-the-linked-list/",
     "difficulty": "easy",
-    "patterns": ["fast-slow-pointers"],
-    "topics": ["fast-slow-pointers", "linked-lists"],
+    "patterns": [
+      "fast-slow-pointers"
+    ],
+    "topics": [
+      "fast-slow-pointers",
+      "linked-lists"
+    ],
     "neetcode_category": "Linked List",
     "frequency_tags": []
   },
@@ -1000,39 +2162,60 @@
     "title": "Happy Number",
     "leetcode_url": "https://leetcode.com/problems/happy-number/",
     "difficulty": "easy",
-    "patterns": ["fast-slow-pointers"],
-    "topics": ["fast-slow-pointers"],
+    "patterns": [
+      "fast-slow-pointers"
+    ],
+    "topics": [
+      "fast-slow-pointers"
+    ],
     "neetcode_category": "Linked List",
     "frequency_tags": []
-  }
-  ,
+  },
   {
     "id": "subsets",
     "title": "Subsets",
     "leetcode_url": "https://leetcode.com/problems/subsets/",
     "difficulty": "medium",
-    "patterns": ["backtracking"],
-    "topics": ["backtracking", "recursion"],
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking",
+      "recursion"
+    ],
     "neetcode_category": "Backtracking",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "permutations",
     "title": "Permutations",
     "leetcode_url": "https://leetcode.com/problems/permutations/",
     "difficulty": "medium",
-    "patterns": ["backtracking"],
-    "topics": ["backtracking", "recursion"],
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking",
+      "recursion"
+    ],
     "neetcode_category": "Backtracking",
-    "frequency_tags": ["blind-75"]
+    "frequency_tags": [
+      "blind-75"
+    ]
   },
   {
     "id": "combinations",
     "title": "Combinations",
     "leetcode_url": "https://leetcode.com/problems/combinations/",
     "difficulty": "medium",
-    "patterns": ["backtracking"],
-    "topics": ["backtracking"],
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking"
+    ],
     "neetcode_category": "Backtracking",
     "frequency_tags": []
   },
@@ -1041,19 +2224,31 @@
     "title": "N-Queens",
     "leetcode_url": "https://leetcode.com/problems/n-queens/",
     "difficulty": "hard",
-    "patterns": ["backtracking"],
-    "topics": ["backtracking"],
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking"
+    ],
     "neetcode_category": "Backtracking",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   },
   {
     "id": "word-search",
     "title": "Word Search",
     "leetcode_url": "https://leetcode.com/problems/word-search/",
     "difficulty": "medium",
-    "patterns": ["backtracking"],
-    "topics": ["backtracking"],
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking"
+    ],
     "neetcode_category": "Backtracking",
-    "frequency_tags": ["faang-common"]
+    "frequency_tags": [
+      "faang-common"
+    ]
   }
 ]
