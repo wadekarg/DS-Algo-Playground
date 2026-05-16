@@ -636,6 +636,64 @@
       color: var(--text-secondary);
       font-style: italic;
     }
+
+    /* ── Test Cases pane ───────────────────────────────────── */
+    .test-cases {
+      padding: 14px 16px;
+      overflow-y: auto;
+    }
+    .test-cases__title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: var(--text-primary);
+    }
+    .test-cases__count {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 0 0 14px 0;
+    }
+    .test-case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .test-case-card__header {
+      font-family: var(--font-sans, system-ui, sans-serif);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-case-card__label {
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .test-case-card__row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .test-case-card__row-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      min-width: 70px;
+      flex-shrink: 0;
+    }
+    .test-case-card__row-value {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
   </style>
 </head>
 <body data-topic="problems">
@@ -707,6 +765,7 @@
           <div class="editor-tabs" role="tablist">
             <button class="editor-tab active" data-pane="code" role="tab" aria-selected="true">🐍 Code Editor</button>
             <button class="editor-tab" data-pane="text" role="tab" aria-selected="false">📝 Text Editor</button>
+            <button class="editor-tab" data-pane="tests" role="tab" aria-selected="false">🧪 Test Cases</button>
           </div>
 
           <!-- Pane 1: code editor — populated by problem-renderer.js -->
@@ -721,6 +780,11 @@
             </p>
             <textarea class="text-editor" spellcheck="false" placeholder="Write your solution here from scratch — as if in a shared doc."></textarea>
             <div class="text-editor__hint">No syntax highlighting. No autocomplete. No run button. Just you, the prompt, and the cursor.</div>
+          </div>
+
+          <!-- Pane 3: test cases — populated by problem-renderer.js -->
+          <div class="editor-pane" data-pane="tests" hidden>
+            <div data-section="test-cases"></div>
           </div>
 
           <!-- Related problems + topic info — populated by problem-renderer.js -->

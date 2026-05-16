@@ -50,6 +50,7 @@ async function renderProblem(problemId) {
   renderFaangTips(prob);
   renderApproaches(prob);
   renderPracticeEditor(prob);
+  renderTestCases(prob);
   renderRelatedProblems(prob, all);
 }
 
@@ -482,4 +483,59 @@ function renderRelatedProblems(prob, allProblems) {
     : '';
 
   slot.innerHTML = items + topicRow;
+}
+
+/**
+ * Renders the test cases list pane.
+ * Parses function_signature to get parameter names, then formats each test case's
+ * args using those names. E.g. "def two_sum(nums, target):" → ["nums", "target"].
+ */
+function renderTestCases(prob) {
+  const slot = document.querySelector('[data-section="test-cases"]');
+  if (!slot) return;
+
+  const cases = prob.test_cases || [];
+  if (cases.length === 0) {
+    slot.innerHTML = '<p style="padding:14px 16px;font-size:13px;color:var(--text-secondary);">No test cases for this problem.</p>';
+    return;
+  }
+
+  // Extract parameter names from function_signature.
+  // E.g. "def two_sum(nums, target):" → ["nums", "target"]
+  const paramNames = (function () {
+    const sig = prob.function_signature || '';
+    const m = sig.match(/\(([^)]*)\)/);
+    if (!m) return [];
+    return m[1].split(',').map(s => s.trim()).filter(s => s.length > 0);
+  })();
+
+  const formatArgs = args => args.map((a, i) => {
+    const name = paramNames[i] || ('arg' + i);
+    return name + ' = ' + JSON.stringify(a);
+  }).join(', ');
+
+  const cards = cases.map((tc, i) => `
+    <div class="test-case-card">
+      <div class="test-case-card__header">
+        Case ${i + 1}
+        ${tc.label ? `<span class="test-case-card__label">&#8212; ${_esc(tc.label)}</span>` : ''}
+      </div>
+      <div class="test-case-card__row">
+        <span class="test-case-card__row-label">Input:</span>
+        <span class="test-case-card__row-value">${_esc(formatArgs(tc.args || []))}</span>
+      </div>
+      <div class="test-case-card__row">
+        <span class="test-case-card__row-label">Expected:</span>
+        <span class="test-case-card__row-value">${_esc(String(tc.expected))}</span>
+      </div>
+    </div>
+  `).join('');
+
+  slot.innerHTML = `
+    <div class="test-cases">
+      <h3 class="test-cases__title">Test cases for ${_esc(prob.title)}</h3>
+      <p class="test-cases__count">${cases.length} case${cases.length === 1 ? '' : 's'}</p>
+      ${cards}
+    </div>
+  `;
 }
