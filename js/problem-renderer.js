@@ -509,6 +509,30 @@ function renderApproaches(prob) {
       </div>
     </div>
   `;
+
+  // Syntax-highlight the freshly rendered code blocks using CodeMirror's
+  // runMode (reuses the editor library we already load — no extra deps).
+  _colorizeApproachCode(slot);
+}
+
+/** Tokenize <pre> blocks inside the approaches section with CodeMirror's
+ *  Python mode. Requires CodeMirror + the python mode to be loaded; if not,
+ *  loads them lazily and re-runs. The .cm-s-dracula class on each <pre>
+ *  picks up our existing dracula CSS theme. */
+function _colorizeApproachCode(root) {
+  if (!window.DSA || !DSA.cdnLoader) return;
+  DSA.cdnLoader.loadCodeMirror(function(err) {
+    if (err || !window.CodeMirror || typeof CodeMirror.runMode !== 'function') return;
+    const pres = root.querySelectorAll('.approach-body pre');
+    pres.forEach(pre => {
+      if (pre.dataset.colorized === '1') return;
+      const code = pre.textContent;
+      pre.textContent = '';
+      pre.classList.add('cm-s-dracula');
+      CodeMirror.runMode(code, 'python', pre);
+      pre.dataset.colorized = '1';
+    });
+  });
 }
 
 /**

@@ -484,8 +484,11 @@
       border-top: 1px solid var(--border-color);
     }
     .approach-body pre {
-      background: var(--bg-code);
-      color: var(--text-primary);
+      /* Falls back to a light grey for any block that hasn't been colorized
+         yet; once _colorizeApproachCode adds .cm-s-dracula, the inlined
+         dracula theme's bg/colors take over. */
+      background: #282a36;
+      color: #f8f8f2;
       border-radius: 6px;
       padding: 10px 12px;
       font-family: var(--font-mono);
