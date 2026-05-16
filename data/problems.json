@@ -21418,5 +21418,685 @@
       "partition-equal-subset-sum",
       "house-robber"
     ]
+  },
+  {
+    "id": "edit-distance",
+    "title": "Edit Distance",
+    "leetcode_url": "https://leetcode.com/problems/edit-distance/",
+    "leetcode_id": 72,
+    "difficulty": "hard",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two strings word1 and word2, return the minimum number of operations to convert word1 into word2. Operations: insert a character, delete a character, replace a character.",
+    "constraints": [
+      "0 <= word1.length, word2.length <= 500",
+      "Both consist of lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "word1 = \"horse\", word2 = \"ros\"",
+        "output": "3",
+        "explanation": "horse \u2192 rorse (replace 'h' \u2192 'r') \u2192 rose (delete 'r') \u2192 ros (delete 'e'). 3 operations."
+      },
+      {
+        "input": "word1 = \"intention\", word2 = \"execution\"",
+        "output": "5",
+        "explanation": "5 operations (e.g., replace 'i'\u2192'e', 'n'\u2192'x', 't'\u2192'c', insert 'u', delete 'n')."
+      }
+    ],
+    "function_name": "minDistance",
+    "function_signature": "def minDistance(word1, word2):",
+    "starter_code": "def minDistance(word1, word2):\n    # dp[i][j] = edit distance between word1[:i] and word2[:j].\n    # If chars match: dp[i][j] = dp[i-1][j-1] (no op).\n    # Else: dp[i][j] = 1 + min(insert: dp[i][j-1], delete: dp[i-1][j], replace: dp[i-1][j-1]).\n    pass",
+    "test_cases": [
+      {
+        "label": "horse -> ros",
+        "args": [
+          "horse",
+          "ros"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "intention -> execution",
+        "args": [
+          "intention",
+          "execution"
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "identical",
+        "args": [
+          "abc",
+          "abc"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "empty source",
+        "args": [
+          "",
+          "abc"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "empty target",
+        "args": [
+          "abc",
+          ""
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single char replace",
+        "args": [
+          "a",
+          "b"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single insertion",
+        "args": [
+          "a",
+          "ab"
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Levenshtein distance. dp[i][j] = edit distance between word1[:i] and word2[:j]. Base: dp[0][j] = j (insert j chars), dp[i][0] = i (delete i chars). Transition: if chars match, dp[i][j] = dp[i-1][j-1] (no cost). Else: dp[i][j] = 1 + min(dp[i-1][j-1] replace, dp[i-1][j] delete, dp[i][j-1] insert).",
+      "clarifying_questions": [
+        {
+          "question": "Operation costs \u2014 all equal (1)?",
+          "why": "Yes per spec. Generalization allows different costs, but baseline is uniform."
+        },
+        {
+          "question": "Both strings can be empty?",
+          "why": "Per constraints, length >= 0. Empty \u2192 length = number of ops needed."
+        },
+        {
+          "question": "Mutate the input or create a new string?",
+          "why": "We only count ops. Algorithm is index-based; doesn't actually build the target."
+        },
+        {
+          "question": "Order: which is the source and which is the target?",
+          "why": "Doesn't matter \u2014 Levenshtein is symmetric. By convention word1 \u2192 word2."
+        },
+        {
+          "question": "Space optimization?",
+          "why": "Only need previous row \u2192 O(min(m,n)) space. Useful for very long strings."
+        }
+      ],
+      "think_out_loud": "Classic 2D DP. Build (m+1) x (n+1) table. Fill first row/col with insert/delete counts. Iterate filling each cell: if chars equal, take diagonal; else, 1 + min of three neighbors (insert/delete/replace). Final answer in dp[m][n].",
+      "edge_cases": [
+        {
+          "category": "Empty source",
+          "details": "Need to insert n chars."
+        },
+        {
+          "category": "Empty target",
+          "details": "Need to delete m chars."
+        },
+        {
+          "category": "Identical strings",
+          "details": "0 ops."
+        },
+        {
+          "category": "Same length, different chars",
+          "details": "Replace each \u2014 n ops."
+        },
+        {
+          "category": "One is prefix of other",
+          "details": "Insertions or deletions only."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to include 'replace' in the min \u2014 missing diagonal case.",
+        "Wrong base cases (dp[0][j] should be j, dp[i][0] should be i).",
+        "Off-by-one indexing (word1[i] vs word1[i-1]).",
+        "Recursion without memoization \u2014 exponential.",
+        "Not handling empty strings."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The canonical 2D DP problem. Every interview prep guide mentions this.",
+      "introduction_context": "Onsite at Amazon, Google, Meta, Microsoft. The recurrence with three operations is the famous part.",
+      "really_testing": [
+        "Recognizing the 2D DP structure.",
+        "All three operations in the recurrence (insert, delete, replace).",
+        "Base case handling.",
+        "Off-by-one discipline."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Derives recurrence in 5 min, codes in 12-15 min. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct with one operation missed initially, then fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Only insert/delete (missing replace) \u2014 gets wrong answer."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'min ops (ins/del/repl) to turn word1 into word2'.",
+        "Pitch 2D DP.",
+        "Code: m, n = len(word1), len(word2). dp = [[0]*(n+1) for _ in range(m+1)]. for i in range(m+1): dp[i][0] = i. for j in range(n+1): dp[0][j] = j. for i in range(1, m+1): for j in range(1, n+1): if word1[i-1] == word2[j-1]: dp[i][j] = dp[i-1][j-1]. else: dp[i][j] = 1 + min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]). return dp[m][n].",
+        "Walk 'horse' / 'ros': end at dp[5][3] = 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: One Edit Distance (LC 161), Reconstruct the edits.",
+      "dont_do": [
+        "Don't miss 'replace' in the min.",
+        "Don't recurse without memo.",
+        "Don't off-by-one base.",
+        "Don't allocate full 2D if O(n) space is asked."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up 2D DP",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def minDistance(word1, word2):\n    m, n = len(word1), len(word2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Base: converting empty to word2[:j] needs j inserts; word1[:i] to empty needs i deletes\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if word1[i - 1] == word2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1]  # no op needed\n            else:\n                dp[i][j] = 1 + min(\n                    dp[i - 1][j - 1],  # replace\n                    dp[i - 1][j],      # delete from word1\n                    dp[i][j - 1]       # insert into word1 (to match word2's char)\n                )\n    return dp[m][n]",
+        "explanation": "Classic Levenshtein DP. dp[i][j] = min edits to transform word1[:i] into word2[:j]. Base row/col reflects 'empty + j inserts' or 'i deletes + empty'. Match \u2192 diagonal (no cost). Mismatch \u2192 1 + min of three neighbors (insert/delete/replace). O(m*n) time and space."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-common-subsequence",
+      "distinct-subsequences",
+      "word-break"
+    ]
+  },
+  {
+    "id": "target-sum",
+    "title": "Target Sum",
+    "leetcode_url": "https://leetcode.com/problems/target-sum/",
+    "leetcode_id": 494,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "knapsack"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an integer array nums and an integer target. You want to assign '+' or '-' to each element so the sum equals target. Return the number of different ways to achieve this.",
+    "constraints": [
+      "1 <= nums.length <= 20",
+      "0 <= nums[i] <= 1000",
+      "0 <= sum(nums[i]) <= 1000",
+      "-1000 <= target <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,1,1,1,1], target = 3",
+        "output": "5",
+        "explanation": "Five ways: -1+1+1+1+1, +1-1+1+1+1, ..., +1+1+1+1-1."
+      },
+      {
+        "input": "nums = [1], target = 1",
+        "output": "1",
+        "explanation": "+1 \u2192 1."
+      },
+      {
+        "input": "nums = [1], target = 2",
+        "output": "0",
+        "explanation": "Can't reach 2 from a single 1."
+      }
+    ],
+    "function_name": "findTargetSumWays",
+    "function_signature": "def findTargetSumWays(nums, target):",
+    "starter_code": "def findTargetSumWays(nums, target):\n    # Memoization on (index, current_sum) OR reduce to subset-sum:\n    # Sum_plus - Sum_minus = target. Sum_plus + Sum_minus = total.\n    # => Sum_plus = (total + target) / 2. Count subsets summing to Sum_plus.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          3
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "single match",
+        "args": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single no match",
+        "args": [
+          [
+            1
+          ],
+          2
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all zeros target 0",
+        "args": [
+          [
+            0,
+            0,
+            0
+          ],
+          0
+        ],
+        "expected": "8"
+      },
+      {
+        "label": "negatives target",
+        "args": [
+          [
+            1,
+            1
+          ],
+          -2
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "impossible odd",
+        "args": [
+          [
+            1,
+            2,
+            1
+          ],
+          4
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches. (1) Memoization on (index, current_sum) \u2014 explores all 2^n sign assignments. (2) Reduce to subset-sum: let S+ be the sum of '+' elements and S- the sum of '-' elements. S+ - S- = target, S+ + S- = total. So S+ = (total + target) / 2. Count subsets summing to that. Requires (total + target) be even and non-negative.",
+      "clarifying_questions": [
+        {
+          "question": "Each number must be assigned a sign (can't skip)?",
+          "why": "Yes per spec. Every nums[i] gets + or -."
+        },
+        {
+          "question": "Target can be negative?",
+          "why": "Yes per spec (-1000 \u2264 target). Algorithm handles."
+        },
+        {
+          "question": "What if total + target is odd or negative?",
+          "why": "0 ways. The reduction requires (total + target) to be even AND non-negative."
+        },
+        {
+          "question": "Can numbers be zero?",
+          "why": "Yes. Each zero doubles the count (sign doesn't change sum, but counts as a distinct assignment)."
+        },
+        {
+          "question": "Memoization or DP \u2014 which?",
+          "why": "Either. Memoization is cleaner to write; DP reduction is more elegant if you see it."
+        }
+      ],
+      "think_out_loud": "Brute force: 2^n sign assignments. With memoization on (index, current_sum), it reduces to O(n * sum) states. Subset-sum reduction: count subsets of nums summing to (total + target) / 2 \u2014 that's the count of distinct '+' assignments.",
+      "edge_cases": [
+        {
+          "category": "Zeros included",
+          "details": "Each zero doubles the count (sign doesn't matter for sum but counts)."
+        },
+        {
+          "category": "Single number",
+          "details": "Either +num or -num. Count = 1 if matches target, else 0."
+        },
+        {
+          "category": "Target larger than total",
+          "details": "0 ways."
+        },
+        {
+          "category": "Target = total or -total",
+          "details": "Exactly 1 way (all + or all -)."
+        },
+        {
+          "category": "Sum + target odd or negative",
+          "details": "0 ways (reduction fails)."
+        }
+      ],
+      "common_mistakes": [
+        "Brute force without memo \u2014 2^n, TLE on n=20.",
+        "Forgetting the (total + target) sign / parity check.",
+        "Confusion on subset-sum reduction.",
+        "Counting same state multiple times (memo key bug).",
+        "Off-by-one on the reduced subset target."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Combinatorial DP. Tests both memoization and the optional subset-sum reduction.",
+      "introduction_context": "Common at Amazon, Microsoft. The reduction trick impresses interviewers.",
+      "really_testing": [
+        "Memoization on multiple state variables.",
+        "Optional: subset-sum reduction.",
+        "Edge cases around zero, negative, parity."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Memoization in 8 min, subset-sum in 12 min, picks one and ships."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Brute force only."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive any solution."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count ways to assign +/- signs to reach target'.",
+        "Memoization approach: 'state = (i, current_sum); transitions = +nums[i] or -nums[i]'.",
+        "Code: from functools import lru_cache. @lru_cache(maxsize=None). def go(i, s): if i == len(nums): return 1 if s == target else 0. return go(i+1, s + nums[i]) + go(i+1, s - nums[i]). return go(0, 0).",
+        "Or reduction: total = sum(nums). if (total + target) % 2 != 0 or total < abs(target): return 0. P = (total + target) // 2. count subsets summing to P (knapsack)."
+      ],
+      "playbook_meta": "Total time: 8-15 min.",
+      "dont_do": [
+        "Don't 2^n brute force.",
+        "Don't forget memo.",
+        "Don't ignore parity/sign in reduction.",
+        "Don't memo without including the relevant state."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Memoization on (index, sum)",
+        "time": "O(n * total)",
+        "space": "O(n * total)",
+        "code": "from functools import lru_cache\n\ndef findTargetSumWays(nums, target):\n    @lru_cache(maxsize=None)\n    def go(i, s):\n        if i == len(nums):\n            return 1 if s == target else 0\n        return go(i + 1, s + nums[i]) + go(i + 1, s - nums[i])\n    return go(0, 0)",
+        "explanation": "Top-down DP with memoization. State: index in nums + running sum. At each index, two choices: add or subtract nums[i]. Memoize on the (index, sum) pair so we don't recompute. O(n * total) unique states; each transition O(1)."
+      },
+      {
+        "name": "Subset-Sum Reduction",
+        "time": "O(n * total)",
+        "space": "O(total)",
+        "code": "def findTargetSumWays(nums, target):\n    total = sum(nums)\n    # Need (total + target) to be even and non-negative\n    if (total + target) % 2 != 0 or abs(target) > total:\n        return 0\n    P = (total + target) // 2  # subset that gets '+' sign\n    \n    dp = [0] * (P + 1)\n    dp[0] = 1\n    for num in nums:\n        for j in range(P, num - 1, -1):\n            dp[j] += dp[j - num]\n    return dp[P]",
+        "explanation": "Elegant reduction. Let S+ = sum of '+' elements, S- = sum of '-' elements. We have S+ - S- = target AND S+ + S- = total. Solving: S+ = (total + target) / 2. So the problem becomes 'count subsets summing to S+' \u2014 a standard 0/1 knapsack subset-sum count. O(n * P) time, O(P) space."
+      }
+    ],
+    "related_problem_ids": [
+      "partition-equal-subset-sum",
+      "coin-change-ii",
+      "coin-change"
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-with-cooldown",
+    "title": "Best Time to Buy and Sell Stock with Cooldown",
+    "leetcode_url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/",
+    "leetcode_id": 309,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "state-machine"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an array prices where prices[i] is the price of a given stock on day i. Find the maximum profit you can achieve with the following restrictions: (1) you may complete as many transactions as you like (buy \u2192 sell), (2) after you sell, you cannot buy on the next day (1-day cooldown), (3) you can only hold ONE share at a time.",
+    "constraints": [
+      "1 <= prices.length <= 5000",
+      "0 <= prices[i] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "prices = [1,2,3,0,2]",
+        "output": "3",
+        "explanation": "Buy day 0 ($1), sell day 1 ($2). Cooldown day 2. Buy day 3 ($0), sell day 4 ($2). Profit (2-1) + (2-0) = 3."
+      },
+      {
+        "input": "prices = [1]",
+        "output": "0",
+        "explanation": "Single day, can't transact."
+      }
+    ],
+    "function_name": "maxProfit",
+    "function_signature": "def maxProfit(prices):",
+    "starter_code": "def maxProfit(prices):\n    # State machine: hold, sold, rest.\n    # Transitions: hold = max(hold, rest - price); sold = hold + price; rest = max(rest, sold).\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,2,3,0,2]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            0,
+            2
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single price",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "two prices increasing",
+        "args": [
+          [
+            1,
+            5
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "two prices decreasing",
+        "args": [
+          [
+            5,
+            1
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all same",
+        "args": [
+          [
+            3,
+            3,
+            3,
+            3
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "longer",
+        "args": [
+          [
+            6,
+            1,
+            3,
+            2,
+            4,
+            7
+          ]
+        ],
+        "expected": "6"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "State machine DP with three states: hold (own a stock), sold (just sold today), rest (not holding, not on cooldown). Transitions: hold[i] = max(hold[i-1], rest[i-1] - price); sold[i] = hold[i-1] + price; rest[i] = max(rest[i-1], sold[i-1]). Answer is max(sold[n-1], rest[n-1]) \u2014 can't end in 'hold'.",
+      "clarifying_questions": [
+        {
+          "question": "How many transactions allowed?",
+          "why": "Unlimited per spec. Just respect the cooldown between sell and next buy."
+        },
+        {
+          "question": "Cooldown duration \u2014 1 day?",
+          "why": "Yes per spec. After selling on day i, can buy earliest on day i+2."
+        },
+        {
+          "question": "Can hold multiple stocks?",
+          "why": "No \u2014 only one at a time."
+        },
+        {
+          "question": "Negative prices?",
+          "why": "Per spec, prices >= 0. Algorithm doesn't depend on positivity."
+        },
+        {
+          "question": "Can transactions overlap (buy before selling previous)?",
+          "why": "No \u2014 must sell before buying again. Plus the cooldown."
+        }
+      ],
+      "think_out_loud": "State machine DP. Three states per day: hold (owning a stock), sold (just sold today \u2014 can't buy tomorrow), rest (idle, no cooldown active). Buy: rest \u2192 hold (pay price). Sell: hold \u2192 sold (gain price). Rest: stay or transition from sold. Track each state's max profit; roll with three variables.",
+      "edge_cases": [
+        {
+          "category": "Single price",
+          "details": "Can't profit. Return 0."
+        },
+        {
+          "category": "Two prices increasing",
+          "details": "Buy then sell. Profit = diff."
+        },
+        {
+          "category": "Two prices decreasing",
+          "details": "Don't buy. Profit = 0."
+        },
+        {
+          "category": "All same price",
+          "details": "No profit possible."
+        },
+        {
+          "category": "Many oscillations",
+          "details": "Cooldown limits how often we can capture them. Algorithm finds optimal."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy 'buy at every dip' \u2014 ignores cooldown.",
+        "Forgetting the cooldown \u2014 sold \u2192 buy next day is illegal.",
+        "Initial values wrong (hold = -prices[0], others 0).",
+        "Returning hold at the end (still owning a share).",
+        "Trying to enumerate transactions \u2014 exponential."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "State machine DP. The 'three states + transitions' pattern.",
+      "introduction_context": "Onsite at Amazon, Meta. Variants like 'with fee' use the same skeleton.",
+      "really_testing": [
+        "Recognizing state machine DP.",
+        "Defining states: hold, sold, rest.",
+        "Transitions including the cooldown.",
+        "O(1) space via rolling variables."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States and transitions clear in 5 min, codes in 10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with arrays for each state; refactors to vars when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy approach; can't handle cooldown."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive state machine."
+        }
+      ],
+      "playbook": [
+        "Restate: 'unlimited transactions, 1-day cooldown after selling'.",
+        "States: hold (own), sold (just sold), rest (idle).",
+        "Transitions: hold = max(hold, rest - p); sold = hold + p; rest = max(rest, sold).",
+        "Code: hold, sold, rest = -prices[0], 0, 0. for p in prices[1:]: hold, sold, rest = max(hold, rest - p), hold + p, max(rest, sold). return max(sold, rest).",
+        "Walk [1,2,3,0,2]: trace each day's three states; ends sold=3 or rest=3. Return 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: with transaction fee, with k transactions.",
+      "dont_do": [
+        "Don't greedy.",
+        "Don't ignore cooldown.",
+        "Don't return hold (still owning).",
+        "Don't use full O(n*3) arrays \u2014 three vars suffice."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "State Machine DP, O(1) Space",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def maxProfit(prices):\n    if len(prices) <= 1:\n        return 0\n    # hold: best profit while currently holding a share\n    # sold: best profit just sold today (cooldown tomorrow)\n    # rest: best profit while idle (no cooldown active)\n    hold = -prices[0]\n    sold = 0\n    rest = 0\n    \n    for p in prices[1:]:\n        new_hold = max(hold, rest - p)   # keep holding OR buy today (from rest)\n        new_sold = hold + p              # sell today (must have been holding)\n        new_rest = max(rest, sold)       # stay idle OR rest after cooldown\n        hold, sold, rest = new_hold, new_sold, new_rest\n    \n    return max(sold, rest)",
+        "explanation": "State machine with three states tracked across days. hold = best profit while owning. sold = just sold today (next day is cooldown). rest = idle, free to buy. Transitions encode the rules. Roll with three variables for O(1) space. End in sold or rest (never hold)."
+      }
+    ],
+    "related_problem_ids": [
+      "best-time-to-buy-and-sell-stock",
+      "house-robber",
+      "coin-change"
+    ]
   }
 ]
