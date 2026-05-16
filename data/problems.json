@@ -27677,5 +27677,561 @@
       "plus-one",
       "powx-n"
     ]
+  },
+  {
+    "id": "detect-squares",
+    "title": "Detect Squares",
+    "leetcode_url": "https://leetcode.com/problems/detect-squares/",
+    "leetcode_id": 2013,
+    "difficulty": "medium",
+    "patterns": [
+      "hash-map",
+      "design",
+      "math"
+    ],
+    "topics": [
+      "math"
+    ],
+    "neetcode_category": "Math & Geometry",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design a data structure that adds points to a stream and counts axis-aligned squares formed by a given query point and three other previously added points.",
+    "constraints": [
+      "point[i] in [0, 1000]",
+      "At most 3000 calls combined"
+    ],
+    "examples": [
+      {
+        "input": "add(3,10), add(11,2), add(3,2), count(11,10)",
+        "output": "1",
+        "explanation": "Square: (3,10), (11,10), (3,2), (11,2)."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "from collections import defaultdict\n\nclass DetectSquares:\n    def __init__(self):\n        self.count = defaultdict(int)\n    def add(self, point):\n        self.count[(point[0], point[1])] += 1\n    def count_squares(self, point):\n        # For each point at same x or y as the query forming a potential diagonal, multiply counts.\n        pass\n\ndef runOps(ops):\n    d = DetectSquares()\n    out = []\n    for op in ops:\n        if op[0] == 'add':\n            d.add(op[1])\n        else:\n            out.append(d.count_squares(op[1]))\n    return out\n",
+    "test_cases": [
+      {
+        "label": "one square",
+        "args": [
+          [
+            [
+              "add",
+              [
+                3,
+                10
+              ]
+            ],
+            [
+              "add",
+              [
+                11,
+                2
+              ]
+            ],
+            [
+              "add",
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              "count",
+              [
+                11,
+                10
+              ]
+            ]
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "no square",
+        "args": [
+          [
+            [
+              "add",
+              [
+                1,
+                1
+              ]
+            ],
+            [
+              "count",
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "expected": "[0]"
+      },
+      {
+        "label": "duplicate points",
+        "args": [
+          [
+            [
+              "add",
+              [
+                0,
+                0
+              ]
+            ],
+            [
+              "add",
+              [
+                0,
+                0
+              ]
+            ],
+            [
+              "add",
+              [
+                2,
+                0
+              ]
+            ],
+            [
+              "add",
+              [
+                0,
+                2
+              ]
+            ],
+            [
+              "count",
+              [
+                2,
+                2
+              ]
+            ]
+          ]
+        ],
+        "expected": "[2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "For each candidate diagonal point (px, py) where px != qx and py != qy, check if (px, py), (px, qy), (qx, py) all exist. The other two corners are determined. Multiply counts (allows duplicates).",
+      "clarifying_questions": [
+        {
+          "question": "Axis-aligned squares only?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Duplicate points count separately?",
+          "why": "Yes \u2014 multiplied."
+        },
+        {
+          "question": "Are query points themselves added?",
+          "why": "No \u2014 count_squares is a query, not an add."
+        }
+      ],
+      "think_out_loud": "Iterate all stored points. For each diagonal candidate (different x AND y), require |dx| == |dy| (square). Multiply counts at the three required positions.",
+      "edge_cases": [
+        {
+          "category": "No squares",
+          "details": "0."
+        },
+        {
+          "category": "Duplicate points",
+          "details": "Multiply for combinatorics."
+        },
+        {
+          "category": "Query same as stored point",
+          "details": "Algorithm naturally handles (degenerate squares excluded by dx != 0)."
+        }
+      ],
+      "common_mistakes": [
+        "Iterating diagonals not at 45\u00b0.",
+        "Not multiplying duplicates.",
+        "Missing the dx != 0 check."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Design + geometry combinatorics.",
+      "introduction_context": "Common at Amazon.",
+      "really_testing": [
+        "Hash map of point counts.",
+        "Square geometry."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 10-12 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct after handling duplicates."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses multiplication."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "Store counts in dict. count_squares iterates all points.",
+        "For each (px, py): if abs(px - qx) == abs(py - qy) and px != qx: total += count[(px, py)] * count[(px, qy)] * count[(qx, py)]."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't ignore duplicates.",
+        "Don't iterate all O(n\u00b2) pairs."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Hash Map + Diagonal Iteration",
+        "time": "O(n) per query",
+        "space": "O(n)",
+        "code": "from collections import defaultdict\n\nclass DetectSquares:\n    def __init__(self):\n        self.count = defaultdict(int)\n    def add(self, point):\n        self.count[(point[0], point[1])] += 1\n    def count_squares(self, point):\n        qx, qy = point\n        total = 0\n        for (px, py), c in list(self.count.items()):\n            if abs(px - qx) != abs(py - qy) or px == qx or py == qy:\n                continue\n            total += c * self.count.get((px, qy), 0) * self.count.get((qx, py), 0)\n        return total\n\ndef runOps(ops):\n    d = DetectSquares()\n    out = []\n    for op in ops:\n        if op[0] == 'add':\n            d.add(op[1])\n        else:\n            out.append(d.count_squares(op[1]))\n    return out",
+        "explanation": "For each stored point that could be a diagonal corner with the query (|dx| == |dy|, both non-zero), the other two corners are determined: (px, qy) and (qx, py). Multiply counts to handle duplicate points."
+      }
+    ],
+    "related_problem_ids": [
+      "happy-number",
+      "plus-one"
+    ]
+  },
+  {
+    "id": "single-number",
+    "title": "Single Number",
+    "leetcode_url": "https://leetcode.com/problems/single-number/",
+    "leetcode_id": 136,
+    "difficulty": "easy",
+    "patterns": [
+      "bit-manipulation",
+      "xor"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a non-empty array of integers where every element appears twice except for one, find that single one. O(n) time, O(1) extra space.",
+    "constraints": [
+      "1 <= nums.length <= 3 * 10^4",
+      "-3*10^4 <= nums[i] <= 3*10^4"
+    ],
+    "examples": [
+      {
+        "input": "nums = [2,2,1]",
+        "output": "1"
+      },
+      {
+        "input": "nums = [4,1,2,1,2]",
+        "output": "4"
+      },
+      {
+        "input": "nums = [1]",
+        "output": "1"
+      }
+    ],
+    "function_name": "singleNumber",
+    "function_signature": "def singleNumber(nums):",
+    "starter_code": "def singleNumber(nums):\n    # XOR all together; pairs cancel; result is the singleton.\n    pass",
+    "test_cases": [
+      {
+        "label": "[2,2,1]",
+        "args": [
+          [
+            2,
+            2,
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "[4,1,2,1,2]",
+        "args": [
+          [
+            4,
+            1,
+            2,
+            1,
+            2
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "[1]",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "negative",
+        "args": [
+          [
+            -1,
+            -1,
+            -2
+          ]
+        ],
+        "expected": "-2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "XOR. a ^ a = 0, a ^ 0 = a. So XORing all elements: every pair cancels, leaving the lone element.",
+      "clarifying_questions": [
+        {
+          "question": "Every other appears exactly twice?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "O(1) space required?",
+          "why": "Yes."
+        },
+        {
+          "question": "Negatives?",
+          "why": "XOR works on bits regardless of sign."
+        }
+      ],
+      "think_out_loud": "Classic XOR trick.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "Return it."
+        },
+        {
+          "category": "Negatives",
+          "details": "XOR works."
+        },
+        {
+          "category": "Order doesn't matter",
+          "details": "XOR is commutative."
+        }
+      ],
+      "common_mistakes": [
+        "Using hash set \u2014 O(n) space.",
+        "Sorting \u2014 O(n log n).",
+        "Forgetting XOR identity properties."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "XOR classic.",
+      "introduction_context": "Phone screen everywhere.",
+      "really_testing": [
+        "XOR pairing trick."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "1 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Hash set; refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Sort approach."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "result = 0. for x in nums: result ^= x. return result."
+      ],
+      "playbook_meta": "Total time: 1-2 min.",
+      "dont_do": [
+        "Don't use hash set.",
+        "Don't sort."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "XOR Accumulation",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def singleNumber(nums):\n    result = 0\n    for x in nums:\n        result ^= x\n    return result",
+        "explanation": "XOR is associative and commutative; a^a=0 and a^0=a. Pairs cancel; the loner survives."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-1-bits",
+      "counting-bits",
+      "missing-number"
+    ]
+  },
+  {
+    "id": "number-of-1-bits",
+    "title": "Number of 1 Bits",
+    "leetcode_url": "https://leetcode.com/problems/number-of-1-bits/",
+    "leetcode_id": 191,
+    "difficulty": "easy",
+    "patterns": [
+      "bit-manipulation"
+    ],
+    "topics": [
+      "bit-manipulation"
+    ],
+    "neetcode_category": "Bit Manipulation",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Write a function that takes an unsigned integer and returns the number of '1' bits it has (Hamming weight).",
+    "constraints": [
+      "Input is a 32-bit unsigned integer."
+    ],
+    "examples": [
+      {
+        "input": "n = 11 (binary 1011)",
+        "output": "3"
+      },
+      {
+        "input": "n = 128",
+        "output": "1"
+      }
+    ],
+    "function_name": "hammingWeight",
+    "function_signature": "def hammingWeight(n):",
+    "starter_code": "def hammingWeight(n):\n    # Brian Kernighan: n & (n-1) clears the lowest set bit. Count iterations until n is 0.\n    pass",
+    "test_cases": [
+      {
+        "label": "11",
+        "args": [
+          11
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "128",
+        "args": [
+          128
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "0",
+        "args": [
+          0
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all 1s 32-bit",
+        "args": [
+          4294967295
+        ],
+        "expected": "32"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Brian Kernighan's trick: n & (n-1) removes the lowest set bit. Count iterations.",
+      "clarifying_questions": [
+        {
+          "question": "32-bit unsigned?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Negative input?",
+          "why": "Not per spec (unsigned)."
+        }
+      ],
+      "think_out_loud": "Simple bit-counting loop.",
+      "edge_cases": [
+        {
+          "category": "0",
+          "details": "0 bits set."
+        },
+        {
+          "category": "All 1s",
+          "details": "32 bits set."
+        },
+        {
+          "category": "Power of 2",
+          "details": "1 bit set."
+        }
+      ],
+      "common_mistakes": [
+        "Iterating all 32 bits with n & 1 + shift \u2014 works but slower than Brian K's trick.",
+        "Off-by-one on count."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Bit-count classic.",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "Bit manipulation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Brian K trick in 1 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Shift+count."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Convert to string."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "count = 0. while n: n &= n-1; count += 1. return count."
+      ],
+      "playbook_meta": "Total time: 1-2 min.",
+      "dont_do": [
+        "Don't string-convert.",
+        "Don't pre-shift to mask each bit (slow)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brian Kernighan's Trick",
+        "time": "O(set bits)",
+        "space": "O(1)",
+        "code": "def hammingWeight(n):\n    count = 0\n    while n:\n        n &= n - 1\n        count += 1\n    return count",
+        "explanation": "n & (n-1) clears the lowest set bit. Each iteration removes exactly one set bit, so the count of iterations equals the bit count."
+      }
+    ],
+    "related_problem_ids": [
+      "single-number",
+      "counting-bits",
+      "missing-number"
+    ]
   }
 ]
