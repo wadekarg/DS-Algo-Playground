@@ -17296,5 +17296,817 @@
       "course-schedule",
       "clone-graph"
     ]
+  },
+  {
+    "id": "number-of-connected-components-in-an-undirected-graph",
+    "title": "Number of Connected Components in an Undirected Graph",
+    "leetcode_url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
+    "leetcode_id": 323,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "union-find",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You have a graph of n nodes labeled 0 to n-1. Given an integer n and a list of undirected edges where each edges[i] = [ai, bi], return the number of connected components.",
+    "constraints": [
+      "1 <= n <= 2000",
+      "1 <= edges.length <= 5000",
+      "edges[i].length == 2",
+      "0 <= ai <= bi < n",
+      "ai != bi",
+      "No duplicate edges."
+    ],
+    "examples": [
+      {
+        "input": "n = 5, edges = [[0,1],[1,2],[3,4]]",
+        "output": "2",
+        "explanation": "Two components: {0,1,2} and {3,4}."
+      },
+      {
+        "input": "n = 5, edges = [[0,1],[1,2],[2,3],[3,4]]",
+        "output": "1",
+        "explanation": "All connected \u2014 one component."
+      }
+    ],
+    "function_name": "countComponents",
+    "function_signature": "def countComponents(n, edges):",
+    "starter_code": "def countComponents(n, edges):\n    # Count the number of connected components in the undirected graph.\n    # Approach: Union-Find. Each union of distinct roots reduces component count by 1.\n    pass",
+    "test_cases": [
+      {
+        "label": "two components",
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "one component",
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all isolated",
+        "args": [
+          5,
+          []
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "single node",
+        "args": [
+          1,
+          []
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "redundant edges",
+        "args": [
+          4,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              3,
+              3
+            ]
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Union-Find. Start with n components. For each edge: if endpoints are in different components, union them and decrement the count. If they're already in the same component, skip (redundant edge). Final count is the answer.",
+      "clarifying_questions": [
+        {
+          "question": "Undirected edges?",
+          "why": "Yes per spec. Direction doesn't matter for connectivity."
+        },
+        {
+          "question": "0-indexed nodes?",
+          "why": "Yes. Size parent array as n."
+        },
+        {
+          "question": "Self-loops?",
+          "why": "Probably not per spec ('ai != bi'). Defensive code handles them (no union, no count change)."
+        },
+        {
+          "question": "Can I use DFS instead?",
+          "why": "Yes. Build adjacency, then DFS from unvisited node, mark all reachable, count++. Same O(V+E). Union-Find is slightly more elegant."
+        },
+        {
+          "question": "Why decrement on union?",
+          "why": "Each successful union merges two components into one \u2014 net change of -1."
+        }
+      ],
+      "think_out_loud": "Two clean options. (1) Union-Find: start with count = n. For each edge, find roots; if different, union and count--. Return count. (2) DFS: build adjacency. Iterate nodes; for each unvisited, DFS-mark all reachable, count++. Both O(V+E) with proper UF optimizations.",
+      "edge_cases": [
+        {
+          "category": "No edges",
+          "details": "n isolated components."
+        },
+        {
+          "category": "Single node",
+          "details": "1 component."
+        },
+        {
+          "category": "Fully connected",
+          "details": "1 component, regardless of edge count."
+        },
+        {
+          "category": "Redundant edges (a-b and a-b twice)",
+          "details": "Spec says no duplicates. But UF handles them gracefully (skip)."
+        },
+        {
+          "category": "Cycle",
+          "details": "Same component; union skipped; count unchanged."
+        }
+      ],
+      "common_mistakes": [
+        "Counting initial components as 0 \u2014 start with n.",
+        "Decrementing on EVERY edge \u2014 only when union actually merges.",
+        "Skipping path compression \u2014 slow on adversarial inputs.",
+        "Wrong indexing (off-by-one).",
+        "Using DFS without visited set \u2014 infinite loops."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Union-Find application. Tests the canonical connectivity pattern.",
+      "introduction_context": "Common at Amazon, Bloomberg. Often used as a Union-Find practice problem.",
+      "really_testing": [
+        "Union-Find pattern.",
+        "Counting components by tracking merges.",
+        "DFS as an alternative.",
+        "Handling isolated nodes (no edges)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Union-Find with optimizations in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with DFS or basic UF. Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy count logic (decrement on every edge)."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive connectivity logic."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count connected components in undirected graph'.",
+        "Pitch UF: 'start with n components; union merges; count decreases each successful union'.",
+        "Code: parent = list(range(n)). count = n. def find(x): while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]; return x. for a, b in edges: ra, rb = find(a), find(b). if ra != rb: parent[ra] = rb; count -= 1. return count.",
+        "Walk n=5, edges=[[0,1],[1,2],[3,4]]: unions (0,1) count\u21924. (1,2) count\u21923. (3,4) count\u21922. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: Redundant Connection (when union fails, that edge creates cycle).",
+      "dont_do": [
+        "Don't decrement on every edge \u2014 only on real merges.",
+        "Don't skip path compression.",
+        "Don't start count at 0.",
+        "Don't forget that disconnected nodes count as components."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Union-Find (DSU)",
+        "time": "O((n + E) \u03b1(n)) \u2248 O(n + E)",
+        "space": "O(n)",
+        "code": "def countComponents(n, edges):\n    parent = list(range(n))\n    count = n  # start with all isolated\n    \n    def find(x):\n        root = x\n        while parent[root] != root:\n            root = parent[root]\n        while parent[x] != root:\n            parent[x], x = root, parent[x]\n        return root\n    \n    for a, b in edges:\n        ra, rb = find(a), find(b)\n        if ra != rb:\n            parent[ra] = rb\n            count -= 1\n    return count",
+        "explanation": "Start with n components (every node alone). For each edge, find both endpoints' roots. If they're different, this edge connects two distinct components \u2014 union them and decrement the count. If they're the same root, the edge is redundant. Final count = number of components. With path compression, effectively O(n + E)."
+      },
+      {
+        "name": "DFS (alternative)",
+        "time": "O(n + E)",
+        "space": "O(n + E)",
+        "code": "def countComponents(n, edges):\n    graph = [[] for _ in range(n)]\n    for a, b in edges:\n        graph[a].append(b)\n        graph[b].append(a)\n    \n    visited = [False] * n\n    count = 0\n    \n    def dfs(u):\n        visited[u] = True\n        for v in graph[u]:\n            if not visited[v]:\n                dfs(v)\n    \n    for i in range(n):\n        if not visited[i]:\n            dfs(i)\n            count += 1\n    return count",
+        "explanation": "Build adjacency. For each unvisited node, DFS to mark all reachable; increment component count. Equivalent correctness, slightly more code than UF."
+      }
+    ],
+    "related_problem_ids": [
+      "redundant-connection",
+      "number-of-islands",
+      "graph-valid-tree"
+    ]
+  },
+  {
+    "id": "graph-valid-tree",
+    "title": "Graph Valid Tree",
+    "leetcode_url": "https://leetcode.com/problems/graph-valid-tree/",
+    "leetcode_id": 261,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "union-find",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given n nodes labeled 0 to n-1 and a list of undirected edges, return True if the edges form a valid TREE. A valid tree has exactly n-1 edges, no cycles, and is fully connected.",
+    "constraints": [
+      "1 <= n <= 2000",
+      "0 <= edges.length <= 5000",
+      "edges[i].length == 2",
+      "0 <= ai, bi < n",
+      "ai != bi",
+      "No duplicate edges."
+    ],
+    "examples": [
+      {
+        "input": "n = 5, edges = [[0,1],[0,2],[0,3],[1,4]]",
+        "output": "True",
+        "explanation": "4 edges, connected, no cycles. Valid tree."
+      },
+      {
+        "input": "n = 5, edges = [[0,1],[1,2],[2,3],[1,3],[1,4]]",
+        "output": "False",
+        "explanation": "5 edges on 5 nodes \u2014 guaranteed cycle. Not a tree."
+      }
+    ],
+    "function_name": "validTree",
+    "function_signature": "def validTree(n, edges):",
+    "starter_code": "def validTree(n, edges):\n    # Valid tree iff exactly n-1 edges, connected, no cycles.\n    # Shortcut: if edges count != n-1, return False. Then just check connectivity (no cycle check needed).\n    pass",
+    "test_cases": [
+      {
+        "label": "valid tree",
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              4
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "has cycle",
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ]
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single node",
+        "args": [
+          1,
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "disconnected (n-1 edges, not connected)",
+        "args": [
+          4,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "two nodes one edge",
+        "args": [
+          2,
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single isolated cycle",
+        "args": [
+          3,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "A tree on n nodes has exactly n-1 edges AND is connected AND has no cycles. Key insight: if edge count = n-1, then 'connected' and 'no cycles' are equivalent \u2014 checking either is sufficient. So just verify: len(edges) == n - 1 AND graph is connected (DFS reaches all nodes from node 0).",
+      "clarifying_questions": [
+        {
+          "question": "Definition of tree \u2014 connected + acyclic + n-1 edges?",
+          "why": "Yes. All three properties are necessary. But any two imply the third (given the right count of nodes)."
+        },
+        {
+          "question": "Empty edges, n=1?",
+          "why": "Single node is a valid tree (trivially). 0 edges, 1 node \u2014 n-1 = 0 edges matches."
+        },
+        {
+          "question": "Self-loops?",
+          "why": "Not per spec (ai != bi). Defensive code can guard."
+        },
+        {
+          "question": "Why is the edge-count shortcut valid?",
+          "why": "On n nodes: connected + n-1 edges \u2192 tree (proves acyclic). Acyclic + n-1 edges \u2192 tree (proves connected, by counting). Either property + edge count = sufficient."
+        },
+        {
+          "question": "Union-Find or DFS?",
+          "why": "UF: cycle detected when union fails. Edge count check + UF that never fails = tree. DFS: build adjacency, DFS from 0, must visit all n nodes."
+        }
+      ],
+      "think_out_loud": "Fast check: if len(edges) != n - 1, False. Otherwise build adjacency, DFS from 0, count visited. If visited == n, return True. Or use UF: walk edges; if union fails (cycle), False; if it succeeds for all and we end with one component, True.",
+      "edge_cases": [
+        {
+          "category": "Single node n=1",
+          "details": "0 edges. Trivially a tree. Return True."
+        },
+        {
+          "category": "n-1 edges but disconnected",
+          "details": "Implies cycle (impossible with n-1 edges)? Actually possible: 4 nodes, edges [0-1, 2-3] = 2 edges = n-1 but disconnected. Return False."
+        },
+        {
+          "category": "Too many edges",
+          "details": "len(edges) > n - 1 \u2192 must have cycle. Return False."
+        },
+        {
+          "category": "Too few edges",
+          "details": "len(edges) < n - 1 \u2192 disconnected. Return False."
+        },
+        {
+          "category": "Tree (correct edge count, connected)",
+          "details": "Return True."
+        }
+      ],
+      "common_mistakes": [
+        "Not checking edge count \u2014 leads to inefficient cycle detection.",
+        "Assuming n-1 edges implies tree \u2014 must also verify connectivity (or absence of cycle).",
+        "DFS without visited tracking \u2014 infinite loops.",
+        "Treating directed edges (when input is undirected) \u2014 miss half the neighbors.",
+        "Off-by-one on n vs n-1."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Connectivity + acyclic check. Tests deriving the n-1 shortcut.",
+      "introduction_context": "Premium LC problem but very common in interviews. Onsite at Amazon, Microsoft, Google.",
+      "really_testing": [
+        "Tree properties: connected + acyclic + n-1 edges.",
+        "Edge-count shortcut.",
+        "DFS or Union-Find for connectivity.",
+        "Edge case: single isolated node."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Edge-count shortcut + DFS/UF in 6-8 min. Explains the property."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Doesn't use shortcut; runs full connectivity + cycle check. Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets one of the conditions; passes some tests, fails others."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate tree properties."
+        }
+      ],
+      "playbook": [
+        "Restate: 'tree = connected + acyclic + exactly n-1 edges'.",
+        "Insight: 'check edge count first; if n-1, then connected iff acyclic'.",
+        "Code: if len(edges) != n - 1: return False. graph = [[] for _ in range(n)]. for a,b in edges: graph[a].append(b); graph[b].append(a). visited = set(). def dfs(u): visited.add(u). for v in graph[u]: if v not in visited: dfs(v). dfs(0). return len(visited) == n.",
+        "Walk valid tree: n=5, 4 edges, DFS from 0 reaches all 5. True. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Premium-LC follow-up: Find Smallest Set of Vertices to Reach All Nodes.",
+      "dont_do": [
+        "Don't skip the edge-count check (wastes time).",
+        "Don't check only connectivity OR only cycle without edge count.",
+        "Don't treat as directed.",
+        "Don't forget the n=1 case."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Edge-Count + DFS for Connectivity",
+        "time": "O(n + E)",
+        "space": "O(n + E)",
+        "code": "def validTree(n, edges):\n    if len(edges) != n - 1:\n        return False\n    \n    graph = [[] for _ in range(n)]\n    for a, b in edges:\n        graph[a].append(b)\n        graph[b].append(a)\n    \n    visited = set()\n    def dfs(u):\n        if u in visited:\n            return\n        visited.add(u)\n        for v in graph[u]:\n            dfs(v)\n    \n    dfs(0)\n    return len(visited) == n",
+        "explanation": "First check the edge count: a tree on n nodes must have exactly n-1 edges. If yes, just verify connectivity \u2014 DFS from node 0 should reach all n nodes. Since we've ensured the right edge count, connectivity alone is sufficient (no separate cycle check needed). O(n + E)."
+      },
+      {
+        "name": "Union-Find with Cycle Detection",
+        "time": "O(n + E * \u03b1(n))",
+        "space": "O(n)",
+        "code": "def validTree(n, edges):\n    if len(edges) != n - 1:\n        return False\n    parent = list(range(n))\n    \n    def find(x):\n        root = x\n        while parent[root] != root:\n            root = parent[root]\n        while parent[x] != root:\n            parent[x], x = root, parent[x]\n        return root\n    \n    for a, b in edges:\n        ra, rb = find(a), find(b)\n        if ra == rb:\n            return False  # cycle\n        parent[ra] = rb\n    \n    return True",
+        "explanation": "Edge-count check first. Then Union-Find: for each edge, if endpoints share a root \u2192 cycle \u2192 False. If all unions succeed and edge count is n-1, the graph is a tree (one component, no cycles)."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-connected-components-in-an-undirected-graph",
+      "redundant-connection",
+      "number-of-islands"
+    ]
+  },
+  {
+    "id": "network-delay-time",
+    "title": "Network Delay Time",
+    "leetcode_url": "https://leetcode.com/problems/network-delay-time/",
+    "leetcode_id": 743,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dijkstra",
+      "shortest-path"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Advanced Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given n nodes labeled 1 to n and a list of directed weighted edges times[i] = [ui, vi, wi] meaning a signal from ui takes wi time to reach vi, send a signal from node k. Return the minimum time for ALL n nodes to receive the signal, or -1 if impossible.",
+    "constraints": [
+      "1 <= k <= n <= 100",
+      "1 <= times.length <= 6000",
+      "times[i].length == 3",
+      "1 <= ui, vi <= n; ui != vi",
+      "0 <= wi <= 100",
+      "All (ui, vi) pairs are unique."
+    ],
+    "examples": [
+      {
+        "input": "times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2",
+        "output": "2",
+        "explanation": "From 2: reaches 1 in 1, reaches 3 in 1, then 4 in 2. Max = 2."
+      },
+      {
+        "input": "times = [[1,2,1]], n = 2, k = 1",
+        "output": "1",
+        "explanation": "Just one hop."
+      },
+      {
+        "input": "times = [[1,2,1]], n = 2, k = 2",
+        "output": "-1",
+        "explanation": "From node 2, can't reach node 1 (directed edges only)."
+      }
+    ],
+    "function_name": "networkDelayTime",
+    "function_signature": "def networkDelayTime(times, n, k):",
+    "starter_code": "import heapq\nfrom collections import defaultdict\n\ndef networkDelayTime(times, n, k):\n    # Dijkstra's algorithm. Min-heap of (distance, node). Track shortest distance to each.\n    # Return max distance, or -1 if any node unreachable.\n    pass",
+    "test_cases": [
+      {
+        "label": "chain",
+        "args": [
+          [
+            [
+              2,
+              1,
+              1
+            ],
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              3,
+              4,
+              1
+            ]
+          ],
+          4,
+          2
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "single edge",
+        "args": [
+          [
+            [
+              1,
+              2,
+              1
+            ]
+          ],
+          2,
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "unreachable",
+        "args": [
+          [
+            [
+              1,
+              2,
+              1
+            ]
+          ],
+          2,
+          2
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "star from center",
+        "args": [
+          [
+            [
+              1,
+              2,
+              1
+            ],
+            [
+              1,
+              3,
+              1
+            ],
+            [
+              1,
+              4,
+              1
+            ]
+          ],
+          4,
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "loop with weights",
+        "args": [
+          [
+            [
+              1,
+              2,
+              5
+            ],
+            [
+              2,
+              3,
+              5
+            ],
+            [
+              1,
+              3,
+              8
+            ]
+          ],
+          3,
+          1
+        ],
+        "expected": "8"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Single-source shortest path in a directed weighted graph \u2192 Dijkstra. Min-heap of (distance, node). Pop the node with smallest tentative distance, relax its neighbors. Answer is the max of the final shortest distances (or -1 if any node was never reached).",
+      "clarifying_questions": [
+        {
+          "question": "Are weights non-negative?",
+          "why": "Yes per spec (0 \u2264 wi \u2264 100). So Dijkstra applies. Negative weights would need Bellman-Ford."
+        },
+        {
+          "question": "Directed edges?",
+          "why": "Yes per spec. Build adjacency only from u to v."
+        },
+        {
+          "question": "Multiple edges between same pair?",
+          "why": "Per spec, unique (u, v) pairs. So no need to dedupe."
+        },
+        {
+          "question": "Answer is the MAX over all destination delays?",
+          "why": "Yes \u2014 signal reaches all when even the last node has gotten it. So max of shortest distances."
+        },
+        {
+          "question": "Unreachable node?",
+          "why": "Return -1. Any node with infinite distance after Dijkstra means -1."
+        }
+      ],
+      "think_out_loud": "Classic Dijkstra. Build adjacency. Min-heap starts with (0, k). dist = {}. Pop (d, u). If u already settled, skip. Settle u with distance d. Push neighbors with (d + w, v). At the end: if len(dist) < n, return -1. Else max(dist.values()).",
+      "edge_cases": [
+        {
+          "category": "Source unreachable from itself",
+          "details": "Impossible \u2014 distance to k is 0."
+        },
+        {
+          "category": "Isolated nodes",
+          "details": "If any node never reached, return -1."
+        },
+        {
+          "category": "Single node, no edges",
+          "details": "n=1, k=1 \u2014 answer is 0."
+        },
+        {
+          "category": "Zero-weight edges",
+          "details": "Algorithm handles. Just means equal-distance neighbors."
+        },
+        {
+          "category": "Negative weights (out of spec)",
+          "details": "Dijkstra would fail. Need Bellman-Ford."
+        }
+      ],
+      "common_mistakes": [
+        "Treating edges as undirected.",
+        "Not skipping already-settled nodes (revisits give wrong answer).",
+        "Using BFS without weights \u2014 wrong distances.",
+        "Forgetting the unreachable case (return -1).",
+        "Initializing distances incorrectly."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Dijkstra's algorithm classic. Tests whether you can implement shortest-path with a priority queue.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. Often the entry point to shortest-path discussions.",
+      "really_testing": [
+        "Dijkstra with min-heap.",
+        "Skip-if-settled logic.",
+        "Reading 'time for all to receive' = max shortest distance.",
+        "Handling unreachable nodes."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Dijkstra in 10-12 min. Clean adjacency, heap, settle logic."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, possibly Bellman-Ford if unfamiliar with Dijkstra."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "BFS without weights, or buggy heap state management."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any shortest-path algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'shortest delay to each node from k; return max'.",
+        "Pitch Dijkstra.",
+        "Code: graph = defaultdict(list). for u,v,w in times: graph[u].append((v, w)). heap = [(0, k)]. dist = {}. while heap: d, u = heappop(heap). if u in dist: continue. dist[u] = d. for v, w in graph[u]: if v not in dist: heappush(heap, (d + w, v)). return max(dist.values()) if len(dist) == n else -1.",
+        "Walk chain: from 2: heap=[(0,2)]. Settle 2 dist=0. Push (1,1), (1,3). Settle 1 dist=1. Settle 3 dist=1. Push (2,4). Settle 4 dist=2. Max = 2. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Cheapest Flights Within K Stops (Dijkstra variant with hop limit).",
+      "dont_do": [
+        "Don't BFS \u2014 ignores weights.",
+        "Don't revisit settled nodes.",
+        "Don't forget the unreachable case.",
+        "Don't treat edges as undirected."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Dijkstra with Min-Heap",
+        "time": "O((V + E) log V)",
+        "space": "O(V + E)",
+        "code": "import heapq\nfrom collections import defaultdict\n\ndef networkDelayTime(times, n, k):\n    graph = defaultdict(list)\n    for u, v, w in times:\n        graph[u].append((v, w))\n    \n    heap = [(0, k)]\n    dist = {}\n    \n    while heap:\n        d, u = heapq.heappop(heap)\n        if u in dist:\n            continue  # already settled\n        dist[u] = d\n        for v, w in graph[u]:\n            if v not in dist:\n                heapq.heappush(heap, (d + w, v))\n    \n    return max(dist.values()) if len(dist) == n else -1",
+        "explanation": "Dijkstra's algorithm. Min-heap holds (tentative_distance, node) tuples. Each pop yields the node with smallest pending distance \u2014 settle it once, then relax its neighbors. The 'already settled' skip ensures O((V + E) log V). At the end, max of distances is the time for all nodes to receive the signal; if any node missing from dist, return -1."
+      }
+    ],
+    "related_problem_ids": [
+      "course-schedule",
+      "clone-graph",
+      "number-of-islands"
+    ]
   }
 ]
