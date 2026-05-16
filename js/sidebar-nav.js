@@ -312,16 +312,32 @@ var DSA = window.DSA || {};
     xhr.send();
   }
 
+  // localStorage cache so the sidebar renders synchronously on every page
+  // after the first. We still fetch fresh JSON in the background and update
+  // if it changed.
+  var TOPICS_CACHE_KEY = 'dsa-sidebar-topics-cache-v1';
+  var PROBLEMS_CACHE_KEY = 'dsa-sidebar-problems-cache-v1';
+
+  function readCache(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function writeCache(key, data) {
+    try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+  }
+
   function init() {
     var nav = document.getElementById('sidebar-nav');
     if (!nav) return;
 
     var base = getBasePath();
-    var topicsLoaded = null;
-    var problemsLoaded = null;
+    var topicsLoaded = readCache(TOPICS_CACHE_KEY);
+    var problemsLoaded = readCache(PROBLEMS_CACHE_KEY);
 
     function renderIfReady() {
-      // Render once topics has loaded; problems can fill in later (or never).
+      // Render as soon as topics is available (from cache or fetch).
       if (topicsLoaded === null) return;
       buildSidebar(topicsLoaded || [], problemsLoaded || []);
       if (DSA.progress && DSA.progress.updateBadges) {
@@ -329,14 +345,38 @@ var DSA = window.DSA || {};
       }
     }
 
-    fetchJson(base + 'data/topics.json', function(err, data) {
-      topicsLoaded = err ? [] : data;
+    // Render immediately from cache if we have anything (no flash of empty sidebar).
+    if (topicsLoaded !== null) {
       renderIfReady();
+    }
+
+    // Background refresh — only re-render if data actually changed.
+    fetchJson(base + 'data/topics.json', function(err, data) {
+      if (err) {
+        if (topicsLoaded === null) { topicsLoaded = []; renderIfReady(); }
+        return;
+      }
+      var prev = JSON.stringify(topicsLoaded);
+      var next = JSON.stringify(data);
+      if (prev !== next) {
+        topicsLoaded = data;
+        writeCache(TOPICS_CACHE_KEY, data);
+        renderIfReady();
+      }
     });
 
     fetchJson(base + 'data/problems.json', function(err, data) {
-      problemsLoaded = err ? [] : data;
-      renderIfReady();
+      if (err) {
+        if (problemsLoaded === null) { problemsLoaded = []; renderIfReady(); }
+        return;
+      }
+      var prev = JSON.stringify(problemsLoaded);
+      var next = JSON.stringify(data);
+      if (prev !== next) {
+        problemsLoaded = data;
+        writeCache(PROBLEMS_CACHE_KEY, data);
+        renderIfReady();
+      }
     });
 
     // Refresh sidebar problem dots when status changes (same tab) or across tabs.
