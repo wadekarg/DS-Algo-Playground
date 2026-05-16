@@ -14134,5 +14134,817 @@
       "k-closest-points-to-origin",
       "last-stone-weight"
     ]
+  },
+  {
+    "id": "find-median-from-data-stream",
+    "title": "Find Median from Data Stream",
+    "leetcode_url": "https://leetcode.com/problems/find-median-from-data-stream/",
+    "leetcode_id": 295,
+    "difficulty": "hard",
+    "patterns": [
+      "heap",
+      "two-heaps",
+      "design"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design a data structure that supports addNum(num) to add an integer to a stream and findMedian() to return the median of all elements so far. Both operations should be efficient under repeated calls.",
+    "constraints": [
+      "-10^5 <= num <= 10^5",
+      "At most 5 * 10^4 calls to addNum and findMedian.",
+      "There will be at least one element in the data structure before findMedian is called."
+    ],
+    "examples": [
+      {
+        "input": "ops: addNum(1), addNum(2), findMedian(), addNum(3), findMedian()",
+        "output": "[1.5, 2.0]",
+        "explanation": "After [1, 2] median is 1.5. After [1, 2, 3] median is 2."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        # Use two heaps: max-heap (lower half) + min-heap (upper half).\n        pass\n    def addNum(self, num):\n        # Balance the two heaps so their sizes differ by at most 1.\n        pass\n    def findMedian(self):\n        # Median is one root (odd total) or average of both roots (even).\n        pass\n\ndef runOps(ops):\n    mf = MedianFinder()\n    out = []\n    for op in ops:\n        if op[0] == 'addNum':\n            mf.addNum(op[1])\n        elif op[0] == 'findMedian':\n            out.append(mf.findMedian())\n    return out\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "addNum",
+              1
+            ],
+            [
+              "addNum",
+              2
+            ],
+            [
+              "findMedian"
+            ],
+            [
+              "addNum",
+              3
+            ],
+            [
+              "findMedian"
+            ]
+          ]
+        ],
+        "expected": "[1.5, 2.0]"
+      },
+      {
+        "label": "single number",
+        "args": [
+          [
+            [
+              "addNum",
+              5
+            ],
+            [
+              "findMedian"
+            ]
+          ]
+        ],
+        "expected": "[5.0]"
+      },
+      {
+        "label": "even then odd",
+        "args": [
+          [
+            [
+              "addNum",
+              1
+            ],
+            [
+              "addNum",
+              3
+            ],
+            [
+              "findMedian"
+            ],
+            [
+              "addNum",
+              2
+            ],
+            [
+              "findMedian"
+            ]
+          ]
+        ],
+        "expected": "[2.0, 2.0]"
+      },
+      {
+        "label": "duplicates",
+        "args": [
+          [
+            [
+              "addNum",
+              5
+            ],
+            [
+              "addNum",
+              5
+            ],
+            [
+              "findMedian"
+            ],
+            [
+              "addNum",
+              5
+            ],
+            [
+              "findMedian"
+            ]
+          ]
+        ],
+        "expected": "[5.0, 5.0]"
+      },
+      {
+        "label": "negatives",
+        "args": [
+          [
+            [
+              "addNum",
+              -1
+            ],
+            [
+              "addNum",
+              -2
+            ],
+            [
+              "findMedian"
+            ],
+            [
+              "addNum",
+              -3
+            ],
+            [
+              "findMedian"
+            ]
+          ]
+        ],
+        "expected": "[-1.5, -2.0]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two heaps. Lower half is a MAX-heap (Python: negate values), upper half is a MIN-heap. Their sizes differ by at most 1. When adding: push to lower if num \u2264 lower's max, else upper; then rebalance. Median: if sizes equal \u2192 average of both roots. Else: root of the larger heap.",
+      "clarifying_questions": [
+        {
+          "question": "What's the time bound per operation?",
+          "why": "O(log n) for addNum, O(1) for findMedian. The two-heaps approach hits this; sorted-list-with-insert is O(n) per add."
+        },
+        {
+          "question": "What's an empty-data findMedian \u2014 does that need handling?",
+          "why": "Per spec, at least one element before findMedian. So no. But defensive return of 0 or raising is acceptable."
+        },
+        {
+          "question": "Return float or int?",
+          "why": "Float \u2014 median of two integers can be x.5. Always return float."
+        },
+        {
+          "question": "Could I use a sorted list with bisect?",
+          "why": "Yes \u2014 O(log n) insertion lookup + O(n) shift. Asymptotically worse but possible. Two heaps is better."
+        },
+        {
+          "question": "Why max-heap on the low side?",
+          "why": "So its root is the LARGEST of the lower half \u2014 adjacent to the median. Similarly min-heap on the high side gives the SMALLEST of the upper half."
+        }
+      ],
+      "think_out_loud": "Two heaps maintained at balanced sizes. Lower = max-heap (Python: store negative). Upper = min-heap. Invariant: sizes differ by at most 1. To add: push to one (decide by value), then if sizes are unbalanced, move root from larger to smaller. Median: if equal sizes, average of both roots. Else: root of the larger heap.",
+      "edge_cases": [
+        {
+          "category": "Single number",
+          "details": "Goes to lower. Median is that number (as float)."
+        },
+        {
+          "category": "Even count",
+          "details": "Sizes equal. Median = (lower_root + upper_root) / 2."
+        },
+        {
+          "category": "Odd count",
+          "details": "Larger heap (by 1) has the median at its root."
+        },
+        {
+          "category": "Duplicates",
+          "details": "Algorithm handles them \u2014 they just land in the appropriate heap."
+        },
+        {
+          "category": "Negative values",
+          "details": "Works the same. Just comparing values."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to negate when using heapq as max-heap.",
+        "Returning int division instead of float \u2014 must be float.",
+        "Not rebalancing after each insert \u2014 heaps drift apart, median is wrong.",
+        "Pushing to wrong heap initially \u2014 fixable by an immediate rebalance step.",
+        "Using a single sorted list and not seeing O(n)-per-insert problem."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Two-heaps design problem. The canonical 'maintain median under streaming inserts' challenge.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. The two-heaps insight separates strong-hire from average candidates.",
+      "really_testing": [
+        "Recognizing 'median = element adjacent to two halves'.",
+        "Two heaps with size invariant.",
+        "Balancing logic on each insert.",
+        "Distinguishing odd vs even counts for findMedian."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pitches two heaps in 1-2 min. Codes it in 10-15 min. Handles balancing correctly."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with sorted list (O(n) insert); refactors to two heaps with prompting."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Two-heap idea but buggy balancing. Or off-by-one on size invariants."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any sublinear-per-add algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'addNum + findMedian, frequent both, want efficient'.",
+        "Pitch two heaps: 'max-heap for lower half, min-heap for upper half, sizes balanced'.",
+        "addNum: push to lower if num <= lower.peek() else upper. Then rebalance: if size diff > 1, move root from larger to smaller.",
+        "findMedian: if sizes equal \u2192 (max-of-lower + min-of-upper) / 2. Else \u2192 root of larger heap.",
+        "Walk addNum(1), addNum(2), findMedian: lower=[1], upper=[]. After 2: 2 > 1 \u2192 upper=[2]. Sizes equal: (1+2)/2 = 1.5. \u2713"
+      ],
+      "playbook_meta": "Total time: 12-18 min. Follow-up: 'streaming median in a sliding window' (combine with sorted-list/multiset).",
+      "dont_do": [
+        "Don't sort each findMedian.",
+        "Don't forget to rebalance.",
+        "Don't return int \u2014 must be float.",
+        "Don't forget to negate when using heapq as max-heap."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two Heaps (Max + Min)",
+        "time": "O(log n) addNum, O(1) findMedian",
+        "space": "O(n)",
+        "code": "import heapq\n\nclass MedianFinder:\n    def __init__(self):\n        self.lower = []  # max-heap (negated) for lower half\n        self.upper = []  # min-heap for upper half\n    \n    def addNum(self, num):\n        # Push into lower or upper based on value\n        if not self.lower or num <= -self.lower[0]:\n            heapq.heappush(self.lower, -num)\n        else:\n            heapq.heappush(self.upper, num)\n        # Rebalance: sizes must differ by at most 1\n        if len(self.lower) > len(self.upper) + 1:\n            heapq.heappush(self.upper, -heapq.heappop(self.lower))\n        elif len(self.upper) > len(self.lower):\n            heapq.heappush(self.lower, -heapq.heappop(self.upper))\n    \n    def findMedian(self):\n        if len(self.lower) > len(self.upper):\n            return float(-self.lower[0])\n        return (-self.lower[0] + self.upper[0]) / 2.0\n\ndef runOps(ops):\n    mf = MedianFinder()\n    out = []\n    for op in ops:\n        if op[0] == 'addNum':\n            mf.addNum(op[1])\n        elif op[0] == 'findMedian':\n            out.append(mf.findMedian())\n    return out",
+        "explanation": "Two heaps with size invariant: |lower| - |upper| \u2208 {0, 1}. Lower is a max-heap (negate values for Python's min-heap); upper is a min-heap. addNum places into the appropriate heap based on value, then rebalances. findMedian returns the larger heap's root (odd case) or the average of both roots (even case). O(log n) per add, O(1) per median."
+      }
+    ],
+    "related_problem_ids": [
+      "kth-largest-element-in-a-stream",
+      "task-scheduler",
+      "kth-largest-element-in-an-array"
+    ]
+  },
+  {
+    "id": "number-of-islands",
+    "title": "Number of Islands",
+    "leetcode_url": "https://leetcode.com/problems/number-of-islands/",
+    "leetcode_id": 200,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs",
+      "grid"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an m \u00d7 n 2D grid of '1's (land) and '0's (water), return the number of islands. An island is surrounded by water and formed by connecting adjacent lands horizontally or vertically. You may assume the grid is surrounded by water.",
+    "constraints": [
+      "m == grid.length, n == grid[i].length",
+      "1 <= m, n <= 300",
+      "grid[i][j] is '0' or '1'."
+    ],
+    "examples": [
+      {
+        "input": "grid = [[\"1\",\"1\",\"1\",\"1\",\"0\"], [\"1\",\"1\",\"0\",\"1\",\"0\"], [\"1\",\"1\",\"0\",\"0\",\"0\"], [\"0\",\"0\",\"0\",\"0\",\"0\"]]",
+        "output": "1",
+        "explanation": "All '1's are connected \u2192 one island."
+      },
+      {
+        "input": "grid = [[\"1\",\"1\",\"0\",\"0\",\"0\"], [\"1\",\"1\",\"0\",\"0\",\"0\"], [\"0\",\"0\",\"1\",\"0\",\"0\"], [\"0\",\"0\",\"0\",\"1\",\"1\"]]",
+        "output": "3",
+        "explanation": "Three disconnected groups of '1's."
+      }
+    ],
+    "function_name": "numIslands",
+    "function_signature": "def numIslands(grid):",
+    "starter_code": "def numIslands(grid):\n    # Return the number of connected components of '1' cells (4-directional).\n    pass",
+    "test_cases": [
+      {
+        "label": "one big island",
+        "args": [
+          [
+            [
+              "1",
+              "1",
+              "1",
+              "1",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "1",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "0",
+              "0"
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "three islands",
+        "args": [
+          [
+            [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "0",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0",
+              "0",
+              "1",
+              "1"
+            ]
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "all water",
+        "args": [
+          [
+            [
+              "0",
+              "0"
+            ],
+            [
+              "0",
+              "0"
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all land",
+        "args": [
+          [
+            [
+              "1",
+              "1"
+            ],
+            [
+              "1",
+              "1"
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single cell island",
+        "args": [
+          [
+            [
+              "1"
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "diagonal not connected",
+        "args": [
+          [
+            [
+              "1",
+              "0"
+            ],
+            [
+              "0",
+              "1"
+            ]
+          ]
+        ],
+        "expected": "2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Connected components on a grid. For each cell that's '1' and unvisited, start DFS/BFS, marking all connected '1' cells visited. Increment island count once per start. Mark visited by mutating to '0' (saves space) or with a separate visited set.",
+      "clarifying_questions": [
+        {
+          "question": "4-directional or 8-directional?",
+          "why": "Per spec, 4-directional (horizontal + vertical only). Diagonal '1's are separate islands. Critical to confirm."
+        },
+        {
+          "question": "Can I mutate the input grid?",
+          "why": "Usually yes \u2014 saves the visited set. Confirm with interviewer. Otherwise use a separate set."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "DFS recursive is shortest. BFS iterative with a queue is safer for deep grids (stack overflow concerns)."
+        },
+        {
+          "question": "Cells are strings or ints?",
+          "why": "LC has strings '1'/'0'. Easy to mistake for ints. Use exact comparison."
+        },
+        {
+          "question": "Worst case grid size?",
+          "why": "300x300 = 90000 cells. O(m*n) handles it easily."
+        }
+      ],
+      "think_out_loud": "Iterate every cell. If it's land ('1'), increment count and flood-fill DFS to mark the connected component as visited (or sink to '0'). Each cell visited at most once across all DFS calls \u2192 O(m*n) total.",
+      "edge_cases": [
+        {
+          "category": "All water",
+          "details": "Return 0. No DFS calls."
+        },
+        {
+          "category": "All land",
+          "details": "One island. First DFS fills everything."
+        },
+        {
+          "category": "Single cell",
+          "details": "Either 0 or 1."
+        },
+        {
+          "category": "Diagonal '1's",
+          "details": "Separate islands (4-direction only). [[1,0],[0,1]] = 2."
+        },
+        {
+          "category": "Rectangular grid",
+          "details": "m != n is fine. Algorithm doesn't assume square."
+        }
+      ],
+      "common_mistakes": [
+        "8-directional traversal \u2014 wrong by spec.",
+        "Not marking visited \u2014 infinite loop.",
+        "Mutating grid when caller didn't authorize \u2014 bad practice.",
+        "Off-by-one on bounds (m vs m-1).",
+        "Comparing to int 1 instead of string '1'."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic flood-fill / connected components problem. Foundation for many grid problems.",
+      "introduction_context": "Onsite at virtually every FAANG. Often a warm-up before a harder grid problem (rotting oranges, surrounded regions, etc.).",
+      "really_testing": [
+        "Recognizing connected components pattern.",
+        "DFS or BFS on a grid.",
+        "Marking visited (mutate or set).",
+        "4-direction vs 8-direction discipline."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes DFS/BFS flood-fill in 5-8 min. Confirms 4-direction. Handles edges."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one self-corrected bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets to mark visited, gets infinite loop or wrong count."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any flood-fill approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count 4-connected components of '1' cells'.",
+        "Pitch: 'iterate every cell; if it's land, DFS-mark and increment count'.",
+        "Code: m, n = len(grid), len(grid[0]). def dfs(r, c): if r<0 or r>=m or c<0 or c>=n or grid[r][c] != '1': return. grid[r][c] = '0'. dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1). count = 0. for r in range(m): for c in range(n): if grid[r][c] == '1': dfs(r, c); count += 1. return count.",
+        "Walk on example 1: DFS from (0,0) sinks all connected '1's. Count = 1. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-ups: Number of Connected Components (graph), Surrounded Regions, Pacific Atlantic Water Flow.",
+      "dont_do": [
+        "Don't traverse diagonally.",
+        "Don't forget to mark visited.",
+        "Don't check bounds at the call site instead of at function start (cluttered).",
+        "Don't use Union-Find unless asked \u2014 DFS is shorter and faster."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS Flood-Fill (mutate grid)",
+        "time": "O(m * n)",
+        "space": "O(m * n) recursion worst case",
+        "code": "def numIslands(grid):\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    \n    def dfs(r, c):\n        if r < 0 or r >= m or c < 0 or c >= n or grid[r][c] != '1':\n            return\n        grid[r][c] = '0'  # mark visited by sinking\n        dfs(r + 1, c)\n        dfs(r - 1, c)\n        dfs(r, c + 1)\n        dfs(r, c - 1)\n    \n    count = 0\n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == '1':\n                dfs(r, c)\n                count += 1\n    return count",
+        "explanation": "Classic flood-fill. Iterate every cell; when we find a land cell, increment count and DFS-mark all connected land cells (sink them to '0' so they're not counted again). Each cell visited at most once \u2192 O(m * n). Mutates input \u2014 call out in the interview."
+      },
+      {
+        "name": "BFS Flood-Fill (queue, no mutation)",
+        "time": "O(m * n)",
+        "space": "O(m * n) for visited",
+        "code": "from collections import deque\n\ndef numIslands(grid):\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    visited = set()\n    count = 0\n    \n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == '1' and (r, c) not in visited:\n                queue = deque([(r, c)])\n                visited.add((r, c))\n                while queue:\n                    cr, cc = queue.popleft()\n                    for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n                        nr, nc = cr + dr, cc + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == '1' and (nr, nc) not in visited:\n                            visited.add((nr, nc))\n                            queue.append((nr, nc))\n                count += 1\n    return count",
+        "explanation": "BFS variant. Use a queue to flood-fill from each starting land cell. Maintain a visited set to avoid revisits and avoid mutating the grid. Same O(m * n) complexity; safer for deep grids that would blow the recursion stack in DFS."
+      }
+    ],
+    "related_problem_ids": [
+      "clone-graph",
+      "course-schedule",
+      "rotting-oranges"
+    ]
+  },
+  {
+    "id": "clone-graph",
+    "title": "Clone Graph",
+    "leetcode_url": "https://leetcode.com/problems/clone-graph/",
+    "leetcode_id": 133,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a reference of a node in a connected undirected graph, return a DEEP COPY (clone) of the graph. Each node has an integer val and a list of its neighbors. (Here the input is an adjacency list and we return the cloned adjacency list.)",
+    "constraints": [
+      "The number of nodes in the graph is in [0, 100].",
+      "1 <= Node.val <= 100",
+      "Node.val is unique for each node.",
+      "There are no repeated edges and no self-loops."
+    ],
+    "examples": [
+      {
+        "input": "adjList = [[2,4],[1,3],[2,4],[1,3]]",
+        "output": "[[2,4],[1,3],[2,4],[1,3]]",
+        "explanation": "Each index represents node val = index+1. Node 1's neighbors are 2 and 4; node 2's are 1 and 3; etc. After cloning the adjacency list should match exactly."
+      },
+      {
+        "input": "adjList = [[]]",
+        "output": "[[]]",
+        "explanation": "Single isolated node with no neighbors."
+      },
+      {
+        "input": "adjList = []",
+        "output": "[]",
+        "explanation": "Empty graph."
+      }
+    ],
+    "function_name": "cloneGraph",
+    "function_signature": "def cloneGraph(adjList):",
+    "starter_code": "class Node:\n    def __init__(self, val=0, neighbors=None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\ndef cloneGraph(adjList):\n    # Test wrapper: build a graph from adjList, clone it via DFS/BFS,\n    # serialize the clone's adjList back, and return it.\n    if not adjList:\n        return []\n    \n    # Step 1: build the original graph from adjList\n    nodes = [Node(i + 1) for i in range(len(adjList))]\n    for i, neighbors in enumerate(adjList):\n        for n in neighbors:\n            nodes[i].neighbors.append(nodes[n - 1])\n    \n    # Step 2: clone \u2014 your code goes here. Return the clone of nodes[0].\n    \n    def clone(node):\n        # Your clone logic\n        pass\n    \n    cloned_root = clone(nodes[0])\n    \n    # Step 3: serialize cloned graph back to adjList\n    if not cloned_root:\n        return [[]]\n    visited = {cloned_root: True}\n    queue = [cloned_root]\n    all_nodes = []\n    while queue:\n        node = queue.pop(0)\n        all_nodes.append(node)\n        for nb in node.neighbors:\n            if nb not in visited:\n                visited[nb] = True\n                queue.append(nb)\n    all_nodes.sort(key=lambda n: n.val)\n    return [[nb.val for nb in n.neighbors] for n in all_nodes]\n",
+    "test_cases": [
+      {
+        "label": "classic 4-node ring",
+        "args": [
+          [
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              1,
+              3
+            ]
+          ]
+        ],
+        "expected": "[[2, 4], [1, 3], [2, 4], [1, 3]]"
+      },
+      {
+        "label": "single isolated",
+        "args": [
+          [
+            []
+          ]
+        ],
+        "expected": "[[]]"
+      },
+      {
+        "label": "empty graph",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "two-node edge",
+        "args": [
+          [
+            [
+              2
+            ],
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "[[2], [1]]"
+      },
+      {
+        "label": "triangle",
+        "args": [
+          [
+            [
+              2,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": "[[2, 3], [1, 3], [1, 2]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "DFS or BFS with a hash map old_node \u2192 new_node. As you walk the original graph, create a new node for each original you encounter (if not already cloned), then recursively clone each neighbor and append it to the new node's neighbors list. The map prevents infinite loops on cycles.",
+      "clarifying_questions": [
+        {
+          "question": "Connected graph?",
+          "why": "Per spec, yes (you're given one node). A DFS/BFS from it reaches everything."
+        },
+        {
+          "question": "Undirected (each edge appears twice in adjacency lists)?",
+          "why": "Yes. Algorithm handles both \u2014 the visited map prevents double-cloning."
+        },
+        {
+          "question": "Self-loops or duplicate edges?",
+          "why": "Per spec, no. Simplifies \u2014 no need to handle node.neighbors containing duplicates."
+        },
+        {
+          "question": "DFS or BFS?",
+          "why": "Either works. DFS recursive is shortest. BFS iterative avoids deep recursion. Pick one and execute well."
+        },
+        {
+          "question": "Can the graph be empty?",
+          "why": "If yes (no nodes), return None / empty. Defensive but easy."
+        }
+      ],
+      "think_out_loud": "Need to clone every node AND preserve the edge structure. Use a hash map from original-node to its clone. DFS: if node already in map, return its clone (handles cycles). Otherwise create clone, register in map, then for each neighbor recursively clone and append to the new clone's neighbors. Return the clone.",
+      "edge_cases": [
+        {
+          "category": "Empty graph",
+          "details": "Return None / []. No nodes to clone."
+        },
+        {
+          "category": "Single node",
+          "details": "Clone with empty neighbors list."
+        },
+        {
+          "category": "Cycle",
+          "details": "Visited map prevents infinite recursion."
+        },
+        {
+          "category": "Disconnected (out of spec)",
+          "details": "Per spec, graph is connected. Single DFS reaches all."
+        },
+        {
+          "category": "Dense vs sparse",
+          "details": "Algorithm complexity O(N + E) handles both."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting the visited map \u2014 infinite recursion on cycles.",
+        "Returning the original node instead of the clone.",
+        "Copying val but not neighbors (shallow copy).",
+        "Pointing clone's neighbors to ORIGINAL nodes (must point to clones).",
+        "Trying to use copy.deepcopy \u2014 works but defeats the algorithm interview."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic graph DFS/BFS with state. Tests the 'visited map' technique that's foundational for many graph problems.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. Often paired with Number of Islands as a graph-traversal round.",
+      "really_testing": [
+        "Recognizing 'clone with cycles' as a visited-map problem.",
+        "DFS/BFS with state passed across calls.",
+        "Avoiding both infinite recursion AND duplicate cloning.",
+        "Connecting new edges to NEW nodes, not original."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pitches visited-map approach in <2 min. Codes DFS in 10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one bug fixed mid-flight."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets visited map, hits infinite recursion. Or copies neighbors as original nodes."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate the cycle problem or any traversal."
+        }
+      ],
+      "playbook": [
+        "Restate: 'deep copy a connected undirected graph'.",
+        "Insight: 'cycles \u2192 need visited map old \u2192 clone'.",
+        "DFS: def clone(node): if node in seen: return seen[node]. copy = Node(node.val). seen[node] = copy. for nb in node.neighbors: copy.neighbors.append(clone(nb)). return copy.",
+        "Walk on a 2-node graph A-B: clone(A) creates A', registers A\u2192A', recurses clone(B) \u2192 creates B', recurses clone(A): already in seen, returns A'. So B'.neighbors = [A']. Back to A: A'.neighbors = [B']. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: 'Clone with random pointers' (LC 138).",
+      "dont_do": [
+        "Don't forget the visited map.",
+        "Don't connect new edges to original nodes.",
+        "Don't use deepcopy.",
+        "Don't return the original."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with Visited Map",
+        "time": "O(N + E)",
+        "space": "O(N) for map + recursion",
+        "code": "class Node:\n    def __init__(self, val=0, neighbors=None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\ndef cloneGraph(adjList):\n    if not adjList:\n        return []\n    \n    # Build the original graph from the adjacency list\n    nodes = [Node(i + 1) for i in range(len(adjList))]\n    for i, neighbors in enumerate(adjList):\n        for n in neighbors:\n            nodes[i].neighbors.append(nodes[n - 1])\n    \n    # Clone via DFS + visited map\n    seen = {}\n    def clone(node):\n        if node in seen:\n            return seen[node]\n        copy = Node(node.val)\n        seen[node] = copy  # register BEFORE recursing on neighbors\n        for nb in node.neighbors:\n            copy.neighbors.append(clone(nb))\n        return copy\n    \n    cloned_root = clone(nodes[0])\n    \n    # Serialize cloned graph back to adjList for test comparison\n    if not cloned_root:\n        return [[]]\n    visited = {cloned_root: True}\n    queue = [cloned_root]\n    all_nodes = []\n    while queue:\n        node = queue.pop(0)\n        all_nodes.append(node)\n        for nb in node.neighbors:\n            if nb not in visited:\n                visited[nb] = True\n                queue.append(nb)\n    all_nodes.sort(key=lambda n: n.val)\n    return [[nb.val for nb in n.neighbors] for n in all_nodes]",
+        "explanation": "Classic DFS clone. The visited map old\u2192clone serves two purposes: prevents infinite recursion on cycles, and ensures we only create each clone once. Crucially, register the clone in the map BEFORE recursing on neighbors \u2014 otherwise the first cycle returns to an unregistered node and creates a second clone. O(N + E) total work."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "course-schedule",
+      "pacific-atlantic-water-flow"
+    ]
   }
 ]
