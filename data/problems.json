@@ -178,6 +178,7 @@
     "difficulty": "easy",
     "patterns": ["hash-map"],
     "topics": ["arrays", "hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -187,6 +188,7 @@
     "difficulty": "easy",
     "patterns": ["kadane"],
     "topics": ["arrays"],
+    "neetcode_category": "Dynamic Programming",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -506,6 +508,7 @@
     "difficulty": "medium",
     "patterns": ["two-pointers"],
     "topics": ["arrays", "two-pointers"],
+    "neetcode_category": "Two Pointers",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -515,6 +518,7 @@
     "difficulty": "medium",
     "patterns": ["prefix-sum"],
     "topics": ["arrays", "prefix-sum"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -524,6 +528,7 @@
     "difficulty": "medium",
     "patterns": ["two-pointers"],
     "topics": ["arrays"],
+    "neetcode_category": "Two Pointers",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -533,6 +538,7 @@
     "difficulty": "medium",
     "patterns": ["hash-map"],
     "topics": ["arrays", "hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -542,6 +548,7 @@
     "difficulty": "hard",
     "patterns": ["two-pointers"],
     "topics": ["arrays", "two-pointers"],
+    "neetcode_category": "Two Pointers",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -551,6 +558,7 @@
     "difficulty": "hard",
     "patterns": ["hash-map"],
     "topics": ["arrays"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -560,6 +568,7 @@
     "difficulty": "medium",
     "patterns": ["prefix-sum", "hash-map"],
     "topics": ["arrays", "prefix-sum", "hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["faang-common"],
     "has_walkthrough": true,
     "approaches": [
@@ -586,6 +595,7 @@
     "difficulty": "easy",
     "patterns": ["hash-map"],
     "topics": ["hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -595,6 +605,7 @@
     "difficulty": "medium",
     "patterns": ["hash-map"],
     "topics": ["hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -604,6 +615,7 @@
     "difficulty": "medium",
     "patterns": ["hash-map"],
     "topics": ["hash-table"],
+    "neetcode_category": "Arrays & Hashing",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -613,6 +625,7 @@
     "difficulty": "easy",
     "patterns": ["two-pointers"],
     "topics": ["two-pointers"],
+    "neetcode_category": "Two Pointers",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -622,6 +635,7 @@
     "difficulty": "easy",
     "patterns": ["two-pointers"],
     "topics": ["two-pointers", "arrays"],
+    "neetcode_category": "Two Pointers",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -631,6 +645,7 @@
     "difficulty": "medium",
     "patterns": ["sliding-window", "hash-map"],
     "topics": ["sliding-window", "hash-table"],
+    "neetcode_category": "Sliding Window",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -640,6 +655,7 @@
     "difficulty": "hard",
     "patterns": ["sliding-window"],
     "topics": ["sliding-window"],
+    "neetcode_category": "Sliding Window",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -649,6 +665,7 @@
     "difficulty": "medium",
     "patterns": ["sliding-window"],
     "topics": ["sliding-window"],
+    "neetcode_category": "Sliding Window",
     "frequency_tags": []
   },
   {
@@ -658,6 +675,7 @@
     "difficulty": "easy",
     "patterns": ["sliding-window"],
     "topics": ["sliding-window"],
+    "neetcode_category": "Sliding Window",
     "frequency_tags": []
   },
   {
@@ -667,6 +685,7 @@
     "difficulty": "easy",
     "patterns": ["binary-search"],
     "topics": ["binary-search"],
+    "neetcode_category": "Binary Search",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -676,6 +695,7 @@
     "difficulty": "medium",
     "patterns": ["binary-search"],
     "topics": ["binary-search"],
+    "neetcode_category": "Binary Search",
     "frequency_tags": ["blind-75", "faang-common"]
   },
   {
@@ -685,6 +705,7 @@
     "difficulty": "medium",
     "patterns": ["binary-search"],
     "topics": ["binary-search"],
+    "neetcode_category": "Binary Search",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -694,6 +715,7 @@
     "difficulty": "medium",
     "patterns": ["binary-search"],
     "topics": ["binary-search"],
+    "neetcode_category": "Binary Search",
     "frequency_tags": ["faang-common"]
   }
   ,
@@ -704,6 +726,7 @@
     "difficulty": "easy",
     "patterns": ["fast-slow-pointers"],
     "topics": ["fast-slow-pointers", "linked-lists"],
+    "neetcode_category": "Linked List",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -713,6 +736,7 @@
     "difficulty": "medium",
     "patterns": ["fast-slow-pointers"],
     "topics": ["fast-slow-pointers", "linked-lists"],
+    "neetcode_category": "Linked List",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -722,6 +746,7 @@
     "difficulty": "easy",
     "patterns": ["fast-slow-pointers"],
     "topics": ["fast-slow-pointers", "linked-lists"],
+    "neetcode_category": "Linked List",
     "frequency_tags": []
   },
   {
@@ -731,6 +756,7 @@
     "difficulty": "easy",
     "patterns": ["fast-slow-pointers"],
     "topics": ["fast-slow-pointers"],
+    "neetcode_category": "Linked List",
     "frequency_tags": []
   }
   ,
@@ -741,6 +767,7 @@
     "difficulty": "medium",
     "patterns": ["backtracking"],
     "topics": ["backtracking", "recursion"],
+    "neetcode_category": "Backtracking",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -750,6 +777,7 @@
     "difficulty": "medium",
     "patterns": ["backtracking"],
     "topics": ["backtracking", "recursion"],
+    "neetcode_category": "Backtracking",
     "frequency_tags": ["blind-75"]
   },
   {
@@ -759,6 +787,7 @@
     "difficulty": "medium",
     "patterns": ["backtracking"],
     "topics": ["backtracking"],
+    "neetcode_category": "Backtracking",
     "frequency_tags": []
   },
   {
@@ -768,6 +797,7 @@
     "difficulty": "hard",
     "patterns": ["backtracking"],
     "topics": ["backtracking"],
+    "neetcode_category": "Backtracking",
     "frequency_tags": ["faang-common"]
   },
   {
@@ -777,6 +807,7 @@
     "difficulty": "medium",
     "patterns": ["backtracking"],
     "topics": ["backtracking"],
+    "neetcode_category": "Backtracking",
     "frequency_tags": ["faang-common"]
   }
 ]
