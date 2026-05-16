@@ -11254,5 +11254,721 @@
       "binary-tree-right-side-view",
       "invert-binary-tree"
     ]
+  },
+  {
+    "id": "binary-tree-right-side-view",
+    "title": "Binary Tree Right Side View",
+    "leetcode_url": "https://leetcode.com/problems/binary-tree-right-side-view/",
+    "leetcode_id": 199,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "bfs",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a binary tree, imagine standing on the right side of it \u2014 return the values of the nodes you can see, ordered from top to bottom.",
+    "constraints": [
+      "Number of nodes is in [0, 100].",
+      "-100 <= Node.val <= 100"
+    ],
+    "examples": [
+      {
+        "input": "values = [1,2,3,None,5,None,4]",
+        "output": "[1,3,4]",
+        "explanation": "From the right: see 1 (root), 3 (right child), 4 (5's right is None, but 3 has right=4)."
+      },
+      {
+        "input": "values = [1,None,3]",
+        "output": "[1,3]",
+        "explanation": "Skewed right; see both."
+      },
+      {
+        "input": "values = []",
+        "output": "[]",
+        "explanation": "Empty tree, empty view."
+      }
+    ],
+    "function_name": "rightSideView",
+    "function_signature": "def rightSideView(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef rightSideView(values):\n    # Pretend the signature is rightSideView(root: TreeNode) -> List[int].\n    root = build_tree(values)\n    \n    # Your code: for each level, return the rightmost node's value.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic [1,2,3,N,5,N,4]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            null,
+            5,
+            null,
+            4
+          ]
+        ],
+        "expected": "[1, 3, 4]"
+      },
+      {
+        "label": "skewed right",
+        "args": [
+          [
+            1,
+            null,
+            3
+          ]
+        ],
+        "expected": "[1, 3]"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "left-only chain",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "[1, 2, 3]"
+      },
+      {
+        "label": "balanced",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "[1, 3, 7]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "BFS by level, take the LAST node's value from each level. That's the rightmost node visible. Trivial variation on standard BFS \u2014 same queue pattern, just append the last popped value per level instead of all of them.",
+      "clarifying_questions": [
+        {
+          "question": "What if a level has no right-side node? (left-only tree)",
+          "why": "Then the leftmost node IS the rightmost \u2014 it's the only one. The 'rightmost per level' rule still works."
+        },
+        {
+          "question": "Empty tree \u2192 empty list?",
+          "why": "Yes. Confirms the trivial case."
+        },
+        {
+          "question": "Is left-side view the symmetric problem?",
+          "why": "Yes (LC 199 has a companion). Same algorithm, take first instead of last per level."
+        },
+        {
+          "question": "Can I do it with DFS?",
+          "why": "Yes \u2014 preorder visit right first, track max depth seen; first node at each depth is the answer. Slightly trickier but valid."
+        }
+      ],
+      "think_out_loud": "BFS by level. For each level, the last node popped is the rightmost. Append its value to the result. Done. DFS alternative: traverse right children first (right-preorder); at each node, if its depth exceeds max-depth-seen, append its value. Both O(n).",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "Return []. BFS loop never enters."
+        },
+        {
+          "category": "Single node",
+          "details": "[root.val]."
+        },
+        {
+          "category": "Skewed left (only left children)",
+          "details": "All single-node levels \u2014 the only nodes are the rightmost. Return the chain in order."
+        },
+        {
+          "category": "Skewed right",
+          "details": "Right chain \u2014 same chain returned."
+        },
+        {
+          "category": "Balanced",
+          "details": "Rightmost of each level. Mixes left and right children."
+        }
+      ],
+      "common_mistakes": [
+        "Returning only nodes that have NO sibling \u2014 wrong (rightmost includes nodes with left siblings).",
+        "Returning rightmost of subtree \u2014 different problem.",
+        "DFS without right-first ordering \u2014 first hit at each depth becomes leftmost, not rightmost.",
+        "Forgetting to snapshot queue size \u2014 adds children to current level.",
+        "Off-by-one when picking the last node (use index len-1)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Variant of Level Order Traversal. Tests whether you can adapt the BFS-by-level pattern to a slightly different output.",
+      "introduction_context": "Common at Amazon, Meta, Bloomberg. Often paired with Level Order as the second half of a tree round.",
+      "really_testing": [
+        "Adapting BFS-by-level to produce one value per level.",
+        "Knowing 'last popped per level' = rightmost.",
+        "Or: DFS right-first with depth tracking.",
+        "Edge cases (empty, skewed)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes BFS variant in 3-5 min, or DFS variant; explains why both work."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, mentions one alternative."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy queue management or wrong ordering."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'rightmost node at each level, top to bottom'.",
+        "Pitch BFS: 'standard level traversal, but only keep the last node value per level'.",
+        "Code: queue = deque([root]) if root else deque(). result = []. while queue: size = len(queue). for i in range(size): node = queue.popleft(). if i == size - 1: result.append(node.val). if node.left: queue.append(node.left). if node.right: queue.append(node.right). return result.",
+        "Walk [1,2,3,N,5,N,4]: level 0 [1] \u2192 1. Level 1 [2,3] \u2192 3. Level 2 [5, 4] \u2192 4. Result [1,3,4]. \u2713"
+      ],
+      "playbook_meta": "Total time: 3-5 min. Follow-up: 'left side view' (take first instead of last). Or 'top view' / 'bottom view' (harder; needs column tracking).",
+      "dont_do": [
+        "Don't return only nodes without left siblings.",
+        "Don't forget to handle empty root.",
+        "Don't enqueue None children.",
+        "Don't sort \u2014 natural BFS order is already correct."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "BFS, Rightmost per Level",
+        "time": "O(n)",
+        "space": "O(w)",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\nfrom collections import deque\n\ndef rightSideView(values):\n    root = build_tree(values)\n    result = []\n    if not root:\n        return result\n    \n    queue = deque([root])\n    while queue:\n        size = len(queue)\n        for i in range(size):\n            node = queue.popleft()\n            if i == size - 1:\n                result.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n    return result",
+        "explanation": "Standard BFS by level. We process each level fully, then add the LAST node's value to the result \u2014 that's the rightmost visible from outside. Each node touched once \u2192 O(n)."
+      },
+      {
+        "name": "DFS Right-First with Depth",
+        "time": "O(n)",
+        "space": "O(h)",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef rightSideView(values):\n    root = build_tree(values)\n    result = []\n    \n    def dfs(node, depth):\n        if not node:\n            return\n        if depth == len(result):\n            result.append(node.val)  # first time we hit this depth\n        dfs(node.right, depth + 1)\n        dfs(node.left, depth + 1)\n    \n    dfs(root, 0)\n    return result",
+        "explanation": "DFS variant. Visit right children FIRST. The first time we reach a given depth, that node must be the rightmost (because of right-first ordering). Append it. Slightly trickier than BFS, but uses less queue memory."
+      }
+    ],
+    "related_problem_ids": [
+      "binary-tree-level-order-traversal",
+      "maximum-depth-of-binary-tree",
+      "invert-binary-tree"
+    ]
+  },
+  {
+    "id": "validate-binary-search-tree",
+    "title": "Validate Binary Search Tree",
+    "leetcode_url": "https://leetcode.com/problems/validate-binary-search-tree/",
+    "leetcode_id": 98,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "dfs",
+      "bst"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a binary tree, determine if it is a valid BST. A valid BST has: (1) the left subtree contains only nodes with values STRICTLY LESS than the node's value, (2) the right subtree contains only nodes with values STRICTLY GREATER than the node's value, (3) both subtrees are themselves BSTs.",
+    "constraints": [
+      "Number of nodes is in [1, 10^4].",
+      "-2^31 <= Node.val <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "values = [2,1,3]",
+        "output": "True",
+        "explanation": "1 < 2 < 3. Valid BST."
+      },
+      {
+        "input": "values = [5,1,4,None,None,3,6]",
+        "output": "False",
+        "explanation": "Root is 5, right child is 4. But the right SUBTREE contains 3, which is less than root 5 \u2014 invalid. The local parent-child check alone misses this."
+      }
+    ],
+    "function_name": "isValidBST",
+    "function_signature": "def isValidBST(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isValidBST(values):\n    # Pretend the signature is isValidBST(root: TreeNode) -> bool.\n    root = build_tree(values)\n    \n    # Your code: every node must be strictly within (lower, upper) bounds.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "valid [2,1,3]",
+        "args": [
+          [
+            2,
+            1,
+            3
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "global violation",
+        "args": [
+          [
+            5,
+            1,
+            4,
+            null,
+            null,
+            3,
+            6
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "duplicate violation",
+        "args": [
+          [
+            2,
+            1,
+            2
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "deep valid BST",
+        "args": [
+          [
+            8,
+            3,
+            10,
+            1,
+            6,
+            null,
+            14,
+            null,
+            null,
+            4,
+            7,
+            13
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "left descendant too large",
+        "args": [
+          [
+            10,
+            5,
+            15,
+            null,
+            null,
+            6,
+            20
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "The trap: checking only that each node satisfies node.left.val < node.val < node.right.val is WRONG. You can have a left subtree where the immediate left child is fine but a deeper RIGHT descendant violates the constraint against an ancestor. Solution: pass down (lower, upper) bounds. Every node must be strictly within (lower, upper); update bounds when recursing.",
+      "clarifying_questions": [
+        {
+          "question": "Strict or non-strict inequality?",
+          "why": "Strict. Duplicates are NOT allowed (left < node < right, not \u2264). Easy to get wrong."
+        },
+        {
+          "question": "What's the initial range for root?",
+          "why": "(-infinity, infinity). Use float('-inf') and float('inf') as bounds."
+        },
+        {
+          "question": "Could in-order traversal work?",
+          "why": "Yes \u2014 for a valid BST, in-order yields strictly increasing values. Walk in-order, check each value > previous. Equally valid alternative."
+        },
+        {
+          "question": "Why is the 'check immediate children only' approach wrong?",
+          "why": "Because the BST property is GLOBAL \u2014 every node in left subtree must be less than the ancestor, not just the immediate parent. Critical insight to vocalize."
+        },
+        {
+          "question": "Is empty tree a valid BST?",
+          "why": "Yes by convention. Constraints say n \u2265 1, so moot in practice."
+        }
+      ],
+      "think_out_loud": "Two approaches. (1) Bounds: pass (lo, hi) down. Root starts at (-inf, +inf). For node, check lo < node.val < hi. Recurse left with (lo, node.val); recurse right with (node.val, hi). (2) In-order traversal: a valid BST yields strictly increasing values in order. Walk in-order, track previous; if ever prev >= current, invalid.",
+      "edge_cases": [
+        {
+          "category": "Single node",
+          "details": "Trivially valid."
+        },
+        {
+          "category": "Duplicate values",
+          "details": "Invalid (strict inequality). [2,1,2] returns False."
+        },
+        {
+          "category": "Left descendant violates ancestor",
+          "details": "The classic gotcha \u2014 local checks pass but global fails. Example [5,1,4,N,N,3,6]."
+        },
+        {
+          "category": "Extreme values (INT_MIN/MAX)",
+          "details": "Use float('-inf') / float('inf') to safely bound."
+        },
+        {
+          "category": "Deep skewed tree",
+          "details": "Algorithm still works; recursion depth equals tree height."
+        }
+      ],
+      "common_mistakes": [
+        "Checking only immediate child relationships \u2014 fails on global violations.",
+        "Using \u2264/\u2265 instead of strict < / > \u2014 accepts duplicates incorrectly.",
+        "Forgetting to update bounds when recursing \u2014 every recursion uses the same (-inf, +inf).",
+        "Trying to use INT_MIN/MAX bounds and hitting them on nodes with those values \u2014 use \u00b1inf.",
+        "In-order approach: forgetting to update prev or using \u2264 instead of <."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The classic 'local check isn't enough' tree problem. Tests whether you can think globally about a recursive structure.",
+      "introduction_context": "Onsite at Amazon, Meta, Google, Microsoft. The 'why not just check immediate children?' question is the hook \u2014 naive candidates fall into it.",
+      "really_testing": [
+        "Recognizing the global vs local distinction.",
+        "Passing bounds through recursion (or doing in-order).",
+        "Strict inequality discipline.",
+        "Confidence with \u00b1infinity as initial bounds."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Calls out the local-check trap upfront, codes bounds-based DFS in 5-7 min, mentions in-order as alternative."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Falls into local-check; when test case shows failure, refactors to bounds correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Local check; defends it as correct or gets stuck refactoring."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'strict BST \u2014 left subtree all <, right subtree all >'.",
+        "Pitch bounds approach: 'every node sees a (lo, hi) range; recurse with updated bounds'.",
+        "Code: def valid(node, lo, hi): if not node: return True. if not (lo < node.val < hi): return False. return valid(node.left, lo, node.val) and valid(node.right, node.val, hi). return valid(root, float('-inf'), float('inf')).",
+        "Walk [5,1,4,N,N,3,6]: root 5 OK in (-inf, inf). Right child 4 must be > 5 \u2014 fail. False. \u2713",
+        "Walk [2,1,3]: all in bounds at each level. True. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: BST iterator, Recover BST (swap two misplaced nodes).",
+      "dont_do": [
+        "Don't only check immediate children.",
+        "Don't use \u2264 or \u2265 (must be strict).",
+        "Don't use INT_MIN/MAX \u2014 use \u00b1inf.",
+        "Don't forget to update bounds when recursing."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with Bounds",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isValidBST(values):\n    root = build_tree(values)\n    \n    def valid(node, lo, hi):\n        if not node:\n            return True\n        if not (lo < node.val < hi):\n            return False\n        return valid(node.left, lo, node.val) and valid(node.right, node.val, hi)\n    \n    return valid(root, float('-inf'), float('inf'))",
+        "explanation": "The canonical answer. Each node must lie strictly within (lo, hi). Recurse left with hi = node.val (everything left must be smaller); recurse right with lo = node.val (everything right must be larger). Bounds propagate down the tree, catching any global violation. O(n) time, O(h) recursion stack."
+      },
+      {
+        "name": "In-Order Traversal Check",
+        "time": "O(n)",
+        "space": "O(h)",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isValidBST(values):\n    root = build_tree(values)\n    self_prev = [float('-inf')]  # using a mutable container to share state across recursion\n    valid = [True]\n    \n    def inorder(node):\n        if not node or not valid[0]:\n            return\n        inorder(node.left)\n        if node.val <= self_prev[0]:\n            valid[0] = False\n            return\n        self_prev[0] = node.val\n        inorder(node.right)\n    \n    inorder(root)\n    return valid[0]",
+        "explanation": "Alternative using the fact that in-order traversal of a valid BST produces strictly increasing values. Walk in-order, track the previous value; if any current \u2264 previous, invalid. Equivalent O(n) complexity. Cleaner with nonlocal in Python 3."
+      }
+    ],
+    "related_problem_ids": [
+      "lowest-common-ancestor-of-a-binary-search-tree",
+      "same-tree",
+      "maximum-depth-of-binary-tree"
+    ]
+  },
+  {
+    "id": "count-good-nodes-in-binary-tree",
+    "title": "Count Good Nodes in Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/",
+    "leetcode_id": 1448,
+    "difficulty": "medium",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a binary tree, a 'good' node X is one where on the path from root to X there is NO node with value greater than X. Return the number of good nodes.",
+    "constraints": [
+      "Number of nodes is in [1, 10^5].",
+      "-10^4 <= Node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "values = [3,1,4,3,None,1,5]",
+        "output": "4",
+        "explanation": "Root 3 (good). Subtree at 4: 4 (good \u2014 max in path was 3), 5 (good \u2014 max was 4). Left subtree's 3 (good \u2014 equal to root max). Total 4."
+      },
+      {
+        "input": "values = [3,3,None,4,2]",
+        "output": "3",
+        "explanation": "Root 3 (good). 3 (good \u2014 equal to max). 4 (good \u2014 beats max 3). 2 (NOT good \u2014 3 in path). Total 3."
+      },
+      {
+        "input": "values = [1]",
+        "output": "1",
+        "explanation": "Single node, trivially good."
+      }
+    ],
+    "function_name": "goodNodes",
+    "function_signature": "def goodNodes(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef goodNodes(values):\n    # Pretend the signature is goodNodes(root: TreeNode) -> int.\n    root = build_tree(values)\n    \n    # Your code: DFS passing 'max value seen along the path so far'.\n    # If node.val >= path_max, this node is good. Update path_max and recurse.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic [3,1,4,3,N,1,5]",
+        "args": [
+          [
+            3,
+            1,
+            4,
+            3,
+            null,
+            1,
+            5
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "small [3,3,N,4,2]",
+        "args": [
+          [
+            3,
+            3,
+            null,
+            4,
+            2
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            5,
+            5,
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "strictly decreasing",
+        "args": [
+          [
+            5,
+            4,
+            3
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "strictly increasing chain",
+        "args": [
+          [
+            1,
+            null,
+            2,
+            null,
+            3,
+            null,
+            4
+          ]
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "DFS passing 'max value seen along the root-to-here path' as a parameter. Node is good iff node.val >= path_max. Update path_max = max(path_max, node.val) and recurse into both children. Sum the good counts.",
+      "clarifying_questions": [
+        {
+          "question": "Is the root always considered good?",
+          "why": "Yes. Trivially \u2014 its path is just itself. Initial path_max = -inf or root.val both work."
+        },
+        {
+          "question": "Strict greater or greater-or-equal for 'no greater in path'?",
+          "why": "Strict. 'No node with value GREATER than X' means equal-valued ancestors don't disqualify. So check node.val >= path_max."
+        },
+        {
+          "question": "Negative values possible?",
+          "why": "Yes, per constraints. Use float('-inf') as initial path_max to avoid issues."
+        },
+        {
+          "question": "Could I do this iteratively?",
+          "why": "Yes \u2014 DFS with explicit stack of (node, path_max) tuples. Recursive is more natural; iterative useful for deep trees."
+        }
+      ],
+      "think_out_loud": "Single DFS pass. For each node, the rule depends only on the maximum value on the path from root to here. So I'll pass that max as a parameter. Base case: None \u2192 0. Otherwise: count = 1 if node.val >= path_max else 0. Update path_max. Recurse into both children, accumulate. Returns total good count.",
+      "edge_cases": [
+        {
+          "category": "Single node",
+          "details": "Root is good. Return 1."
+        },
+        {
+          "category": "All equal values",
+          "details": "Every node is good (equal counts). Return n."
+        },
+        {
+          "category": "Strictly decreasing path",
+          "details": "Only root is good \u2014 every child is smaller, so blocked by max=root.val."
+        },
+        {
+          "category": "Strictly increasing chain",
+          "details": "Every node beats path_max. All good. Return n."
+        },
+        {
+          "category": "Mixed branching",
+          "details": "Each subtree has its own path_max accumulated independently."
+        }
+      ],
+      "common_mistakes": [
+        "Using > instead of >= \u2014 spec says NO greater, equal is fine.",
+        "Forgetting to update path_max \u2014 uses stale value.",
+        "Tracking path_max with mutable state shared across branches \u2014 sibling subtrees should see independent maxes from their common ancestor down.",
+        "Returning a bool instead of an int (count).",
+        "Not handling root specially when initial path_max is root.val (causes off-by-one in some impls)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Tree DFS with state propagation. Tests the 'pass extra info down the recursion' technique.",
+      "introduction_context": "Common at Amazon, Bloomberg. Easier than Validate BST but uses similar 'state-down recursion' pattern.",
+      "really_testing": [
+        "DFS with a parameter tracking root-to-here state.",
+        "Understanding that branches share ancestor state but evolve independently.",
+        "Summing recursive return values.",
+        "Strict vs equal comparison detail."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes 7-line recursion in 4-6 min. Walks through an example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct after one small bug self-fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets to update path_max or uses > instead of >=."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't structure the recursion."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count nodes where the max value on the root-to-node path is the node itself (or tied)'.",
+        "Pitch: 'DFS with path_max as a parameter'.",
+        "Code: def dfs(node, path_max): if not node: return 0. count = 1 if node.val >= path_max else 0. new_max = max(path_max, node.val). return count + dfs(node.left, new_max) + dfs(node.right, new_max). return dfs(root, float('-inf')).",
+        "Walk [3,3,N,4,2]: dfs(3, -inf) good=1, new_max=3. dfs(3 left, 3): good=1 (3>=3), new_max=3. dfs(4, 3): good=1 (4>=3), new_max=4. dfs(2, 4): good=0 (2<4). Sums: 1+1+1+0=3. \u2713"
+      ],
+      "playbook_meta": "Total time: 4-7 min. Follow-up: Path Sum III (count paths with given sum).",
+      "dont_do": [
+        "Don't use > (must be >=).",
+        "Don't forget to update path_max.",
+        "Don't use shared mutable state across siblings.",
+        "Don't return bool \u2014 return int count."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with Path-Max",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef goodNodes(values):\n    root = build_tree(values)\n    \n    def dfs(node, path_max):\n        if not node:\n            return 0\n        count = 1 if node.val >= path_max else 0\n        new_max = max(path_max, node.val)\n        return count + dfs(node.left, new_max) + dfs(node.right, new_max)\n    \n    return dfs(root, float('-inf'))",
+        "explanation": "Pass the running max of root-to-here path as a parameter. At each node, contribute 1 if node.val >= path_max (it's the new high water mark, or tied). Recurse with updated max into both children, sum the counts. Path_max naturally splits independently into each subtree."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-depth-of-binary-tree",
+      "binary-tree-maximum-path-sum",
+      "diameter-of-binary-tree"
+    ]
   }
 ]
