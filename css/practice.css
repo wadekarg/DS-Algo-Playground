@@ -8,6 +8,17 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
+/* "bare" variant — used on per-problem pages where the topbar already shows
+   title/difficulty and the problem-statement card carries the summary, so
+   repeating them inside the practice block is redundant. */
+.practice-block--bare > .practice-block__header,
+.practice-block--bare > .practice-block__description {
+  display: none;
+}
+.practice-block--bare {
+  margin-top: 0;
+}
+
 .practice-block__header {
   display: flex;
   flex-direction: row;

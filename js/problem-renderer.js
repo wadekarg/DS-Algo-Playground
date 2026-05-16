@@ -496,18 +496,15 @@ function renderPracticeEditor(prob) {
     .replace(/'/g, "\\'")
     .replace(/\n/g, '\\n');
 
-  // We can't set innerHTML directly for the practice-block because practice.js
-  // reads data-* attributes on the element itself. Build the full element string.
+  // No need to re-render title/summary inside the editor — they already appear
+  // in the topbar and problem-statement card on the left.
   slot.innerHTML = `
-    <div class="practice-block"
+    <div class="practice-block practice-block--bare"
       data-title="${_esc(prob.title)}"
       data-difficulty="${_esc(prob.difficulty)}"
       data-fn="${_esc(prob.function_name)}"
       data-starter='${starterEscaped}'
       data-tests='${testsJson}'>
-      <div class="practice-problem">
-        ${_esc(prob.summary)}
-      </div>
     </div>
   `;
 
