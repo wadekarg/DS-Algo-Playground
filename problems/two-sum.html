@@ -395,6 +395,10 @@
       color: var(--text-secondary);
       line-height: 1.7;
     }
+    .clarify-list dt { font-weight: 600; margin-top: 10px; font-size: 14px; }
+    .clarify-list dt:first-child { margin-top: 0; }
+    .clarify-list dd { margin: 4px 0 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+    .clarify-list dd em { color: var(--accent-primary, #6366f1); font-style: normal; font-weight: 600; margin-right: 4px; }
 
     /* ── Approaches (condensed) ────────────────────────────── */
     .approaches-note {
@@ -670,14 +674,23 @@
                 </div>
 
                 <div class="tip-block">
-                  <div class="tip-block__head">&#10067; Clarifying questions to ask</div>
-                  <ul>
-                    <li>What is the size of the array? Affects whether O(n&sup2;) is acceptable.</li>
-                    <li>Are there negative numbers? Zeros? Duplicates?</li>
-                    <li>Is exactly one answer guaranteed, or should I handle no-answer / multiple answers?</li>
-                    <li>Can I modify the input array?</li>
-                    <li>Should I return indices or values?</li>
-                  </ul>
+                  <h4>❓ Clarifying questions <span style="font-weight:400;color:var(--text-secondary);font-size:13px;">(and why we ask each)</span></h4>
+                  <dl class="clarify-list">
+                    <dt>What's the size of the array?</dt>
+                    <dd><em>Why:</em> Determines acceptable complexity. n ≤ 10⁴ → O(n²) brute force is OK. n ≤ 10⁶ → need O(n) or O(n log n). The constraint dictates the algorithm.</dd>
+
+                    <dt>Are negative numbers, zeros, or duplicates allowed?</dt>
+                    <dd><em>Why:</em> Negatives are fine for hash-map (any int can be a key) but break some range-based tricks. Zeros mean a value can be its own complement (target=0, value=0). Duplicates mean the same value can appear at different indices — the answer might pair two equal numbers (e.g., [3,3] target 6).</dd>
+
+                    <dt>Is exactly one valid answer guaranteed, or could there be zero / many?</dt>
+                    <dd><em>Why:</em> If guaranteed unique, you can return on the first match. If multiple are valid, the question changes ("any one" vs "all pairs"). If none guaranteed, you need a sentinel return value — usually an empty list or [-1, -1].</dd>
+
+                    <dt>Can I modify the input array?</dt>
+                    <dd><em>Why:</em> Some algorithms (sort-then-two-pointer) mutate. Interviewers may expect immutability for code-cleanliness reasons. Always ask — costs nothing, prevents wasted work if they say "no".</dd>
+
+                    <dt>What should I return — indices, values, or a boolean?</dt>
+                    <dd><em>Why:</em> Two Sum returns indices, but the variants don't. "Two Sum II" returns 1-indexed positions. "Two Sum IV — Input is a BST" returns a boolean. Misreading the return spec is a classic interview face-plant.</dd>
+                  </dl>
                 </div>
 
                 <div class="tip-block">
@@ -692,6 +705,35 @@
                     <li>Off-by-one when returning indices — double-check on Example 2.</li>
                     <li>Hashing the values array instead of tracking <em>indices</em> — you need to return positions, not values.</li>
                   </ul>
+                </div>
+
+                <div class="tip-block">
+                  <h4>🎯 How to think about edge cases</h4>
+                  <p style="margin: 6px 0 8px 0; font-size: 13px;">Before you say "I'm done," walk through these categories. For each, ask: <em>does my code handle this gracefully?</em></p>
+                  <dl class="clarify-list">
+                    <dt>Minimum-size input</dt>
+                    <dd>Constraint says <code>n ≥ 2</code>. Test <code>[1,2]</code> with target 3 — does it return <code>[0,1]</code>?</dd>
+
+                    <dt>Duplicates (same value, different indices)</dt>
+                    <dd>Test <code>[3,3]</code> with target 6 — your hash map must NOT block the second 3 from finding the first. Most off-by-one bugs hide here.</dd>
+
+                    <dt>Negative numbers and zero</dt>
+                    <dd>Test <code>[-1, 1, 0]</code> with target 0. Does <code>complement = target - x</code> work when target is 0 or negative? It should — but verify.</dd>
+
+                    <dt>Solution at the boundaries</dt>
+                    <dd>What if the answer is the first two elements (e.g., <code>[1,2,...]</code> target 3) or the last two (<code>[...,9,10]</code> target 19)? Walk through both mentally.</dd>
+
+                    <dt>Single-element edge: same element twice</dt>
+                    <dd>Constraint says "may not use the same element twice." A hash map naturally enforces this if you check the map BEFORE inserting the current value. Confirm your ordering.</dd>
+
+                    <dt>What's the answer if no pair exists?</dt>
+                    <dd>Problem says exactly one solution is guaranteed, so this shouldn't happen. But if I asked you to extend the problem to handle "no answer", what would you return? Knowing the answer signals seniority.</dd>
+                  </dl>
+
+                  <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
+                    <strong>General framework</strong>: empty / minimum / maximum input, extreme values (min/max int, negative, zero), duplicates,
+                    solution-at-boundary, no-solution, multiple-solutions, ordering matters?, mutability allowed?
+                  </p>
                 </div>
 
               </div>
