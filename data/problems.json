@@ -25250,5 +25250,639 @@
       "generate-parentheses",
       "jump-game"
     ]
+  },
+  {
+    "id": "insert-interval",
+    "title": "Insert Interval",
+    "leetcode_url": "https://leetcode.com/problems/insert-interval/",
+    "leetcode_id": 57,
+    "difficulty": "medium",
+    "patterns": [
+      "intervals",
+      "array"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a sorted list of non-overlapping intervals and a new interval, insert it in the right place and merge if necessary.",
+    "constraints": [
+      "0 <= intervals.length <= 10^4",
+      "intervals sorted by start",
+      "0 <= start_i <= end_i <= 10^5"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[1,3],[6,9]], newInterval = [2,5]",
+        "output": "[[1,5],[6,9]]",
+        "explanation": "Merge [1,3] with [2,5]."
+      }
+    ],
+    "function_name": "insert",
+    "function_signature": "def insert(intervals, newInterval):",
+    "starter_code": "def insert(intervals, newInterval):\n    # 3 phases: copy intervals entirely before newInterval; merge overlapping; copy rest.\n    pass",
+    "test_cases": [
+      {
+        "label": "merge middle",
+        "args": [
+          [
+            [
+              1,
+              3
+            ],
+            [
+              6,
+              9
+            ]
+          ],
+          [
+            2,
+            5
+          ]
+        ],
+        "expected": "[[1, 5], [6, 9]]"
+      },
+      {
+        "label": "merge multiple",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              12,
+              16
+            ]
+          ],
+          [
+            4,
+            8
+          ]
+        ],
+        "expected": "[[1, 2], [3, 10], [12, 16]]"
+      },
+      {
+        "label": "no overlap append",
+        "args": [
+          [
+            [
+              1,
+              5
+            ]
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "expected": "[[1, 5], [6, 8]]"
+      },
+      {
+        "label": "empty intervals",
+        "args": [
+          [],
+          [
+            5,
+            7
+          ]
+        ],
+        "expected": "[[5, 7]]"
+      },
+      {
+        "label": "no overlap prepend",
+        "args": [
+          [
+            [
+              3,
+              5
+            ]
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "[[1, 2], [3, 5]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Three phases: (1) Copy intervals ending before newInterval starts. (2) Merge while there's overlap with newInterval (expand its boundaries). (3) Copy remaining intervals.",
+      "clarifying_questions": [
+        {
+          "question": "Input sorted?",
+          "why": "Yes \u2014 by start."
+        },
+        {
+          "question": "Output sorted with no overlaps?",
+          "why": "Yes."
+        },
+        {
+          "question": "Touching intervals merge?",
+          "why": "Yes \u2014 [1,3] and [3,5] merge to [1,5]."
+        }
+      ],
+      "think_out_loud": "Single pass with 3 phases. Phase 1: intervals fully before new. Phase 2: overlap \u2014 extend new's bounds. Phase 3: intervals fully after.",
+      "edge_cases": [
+        {
+          "category": "Empty",
+          "details": "Just return [newInterval]."
+        },
+        {
+          "category": "No overlap at end",
+          "details": "Append newInterval after."
+        },
+        {
+          "category": "No overlap at start",
+          "details": "Prepend newInterval."
+        },
+        {
+          "category": "New spans all",
+          "details": "Single merged interval."
+        }
+      ],
+      "common_mistakes": [
+        "O(n log n) sort+merge \u2014 works but ignores pre-sorted property.",
+        "Off-by-one in phase 2 loop."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Interval insertion classic.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "3-phase pass.",
+        "Boundary expansion logic."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "3-phase in 8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Sort+merge solution; correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one bugs."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "result = []. i = 0. n = len(intervals).",
+        "while i < n and intervals[i][1] < newInterval[0]: result.append(intervals[i]); i += 1.",
+        "while i < n and intervals[i][0] <= newInterval[1]: newInterval[0] = min(newInterval[0], intervals[i][0]); newInterval[1] = max(newInterval[1], intervals[i][1]); i += 1.",
+        "result.append(newInterval).",
+        "while i < n: result.append(intervals[i]); i += 1.",
+        "return result."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't sort if already sorted.",
+        "Don't forget the merge expansion."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Three-Phase Pass",
+        "time": "O(n)",
+        "space": "O(n) for output",
+        "code": "def insert(intervals, newInterval):\n    result = []\n    i = 0\n    n = len(intervals)\n    \n    # Phase 1: intervals entirely before newInterval\n    while i < n and intervals[i][1] < newInterval[0]:\n        result.append(intervals[i])\n        i += 1\n    \n    # Phase 2: merge overlapping\n    while i < n and intervals[i][0] <= newInterval[1]:\n        newInterval = [min(newInterval[0], intervals[i][0]), max(newInterval[1], intervals[i][1])]\n        i += 1\n    result.append(newInterval)\n    \n    # Phase 3: intervals entirely after\n    while i < n:\n        result.append(intervals[i])\n        i += 1\n    \n    return result",
+        "explanation": "Linear three-phase scan exploiting the sorted input. Phase 1 copies non-overlapping prefix. Phase 2 expands newInterval to absorb all overlaps. Phase 3 copies the rest. O(n)."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-intervals",
+      "non-overlapping-intervals",
+      "meeting-rooms"
+    ]
+  },
+  {
+    "id": "merge-intervals",
+    "title": "Merge Intervals",
+    "leetcode_url": "https://leetcode.com/problems/merge-intervals/",
+    "leetcode_id": 56,
+    "difficulty": "medium",
+    "patterns": [
+      "intervals",
+      "sorting"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an array of intervals, merge all overlapping intervals and return the result.",
+    "constraints": [
+      "1 <= intervals.length <= 10^4",
+      "intervals[i].length == 2",
+      "0 <= start_i <= end_i <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+        "output": "[[1,6],[8,10],[15,18]]",
+        "explanation": "[1,3] and [2,6] overlap \u2192 [1,6]."
+      }
+    ],
+    "function_name": "merge",
+    "function_signature": "def merge(intervals):",
+    "starter_code": "def merge(intervals):\n    # Sort by start. Iterate; if current overlaps last in result, extend last.end; else append.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              15,
+              18
+            ]
+          ]
+        ],
+        "expected": "[[1, 6], [8, 10], [15, 18]]"
+      },
+      {
+        "label": "touching",
+        "args": [
+          [
+            [
+              1,
+              4
+            ],
+            [
+              4,
+              5
+            ]
+          ]
+        ],
+        "expected": "[[1, 5]]"
+      },
+      {
+        "label": "no overlap",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "[[1, 2], [3, 4]]"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ],
+        "expected": "[[1, 4]]"
+      },
+      {
+        "label": "all merge",
+        "args": [
+          [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "[[1, 4]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Sort by start. Iterate. If current.start <= last_merged.end, extend last_merged.end. Else append current.",
+      "clarifying_questions": [
+        {
+          "question": "Touching intervals merge?",
+          "why": "Yes \u2014 [1,4] [4,5] \u2192 [1,5]."
+        },
+        {
+          "question": "In-place or new list?",
+          "why": "New list cleaner."
+        }
+      ],
+      "think_out_loud": "Sort then linear scan. Compare current with the last merged.",
+      "edge_cases": [
+        {
+          "category": "Single",
+          "details": "Return as-is."
+        },
+        {
+          "category": "All overlap",
+          "details": "Single output."
+        },
+        {
+          "category": "None overlap",
+          "details": "Output equals sorted input."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to sort.",
+        "Using strict < (misses touching)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Foundation interval problem.",
+      "introduction_context": "Onsite everywhere.",
+      "really_testing": [
+        "Sort + scan.",
+        "Overlap condition."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct, minor bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forgets sort."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "intervals.sort(). result = [intervals[0]]. for s, e in intervals[1:]: if s <= result[-1][1]: result[-1][1] = max(result[-1][1], e). else: result.append([s, e]). return result."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't forget sort.",
+        "Don't strict <."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort + Sweep",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "def merge(intervals):\n    intervals.sort(key=lambda x: x[0])\n    result = [list(intervals[0])]\n    for s, e in intervals[1:]:\n        if s <= result[-1][1]:\n            result[-1][1] = max(result[-1][1], e)\n        else:\n            result.append([s, e])\n    return result",
+        "explanation": "Sort by start. Walk; merge with last result if overlapping (s <= last_end), else append. O(n log n) from sort."
+      }
+    ],
+    "related_problem_ids": [
+      "insert-interval",
+      "non-overlapping-intervals",
+      "meeting-rooms"
+    ]
+  },
+  {
+    "id": "non-overlapping-intervals",
+    "title": "Non-overlapping Intervals",
+    "leetcode_url": "https://leetcode.com/problems/non-overlapping-intervals/",
+    "leetcode_id": 435,
+    "difficulty": "medium",
+    "patterns": [
+      "intervals",
+      "greedy"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array of intervals, return the minimum number you need to REMOVE so the rest are non-overlapping.",
+    "constraints": [
+      "1 <= intervals.length <= 10^5",
+      "intervals[i].length == 2",
+      "-5*10^4 <= start, end <= 5*10^4"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[1,2],[2,3],[3,4],[1,3]]",
+        "output": "1",
+        "explanation": "Remove [1,3] to make rest non-overlapping."
+      }
+    ],
+    "function_name": "eraseOverlapIntervals",
+    "function_signature": "def eraseOverlapIntervals(intervals):",
+    "starter_code": "def eraseOverlapIntervals(intervals):\n    # Sort by END. Greedy: keep intervals that end earliest. Count overlaps.\n    pass",
+    "test_cases": [
+      {
+        "label": "remove one",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              1,
+              3
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all overlap",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "no overlap",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Greedy: sort by END time. Iterate, keeping intervals whose start >= prev_end. Skipped = removed. The end-time sort maximizes the count of kept intervals (classic activity selection).",
+      "clarifying_questions": [
+        {
+          "question": "Touching counts as overlap?",
+          "why": "No \u2014 [1,2] [2,3] are fine. Use start >= prev_end."
+        },
+        {
+          "question": "Sort by start or end?",
+          "why": "End \u2014 for greedy activity selection."
+        }
+      ],
+      "think_out_loud": "Activity selection variant. Sort by end. Greedy keep: prev_end = -inf. for s, e in sorted by e: if s >= prev_end: kept += 1; prev_end = e. else: removed += 1. Return removed.",
+      "edge_cases": [
+        {
+          "category": "Single",
+          "details": "0 removals."
+        },
+        {
+          "category": "All overlap at same point",
+          "details": "Keep 1, remove rest."
+        },
+        {
+          "category": "No overlap",
+          "details": "0 removals."
+        }
+      ],
+      "common_mistakes": [
+        "Sort by start \u2014 wrong for this.",
+        "Using strict > vs >= (touching)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Classic activity selection.",
+      "introduction_context": "Amazon, Meta.",
+      "really_testing": [
+        "End-time sort insight.",
+        "Greedy keep."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "End-sort greedy in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong sort key."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "intervals.sort(key=lambda x: x[1]). prev_end = float('-inf'). removed = 0. for s, e in intervals: if s >= prev_end: prev_end = e. else: removed += 1. return removed."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't sort by start.",
+        "Don't strict >."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort by End + Greedy",
+        "time": "O(n log n)",
+        "space": "O(1)",
+        "code": "def eraseOverlapIntervals(intervals):\n    intervals.sort(key=lambda x: x[1])\n    prev_end = float('-inf')\n    removed = 0\n    for s, e in intervals:\n        if s >= prev_end:\n            prev_end = e  # keep\n        else:\n            removed += 1  # remove this one\n    return removed",
+        "explanation": "Sort by end time. Greedy keep: if current's start >= prev_end, keep (no overlap); else remove. Classic activity selection \u2014 proven optimal."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-intervals",
+      "insert-interval",
+      "meeting-rooms"
+    ]
   }
 ]
