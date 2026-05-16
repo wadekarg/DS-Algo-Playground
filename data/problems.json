@@ -9749,5 +9749,740 @@
       "balanced-binary-tree",
       "same-tree"
     ]
+  },
+  {
+    "id": "same-tree",
+    "title": "Same Tree",
+    "leetcode_url": "https://leetcode.com/problems/same-tree/",
+    "leetcode_id": 100,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the roots of two binary trees p and q, return True if they are the same tree \u2014 same structure AND same node values. (Here the function takes two level-order lists.)",
+    "constraints": [
+      "The number of nodes in both trees is in the range [0, 100].",
+      "-10^4 <= Node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "p = [1,2,3], q = [1,2,3]",
+        "output": "True",
+        "explanation": "Identical structure and values."
+      },
+      {
+        "input": "p = [1,2], q = [1,None,2]",
+        "output": "False",
+        "explanation": "Same values, different structure (left vs right child)."
+      },
+      {
+        "input": "p = [1,2,1], q = [1,1,2]",
+        "output": "False",
+        "explanation": "Values differ at the children."
+      }
+    ],
+    "function_name": "isSameTree",
+    "function_signature": "def isSameTree(p_values, q_values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isSameTree(p_values, q_values):\n    # Pretend the signature is isSameTree(p: TreeNode, q: TreeNode) -> bool.\n    p = build_tree(p_values)\n    q = build_tree(q_values)\n    \n    # Your code: recursive structural+value comparison.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "identical",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "structure differs",
+        "args": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            null,
+            2
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "values differ",
+        "args": [
+          [
+            1,
+            2,
+            1
+          ],
+          [
+            1,
+            1,
+            2
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "both empty",
+        "args": [
+          [],
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "one empty",
+        "args": [
+          [
+            1
+          ],
+          []
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "deep identical",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single node match",
+        "args": [
+          [
+            5
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Recursive comparison. If both nodes are None \u2192 True (matching nulls). If one is None and the other isn't \u2192 False. If values differ \u2192 False. Otherwise recurse into both pairs of children. Three lines of logic, mirrored on left and right.",
+      "clarifying_questions": [
+        {
+          "question": "Are values guaranteed comparable (ints)?",
+          "why": "Yes per constraints. So == works directly."
+        },
+        {
+          "question": "Two empty trees \u2014 should they be considered same?",
+          "why": "Yes. Both None \u2192 True is the natural base case."
+        },
+        {
+          "question": "Structural match \u2014 same parent-child relations?",
+          "why": "Yes \u2014 left children compare with left, right with right. NOT 'same set of values'."
+        },
+        {
+          "question": "Recursive or iterative?",
+          "why": "Recursive is natural. Iterative (with two queues or a queue of pairs) works if recursion depth is a concern."
+        }
+      ],
+      "think_out_loud": "Recursion on the structure. Base cases: both None \u2192 True; exactly one None \u2192 False. Recursive case: same values AND recursively same-left AND recursively same-right. Iterate as a queue of (p, q) node pairs if avoiding recursion.",
+      "edge_cases": [
+        {
+          "category": "Both empty",
+          "details": "True. Base case fires immediately."
+        },
+        {
+          "category": "One empty, one not",
+          "details": "False. Caught by the 'one None' check."
+        },
+        {
+          "category": "Single node match",
+          "details": "True if values equal, recurse into (None, None) twice (both True)."
+        },
+        {
+          "category": "Structure same, one value differs",
+          "details": "False \u2014 returns False at the mismatching pair, short-circuits the rest."
+        },
+        {
+          "category": "Values same, structure differs",
+          "details": "False \u2014 caught by None vs non-None at a child position."
+        }
+      ],
+      "common_mistakes": [
+        "Comparing values without comparing structure \u2014 e.g., tree-to-list comparison breaks because [1,None,2] and [1,2] both serialize to confusable forms.",
+        "Forgetting one of the base cases \u2014 usually 'both None'.",
+        "Returning False on (None, None) \u2014 should be True.",
+        "Comparing left to right (swap bug) \u2014 left must match left.",
+        "Using a queue but forgetting to enqueue both children's pairs in order."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Foundational tree recursion. Common warm-up before harder tree problems.",
+      "introduction_context": "Phone screen at Amazon, Microsoft, Bloomberg. Often used as a sub-routine (e.g., in Subtree of Another Tree).",
+      "really_testing": [
+        "Recursive tree traversal with two trees in lockstep.",
+        "Base case enumeration: both None, one None, values differ.",
+        "Short-circuiting on first mismatch."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes the 4-line recursion in 1-2 min. Walks through (None, None) and (None, non-None) cases."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one self-corrected bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one on base cases (None handling)."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Tries to serialize and compare lists \u2014 fails on ambiguity."
+        }
+      ],
+      "playbook": [
+        "Restate: 'same structure and same values'.",
+        "Recursive pseudocode: if both None \u2192 True. If one None \u2192 False. If values differ \u2192 False. Else recurse on left+right.",
+        "Code: def same(p, q): if not p and not q: return True. if not p or not q: return False. return p.val == q.val and same(p.left, q.left) and same(p.right, q.right).",
+        "Walk identical [1,2,3] vs [1,2,3]: roots match (1==1); left subtrees (2,2) match; right subtrees (3,3) match. True. \u2713",
+        "Walk [1,2] vs [1,None,2]: root 1==1; left (2 vs None) \u2192 False."
+      ],
+      "playbook_meta": "Total time: 2-4 min. Direct follow-up: Subtree of Another Tree, Symmetric Tree.",
+      "dont_do": [
+        "Don't serialize trees and compare strings \u2014 ambiguous.",
+        "Don't forget the 'both None \u2192 True' base case.",
+        "Don't compare left to right.",
+        "Don't use BFS for elegance \u2014 DFS is shorter."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Recursive Comparison",
+        "time": "O(min(|p|, |q|))",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isSameTree(p_values, q_values):\n    p = build_tree(p_values)\n    q = build_tree(q_values)\n    \n    def same(a, b):\n        if not a and not b:\n            return True\n        if not a or not b:\n            return False\n        return a.val == b.val and same(a.left, b.left) and same(a.right, b.right)\n    \n    return same(p, q)",
+        "explanation": "Standard recursive answer. Base cases: both None (match), exactly one None (mismatch). Recursive case: values match AND left subtrees match AND right subtrees match. Short-circuits at the first mismatch \u2014 runs in O(min(|p|, |q|)) in the worst case but often much less."
+      },
+      {
+        "name": "Iterative BFS with Pairs",
+        "time": "O(min(|p|, |q|))",
+        "space": "O(w) for the queue",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\nfrom collections import deque\n\ndef isSameTree(p_values, q_values):\n    p = build_tree(p_values)\n    q = build_tree(q_values)\n    \n    queue = deque([(p, q)])\n    while queue:\n        a, b = queue.popleft()\n        if not a and not b:\n            continue\n        if not a or not b:\n            return False\n        if a.val != b.val:\n            return False\n        queue.append((a.left, b.left))\n        queue.append((a.right, b.right))\n    return True",
+        "explanation": "BFS with node pairs in the queue. Same logic as the recursive version, just expressed iteratively. Useful when deep recursion is a concern. Each pair is processed once."
+      }
+    ],
+    "related_problem_ids": [
+      "invert-binary-tree",
+      "subtree-of-another-tree",
+      "maximum-depth-of-binary-tree"
+    ]
+  },
+  {
+    "id": "diameter-of-binary-tree",
+    "title": "Diameter of Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/diameter-of-binary-tree/",
+    "leetcode_id": 543,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given the root of a binary tree, return the length of the diameter \u2014 the longest path between any two nodes, measured in edges. The path may or may not pass through the root.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 10^4].",
+      "-100 <= Node.val <= 100"
+    ],
+    "examples": [
+      {
+        "input": "values = [1,2,3,4,5]",
+        "output": "3",
+        "explanation": "Longest path: 4 \u2192 2 \u2192 1 \u2192 3 (or 5 \u2192 2 \u2192 1 \u2192 3). 3 edges."
+      },
+      {
+        "input": "values = [1,2]",
+        "output": "1",
+        "explanation": "Just one edge between the two nodes."
+      }
+    ],
+    "function_name": "diameterOfBinaryTree",
+    "function_signature": "def diameterOfBinaryTree(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef diameterOfBinaryTree(values):\n    # Pretend the signature is diameterOfBinaryTree(root: TreeNode) -> int.\n    root = build_tree(values)\n    \n    # Your code: at each node, diameter through this node = left_depth + right_depth.\n    # Track the max across the recursion.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "classic [1,2,3,4,5]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "two nodes",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "skewed left",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3,
+            null,
+            4
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "balanced 3 levels",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "diameter doesn't pass root",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            null,
+            null,
+            6,
+            7
+          ]
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Insight: the diameter through any node = depth(left) + depth(right) (in edges). The global diameter is the max over all nodes. So define a depth function that ALSO updates the diameter at each call. Returns depth (for the parent to use); side-effects the global max.",
+      "clarifying_questions": [
+        {
+          "question": "Diameter measured in nodes or edges?",
+          "why": "Edges. So a single node has diameter 0. [1,2] has diameter 1. Critical to get right."
+        },
+        {
+          "question": "Can the longest path NOT pass through the root?",
+          "why": "Yes. The diameter is the max over all nodes of (left_depth + right_depth). Often the answer lives in a deep subtree."
+        },
+        {
+          "question": "Should I return the diameter, or both endpoints?",
+          "why": "Just the count of edges. Endpoints would be more work."
+        },
+        {
+          "category": "single node",
+          "question": "What's the diameter of a single-node tree?",
+          "why": "0 \u2014 no edges to traverse."
+        },
+        {
+          "question": "Can the tree be empty?",
+          "why": "Per constraints, n >= 1, so no. Defensive 0 for empty is cheap."
+        }
+      ],
+      "think_out_loud": "Define depth(node) returning the depth in edges. As a side effect, at every node compute left_depth + right_depth and update a 'max' variable. The trick: depth(None) = -1 makes the arithmetic clean. OR depth(None) = 0 and then a leaf has depth 0; through-leaf diameter is 0+0=0; through-leaf-with-two-children is 1+1=2 edges. Both conventions work \u2014 pick one and be consistent.",
+      "edge_cases": [
+        {
+          "category": "Single node",
+          "details": "Diameter 0 \u2014 no edges. depth(node) = 0 if both children None."
+        },
+        {
+          "category": "Two nodes",
+          "details": "Diameter 1 \u2014 one edge."
+        },
+        {
+          "category": "Path passes through root",
+          "details": "Common case. left_depth + right_depth at root is the answer."
+        },
+        {
+          "category": "Path doesn't pass through root",
+          "details": "Need to consider every node. That's why we update max at EVERY node, not just root."
+        },
+        {
+          "category": "Skewed tree",
+          "details": "Diameter = n - 1 (height - 1). All edges form the path."
+        }
+      ],
+      "common_mistakes": [
+        "Returning depth + 1 instead of just depth \u2014 confuses diameter with depth.",
+        "Counting in nodes instead of edges (off-by-one).",
+        "Only checking diameter at the root \u2014 misses deep-subtree maxima.",
+        "Computing depth in O(n) for each node \u2192 O(n\u00b2) total. Use the single-pass max-tracking trick.",
+        "Forgetting to update max at every recursive call \u2014 only checks root's diameter."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic 'compute X at every node and take the max' pattern. The optimal solution combines a depth helper with an outer-scope counter.",
+      "introduction_context": "Common at Amazon, Microsoft, Bloomberg. Quick interview question if you've seen the pattern; tricky if you haven't.",
+      "really_testing": [
+        "Spotting that diameter through a node = left_depth + right_depth.",
+        "Combining recursion's return value (depth) with a side effect (max update).",
+        "Edge count vs node count discipline.",
+        "Avoiding O(n\u00b2) by not recomputing depth from scratch."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States the 'depth + side-effect max' pattern. Codes in 5-7 min. Walks through diameter-not-through-root case."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with O(n\u00b2) (recompute depth at every node), recognizes inefficiency, refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Counts in nodes not edges. Or only checks diameter at root."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any traversal-based approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'longest path between any two nodes, in edges'.",
+        "Insight: 'diameter through a node = depth(left) + depth(right)'.",
+        "Trick: 'compute depth in one DFS, side-effecting a max counter'.",
+        "Code: diameter = 0. def depth(node): nonlocal diameter; if not node: return 0; L = depth(node.left); R = depth(node.right); diameter = max(diameter, L + R); return 1 + max(L, R). depth(root). return diameter.",
+        "Walk [1,2,3,4,5]: at root, L=2, R=1, diameter = 3. \u2713",
+        "Walk diameter-not-through-root: subtree with deeper branches has larger L+R at its root. Max captures it."
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: Binary Tree Maximum Path Sum (Hard) \u2014 same pattern with values instead of depth.",
+      "dont_do": [
+        "Don't compute depth at every node from scratch \u2014 O(n\u00b2).",
+        "Don't only check the root's diameter.",
+        "Don't count in nodes when spec says edges.",
+        "Don't forget the +1 in `1 + max(L, R)` when returning depth."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DFS with Side-Effect Max",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef diameterOfBinaryTree(values):\n    root = build_tree(values)\n    diameter = 0\n    \n    def depth(node):\n        nonlocal diameter\n        if not node:\n            return 0\n        left = depth(node.left)\n        right = depth(node.right)\n        # Diameter through this node = left depth + right depth (in edges)\n        diameter = max(diameter, left + right)\n        return 1 + max(left, right)\n    \n    depth(root)\n    return diameter",
+        "explanation": "Single DFS pass. The depth helper returns the depth of the subtree (for parents to use) and as a side effect updates the global maximum diameter \u2014 measured as left + right depths at every node. Each node visited once \u2192 O(n). Outer-scope `nonlocal diameter` keeps the count simple."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-depth-of-binary-tree",
+      "balanced-binary-tree",
+      "binary-tree-maximum-path-sum"
+    ]
+  },
+  {
+    "id": "balanced-binary-tree",
+    "title": "Balanced Binary Tree",
+    "leetcode_url": "https://leetcode.com/problems/balanced-binary-tree/",
+    "leetcode_id": 110,
+    "difficulty": "easy",
+    "patterns": [
+      "tree",
+      "dfs"
+    ],
+    "topics": [
+      "trees"
+    ],
+    "neetcode_category": "Trees",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a binary tree, determine if it is height-balanced \u2014 for every node, the heights of its left and right subtrees differ by at most 1.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [0, 5000].",
+      "-10^4 <= Node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "values = [3,9,20,None,None,15,7]",
+        "output": "True",
+        "explanation": "Every node's subtrees differ in height by at most 1."
+      },
+      {
+        "input": "values = [1,2,2,3,3,None,None,4,4]",
+        "output": "False",
+        "explanation": "Subtree at root has left height 4 and right height 2 \u2014 differ by 2."
+      }
+    ],
+    "function_name": "isBalanced",
+    "function_signature": "def isBalanced(values):",
+    "starter_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isBalanced(values):\n    # Pretend the signature is isBalanced(root: TreeNode) -> bool.\n    root = build_tree(values)\n    \n    # Your code: compute height bottom-up, propagate -1 if any subtree is unbalanced.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "balanced",
+        "args": [
+          [
+            3,
+            9,
+            20,
+            null,
+            null,
+            15,
+            7
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "unbalanced",
+        "args": [
+          [
+            1,
+            2,
+            2,
+            3,
+            3,
+            null,
+            null,
+            4,
+            4
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single node",
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "skewed (unbalanced)",
+        "args": [
+          [
+            1,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "two nodes (balanced)",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "The naive O(n\u00b2): for every node, compute heights of both subtrees and check the difference. Better: a bottom-up DFS that returns height and short-circuits with a sentinel (-1) if any subtree is unbalanced. Single pass, O(n).",
+      "clarifying_questions": [
+        {
+          "question": "Height definition \u2014 nodes or edges?",
+          "why": "Conventionally edges in LC, but it doesn't matter for THIS problem since we only compare differences. Either works."
+        },
+        {
+          "question": "Is an empty tree balanced?",
+          "why": "Yes \u2014 trivially. Height 0 (or -1), no imbalance possible."
+        },
+        {
+          "question": "Difference of 1 allowed at EVERY node, or only at root?",
+          "why": "Every node. Even if root's two subtrees differ by 0, a deep subtree could still be unbalanced. Must check recursively."
+        },
+        {
+          "question": "Can I do it in O(n)?",
+          "why": "Yes \u2014 bottom-up DFS that returns 'height OR sentinel -1'. The na\u00efve top-down version is O(n\u00b2)."
+        }
+      ],
+      "think_out_loud": "Two approaches. Top-down: for every node, compute heights of children \u2014 O(n) per node \u00d7 n nodes = O(n\u00b2). Bottom-up: DFS returns height of subtree, or -1 if subtree is unbalanced. At each node, recurse left and right; if either returned -1 or |L - R| > 1, return -1. Else return 1 + max(L, R). Final check: is the returned value != -1? O(n).",
+      "edge_cases": [
+        {
+          "category": "Empty tree",
+          "details": "True (height 0, no imbalance)."
+        },
+        {
+          "category": "Single node",
+          "details": "True. Both subtrees empty, heights 0, diff 0."
+        },
+        {
+          "category": "Two nodes",
+          "details": "True. One child empty (height 0), other height 1. Diff 1 \u2192 OK."
+        },
+        {
+          "category": "Skewed",
+          "details": "False. Long chain creates a height diff > 1 somewhere."
+        },
+        {
+          "category": "Deeply unbalanced subtree",
+          "details": "False. The sentinel -1 propagates up; the entire tree is reported unbalanced."
+        }
+      ],
+      "common_mistakes": [
+        "Top-down O(n\u00b2) \u2014 fine for small inputs, but the interviewer wants O(n).",
+        "Only checking root's balance \u2014 misses deep imbalances.",
+        "Comparing heights without taking abs \u2014 directional difference can be negative.",
+        "Forgetting to propagate the -1 sentinel \u2014 algorithm keeps computing even after detecting imbalance.",
+        "Off-by-one in 'differ by AT MOST 1' (must be \u2264, not <)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Tree DP / bottom-up DFS classic. Tests whether you can avoid the O(n\u00b2) top-down trap.",
+      "introduction_context": "Common at Amazon, Microsoft. Also pairs well with Diameter as 'both use the same pattern' question.",
+      "really_testing": [
+        "Recognizing the O(n\u00b2) pitfall.",
+        "Bottom-up DFS with a sentinel for early exit.",
+        "Returning 'height OR fail' from a single recursive call.",
+        "Checking balance AT EVERY NODE, not just root."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes the O(n) bottom-up version directly. Clean sentinel logic. 5-7 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Codes O(n\u00b2) first, refactors to O(n) when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Only checks root's balance. Or buggy sentinel propagation."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working recursion."
+        }
+      ],
+      "playbook": [
+        "Restate: 'every node's two subtrees differ in height by at most 1'.",
+        "Na\u00efve: 'compute height at every node and check' \u2014 O(n\u00b2).",
+        "Optimization: 'one DFS, returns height OR -1 if unbalanced'.",
+        "Code: def check(node): if not node: return 0. L = check(node.left); if L == -1: return -1. R = check(node.right); if R == -1: return -1. if abs(L-R) > 1: return -1. return 1 + max(L, R). return check(root) != -1.",
+        "Walk balanced [3,9,20,N,N,15,7]: heights at every node fit; returns 3."
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: 'redo for AVL balance (factor \u00b11)' \u2014 same algorithm.",
+      "dont_do": [
+        "Don't ship O(n\u00b2) without mentioning the optimization.",
+        "Don't only check root.",
+        "Don't forget to propagate -1.",
+        "Don't compare heights with strict < \u2014 use abs(L - R) > 1."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up DFS with Sentinel",
+        "time": "O(n)",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isBalanced(values):\n    root = build_tree(values)\n    \n    def check(node):\n        if not node:\n            return 0\n        left = check(node.left)\n        if left == -1:\n            return -1\n        right = check(node.right)\n        if right == -1:\n            return -1\n        if abs(left - right) > 1:\n            return -1\n        return 1 + max(left, right)\n    \n    return check(root) != -1",
+        "explanation": "Single DFS pass. Each call returns either the subtree's height OR -1 if the subtree (or any deeper subtree) is unbalanced. Once a -1 appears, it propagates all the way up \u2014 we never compute past it. O(n) total work."
+      },
+      {
+        "name": "Top-Down (Don't ship this)",
+        "time": "O(n\u00b2) worst case",
+        "space": "O(h) recursion depth",
+        "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef build_tree(values):\n    if not values:\n        return None\n    root = TreeNode(values[0])\n    queue = [root]\n    i = 1\n    while queue and i < len(values):\n        node = queue.pop(0)\n        if i < len(values) and values[i] is not None:\n            node.left = TreeNode(values[i])\n            queue.append(node.left)\n        i += 1\n        if i < len(values) and values[i] is not None:\n            node.right = TreeNode(values[i])\n            queue.append(node.right)\n        i += 1\n    return root\n\ndef isBalanced(values):\n    root = build_tree(values)\n    \n    def height(node):\n        if not node:\n            return 0\n        return 1 + max(height(node.left), height(node.right))\n    \n    def balanced(node):\n        if not node:\n            return True\n        if abs(height(node.left) - height(node.right)) > 1:\n            return False\n        return balanced(node.left) and balanced(node.right)\n    \n    return balanced(root)",
+        "explanation": "Top-down: at every node, recompute heights of both subtrees and check. Correct but O(n\u00b2) \u2014 each node's height is computed many times. Useful only as a stepping stone in conversation."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-depth-of-binary-tree",
+      "diameter-of-binary-tree",
+      "same-tree"
+    ]
   }
 ]
