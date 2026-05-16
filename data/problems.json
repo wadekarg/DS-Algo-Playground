@@ -15810,5 +15810,763 @@
       "course-schedule",
       "pacific-atlantic-water-flow"
     ]
+  },
+  {
+    "id": "rotting-oranges",
+    "title": "Rotting Oranges",
+    "leetcode_url": "https://leetcode.com/problems/rotting-oranges/",
+    "leetcode_id": 994,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "bfs",
+      "grid",
+      "multi-source-bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an m \u00d7 n grid where each cell is 0 (empty), 1 (fresh orange), or 2 (rotten orange). Every minute, fresh oranges 4-directionally adjacent to a rotten one become rotten. Return the minimum minutes until no fresh oranges remain, or -1 if impossible.",
+    "constraints": [
+      "m == grid.length, n == grid[i].length",
+      "1 <= m, n <= 10",
+      "grid[i][j] is 0, 1, or 2."
+    ],
+    "examples": [
+      {
+        "input": "grid = [[2,1,1],[1,1,0],[0,1,1]]",
+        "output": "4",
+        "explanation": "After 4 minutes all fresh oranges are rotten."
+      },
+      {
+        "input": "grid = [[2,1,1],[0,1,1],[1,0,1]]",
+        "output": "-1",
+        "explanation": "The fresh orange at (2,0) can never be reached by the rot. Return -1."
+      },
+      {
+        "input": "grid = [[0,2]]",
+        "output": "0",
+        "explanation": "No fresh oranges. Return 0."
+      }
+    ],
+    "function_name": "orangesRotting",
+    "function_signature": "def orangesRotting(grid):",
+    "starter_code": "from collections import deque\n\ndef orangesRotting(grid):\n    # Multi-source BFS. Start from all rotten oranges simultaneously.\n    # Return minutes until no fresh remain, or -1 if some fresh are unreachable.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic 3x3",
+        "args": [
+          [
+            [
+              2,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "unreachable fresh",
+        "args": [
+          [
+            [
+              2,
+              1,
+              1
+            ],
+            [
+              0,
+              1,
+              1
+            ],
+            [
+              1,
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "no fresh",
+        "args": [
+          [
+            [
+              0,
+              2
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all empty",
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single rotten",
+        "args": [
+          [
+            [
+              2
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single fresh no rotten",
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": "-1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Multi-source BFS. Push ALL initial rotten oranges into the queue simultaneously. BFS level-by-level \u2014 each level is a 'minute'. Count levels until queue is empty. Track fresh count; if any remain at the end, return -1.",
+      "clarifying_questions": [
+        {
+          "question": "All rotten oranges rot adjacent fresh ones at the SAME time?",
+          "why": "Yes \u2014 simultaneous spread. That's why we need multi-source BFS, not separate BFS per rotten orange."
+        },
+        {
+          "question": "What if there are no fresh oranges to start?",
+          "why": "Return 0 \u2014 nothing to rot, no minutes needed."
+        },
+        {
+          "question": "What if there are no rotten oranges but fresh exist?",
+          "why": "Return -1 \u2014 no source to spread the rot."
+        },
+        {
+          "question": "4-directional only?",
+          "why": "Yes per spec. Diagonal is not contagious."
+        },
+        {
+          "question": "Do empty cells (0s) block the rot?",
+          "why": "Yes \u2014 0 means no orange there at all. Rot can't bridge through an empty cell."
+        }
+      ],
+      "think_out_loud": "Standard multi-source BFS. Initial queue: all rotten oranges. Count fresh. While queue and fresh > 0: process one level (current queue size), spreading rot to neighbors. Increment minute counter. At the end: return minutes if fresh == 0, else -1.",
+      "edge_cases": [
+        {
+          "category": "No fresh oranges",
+          "details": "0 minutes needed."
+        },
+        {
+          "category": "No rotten oranges",
+          "details": "If any fresh exist, return -1."
+        },
+        {
+          "category": "Unreachable fresh",
+          "details": "Walled off by 0s. Fresh count > 0 at end \u2192 -1."
+        },
+        {
+          "category": "Single cell grids",
+          "details": "Trivial cases \u2014 return 0 or -1 based on contents."
+        },
+        {
+          "category": "All rotten",
+          "details": "Return 0 immediately."
+        }
+      ],
+      "common_mistakes": [
+        "Single-source BFS per rotten orange \u2014 wrong semantics (rotting is simultaneous).",
+        "Forgetting to count fresh oranges and return -1 for unreachable.",
+        "Incrementing minute counter even when no rotting happened in that step (off-by-one at the end).",
+        "Not handling empty grid or all-empty grid.",
+        "Returning the count of levels processed instead of (levels - 1) if you count the initial state."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Multi-source BFS. Tests recognizing that simultaneous spread needs all sources started together.",
+      "introduction_context": "Common at Amazon, Google. Variants include 'walls and gates', 'shortest distance to all 0s'.",
+      "really_testing": [
+        "Recognizing multi-source BFS.",
+        "Counting fresh and detecting unreachables.",
+        "BFS by levels (minute = level).",
+        "Edge cases (no fresh, no rotten)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes multi-source BFS in 8-10 min. Handles -1 and 0 cases."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly; minor off-by-one fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Single-source BFS; can't unify when prompted."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any BFS."
+        }
+      ],
+      "playbook": [
+        "Restate: 'min minutes to rot all fresh, or -1'.",
+        "Insight: 'multi-source BFS from all initial rotten oranges'.",
+        "Code: queue = deque(). fresh = 0. for r,c: if grid[r][c]==2: queue.append((r,c)). elif grid[r][c]==1: fresh += 1. minutes = 0. while queue and fresh > 0: minutes += 1. for _ in range(len(queue)): r,c = queue.popleft(). for nr,nc in 4 dirs: if 0<=nr<m and 0<=nc<n and grid[nr][nc]==1: grid[nr][nc] = 2; fresh -= 1; queue.append((nr,nc)). return minutes if fresh == 0 else -1.",
+        "Walk classic 3x3: initial queue [(0,0)]. Min 1: rot (0,1) and (1,0). Min 2: rot (0,2) and (1,1). Min 3: rot (2,1). Min 4: rot (2,2). Fresh = 0. Return 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Walls and Gates (LC 286).",
+      "dont_do": [
+        "Don't do single-source BFS per rotten \u2014 wrong.",
+        "Don't increment minutes when nothing rots.",
+        "Don't skip the fresh count.",
+        "Don't forget the no-fresh case (return 0, not minutes-after-loop)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Multi-Source BFS",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "from collections import deque\n\ndef orangesRotting(grid):\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    queue = deque()\n    fresh = 0\n    \n    for r in range(m):\n        for c in range(n):\n            if grid[r][c] == 2:\n                queue.append((r, c))\n            elif grid[r][c] == 1:\n                fresh += 1\n    \n    if fresh == 0:\n        return 0\n    \n    minutes = 0\n    while queue and fresh > 0:\n        minutes += 1\n        for _ in range(len(queue)):\n            r, c = queue.popleft()\n            for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1:\n                    grid[nr][nc] = 2\n                    fresh -= 1\n                    queue.append((nr, nc))\n    \n    return minutes if fresh == 0 else -1",
+        "explanation": "Multi-source BFS. Push every initial rotten orange into the queue at once. Process the queue one level at a time (each level = one minute of simultaneous spread). Decrement the fresh counter as oranges rot. Exit when no fresh remain OR queue empties. If fresh remain at the end, some were unreachable \u2192 -1."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "walls-and-gates",
+      "surrounded-regions"
+    ]
+  },
+  {
+    "id": "walls-and-gates",
+    "title": "Walls and Gates",
+    "leetcode_url": "https://leetcode.com/problems/walls-and-gates/",
+    "leetcode_id": 286,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "bfs",
+      "grid",
+      "multi-source-bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an m \u00d7 n grid of rooms with: -1 (wall/obstacle), 0 (gate), INF=2^31-1 (empty room). Fill each empty room with the distance to its nearest gate. If unreachable, leave it as INF.",
+    "constraints": [
+      "1 <= m, n <= 250",
+      "rooms[i][j] is -1, 0, or 2^31 - 1."
+    ],
+    "examples": [
+      {
+        "input": "rooms = [[INF,-1,0,INF],[INF,INF,INF,-1],[INF,-1,INF,-1],[0,-1,INF,INF]]",
+        "output": "[[3,-1,0,1],[2,2,1,-1],[1,-1,2,-1],[0,-1,3,4]]",
+        "explanation": "Distance from each empty cell to nearest gate, 4-directional."
+      }
+    ],
+    "function_name": "wallsAndGates",
+    "function_signature": "def wallsAndGates(rooms):",
+    "starter_code": "from collections import deque\n\nINF = 2147483647\n\ndef wallsAndGates(rooms):\n    # Multi-source BFS from all gates. Mutate the grid in place, return it.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              2147483647,
+              -1,
+              0,
+              2147483647
+            ],
+            [
+              2147483647,
+              2147483647,
+              2147483647,
+              -1
+            ],
+            [
+              2147483647,
+              -1,
+              2147483647,
+              -1
+            ],
+            [
+              0,
+              -1,
+              2147483647,
+              2147483647
+            ]
+          ]
+        ],
+        "expected": "[[3, -1, 0, 1], [2, 2, 1, -1], [1, -1, 2, -1], [0, -1, 3, 4]]"
+      },
+      {
+        "label": "single gate",
+        "args": [
+          [
+            [
+              0,
+              2147483647
+            ],
+            [
+              2147483647,
+              2147483647
+            ]
+          ]
+        ],
+        "expected": "[[0, 1], [1, 2]]"
+      },
+      {
+        "label": "no gates (all stay INF)",
+        "args": [
+          [
+            [
+              2147483647,
+              2147483647
+            ]
+          ]
+        ],
+        "expected": "[[2147483647, 2147483647]]"
+      },
+      {
+        "label": "wall isolates",
+        "args": [
+          [
+            [
+              0,
+              -1,
+              2147483647
+            ]
+          ]
+        ],
+        "expected": "[[0, -1, 2147483647]]"
+      },
+      {
+        "label": "all walls",
+        "args": [
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              -1,
+              -1
+            ]
+          ]
+        ],
+        "expected": "[[-1, -1], [-1, -1]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Multi-source BFS from all gates simultaneously. Each empty room's BFS distance from the nearest gate is the answer. Push all gates into the queue at level 0. BFS expands; each visited empty room is exactly 'distance from gate' away.",
+      "clarifying_questions": [
+        {
+          "question": "BFS from each gate would be O(gates * m * n) \u2014 can we do better?",
+          "why": "Yes. Multi-source BFS from ALL gates simultaneously: O(m * n) total. Each cell visited once."
+        },
+        {
+          "question": "What if a room is unreachable from any gate?",
+          "why": "Leave it as INF. Don't modify."
+        },
+        {
+          "question": "Can a cell be both wall and gate?",
+          "why": "No \u2014 exclusive types: -1 (wall), 0 (gate), or INF (empty). Algorithm assumes this."
+        },
+        {
+          "question": "Is INF specifically 2^31 - 1?",
+          "why": "Per spec, yes. Used as a sentinel for 'empty room'."
+        },
+        {
+          "question": "Mutate the input grid?",
+          "why": "Yes per spec \u2014 answer is written in-place. Confirm before coding."
+        }
+      ],
+      "think_out_loud": "Multi-source BFS exactly like Rotting Oranges. Initial queue has all gates. For each, visit neighbors at distance 1, 2, 3... Mark visited by writing the distance (replaces INF). Empty rooms unreachable from any gate stay as INF.",
+      "edge_cases": [
+        {
+          "category": "No gates",
+          "details": "All cells stay INF. No work."
+        },
+        {
+          "category": "All walls",
+          "details": "No changes."
+        },
+        {
+          "category": "Single gate",
+          "details": "BFS from it, filling reachable empties."
+        },
+        {
+          "category": "Walls isolate some cells",
+          "details": "Those cells stay INF."
+        },
+        {
+          "category": "Multiple gates",
+          "details": "BFS naturally picks the closest gate \u2014 first visit wins."
+        }
+      ],
+      "common_mistakes": [
+        "Single-source BFS per gate \u2014 O(g * m * n).",
+        "Forgetting to skip walls (-1) in BFS expansion.",
+        "Overwriting INF on cells that are already non-INF (already visited closer) \u2014 first visit wins.",
+        "Off-by-one on distance counter.",
+        "Not pushing all gates initially \u2014 defeats the multi-source trick."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Multi-source BFS variant \u2014 direct cousin of Rotting Oranges. Often the next problem after that.",
+      "introduction_context": "Common at Google, Amazon. Premium LC problem (286) but reproduced everywhere.",
+      "really_testing": [
+        "Multi-source BFS pattern.",
+        "Distance-tracking in BFS (level = distance).",
+        "Handling walls (skip in expansion).",
+        "First-visit wins (closest gate found first)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Multi-source BFS in 5-8 min. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, possibly with one bug fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Per-gate BFS; can't unify."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working BFS."
+        }
+      ],
+      "playbook": [
+        "Restate: 'distance to nearest gate for each empty room'.",
+        "Insight: 'multi-source BFS from all gates'.",
+        "Code: queue = deque(). for r,c: if rooms[r][c]==0: queue.append((r,c)). while queue: r,c = popleft(). for nr,nc in 4-dirs: if in bounds and rooms[nr][nc]==INF: rooms[nr][nc] = rooms[r][c] + 1; queue.append((nr,nc)).",
+        "First-visit wins because BFS visits cells in increasing distance order. Walls (-1) naturally skipped (we check == INF)."
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: '01 Matrix' (LC 542) \u2014 same algorithm.",
+      "dont_do": [
+        "Don't BFS from each gate separately.",
+        "Don't overwrite already-visited cells.",
+        "Don't treat walls as empty rooms.",
+        "Don't forget the in-place mutation."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Multi-Source BFS from All Gates",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "from collections import deque\n\nINF = 2147483647\n\ndef wallsAndGates(rooms):\n    if not rooms or not rooms[0]:\n        return rooms\n    m, n = len(rooms), len(rooms[0])\n    queue = deque()\n    \n    for r in range(m):\n        for c in range(n):\n            if rooms[r][c] == 0:\n                queue.append((r, c))\n    \n    while queue:\n        r, c = queue.popleft()\n        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < m and 0 <= nc < n and rooms[nr][nc] == INF:\n                rooms[nr][nc] = rooms[r][c] + 1\n                queue.append((nr, nc))\n    \n    return rooms",
+        "explanation": "Push all gates onto the queue. BFS expands outward in lockstep \u2014 every cell's first visit is its shortest distance from some gate. Walls are -1 (not INF) so they're naturally skipped by the `== INF` check. Each cell visited at most once \u2192 O(m * n)."
+      }
+    ],
+    "related_problem_ids": [
+      "rotting-oranges",
+      "number-of-islands",
+      "surrounded-regions"
+    ]
+  },
+  {
+    "id": "surrounded-regions",
+    "title": "Surrounded Regions",
+    "leetcode_url": "https://leetcode.com/problems/surrounded-regions/",
+    "leetcode_id": 130,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "dfs",
+      "bfs",
+      "grid"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n board containing 'X' and 'O', capture all 'O' regions that are SURROUNDED by 'X'. A region is captured by flipping all its 'O's to 'X's. 'O' cells connected to a border 'O' cannot be captured.",
+    "constraints": [
+      "m == board.length, n == board[i].length",
+      "1 <= m, n <= 200",
+      "board[i][j] is 'X' or 'O'."
+    ],
+    "examples": [
+      {
+        "input": "board = [['X','X','X','X'],['X','O','O','X'],['X','X','O','X'],['X','O','X','X']]",
+        "output": "[['X','X','X','X'],['X','X','X','X'],['X','X','X','X'],['X','O','X','X']]",
+        "explanation": "Center O's are surrounded \u2192 flipped. Bottom-left O touches the border \u2192 preserved."
+      }
+    ],
+    "function_name": "solve",
+    "function_signature": "def solve(board):",
+    "starter_code": "def solve(board):\n    # Capture surrounded 'O's. Mutate in place, return the board.\n    # Trick: flood-fill from BORDER 'O's to mark survivors, then flip the rest.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "X",
+              "X",
+              "X",
+              "X"
+            ],
+            [
+              "X",
+              "O",
+              "O",
+              "X"
+            ],
+            [
+              "X",
+              "X",
+              "O",
+              "X"
+            ],
+            [
+              "X",
+              "O",
+              "X",
+              "X"
+            ]
+          ]
+        ],
+        "expected": "[['X', 'X', 'X', 'X'], ['X', 'X', 'X', 'X'], ['X', 'X', 'X', 'X'], ['X', 'O', 'X', 'X']]"
+      },
+      {
+        "label": "all X",
+        "args": [
+          [
+            [
+              "X",
+              "X"
+            ],
+            [
+              "X",
+              "X"
+            ]
+          ]
+        ],
+        "expected": "[['X', 'X'], ['X', 'X']]"
+      },
+      {
+        "label": "single O border",
+        "args": [
+          [
+            [
+              "O"
+            ]
+          ]
+        ],
+        "expected": "[['O']]"
+      },
+      {
+        "label": "all border O's",
+        "args": [
+          [
+            [
+              "O",
+              "O"
+            ],
+            [
+              "O",
+              "O"
+            ]
+          ]
+        ],
+        "expected": "[['O', 'O'], ['O', 'O']]"
+      },
+      {
+        "label": "surrounded center O",
+        "args": [
+          [
+            [
+              "X",
+              "X",
+              "X"
+            ],
+            [
+              "X",
+              "O",
+              "X"
+            ],
+            [
+              "X",
+              "X",
+              "X"
+            ]
+          ]
+        ],
+        "expected": "[['X', 'X', 'X'], ['X', 'X', 'X'], ['X', 'X', 'X']]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Reverse the problem. Instead of identifying surrounded regions, identify 'safe' O's \u2014 those connected to a border O. Flood-fill from every border O, marking them with a temporary marker (e.g., '#'). Then walk the grid: anything still 'O' is surrounded (flip to X); anything '#' is safe (restore to O).",
+      "clarifying_questions": [
+        {
+          "question": "What counts as 'border'?",
+          "why": "Any cell on row 0, row m-1, column 0, or column n-1."
+        },
+        {
+          "question": "Mutate in place?",
+          "why": "Yes per spec. Final board is the modified input."
+        },
+        {
+          "question": "4-directional only?",
+          "why": "Yes per spec. Standard grid connectivity."
+        },
+        {
+          "question": "Why reverse the problem?",
+          "why": "Easier to identify 'safe' O's (connected to border) than 'surrounded' ones. Surrounded = NOT safe. Saves logic."
+        },
+        {
+          "question": "Single-cell or all-border O's?",
+          "why": "Trivially: nothing to flip. The reverse approach handles it without special-casing."
+        }
+      ],
+      "think_out_loud": "Flood-fill marker pattern. Walk the border; for each 'O', DFS/BFS marking all connected 'O's with '#'. After pass 1, the grid has 'X', 'O' (surrounded), and '#' (safe). Pass 2: 'O' \u2192 'X', '#' \u2192 'O'. Done.",
+      "edge_cases": [
+        {
+          "category": "All X",
+          "details": "No work. Return unchanged."
+        },
+        {
+          "category": "Single O cell at border",
+          "details": "Safe. Stays O."
+        },
+        {
+          "category": "All O's",
+          "details": "All connected to border. All safe. Stays unchanged."
+        },
+        {
+          "category": "Strict interior O cluster",
+          "details": "Not connected to border \u2192 all flipped to X."
+        },
+        {
+          "category": "Mixed",
+          "details": "Standard algorithm handles correctly."
+        }
+      ],
+      "common_mistakes": [
+        "Forward approach (flood-fill surrounded regions, check 'does any border O touch?') \u2014 tangled.",
+        "Forgetting one of the four borders \u2014 leaks safe regions.",
+        "Using only the four corners as starting points \u2014 misses non-corner border O's.",
+        "Forgetting to restore '#' to 'O' in pass 2.",
+        "Using BFS/DFS without bounds checks."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Reverse-the-problem flood-fill. Tests recognizing that 'safe' is easier to identify than 'surrounded'.",
+      "introduction_context": "Common at Amazon, Microsoft. Often follows Number of Islands.",
+      "really_testing": [
+        "Reverse-the-problem insight.",
+        "Flood-fill from boundaries.",
+        "Temporary marker + 2-pass approach.",
+        "Handling all four borders."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pitches the reverse approach in 2 min. Codes in 8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Tries forward, refactors when stuck. Correct in 12-15 min."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Forward approach with bugs; tangled logic."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'flip surrounded O regions to X; border-connected stay'.",
+        "Reverse insight: 'mark safe O's (border-connected), then flip everything else'.",
+        "DFS from every border O, mark with '#'.",
+        "Walk grid: 'O' \u2192 'X' (surrounded); '#' \u2192 'O' (restored).",
+        "Walk classic 4x4: DFS from (3,1) (only border O), no neighbors are 'O'. So (3,1) becomes '#'. Pass 2: center O's \u2192 X, (3,1) restored. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Use union-find \u2014 same logic, group border O's together.",
+      "dont_do": [
+        "Don't go forward \u2014 tangled.",
+        "Don't skip any of the 4 borders.",
+        "Don't forget to restore '#' \u2192 'O'.",
+        "Don't 8-directional."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Border DFS + Mark + Flip",
+        "time": "O(m * n)",
+        "space": "O(m * n) recursion worst case",
+        "code": "def solve(board):\n    if not board or not board[0]:\n        return board\n    m, n = len(board), len(board[0])\n    \n    def dfs(r, c):\n        if r < 0 or r >= m or c < 0 or c >= n or board[r][c] != 'O':\n            return\n        board[r][c] = '#'  # temporary safe marker\n        dfs(r + 1, c)\n        dfs(r - 1, c)\n        dfs(r, c + 1)\n        dfs(r, c - 1)\n    \n    # Mark all border-connected O's as safe (#)\n    for r in range(m):\n        dfs(r, 0)\n        dfs(r, n - 1)\n    for c in range(n):\n        dfs(0, c)\n        dfs(m - 1, c)\n    \n    # Pass 2: O (surrounded) -> X; # (safe) -> O\n    for r in range(m):\n        for c in range(n):\n            if board[r][c] == 'O':\n                board[r][c] = 'X'\n            elif board[r][c] == '#':\n                board[r][c] = 'O'\n    \n    return board",
+        "explanation": "Two-pass algorithm. Pass 1: DFS from every border cell that's 'O', marking connected 'O's with '#' (safe). Pass 2: any remaining 'O' is surrounded \u2192 flip to 'X'; any '#' is safe \u2192 restore to 'O'. O(m * n) total \u2014 each cell touched a constant number of times."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "rotting-oranges",
+      "walls-and-gates"
+    ]
   }
 ]
