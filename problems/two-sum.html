@@ -880,18 +880,51 @@
     // ── Auto-grow text editor (Google-Docs style) ──────────────
     // As the user types, height tracks scrollHeight so the textarea expands
     // downward. Everything below (test cases, related problems) gets pushed
-    // down inside the scrollable editor column.
+    // down inside the scrollable editor column. We also scroll the column so
+    // the line the user is typing on stays visible.
     (function() {
       var ta = document.querySelector('.text-editor');
+      var col = document.querySelector('.editor-col');
       if (!ta) return;
+
       function resize() {
         if (ta.offsetParent === null) return; // skip while pane is hidden
         ta.style.height = 'auto';
         ta.style.height = (ta.scrollHeight + 2) + 'px';
       }
-      ta.addEventListener('input', resize);
 
-      // Also resize when the Text Editor tab becomes active (first reveal
+      function keepCursorInView() {
+        if (!col || ta.offsetParent === null) return;
+        // Compute the y-position of the cursor inside the textarea by counting
+        // newlines before the caret. Approximation, good enough.
+        var beforeCaret = ta.value.substring(0, ta.selectionEnd);
+        var lineNum = (beforeCaret.match(/\n/g) || []).length;
+        var lineHeight = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+        var paddingTop = parseFloat(getComputedStyle(ta).paddingTop) || 14;
+        var taRect = ta.getBoundingClientRect();
+        var colRect = col.getBoundingClientRect();
+        var cursorY = taRect.top + paddingTop + (lineNum + 1) * lineHeight;
+        // If the cursor is below the visible bottom of the column, scroll down
+        var pad = 24; // breathing room
+        if (cursorY > colRect.bottom - pad) {
+          col.scrollTop += (cursorY - (colRect.bottom - pad));
+        }
+        // If above the visible top (user navigated up), scroll up
+        if (cursorY < colRect.top + paddingTop + pad) {
+          col.scrollTop -= ((colRect.top + paddingTop + pad) - cursorY);
+        }
+      }
+
+      function onInput() {
+        resize();
+        keepCursorInView();
+      }
+
+      ta.addEventListener('input', onInput);
+      ta.addEventListener('keyup', keepCursorInView); // arrow-key nav
+      ta.addEventListener('click', keepCursorInView); // mouse-click nav
+
+      // Resize when the Text Editor tab becomes active (first reveal
       // gives accurate scrollHeight measurements).
       var textTab = document.querySelector('.editor-tab[data-pane="text"]');
       if (textTab) {
@@ -899,9 +932,7 @@
           window.requestAnimationFrame(resize);
         });
       }
-      // And on window resize (column width changes → wrap changes → height changes)
       window.addEventListener('resize', resize);
-      // Initial measurement (in case Text Editor is default)
       window.requestAnimationFrame(resize);
     })();
   </script>
