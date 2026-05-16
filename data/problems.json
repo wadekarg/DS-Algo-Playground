@@ -19462,5 +19462,691 @@
       "house-robber",
       "coin-change"
     ]
+  },
+  {
+    "id": "word-break",
+    "title": "Word Break",
+    "leetcode_url": "https://leetcode.com/problems/word-break/",
+    "leetcode_id": 139,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given a string s and a dictionary wordDict of words, return True if s can be segmented into a space-separated sequence of dictionary words. Each dictionary word may be used multiple times.",
+    "constraints": [
+      "1 <= s.length <= 300",
+      "1 <= wordDict.length <= 1000",
+      "1 <= wordDict[i].length <= 20",
+      "All words consist of lowercase English letters; wordDict contains unique words."
+    ],
+    "examples": [
+      {
+        "input": "s = \"leetcode\", wordDict = [\"leet\",\"code\"]",
+        "output": "True",
+        "explanation": "\"leetcode\" = \"leet\" + \"code\"."
+      },
+      {
+        "input": "s = \"applepenapple\", wordDict = [\"apple\",\"pen\"]",
+        "output": "True",
+        "explanation": "\"apple\" + \"pen\" + \"apple\". Words reusable."
+      },
+      {
+        "input": "s = \"catsandog\", wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]",
+        "output": "False",
+        "explanation": "No way to segment fully \u2014 'catsandog' can start with cats/cat but neither leaves a valid suffix."
+      }
+    ],
+    "function_name": "wordBreak",
+    "function_signature": "def wordBreak(s, wordDict):",
+    "starter_code": "def wordBreak(s, wordDict):\n    # dp[i] = True if s[:i] can be segmented. Transition: dp[i] = any(dp[j] and s[j:i] in dict) for j < i.\n    pass",
+    "test_cases": [
+      {
+        "label": "leetcode",
+        "args": [
+          "leetcode",
+          [
+            "leet",
+            "code"
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "applepenapple (reuse)",
+        "args": [
+          "applepenapple",
+          [
+            "apple",
+            "pen"
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "catsandog impossible",
+        "args": [
+          "catsandog",
+          [
+            "cats",
+            "dog",
+            "sand",
+            "and",
+            "cat"
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty word match",
+        "args": [
+          "a",
+          [
+            "a"
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "no match",
+        "args": [
+          "aaa",
+          [
+            "b"
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single char repeat",
+        "args": [
+          "aaaaa",
+          [
+            "a",
+            "aa"
+          ]
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "1D DP. dp[i] = True if s[:i] can be segmented. Base: dp[0] = True (empty string). Transition: dp[i] = True if there exists j < i such that dp[j] and s[j:i] is in wordDict. Use a set for O(1) lookup.",
+      "clarifying_questions": [
+        {
+          "question": "Words can be reused?",
+          "why": "Yes per spec. Each word may appear multiple times in the segmentation."
+        },
+        {
+          "question": "All same length, or variable?",
+          "why": "Variable per spec (1 to 20 chars)."
+        },
+        {
+          "question": "Case-sensitive match?",
+          "why": "All lowercase per spec. No normalization needed."
+        },
+        {
+          "question": "Empty s \u2014 is that True?",
+          "why": "Per spec s.length >= 1, but dp[0] = True is the natural base case."
+        },
+        {
+          "question": "Why DP not greedy?",
+          "why": "Greedy fails on 'catsandog' \u2014 taking 'cats' or 'cat' first is locally valid but both fail downstream. DP explores all splits."
+        }
+      ],
+      "think_out_loud": "Bottom-up DP. dp[0] = True. For each i from 1 to len(s): for each j from 0 to i-1: if dp[j] is True and s[j:i] is in dict, set dp[i] = True and break. Optimization: only try j values where i - j \u2264 max_word_length.",
+      "edge_cases": [
+        {
+          "category": "Single char in dict",
+          "details": "Repeated single chars segment correctly."
+        },
+        {
+          "category": "No match possible",
+          "details": "dp[len(s)] stays False."
+        },
+        {
+          "category": "Word longer than s",
+          "details": "Skipped \u2014 j would be negative."
+        },
+        {
+          "category": "Repeated word use",
+          "details": "Algorithm naturally allows reuse."
+        },
+        {
+          "category": "Spec disallows empty s; defensive returns True",
+          "details": "dp[0] = True base case."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy first-match \u2014 fails on backtracking-required inputs.",
+        "Recursion without memoization \u2014 exponential.",
+        "Iterating j from len(s) down \u2014 wastes work.",
+        "Using a list instead of set for word lookup \u2014 O(n) per check.",
+        "Off-by-one slicing (s[j:i] vs s[j:i+1])."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "String + DP. The 'can it be split into dictionary pieces' archetype.",
+      "introduction_context": "Common at Amazon, Meta, Google. Often a follow-up: 'return all valid segmentations' (Word Break II).",
+      "really_testing": [
+        "Recognizing 1D DP on string prefixes.",
+        "Building the recurrence: dp[i] = any(dp[j] and s[j:i] in dict).",
+        "Set for O(1) dictionary lookup.",
+        "Why greedy fails."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DP in 8-10 min. Optimizes with max_len trim. Explains why greedy fails."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization first; refactors to bottom-up correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy approach; can't fix when shown counterexample."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'can s be split into dict words (reusable)?'",
+        "Pitch DP: 'dp[i] = True if s[:i] segments'.",
+        "Code: words = set(wordDict); n = len(s). dp = [False] * (n + 1); dp[0] = True. for i in range(1, n + 1): for j in range(i): if dp[j] and s[j:i] in words: dp[i] = True; break. return dp[n].",
+        "Walk 'leetcode': dp[0]=T. dp[4]=T (s[0:4]='leet'). dp[8]=T (dp[4]=T and s[4:8]='code'). \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Word Break II (return all segmentations).",
+      "dont_do": [
+        "Don't greedy.",
+        "Don't use list for dict.",
+        "Don't recurse without memo.",
+        "Don't try every word in dict \u2014 try every split point."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up DP",
+        "time": "O(n\u00b2 * w) where w is avg word length comparison",
+        "space": "O(n)",
+        "code": "def wordBreak(s, wordDict):\n    words = set(wordDict)\n    n = len(s)\n    dp = [False] * (n + 1)\n    dp[0] = True\n    \n    for i in range(1, n + 1):\n        for j in range(i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True\n                break\n    \n    return dp[n]",
+        "explanation": "dp[i] = True iff s[:i] can be segmented. dp[0] = True (empty string is trivially segmented). For each i, look back for a valid split: some j where dp[j] is True AND s[j:i] is a dictionary word. Set-based dict lookup is O(L) for word length L. Total work O(n\u00b2 L)."
+      }
+    ],
+    "related_problem_ids": [
+      "coin-change",
+      "longest-increasing-subsequence",
+      "house-robber"
+    ]
+  },
+  {
+    "id": "decode-ways",
+    "title": "Decode Ways",
+    "leetcode_url": "https://leetcode.com/problems/decode-ways/",
+    "leetcode_id": 91,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "A message containing letters from A-Z can be encoded by mapping 'A' = 1, 'B' = 2, ..., 'Z' = 26. Given a string s containing only digits, return the number of ways to decode it. '0' has no mapping; codes 10-26 are valid two-digit combinations.",
+    "constraints": [
+      "1 <= s.length <= 100",
+      "s contains only digits and may have leading zeros."
+    ],
+    "examples": [
+      {
+        "input": "s = \"12\"",
+        "output": "2",
+        "explanation": "Decodings: 'AB' (1, 2) or 'L' (12). Two ways."
+      },
+      {
+        "input": "s = \"226\"",
+        "output": "3",
+        "explanation": "'BZ' (2, 26), 'VF' (22, 6), 'BBF' (2, 2, 6). Three ways."
+      },
+      {
+        "input": "s = \"06\"",
+        "output": "0",
+        "explanation": "Leading zero \u2014 no valid decoding starts with '0'."
+      }
+    ],
+    "function_name": "numDecodings",
+    "function_signature": "def numDecodings(s):",
+    "starter_code": "def numDecodings(s):\n    # dp[i] = ways to decode s[:i]. Base dp[0] = 1, dp[1] = 1 if s[0] != '0' else 0.\n    # Transition: add dp[i-1] if s[i-1] != '0'; add dp[i-2] if s[i-2:i] is in 10..26.\n    pass",
+    "test_cases": [
+      {
+        "label": "12",
+        "args": [
+          "12"
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "226",
+        "args": [
+          "226"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "leading zero",
+        "args": [
+          "06"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single digit",
+        "args": [
+          "1"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single zero",
+        "args": [
+          "0"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "with 27 (invalid two-digit)",
+        "args": [
+          "27"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "10 (only one way)",
+        "args": [
+          "10"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "long sequence",
+        "args": [
+          "11111"
+        ],
+        "expected": "8"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "1D DP similar to Climbing Stairs. dp[i] = ways to decode s[:i]. From position i: (1) if s[i-1] is '1'-'9', dp[i] += dp[i-1] (single-digit decode); (2) if s[i-2:i] is in '10'..'26', dp[i] += dp[i-2] (two-digit decode). Handle '0' as a special case \u2014 can't stand alone.",
+      "clarifying_questions": [
+        {
+          "question": "Are leading zeros (like '06') ever valid?",
+          "why": "No. '06' means starting with 0, which can't decode (no letter for 0). Spec returns 0."
+        },
+        {
+          "question": "Is '0' alone valid?",
+          "why": "No \u2014 same reason."
+        },
+        {
+          "question": "Numbers above 26?",
+          "why": "Only 1-26 are letters. So '27' = '2','7' (only one way). '32' = '3','2' (only one way)."
+        },
+        {
+          "question": "Why is 0 the trouble case?",
+          "why": "0 can only appear as part of '10' or '20'. Standalone or in '30'-'90' it kills the decoding. Need explicit checks."
+        },
+        {
+          "question": "Can the string be very long?",
+          "why": "100 max per spec. DP O(n) handles easily."
+        }
+      ],
+      "think_out_loud": "Bottom-up DP. dp[0] = 1, dp[1] = 1 if s[0] != '0' else 0. For i from 2 to n: dp[i] = (dp[i-1] if s[i-1] != '0' else 0) + (dp[i-2] if 10 <= int(s[i-2:i]) <= 26 else 0). Return dp[n]. O(1) space possible with two rolling vars.",
+      "edge_cases": [
+        {
+          "category": "Leading zero",
+          "details": "Return 0."
+        },
+        {
+          "category": "Embedded zero",
+          "details": "Only valid if part of '10' or '20'. Otherwise dp drops to 0."
+        },
+        {
+          "category": "All ones",
+          "details": "Fibonacci-like growth (similar to Climbing Stairs)."
+        },
+        {
+          "category": "27, 28, ..., 99",
+          "details": "Two-digit invalid \u2192 only single-digit decode counts."
+        },
+        {
+          "category": "Single zero",
+          "details": "Return 0."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting to handle '0' specially.",
+        "Allowing '07', '08', etc., as valid two-digit codes (they're not \u2014 must be 10-26).",
+        "Counting '0' as a valid single-digit decoding.",
+        "Off-by-one on indices.",
+        "Recursion without memo \u2014 exponential."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic 1D DP with tricky edge cases. The '0' handling separates strong from average candidates.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. The high frequency of '0' edge cases makes this a popular bug-hunt.",
+      "really_testing": [
+        "Climbing-Stairs-style DP variant.",
+        "Handling '0' (invalid single-digit decode).",
+        "Range check for two-digit codes (10-26).",
+        "Carefully composing the transition."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 8-12 min handling all '0' cases. Walks through '226' and '06'."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly; misses one '0' case until tested."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Treats '0' as a valid decode; multiple '0' bugs."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'ways to decode digit string into letters'.",
+        "Insight: 'Climbing Stairs DP with special handling for 0'.",
+        "Code: if not s or s[0] == '0': return 0. n = len(s). dp = [0] * (n + 1); dp[0], dp[1] = 1, 1. for i in range(2, n + 1): if s[i-1] != '0': dp[i] += dp[i-1]. two = int(s[i-2:i]); if 10 <= two <= 26: dp[i] += dp[i-2]. return dp[n].",
+        "Walk '226': dp[0]=1, dp[1]=1. i=2: '2' valid \u2192 dp[2]+=dp[1]=1. '22' in 10-26 \u2192 dp[2]+=dp[0]=1. dp[2]=2. i=3: '6' valid \u2192 dp[3]+=dp[2]=2. '26' in 10-26 \u2192 dp[3]+=dp[1]=1. dp[3]=3. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Decode Ways II (with '*' wildcards).",
+      "dont_do": [
+        "Don't allow '07' as two-digit.",
+        "Don't count '0' as single-digit.",
+        "Don't recurse without memo.",
+        "Don't off-by-one indices."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up DP",
+        "time": "O(n)",
+        "space": "O(n) \u2014 easily reducible to O(1)",
+        "code": "def numDecodings(s):\n    if not s or s[0] == '0':\n        return 0\n    n = len(s)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    dp[1] = 1\n    for i in range(2, n + 1):\n        # Single-digit decode: s[i-1] must be '1'-'9'\n        if s[i-1] != '0':\n            dp[i] += dp[i-1]\n        # Two-digit decode: s[i-2:i] must be '10' to '26'\n        two = int(s[i-2:i])\n        if 10 <= two <= 26:\n            dp[i] += dp[i-2]\n    return dp[n]",
+        "explanation": "Variant of Climbing Stairs. dp[i] = ways to decode s[:i]. From each i, consider decoding the last 1 or 2 characters. '0' is invalid as single-digit, so guard. Two-digit codes only valid in [10, 26]. Sum the contributions. O(n) time."
+      }
+    ],
+    "related_problem_ids": [
+      "climbing-stairs",
+      "house-robber",
+      "word-break"
+    ]
+  },
+  {
+    "id": "maximum-product-subarray",
+    "title": "Maximum Product Subarray",
+    "leetcode_url": "https://leetcode.com/problems/maximum-product-subarray/",
+    "leetcode_id": 152,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an integer array nums, find a contiguous non-empty subarray that has the largest PRODUCT, and return that product.",
+    "constraints": [
+      "1 <= nums.length <= 2 * 10^4",
+      "-10 <= nums[i] <= 10",
+      "The product of any prefix or suffix is guaranteed to fit in a 32-bit integer."
+    ],
+    "examples": [
+      {
+        "input": "nums = [2,3,-2,4]",
+        "output": "6",
+        "explanation": "Subarray [2,3] has product 6."
+      },
+      {
+        "input": "nums = [-2,0,-1]",
+        "output": "0",
+        "explanation": "The largest product is from [0]."
+      }
+    ],
+    "function_name": "maxProduct",
+    "function_signature": "def maxProduct(nums):",
+    "starter_code": "def maxProduct(nums):\n    # Track both running max AND running min (negatives flip them).\n    # At each step: candidates are nums[i], min*nums[i], max*nums[i]. Update both.\n    pass",
+    "test_cases": [
+      {
+        "label": "[2,3,-2,4]",
+        "args": [
+          [
+            2,
+            3,
+            -2,
+            4
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "[-2,0,-1]",
+        "args": [
+          [
+            -2,
+            0,
+            -1
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single positive",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "single negative",
+        "args": [
+          [
+            -5
+          ]
+        ],
+        "expected": "-5"
+      },
+      {
+        "label": "negative pair",
+        "args": [
+          [
+            -2,
+            -3
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "two negatives in middle",
+        "args": [
+          [
+            2,
+            -5,
+            -2,
+            -4,
+            3
+          ]
+        ],
+        "expected": "24"
+      },
+      {
+        "label": "zero resets",
+        "args": [
+          [
+            3,
+            0,
+            4
+          ]
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Kadane's twist: track BOTH running max product AND running min product. A negative number can flip min to max. At each step: new_max = max(nums[i], max*nums[i], min*nums[i]); new_min = min(nums[i], max*nums[i], min*nums[i]). Track the global maximum.",
+      "clarifying_questions": [
+        {
+          "question": "Subarray is contiguous?",
+          "why": "Yes per spec. Different from subsequence."
+        },
+        {
+          "question": "Can be a single element?",
+          "why": "Yes \u2014 minimum subarray length is 1."
+        },
+        {
+          "question": "Negatives possible?",
+          "why": "Yes. They're THE complication \u2014 a sequence with even count of negatives can have huge positive product."
+        },
+        {
+          "question": "What about zeros?",
+          "why": "A zero resets the running product. Both max and min effectively restart from the next element."
+        },
+        {
+          "question": "Overflow?",
+          "why": "Per spec, products fit in 32-bit. Python ints are unbounded, so no issue."
+        }
+      ],
+      "think_out_loud": "Kadane's algorithm doesn't directly work \u2014 multiplying flips signs. Solution: track running max AND running min simultaneously. At each new element: candidates are itself (start fresh), running_max * itself, running_min * itself. Take max of those for new max, min for new min. Update global answer with new max.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "Return that element."
+        },
+        {
+          "category": "All positives",
+          "details": "Product of whole array."
+        },
+        {
+          "category": "Single zero in middle",
+          "details": "Splits problem; max could be left or right side."
+        },
+        {
+          "category": "Even negatives",
+          "details": "Multiplies to positive \u2014 algorithm picks them up."
+        },
+        {
+          "category": "Odd negatives",
+          "details": "Best to use only some \u2014 algorithm explores subarrays."
+        }
+      ],
+      "common_mistakes": [
+        "Plain Kadane \u2014 fails on negatives flipping.",
+        "Tracking only max \u2014 loses negative-pair-becomes-positive case.",
+        "Initializing max/min to 0 \u2014 wrong (single negative element should be max).",
+        "Forgetting to include nums[i] alone as a candidate (start fresh).",
+        "Not updating global max each step."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Kadane's with a twist. Tests recognizing that tracking both min and max is necessary.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. The twin-state insight is the discriminator.",
+      "really_testing": [
+        "Recognizing plain Kadane fails on negatives.",
+        "Tracking BOTH running max and running min.",
+        "Update order (don't overwrite max before using it in min calculation).",
+        "Edge cases: zeros, single elements, all negatives."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Twin-state idea immediately. Codes in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Tries Kadane, recognizes failure on negatives, refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Plain Kadane; can't fix when shown negative case."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive any DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'max product subarray, contiguous'.",
+        "Insight: 'negatives flip sign \u2014 track both running max and running min'.",
+        "Code: result = max_so_far = min_so_far = nums[0]. for x in nums[1:]: candidates = (x, max_so_far * x, min_so_far * x). new_max = max(candidates); new_min = min(candidates). max_so_far, min_so_far = new_max, new_min. result = max(result, max_so_far). return result.",
+        "Walk [2,3,-2,4]: result=max=min=2. x=3: cands (3,6,6) \u2192 max=6, min=3. result=6. x=-2: cands (-2,-12,-6) \u2192 max=-2, min=-12. result=6. x=4: cands (4,-8,-48) \u2192 max=4, min=-48. result=6. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: Maximum Sum Subarray (Kadane's plain). Sliding window variants.",
+      "dont_do": [
+        "Don't plain Kadane.",
+        "Don't update max before computing new min using old max.",
+        "Don't initialize to 0.",
+        "Don't forget single-element start."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Kadane's with Min and Max Tracking",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def maxProduct(nums):\n    result = max_so_far = min_so_far = nums[0]\n    for x in nums[1:]:\n        # Tuple of candidates (must compute before overwriting either tracker)\n        candidates = (x, max_so_far * x, min_so_far * x)\n        new_max = max(candidates)\n        new_min = min(candidates)\n        max_so_far, min_so_far = new_max, new_min\n        result = max(result, max_so_far)\n    return result",
+        "explanation": "Track both running max and running min. At each element, the three candidates are: start fresh (x alone), extend max by multiplying x, extend min by multiplying x. Update both trackers \u2014 and the global result with the new max. The min tracking captures the 'long negative streak flips to positive' case."
+      }
+    ],
+    "related_problem_ids": [
+      "maximum-subarray",
+      "longest-increasing-subsequence",
+      "house-robber"
+    ]
   }
 ]
