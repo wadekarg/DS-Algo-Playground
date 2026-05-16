@@ -20768,5 +20768,655 @@
       "house-robber",
       "longest-increasing-subsequence"
     ]
+  },
+  {
+    "id": "unique-paths",
+    "title": "Unique Paths",
+    "leetcode_url": "https://leetcode.com/problems/unique-paths/",
+    "leetcode_id": 62,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "combinatorics"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "A robot is on an m \u00d7 n grid at position (0, 0). It can only move right or down. Return the number of unique paths to reach (m-1, n-1).",
+    "constraints": [
+      "1 <= m, n <= 100",
+      "Answer is guaranteed to be <= 2 * 10^9."
+    ],
+    "examples": [
+      {
+        "input": "m = 3, n = 7",
+        "output": "28",
+        "explanation": "C(8, 2) = 28 paths from top-left to bottom-right of a 3x7 grid."
+      },
+      {
+        "input": "m = 3, n = 2",
+        "output": "3",
+        "explanation": "Three distinct paths."
+      }
+    ],
+    "function_name": "uniquePaths",
+    "function_signature": "def uniquePaths(m, n):",
+    "starter_code": "def uniquePaths(m, n):\n    # dp[i][j] = paths from (0,0) to (i,j). dp[i][j] = dp[i-1][j] + dp[i][j-1].\n    # 1D rolling row suffices.\n    pass",
+    "test_cases": [
+      {
+        "label": "3x7",
+        "args": [
+          3,
+          7
+        ],
+        "expected": "28"
+      },
+      {
+        "label": "3x2",
+        "args": [
+          3,
+          2
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "1x1",
+        "args": [
+          1,
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "1xN row",
+        "args": [
+          1,
+          5
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "Nx1 column",
+        "args": [
+          10,
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "square 5x5",
+        "args": [
+          5,
+          5
+        ],
+        "expected": "70"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "2D DP. dp[i][j] = paths to reach (i,j) = dp[i-1][j] + dp[i][j-1]. Base: dp[0][j] = dp[i][0] = 1 (only one path along the edges). Optimization: only need previous row, so 1D rolling row reduces space to O(n). Math: C(m+n-2, m-1) gives the closed form (combinatorics).",
+      "clarifying_questions": [
+        {
+          "question": "Only right and down moves?",
+          "why": "Yes per spec. No diagonals, no backtracking."
+        },
+        {
+          "question": "Are there obstacles?",
+          "why": "No in this problem (LC 62). Unique Paths II adds obstacles."
+        },
+        {
+          "question": "Big m or n?",
+          "why": "\u2264 100. Answer up to 2 * 10^9 \u2014 fits in int."
+        },
+        {
+          "question": "Combinatorics shortcut?",
+          "why": "C(m+n-2, m-1). Total moves = m+n-2; choose which m-1 are downward. Closed form is O(min(m,n))."
+        },
+        {
+          "question": "Why DP if combinatorics works?",
+          "why": "Combinatorics needs factorial / large numbers. DP is simpler to code, generalizes to obstacles, and complexity is the same in practice."
+        }
+      ],
+      "think_out_loud": "2D DP with O(n) rolling row. Initialize row = [1] * n (first row's count). For each subsequent row i: row[j] += row[j-1] (cumulative sum trick \u2014 encodes dp[i-1][j] + dp[i][j-1]). After m-1 iterations, row[n-1] is the answer.",
+      "edge_cases": [
+        {
+          "category": "1x1",
+          "details": "Already at destination. Return 1."
+        },
+        {
+          "category": "1xN or Nx1",
+          "details": "Only one path (all in one direction)."
+        },
+        {
+          "category": "Square",
+          "details": "Symmetric \u2014 m and n swappable."
+        },
+        {
+          "category": "Large values",
+          "details": "Answer up to 2*10^9. Python ints fine; Java/C++ need long."
+        },
+        {
+          "category": "Obstacles (Unique Paths II)",
+          "details": "Extension \u2014 set dp[i][j] = 0 at obstacles."
+        }
+      ],
+      "common_mistakes": [
+        "Recursing without memo \u2014 exponential.",
+        "Allocating O(m*n) instead of O(n) rolling.",
+        "Off-by-one (m+n-1 vs m+n-2 in combinatorics).",
+        "Confusing m and n.",
+        "Initializing dp[0][0] = 0 instead of 1."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "2D DP introduction. The simplest 'count paths on a grid' problem.",
+      "introduction_context": "Common phone screen at Amazon, Microsoft. The bar: solve in 5-7 min.",
+      "really_testing": [
+        "Recognizing 2D DP grid pattern.",
+        "Recurrence dp[i][j] = dp[i-1][j] + dp[i][j-1].",
+        "Space optimization to 1D.",
+        "Optional combinatorics."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes 1D DP in 5 min. Mentions combinatorics."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "2D DP works correctly."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Recursion without memo."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive recurrence."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count paths from top-left to bottom-right, right/down only'.",
+        "Recurrence: 'dp[i][j] = dp[i-1][j] + dp[i][j-1]'.",
+        "Pitch 1D rolling: 'row[j] += row[j-1] over m-1 iterations'.",
+        "Code: row = [1] * n. for _ in range(m - 1): for j in range(1, n): row[j] += row[j-1]. return row[-1].",
+        "Walk 3x7: start [1,1,1,1,1,1,1]. Iter 1: [1,2,3,4,5,6,7]. Iter 2: [1,3,6,10,15,21,28]. Return 28. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: Unique Paths II (obstacles), Minimum Path Sum.",
+      "dont_do": [
+        "Don't allocate O(m*n).",
+        "Don't recurse without memo.",
+        "Don't mix m and n.",
+        "Don't off-by-one combinatorics."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "1D Rolling DP",
+        "time": "O(m * n)",
+        "space": "O(n)",
+        "code": "def uniquePaths(m, n):\n    row = [1] * n\n    for _ in range(m - 1):\n        for j in range(1, n):\n            row[j] += row[j - 1]\n    return row[-1]",
+        "explanation": "Roll a single row. Initially [1]*n (top row: one path each, only going right). For each subsequent row, update in place: row[j] += row[j-1] expresses dp[i][j] = dp[i-1][j] (old row[j]) + dp[i][j-1] (already updated row[j-1]). O(m*n) time, O(n) space."
+      },
+      {
+        "name": "Combinatorics",
+        "time": "O(min(m, n))",
+        "space": "O(1)",
+        "code": "from math import comb\n\ndef uniquePaths(m, n):\n    return comb(m + n - 2, m - 1)",
+        "explanation": "Total moves = (m-1) down + (n-1) right = m+n-2. Choose which m-1 of them are 'down' (or equivalently n-1 are 'right'). C(m+n-2, m-1). One-line closed form."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-common-subsequence",
+      "coin-change",
+      "longest-increasing-subsequence"
+    ]
+  },
+  {
+    "id": "longest-common-subsequence",
+    "title": "Longest Common Subsequence",
+    "leetcode_url": "https://leetcode.com/problems/longest-common-subsequence/",
+    "leetcode_id": 1143,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.",
+    "constraints": [
+      "1 <= text1.length, text2.length <= 1000",
+      "Both consist of lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "text1 = \"abcde\", text2 = \"ace\"",
+        "output": "3",
+        "explanation": "'ace' is a common subsequence of length 3."
+      },
+      {
+        "input": "text1 = \"abc\", text2 = \"abc\"",
+        "output": "3",
+        "explanation": "Identical."
+      },
+      {
+        "input": "text1 = \"abc\", text2 = \"def\"",
+        "output": "0",
+        "explanation": "No common characters."
+      }
+    ],
+    "function_name": "longestCommonSubsequence",
+    "function_signature": "def longestCommonSubsequence(text1, text2):",
+    "starter_code": "def longestCommonSubsequence(text1, text2):\n    # dp[i][j] = LCS of text1[:i] and text2[:j].\n    # Recurrence: if chars match, dp[i][j] = dp[i-1][j-1] + 1.\n    # Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1]).\n    pass",
+    "test_cases": [
+      {
+        "label": "abcde / ace",
+        "args": [
+          "abcde",
+          "ace"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "abc / abc",
+        "args": [
+          "abc",
+          "abc"
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "abc / def",
+        "args": [
+          "abc",
+          "def"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single match",
+        "args": [
+          "a",
+          "a"
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single no match",
+        "args": [
+          "a",
+          "b"
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "long shared",
+        "args": [
+          "abcdef",
+          "azced"
+        ],
+        "expected": "3"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Classic 2D DP. dp[i][j] = LCS of text1[:i] and text2[:j]. If text1[i-1] == text2[j-1], dp[i][j] = dp[i-1][j-1] + 1. Else dp[i][j] = max(dp[i-1][j], dp[i][j-1]). Build table bottom-up. Final answer: dp[m][n]. Space can be reduced to O(min(m,n)) with rolling.",
+      "clarifying_questions": [
+        {
+          "question": "Subsequence preserves order, not contiguous?",
+          "why": "Yes \u2014 subsequence (gaps allowed), not substring."
+        },
+        {
+          "question": "Are we returning length or the actual sequence?",
+          "why": "Length per spec. Building the sequence requires backtracking through dp."
+        },
+        {
+          "question": "Empty strings handled?",
+          "why": "Per constraints, length >= 1. dp[0][_] = dp[_][0] = 0 handles empty as base case."
+        },
+        {
+          "question": "Case sensitivity?",
+          "why": "Per spec, all lowercase. No normalization needed."
+        },
+        {
+          "question": "Can I do O(min(m,n)) space?",
+          "why": "Yes \u2014 only need previous row. Roll with two 1D arrays."
+        }
+      ],
+      "think_out_loud": "Bottom-up 2D DP. Build dp of size (m+1) x (n+1). For each cell, character match \u2192 diagonal + 1; no match \u2192 max of up or left. O(m*n) time and space. Roll to O(min(m,n)) space if asked.",
+      "edge_cases": [
+        {
+          "category": "Identical strings",
+          "details": "LCS = length of either."
+        },
+        {
+          "category": "Completely disjoint",
+          "details": "LCS = 0."
+        },
+        {
+          "category": "One char match",
+          "details": "LCS = 1."
+        },
+        {
+          "category": "One string contains the other",
+          "details": "LCS = length of shorter."
+        },
+        {
+          "category": "Empty (out of spec)",
+          "details": "LCS = 0. Base case."
+        }
+      ],
+      "common_mistakes": [
+        "Recursion without memoization \u2014 exponential.",
+        "Treating as substring (contiguous) \u2014 different problem.",
+        "Off-by-one in dp indices (text1[i] vs text1[i-1]).",
+        "Confusing rows and columns.",
+        "Building O(m*n) when O(min(m,n)) suffices."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Canonical string DP. The foundation for Edit Distance, Distinct Subsequences, and many others.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. The recurrence is famous; the interviewer wants to see you derive and code it cleanly.",
+      "really_testing": [
+        "Recognizing 2D DP pattern.",
+        "Deriving the match/no-match recurrence.",
+        "Off-by-one discipline.",
+        "Optional: space optimization."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes 2D DP in 8-10 min. Walks through example. Mentions O(n) space."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct, with one indexing bug fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Treats as substring. Or buggy recurrence."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'LCS length, preserve order, gaps allowed'.",
+        "Recurrence: 'match \u2192 diag+1; mismatch \u2192 max(up, left)'.",
+        "Code: m, n = len(text1), len(text2). dp = [[0]*(n+1) for _ in range(m+1)]. for i in range(1, m+1): for j in range(1, n+1): if text1[i-1] == text2[j-1]: dp[i][j] = dp[i-1][j-1] + 1. else: dp[i][j] = max(dp[i-1][j], dp[i][j-1]). return dp[m][n].",
+        "Walk 'abcde' / 'ace': dp[5][3] = 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Edit Distance, Distinct Subsequences.",
+      "dont_do": [
+        "Don't treat as substring.",
+        "Don't recurse without memo.",
+        "Don't off-by-one indices.",
+        "Don't allocate full 2D when 1D suffices (in production)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up 2D DP",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def longestCommonSubsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i - 1] == text2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    return dp[m][n]",
+        "explanation": "Classic 2D DP. dp[i][j] = LCS of text1's first i chars and text2's first j chars. Match: extend the diagonal. Mismatch: best of skipping a char in either string. Base row/column is 0 (empty string vs anything = 0). O(m*n) time and space."
+      }
+    ],
+    "related_problem_ids": [
+      "longest-increasing-subsequence",
+      "word-break",
+      "edit-distance"
+    ]
+  },
+  {
+    "id": "coin-change-ii",
+    "title": "Coin Change II",
+    "leetcode_url": "https://leetcode.com/problems/coin-change-ii/",
+    "leetcode_id": 518,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "unbounded-knapsack"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an array coins representing distinct coin denominations and an integer amount. Return the NUMBER of distinct combinations that make up amount. You can use each coin an unlimited number of times. If amount is unreachable, return 0.",
+    "constraints": [
+      "1 <= coins.length <= 300",
+      "1 <= coins[i] <= 5000",
+      "All coins are unique.",
+      "0 <= amount <= 5000"
+    ],
+    "examples": [
+      {
+        "input": "amount = 5, coins = [1,2,5]",
+        "output": "4",
+        "explanation": "Combinations: 5, 2+2+1, 2+1+1+1, 1+1+1+1+1."
+      },
+      {
+        "input": "amount = 3, coins = [2]",
+        "output": "0",
+        "explanation": "Impossible to make 3 from only 2s."
+      }
+    ],
+    "function_name": "change",
+    "function_signature": "def change(amount, coins):",
+    "starter_code": "def change(amount, coins):\n    # 1D DP. dp[i] = ways to make amount i.\n    # Iterate coins (outer), amount (inner) to count COMBINATIONS (not permutations).\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,2,5] amount 5",
+        "args": [
+          5,
+          [
+            1,
+            2,
+            5
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "[2] amount 3",
+        "args": [
+          3,
+          [
+            2
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "amount 0",
+        "args": [
+          0,
+          [
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single coin matches",
+        "args": [
+          5,
+          [
+            5
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "large",
+        "args": [
+          10,
+          [
+            1,
+            2,
+            5
+          ]
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "no matching coin",
+        "args": [
+          7,
+          [
+            10
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "1D DP, but order of loops matters. dp[i] = ways to make amount i. Initialize dp[0] = 1 (one way to make 0: empty combination). For each coin (outer loop), for each amount from coin to target (inner loop): dp[i] += dp[i - coin]. The outer-coin loop ensures combinations (order doesn't matter); inner-amount-first would count permutations.",
+      "clarifying_questions": [
+        {
+          "question": "Combinations or permutations?",
+          "why": "Combinations per spec. {1,2} and {2,1} count as one. Loop order matters."
+        },
+        {
+          "question": "Coins reusable?",
+          "why": "Yes per spec \u2014 unbounded knapsack. So inner loop iterates left-to-right (reuse allowed)."
+        },
+        {
+          "question": "amount = 0?",
+          "why": "1 way \u2014 the empty combination. dp[0] = 1 base case."
+        },
+        {
+          "question": "What if no combination reaches amount?",
+          "why": "Return 0. dp[amount] stays 0."
+        },
+        {
+          "question": "Why coin outer / amount inner?",
+          "why": "If you swap to amount outer / coin inner, you count permutations: each ordering becomes a separate count. Coin-outer locks ordering."
+        }
+      ],
+      "think_out_loud": "Unbounded knapsack count variant. dp[i] = number of combinations summing to i. Initialize dp[0]=1. For each coin: for each i from coin to amount: dp[i] += dp[i - coin]. Critical: outer loop is coins (ensures combinations).",
+      "edge_cases": [
+        {
+          "category": "amount = 0",
+          "details": "Return 1."
+        },
+        {
+          "category": "Single coin == amount",
+          "details": "Return 1."
+        },
+        {
+          "category": "Unreachable amount",
+          "details": "Return 0."
+        },
+        {
+          "category": "Coin > amount",
+          "details": "Skipped \u2014 inner range starts at coin."
+        },
+        {
+          "category": "Multiple coins same value (out of spec)",
+          "details": "Spec says distinct. Algorithm would still count correctly."
+        }
+      ],
+      "common_mistakes": [
+        "Swapping loop order \u2014 counts permutations.",
+        "Inner loop right-to-left \u2014 turns into 0/1 knapsack (no reuse).",
+        "Forgetting dp[0] = 1.",
+        "Recursion without memo \u2014 exponential.",
+        "Trying to enumerate explicitly \u2014 exponential."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Variant of Coin Change focused on counting. Loop order is the discriminator.",
+      "introduction_context": "Common at Amazon, Microsoft. The 'why does loop order matter?' question separates strong from average.",
+      "really_testing": [
+        "Combinations vs permutations (loop order).",
+        "Unbounded knapsack count variant.",
+        "1D DP optimization (over 2D).",
+        "Edge cases: amount 0, unreachable."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes 1D DP in 8-10 min, explains coin-outer."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly; might initially flip loop order before debugging."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Counts permutations and can't see why."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'number of combinations summing to amount; coins reusable'.",
+        "Insight: 'unbounded knapsack count; coin-outer for combinations'.",
+        "Code: dp = [0] * (amount + 1); dp[0] = 1. for c in coins: for i in range(c, amount + 1): dp[i] += dp[i - c]. return dp[amount].",
+        "Walk amount=5 coins=[1,2,5]: after coin 1: dp = [1,1,1,1,1,1]. After coin 2: dp = [1,1,2,2,3,3]. After coin 5: dp = [1,1,2,2,3,4]. Return 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Combination Sum, Permutation Sum.",
+      "dont_do": [
+        "Don't flip loop order.",
+        "Don't right-to-left inner.",
+        "Don't enumerate.",
+        "Don't recurse without memo."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "1D Unbounded Knapsack DP",
+        "time": "O(amount * len(coins))",
+        "space": "O(amount)",
+        "code": "def change(amount, coins):\n    dp = [0] * (amount + 1)\n    dp[0] = 1  # one way to make 0: empty combination\n    for c in coins:\n        for i in range(c, amount + 1):\n            dp[i] += dp[i - c]\n    return dp[amount]",
+        "explanation": "Unbounded knapsack count variant. dp[i] = number of combinations summing to i. Outer loop iterates coins (ensures combinations, not permutations). Inner loop left-to-right (allows reuse \u2014 unbounded). dp[0] = 1 is the empty combination. O(amount * coins) time, O(amount) space."
+      }
+    ],
+    "related_problem_ids": [
+      "coin-change",
+      "partition-equal-subset-sum",
+      "house-robber"
+    ]
   }
 ]
