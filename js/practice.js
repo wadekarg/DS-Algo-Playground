@@ -14,7 +14,8 @@ var DSA = window.DSA || {};
     return prefix + 'vendor/codemirror/' + filename;
   }
   var CM_CSS     = vendorPath('codemirror.min.css');
-  var CM_DRACULA = vendorPath('dracula.min.css');
+  // Dracula theme is inlined in css/code-runner.css with !important, so we
+  // don't need to load the theme CSS separately at all.
   var CM_JS      = vendorPath('codemirror.min.js');
   var CM_PYTHON  = vendorPath('python.min.js');
   var CM_CLOSE   = vendorPath('closebrackets.min.js');
@@ -56,7 +57,6 @@ var DSA = window.DSA || {};
     if (cmLoading) return;
     cmLoading = true;
     loadCSS(CM_CSS);
-    loadCSS(CM_DRACULA);
     loadScript(CM_JS, function(err) {
       if (err) { flushCm(err); return; }
       loadScript(CM_PYTHON, function(err2) {

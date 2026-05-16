@@ -27,6 +27,11 @@ function _readCacheSync() {
 
 function _writeCacheSync(data) {
   try { localStorage.setItem(PROBLEMS_CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+  // Notify other modules in this tab. `storage` event only fires cross-tab,
+  // so without this the sidebar wouldn't see fresh data until next page load.
+  try {
+    window.dispatchEvent(new CustomEvent('dsa:problems-cache-updated'));
+  } catch (e) {}
 }
 
 async function _fetchProblems() {
@@ -491,10 +496,16 @@ function renderPracticeEditor(prob) {
     .replace(/'/g, '&#39;')
     .replace(/"/g, '&quot;');
 
+  // HTML-escape for embedding in a single-quoted attribute.
+  // JS-style escapes don't work here — `\'` inside a `'...'` attribute still
+  // closes it. We need entity-escapes. `&#10;` is a real newline after
+  // getAttribute() decodes it, so practice.js can drop its `\\n -> \n` step.
   const starterEscaped = (prob.starter_code || '')
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/\n/g, '\\n');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/'/g, '&#39;')
+    .replace(/\n/g, '&#10;');
 
   // No need to re-render title/summary inside the editor — they already appear
   // in the topbar and problem-statement card on the left.

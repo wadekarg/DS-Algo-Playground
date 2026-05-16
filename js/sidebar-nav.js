@@ -86,6 +86,15 @@ var DSA = window.DSA || {};
     return '<svg class="sidebar__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
   }
 
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function buildProblemsSection(problems, base, currentProblemId) {
     if (!problems || !problems.length) return '';
 
@@ -143,24 +152,24 @@ var DSA = window.DSA || {};
 
       html += '<button type="button" class="sidebar__subcat-toggle' +
         (catOpen ? ' sidebar__subcat-toggle--open' : '') +
-        '" data-collapse-key="' + catKey.replace(/"/g, '&quot;') + '">' +
-        '<span>' + cat + '</span>' +
+        '" data-collapse-key="' + esc(catKey) + '">' +
+        '<span>' + esc(cat) + '</span>' +
         '<span class="sidebar__subcat-count">' + groups[cat].length + '</span>' +
         chevron() +
         '</button>';
       html += '<div class="sidebar__collapse-body sidebar__collapse-body--nested' +
         (catOpen ? '' : ' sidebar__collapse-body--hidden') +
-        '" data-collapse-body="' + catKey.replace(/"/g, '&quot;') + '">';
+        '" data-collapse-body="' + esc(catKey) + '">';
       for (var j = 0; j < groups[cat].length; j++) {
         var prob = groups[cat][j];
         var status = (DSA.problemProgress && DSA.problemProgress.getStatus(prob.id)) || 'unattempted';
         var isActive = prob.id === currentProblemId;
-        html += '<a href="' + base + 'problems/' + prob.id + '.html"' +
+        html += '<a href="' + base + 'problems/' + esc(prob.id) + '.html"' +
           ' class="sidebar__link sidebar__link--problem' +
           (isActive ? ' sidebar__link--active' : '') +
-          '" title="' + prob.title.replace(/"/g, '&quot;') + '">' +
+          '" title="' + esc(prob.title) + '">' +
           '<span class="problem-status-dot ' + status + '"></span>' +
-          '<span class="sidebar__link__title">' + prob.title + '</span>' +
+          '<span class="sidebar__link__title">' + esc(prob.title) + '</span>' +
           '</a>';
       }
       html += '</div>';
@@ -231,13 +240,13 @@ var DSA = window.DSA || {};
       var items = groups[cat];
       if (!items || items.length === 0) continue;
 
-      html += '<div class="sidebar__section-title">' + cat + '</div>';
+      html += '<div class="sidebar__section-title">' + esc(cat) + '</div>';
       for (var j = 0; j < items.length; j++) {
         var topic = items[j];
         var isActive = topic.id === currentTopicId;
-        html += '<a href="' + getTopicPath(topic.url) + '" class="sidebar__link' +
+        html += '<a href="' + esc(getTopicPath(topic.url)) + '" class="sidebar__link' +
           (isActive ? ' sidebar__link--active' : '') +
-          '" data-topic="' + topic.id + '">' + topic.title + '</a>';
+          '" data-topic="' + esc(topic.id) + '">' + esc(topic.title) + '</a>';
       }
     }
 
@@ -382,6 +391,16 @@ var DSA = window.DSA || {};
     // Refresh sidebar problem dots when status changes (same tab) or across tabs.
     window.addEventListener('dsa:problem-progress-changed', renderIfReady);
     window.addEventListener('storage', renderIfReady);
+
+    // problem-renderer.js refreshes problems.json in the background; pick up
+    // the new data so this tab's sidebar doesn't stay stale until reload.
+    window.addEventListener('dsa:problems-cache-updated', function() {
+      var fresh = readCache(PROBLEMS_CACHE_KEY);
+      if (fresh) {
+        problemsLoaded = fresh;
+        renderIfReady();
+      }
+    });
   }
 
   DSA.sidebarNav = { init: init };
