@@ -2334,20 +2334,136 @@
     "id": "longest-substring-without-repeating-characters",
     "title": "Longest Substring Without Repeating Characters",
     "leetcode_url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "leetcode_id": 3,
     "difficulty": "medium",
-    "patterns": [
-      "sliding-window",
-      "hash-map"
-    ],
-    "topics": [
-      "sliding-window",
-      "hash-table"
-    ],
+
+    "patterns": ["sliding-window", "hash-map"],
+    "topics": ["sliding-window", "hash-table"],
     "neetcode_category": "Sliding Window",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given a string s, find the length of the longest substring without duplicate characters.",
+
+    "constraints": [
+      "0 <= s.length <= 5 * 10^4",
+      "s consists of English letters, digits, symbols and spaces."
+    ],
+
+    "examples": [
+      { "input": "s = \"abcabcbb\"", "output": "3", "explanation": "The answer is \"abc\", with the length of 3." },
+      { "input": "s = \"bbbbb\"", "output": "1", "explanation": "The answer is \"b\", with the length of 1." },
+      { "input": "s = \"pwwkew\"", "output": "3", "explanation": "The answer is \"wke\". Note: \"pwke\" is a subsequence, not a substring." }
+    ],
+
+    "function_name": "length_of_longest_substring",
+    "function_signature": "def length_of_longest_substring(s):",
+    "starter_code": "def length_of_longest_substring(s):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic case", "args": ["abcabcbb"], "expected": "3" },
+      { "label": "all same char", "args": ["bbbbb"], "expected": "1" },
+      { "label": "no repeats", "args": ["abcdef"], "expected": "6" },
+      { "label": "empty string", "args": [""], "expected": "0" },
+      { "label": "single space", "args": [" "], "expected": "1" },
+      { "label": "repeats split substring", "args": ["pwwkew"], "expected": "3" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Sliding window with a set or map. Expand the right end of the window. When a duplicate appears, shrink the left end past it. Track the max window size. The map-based version with last-index lookup skips left more aggressively in one step.",
+
+      "clarifying_questions": [
+        { "question": "Substring or subsequence?", "why": "Substring = contiguous. Subsequence = not necessarily contiguous. Big difference. Spec says substring. 'pwke' from 'pwwkew' is a subsequence, NOT a substring." },
+        { "question": "Are characters ASCII or Unicode?", "why": "Spec says English letters, digits, symbols, spaces. So ASCII printables. A fixed-size int[128] could replace the hash map for O(1) space (constant alphabet)." },
+        { "question": "What's the size of s?", "why": "Up to 5×10^4. O(n) is required; O(n²) is borderline. Sliding window is O(n)." },
+        { "question": "Should the answer be the length or the substring itself?", "why": "Spec says length (an int). Some variants ask for the substring. Always confirm." },
+        { "question": "Empty string?", "why": "Returns 0. Trivial edge case but worth confirming." }
+      ],
+
+      "think_out_loud": "Brute force: try every substring, check uniqueness — O(n³). State and skip. Sliding window: maintain [left, right] window with all unique chars. Walk right forward. When s[right] is already in the window, advance left past the duplicate. Update max length each step. Use a set for membership OR a map of char→last_index (lets left jump directly).",
+
+      "edge_cases": [
+        { "category": "Empty string", "details": "\"\" → 0. Loop doesn't execute, return 0." },
+        { "category": "Single character", "details": "\"a\" → 1. Window of size 1." },
+        { "category": "All identical", "details": "\"bbbb\" → 1. Window can never grow past 1." },
+        { "category": "No duplicates at all", "details": "\"abcdef\" → 6. Window grows to full length." },
+        { "category": "Duplicate forces big jump (use map version)", "details": "\"abba\". After 'a' at 0, 'b' at 1, 'b' at 2: dup! Move left to 2 (past the first 'b'). Then 'a' at 3: dup with 'a' at 0, but left is already at 2. CRITICAL: only jump left forward, never backward. The map-based version needs `left = max(left, map[c] + 1)`." }
+       ],
+
+      "common_mistakes": [
+        "Moving left BACKWARD when handling a duplicate (map version) — must take max with current left.",
+        "Forgetting to update max length on the final window after the loop ends.",
+        "Using s.find() / s.index() to locate the duplicate — O(n) per lookup makes the whole thing O(n²).",
+        "Treating 'subsequence' and 'substring' interchangeably — substring is contiguous.",
+        "Off-by-one on window length: right - left + 1 (inclusive) when both pointers point at chars."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic sliding window. Given a string, find the length of the longest substring with all unique characters.",
+      "introduction_context": "Universal interview question. Tests the sliding window pattern at its purest. Often the first 'sliding window' problem candidates encounter in a loop.",
+
+      "really_testing": [
+        "Recognition that 'contiguous + constraint' = sliding window.",
+        "Comfort with the expand-right-shrink-left pattern.",
+        "Choosing the right data structure for membership/last-index: set vs map.",
+        "Handling the 'don't move left backward' subtlety in the map-based version."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Recognizes sliding window immediately. Picks set-based approach for simplicity. Implements correctly. Traces through 'pwwkew' to verify. Mentions the map-based optimization. ~10 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches sliding window after stating brute force. Set-based works. May not mention the map optimization." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Tries brute force O(n²) with substring extraction. Or implements map-based but moves left backward (introduces bug on inputs like 'abba')." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't recognize the sliding window pattern. Doesn't reach O(n)." }
+      ],
+
+      "playbook": [
+        "Restate: 'Longest substring (contiguous) without repeating characters.'",
+        "Ask about ASCII vs Unicode and confirm substring (not subsequence).",
+        "State brute force: every (i,j) substring, check uniqueness. O(n³). Don't code.",
+        "Propose sliding window with a set.",
+        "Code: left=0, max_len=0, seen=set(). For right in range(n): while s[right] in seen, remove s[left] and left++. Then add s[right]. Update max_len.",
+        "Trace through 'pwwkew' to verify the window mechanics.",
+        "Mention the map-based optimization: instead of advancing left one-at-a-time, jump it past the duplicate's previous index. Faster in practice.",
+        "Highlight the 'left = max(left, map[c] + 1)' subtlety to avoid moving left backward."
+      ],
+      "playbook_meta": "Total time: 10-15 min. Common follow-ups: longest substring with K distinct chars (parameterized), longest repeating character replacement (variable window).",
+
+      "dont_do": [
+        "Don't use string.find() to locate duplicates inside the window — O(n) per lookup makes the whole thing O(n²).",
+        "Don't move left backward in the map-based version — bug on inputs like 'abba'.",
+        "Don't confuse substring with subsequence.",
+        "Don't reset the entire window when a duplicate is found — only shrink past the duplicate.",
+        "Don't forget to update max length BEFORE the loop ends (or after — but be consistent)."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n³)",
+        "space": "O(min(n, alphabet))",
+        "code": "def length_of_longest_substring(s):\n    best = 0\n    for i in range(len(s)):\n        for j in range(i, len(s)):\n            if len(set(s[i:j+1])) == j - i + 1:\n                best = max(best, j - i + 1)\n    return best",
+        "explanation": "Try every substring, check uniqueness via set. Correct but O(n³) — too slow."
+      },
+      {
+        "name": "Sliding Window with Set",
+        "time": "O(n)",
+        "space": "O(min(n, alphabet))",
+        "code": "def length_of_longest_substring(s):\n    seen = set()\n    left = 0\n    best = 0\n    for right in range(len(s)):\n        while s[right] in seen:\n            seen.remove(s[left])\n            left += 1\n        seen.add(s[right])\n        best = max(best, right - left + 1)\n    return best",
+        "explanation": "Maintain a window [left, right] of unique chars. When s[right] is already in the window, shrink from left until the duplicate is removed. Each character is added once and removed at most once — O(n) total."
+      },
+      {
+        "name": "Sliding Window with Map (Optimization)",
+        "time": "O(n)",
+        "space": "O(min(n, alphabet))",
+        "code": "def length_of_longest_substring(s):\n    last_idx = {}\n    left = 0\n    best = 0\n    for right, c in enumerate(s):\n        if c in last_idx and last_idx[c] >= left:\n            left = last_idx[c] + 1\n        last_idx[c] = right\n        best = max(best, right - left + 1)\n    return best",
+        "explanation": "Instead of incrementing left one step at a time, jump it directly past the duplicate's last position. The `max(left, ...)` guard is critical — prevents left from moving backward (which would happen on inputs like 'abba' where 'a' was seen at index 0 but left has already advanced to 2). Strictly faster in practice but same asymptotic complexity."
+      }
+    ],
+
+    "related_problem_ids": ["valid-anagram", "minimum-window-substring", "two-sum"]
   },
   {
     "id": "minimum-window-substring",
@@ -2398,17 +2514,137 @@
     "id": "binary-search",
     "title": "Binary Search",
     "leetcode_url": "https://leetcode.com/problems/binary-search/",
+    "leetcode_id": 704,
     "difficulty": "easy",
-    "patterns": [
-      "binary-search"
-    ],
-    "topics": [
-      "binary-search"
-    ],
+
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
     "neetcode_category": "Binary Search",
-    "frequency_tags": [
-      "blind-75"
-    ]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1. You must write an algorithm with O(log n) runtime complexity.",
+
+    "constraints": [
+      "1 <= nums.length <= 10^4",
+      "-10^4 < nums[i], target < 10^4",
+      "All the integers in nums are unique.",
+      "nums is sorted in ascending order."
+    ],
+
+    "examples": [
+      { "input": "nums = [-1,0,3,5,9,12], target = 9", "output": "4", "explanation": "9 exists at index 4." },
+      { "input": "nums = [-1,0,3,5,9,12], target = 2", "output": "-1", "explanation": "2 does not exist in nums." }
+    ],
+
+    "function_name": "search",
+    "function_signature": "def search(nums, target):",
+    "starter_code": "def search(nums, target):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "target present", "args": [[-1,0,3,5,9,12], 9], "expected": "4" },
+      { "label": "target absent", "args": [[-1,0,3,5,9,12], 2], "expected": "-1" },
+      { "label": "single element match", "args": [[1], 1], "expected": "0" },
+      { "label": "single element miss", "args": [[1], 0], "expected": "-1" },
+      { "label": "target at last position", "args": [[2,5], 5], "expected": "1" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Sorted array means binary search. Maintain a [left, right] bracket. Compute mid. If nums[mid] == target, return mid. If nums[mid] < target, search the right half (left = mid+1). Else search the left half (right = mid-1). Repeat until brackets cross. Watch your bracket invariants — they're the #1 source of binary search bugs.",
+
+      "clarifying_questions": [
+        { "question": "Is the array sorted? In what order?", "why": "Spec says ascending. Confirms binary search is applicable. Different sort orders (descending, rotated) need adjusted comparisons." },
+        { "question": "Are there duplicates?", "why": "Spec says unique. If duplicates existed, you'd need to decide: return any match, leftmost, rightmost? Different variants (lower_bound vs upper_bound)." },
+        { "question": "What should I return if target not found?", "why": "Spec says -1. Other variants return insertion point. Always confirm." },
+        { "question": "Iterative or recursive — preference?", "why": "Iterative is generally preferred (no stack overhead, easier to reason about edge cases). State your default but offer either." },
+        { "question": "Watch for integer overflow on mid calculation?", "why": "(left + right) / 2 can overflow for very large arrays. left + (right - left) / 2 is safer. n ≤ 10^4 here, so doesn't matter, but show you know the trick." }
+      ],
+
+      "think_out_loud": "State the invariant: 'target, if it exists, is in nums[left..right] inclusive'. At each step, look at mid. Update left or right to keep the invariant. Terminate when left > right (target not found) or when nums[mid] == target (return mid).",
+
+      "edge_cases": [
+        { "category": "Single element match", "details": "[1] target 1 → 0. Confirm your loop runs at least once when left == right." },
+        { "category": "Single element miss", "details": "[1] target 0 → -1. Confirm termination when left > right." },
+        { "category": "Target at boundary", "details": "[1,2,3] target 1 → 0; target 3 → 2. Both extremes should work without off-by-one." },
+        { "category": "Target outside range", "details": "[1,2,3] target 0 or target 10 → -1. Binary search should terminate quickly." },
+        { "category": "Two-element array", "details": "[2,5] target 5 → 1. Test the smallest non-trivial case carefully." }
+      ],
+
+      "common_mistakes": [
+        "Off-by-one in bracket update: writing `left = mid` (not mid+1) causes infinite loop when target is right of mid.",
+        "Wrong termination: `while left < right` vs `while left <= right` — must be careful which one matches your bracket semantics.",
+        "Using (left + right) // 2 — risks integer overflow for huge arrays. Use left + (right - left) // 2 for safety.",
+        "Forgetting the `return -1` after the loop — if loop exits without finding, must return the sentinel.",
+        "Recursive version with no base case — infinite recursion on miss."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Binary search on a sorted array. Find the index of target, or return -1.",
+      "introduction_context": "Baseline binary search. Tests whether you can write the loop without off-by-one bugs. Foundation for harder variants (rotated arrays, binary search on answer).",
+
+      "really_testing": [
+        "Can you write binary search without bugs on the first try?",
+        "Bracket invariant discipline ([left, right] inclusive vs [left, right) exclusive).",
+        "Awareness of integer overflow on mid calculation.",
+        "Termination correctness (no infinite loops, no missed elements)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Writes iterative binary search correctly on first attempt. States the invariant aloud. Mentions overflow-safe mid. Tests on edge cases (single element, target at boundary). ~5 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Writes binary search correctly. May have a small off-by-one initially but catches it during testing. Code is readable." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Linear scan instead of binary search. Or binary search with an off-by-one that causes infinite loop or missed elements." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't write binary search at all. Or writes a fundamentally broken version (e.g., always updates only left)." }
+      ],
+
+      "playbook": [
+        "Restate. Confirm sorted ascending and unique elements.",
+        "State the invariant: 'target is in nums[left..right] inclusive if it exists'.",
+        "Code iteratively: left = 0, right = n-1. While left <= right: mid = (left + right) // 2; compare nums[mid] to target; update left or right.",
+        "On nums[mid] < target → left = mid + 1 (search right half).",
+        "On nums[mid] > target → right = mid - 1 (search left half).",
+        "On nums[mid] == target → return mid.",
+        "After loop, return -1.",
+        "Walk through example [-1,0,3,5,9,12] target=9 step by step.",
+        "Test on edge cases: single element, target at first/last index, target absent."
+      ],
+      "playbook_meta": "Total time: 5-7 min for a strong run. Common follow-ups: Search in Rotated Sorted Array, Find Min in Rotated Sorted Array, Search Insert Position.",
+
+      "dont_do": [
+        "Don't use linear scan when binary search is asked for — defeats the point.",
+        "Don't write `left = mid` (without the +1) — causes infinite loops.",
+        "Don't use `while left < right` carelessly — it can miss the target when left == right.",
+        "Don't forget to return -1 after the loop.",
+        "Don't use recursion for a simple binary search — iterative is cleaner and avoids stack overhead."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Linear Scan (Wrong Tool)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def search(nums, target):\n    for i, x in enumerate(nums):\n        if x == target:\n            return i\n    return -1",
+        "explanation": "Linear scan. Works correctly but ignores the sorted property — wastes the structure of the input. Wouldn't pass the 'O(log n) runtime' requirement in the spec."
+      },
+      {
+        "name": "Iterative Binary Search",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "code": "def search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = left + (right - left) // 2  # overflow-safe\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+        "explanation": "Classic binary search. Maintain the invariant: target, if it exists, is in nums[left..right] (inclusive). Halve the search space each iteration. Total O(log n). The overflow-safe mid calculation is `left + (right - left) // 2`."
+      },
+      {
+        "name": "Recursive Binary Search",
+        "time": "O(log n)",
+        "space": "O(log n) recursion depth",
+        "code": "def search(nums, target):\n    def helper(left, right):\n        if left > right:\n            return -1\n        mid = left + (right - left) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            return helper(mid + 1, right)\n        else:\n            return helper(left, mid - 1)\n    return helper(0, len(nums) - 1)",
+        "explanation": "Same algorithm, recursive form. Slightly cleaner to read but uses O(log n) stack space. Generally interviewers prefer iterative for binary search."
+      }
+    ],
+
+    "related_problem_ids": ["search-in-rotated-sorted-array", "find-minimum-in-rotated-sorted-array", "koko-eating-bananas"]
   },
   {
     "id": "search-in-rotated-sorted-array",
@@ -2526,18 +2762,132 @@
     "id": "subsets",
     "title": "Subsets",
     "leetcode_url": "https://leetcode.com/problems/subsets/",
+    "leetcode_id": 78,
     "difficulty": "medium",
-    "patterns": [
-      "backtracking"
-    ],
-    "topics": [
-      "backtracking",
-      "recursion"
-    ],
+
+    "patterns": ["backtracking"],
+    "topics": ["backtracking", "recursion"],
     "neetcode_category": "Backtracking",
-    "frequency_tags": [
-      "blind-75"
-    ]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Given an integer array nums of unique elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets. Return the solution in any order.",
+
+    "constraints": [
+      "1 <= nums.length <= 10",
+      "-10 <= nums[i] <= 10",
+      "All the numbers of nums are unique."
+    ],
+
+    "examples": [
+      { "input": "nums = [1,2,3]", "output": "[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]", "explanation": "All 2^3 = 8 subsets of {1,2,3}." },
+      { "input": "nums = [0]", "output": "[[],[0]]", "explanation": "Empty set and the single-element set." }
+    ],
+
+    "function_name": "subsets",
+    "function_signature": "def subsets(nums):",
+    "starter_code": "def subsets(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "empty input", "args": [[]], "expected": "[[]]" },
+      { "label": "single element", "args": [[1]], "expected": "[[], [1]]" },
+      { "label": "two elements (iterative-style order)", "args": [[1,2]], "expected": "[[], [1], [2], [1, 2]]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Power set. For each element, the choice is binary: include it or skip it. That gives 2^n total subsets. Three classic ways to generate them: recursive backtracking (the textbook answer), iterative 'build by extending existing subsets', or bit-manipulation (each int 0..2^n-1 is a subset mask). Backtracking is the most generalizable and the typical FAANG expected answer.",
+
+      "clarifying_questions": [
+        { "question": "Are duplicate elements allowed in input?", "why": "Spec says unique. If duplicates were allowed, you'd need extra dedup logic (Subsets II variant). Knowing the variant matters." },
+        { "question": "Output order — does it matter?", "why": "Spec says any order. Saves the cost of sorting. Different algorithms naturally produce different orders." },
+        { "question": "Empty subset — should I include it?", "why": "Yes — the empty set is always part of the power set. Standard contract but worth confirming." },
+        { "question": "How big is n?", "why": "Constraint: n ≤ 10. So 2^n ≤ 1024 — small. Even O(2^n × n) is fast. No need for sub-exponential. Just be correct." },
+        { "question": "Are mutated subsets shared between iterations?", "why": "If you append the same list to the result repeatedly, all entries point to the same object. Make sure to append a COPY (result.append(current[:])). Classic bug." }
+      ],
+
+      "think_out_loud": "Backtracking framing: at each index, two choices — include nums[i] in the current subset, or skip it. Recurse. When index reaches n, record the current subset (as a COPY). The recursion tree has 2^n leaves, each a distinct subset.",
+
+      "edge_cases": [
+        { "category": "Empty input", "details": "[] → [[]]. Just the empty subset itself. Recursion terminates immediately." },
+        { "category": "Single element", "details": "[5] → [[], [5]]. Two subsets — empty and full." },
+        { "category": "Many duplicates of recursion bugs", "details": "If you forget to copy `current` when appending, all 2^n results will be the same final list. Test by checking len(set(map(tuple, result))) == 2^n." },
+        { "category": "Largest case (n=10)", "details": "2^10 = 1024 subsets. Should run in milliseconds. If your code times out, you have an algorithmic bug." }
+      ],
+
+      "common_mistakes": [
+        "Appending `current` directly to result (shared reference) instead of `current[:]` (copy). Classic Python bug.",
+        "Forgetting to pop after recursing — leaves stale elements in `current` for subsequent calls.",
+        "Off-by-one on the recursion index — starting at 0 vs i+1 changes the semantics.",
+        "Trying to use sets — but subsets in Python are lists, and you'd need tuples for hashability.",
+        "Generating duplicates because you don't track which element-positions you've already considered."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Generate all subsets of an array. Classic backtracking — the gateway problem to the entire backtracking pattern.",
+      "introduction_context": "Tests the choose-or-don't recursive pattern. Sets up follow-ups in Subsets II (with duplicates), Combinations (size-k subsets), Permutations.",
+
+      "really_testing": [
+        "Recursive backtracking pattern recognition.",
+        "Correct state management: include → recurse → undo (the backtrack step).",
+        "Awareness of the shared-reference / copy-before-append bug.",
+        "Comfort with O(2^n) being acceptable when n is small."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Proposes backtracking immediately. Articulates 'include or skip' decision. Correctly copies the current list when appending. Walks through tree mentally for [1,2,3]. ~8 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches backtracking. Initial version has the shared-reference bug; catches it after testing. Correctness in 12 min." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Uses iterative approach without explanation, or backtracking that produces duplicates. Off-by-one on the index." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't structure the recursion. Doesn't recognize the choose-or-skip pattern." }
+      ],
+
+      "playbook": [
+        "Restate: 'Generate all 2^n subsets of nums.'",
+        "Confirm any-order output and that input is duplicate-free.",
+        "Propose backtracking: 'At index i, choose to include nums[i] or skip. Recurse. When i == n, record current subset.'",
+        "Code: def backtrack(start, current): result.append(current[:]); for i in range(start, n): current.append(nums[i]); backtrack(i+1, current); current.pop().",
+        "Note the critical `current[:]` — append a COPY, not a reference.",
+        "Walk through [1,2,3] mentally: produces [], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3].",
+        "Test on [1] → should produce [[], [1]].",
+        "Mention iterative 'add to existing' alternative and bit-manipulation, but say backtracking is the most generalizable."
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-ups: Subsets II (with duplicates, need to sort + skip), Combinations (only size-k), Permutations (order matters).",
+
+      "dont_do": [
+        "Don't append current directly — append current[:] (a copy).",
+        "Don't forget the pop after recursion — leaves stale state for siblings.",
+        "Don't use a set to dedupe — input is guaranteed unique. Adding a set check signals you didn't read the spec.",
+        "Don't use bit manipulation as your primary answer if asked about backtracking — show the right tool for the right interview signal.",
+        "Don't fail to record the empty subset at the START of backtracking (record at every node, not just leaves)."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative — Add to Existing",
+        "time": "O(n × 2^n)",
+        "space": "O(n × 2^n) for the output",
+        "code": "def subsets(nums):\n    result = [[]]\n    for num in nums:\n        new_subsets = []\n        for existing in result:\n            new_subsets.append(existing + [num])\n        result.extend(new_subsets)\n    return result",
+        "explanation": "Start with the empty subset. For each new num, take every existing subset and create a new subset with num appended. Doubles the result set each iteration. O(n) iterations × O(2^n) work per iteration = O(n × 2^n) total."
+      },
+      {
+        "name": "Backtracking",
+        "time": "O(n × 2^n)",
+        "space": "O(n) recursion depth",
+        "code": "def subsets(nums):\n    result = []\n    current = []\n    def backtrack(start):\n        result.append(current[:])  # COPY — critical\n        for i in range(start, len(nums)):\n            current.append(nums[i])\n            backtrack(i + 1)\n            current.pop()\n    backtrack(0)\n    return result",
+        "explanation": "Recursive choose-or-skip. At each call, record the current subset (as a COPY), then for each remaining element, include it and recurse. The pop() at the end is the 'backtrack' — undoes the choice so the next iteration can try a different one. Visits each of 2^n subsets exactly once."
+      },
+      {
+        "name": "Bit Manipulation",
+        "time": "O(n × 2^n)",
+        "space": "O(n × 2^n) for the output",
+        "code": "def subsets(nums):\n    n = len(nums)\n    result = []\n    for mask in range(1 << n):\n        subset = [nums[i] for i in range(n) if mask & (1 << i)]\n        result.append(subset)\n    return result",
+        "explanation": "Each integer mask from 0 to 2^n - 1 represents a subset: bit i is 1 iff nums[i] is included. Iterate through all 2^n masks, build each subset by checking bits. Clean and compact but less generalizable than backtracking (e.g., harder to add early-termination)."
+      }
+    ],
+
+    "related_problem_ids": ["permutations", "combinations", "n-queens"]
   },
   {
     "id": "permutations",
