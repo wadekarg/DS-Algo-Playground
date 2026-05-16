@@ -1381,19 +1381,137 @@
     "id": "product-of-array-except-self",
     "title": "Product of Array Except Self",
     "leetcode_url": "https://leetcode.com/problems/product-of-array-except-self/",
+    "leetcode_id": 238,
     "difficulty": "medium",
-    "patterns": [
-      "prefix-sum"
-    ],
-    "topics": [
-      "arrays",
-      "prefix-sum"
-    ],
+
+    "patterns": ["prefix-sum"],
+    "topics": ["arrays", "prefix-sum"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i]. The algorithm must run in O(n) time and without using the division operation.",
+
+    "constraints": [
+      "2 <= nums.length <= 10^5",
+      "-30 <= nums[i] <= 30",
+      "The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.",
+      "You must write an algorithm that runs in O(n) time and without using the division operation."
+    ],
+
+    "examples": [
+      { "input": "nums = [1,2,3,4]", "output": "[24,12,8,6]", "explanation": "answer[0] = 2*3*4=24, answer[1] = 1*3*4=12, answer[2] = 1*2*4=8, answer[3] = 1*2*3=6." },
+      { "input": "nums = [-1,1,0,-3,3]", "output": "[0,0,9,0,0]", "explanation": "Because there's a 0 in the array, every answer position except the one occupied BY the 0 gets multiplied by 0. answer[2] = (-1)*1*(-3)*3 = 9 (the only nonzero result)." }
+    ],
+
+    "function_name": "product_except_self",
+    "function_signature": "def product_except_self(nums):",
+    "starter_code": "def product_except_self(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "basic positives", "args": [[1,2,3,4]], "expected": "[24, 12, 8, 6]" },
+      { "label": "with a zero (only one nonzero result)", "args": [[-1,1,0,-3,3]], "expected": "[0, 0, 9, 0, 0]" },
+      { "label": "two elements", "args": [[2,3]], "expected": "[3, 2]" },
+      { "label": "two zeros — all zero output", "args": [[0,0]], "expected": "[0, 0]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "The problem forbids division — that's the entire interview. Naive 'total product / nums[i]' is trivial but disallowed, AND fails when there's a zero. The trick: compute prefix products (everything to the left of i) and suffix products (everything to the right of i). Answer at position i is prefix[i] × suffix[i].",
+
+      "clarifying_questions": [
+        { "question": "Confirm — no division operation allowed?", "why": "Spec explicitly forbids it. Asking signals you read the constraints. Division also fails on zeros, so it's the wrong tool anyway." },
+        { "question": "Can the array contain zeros? Negatives?", "why": "Both possible per constraints. Zeros are the killer — division-based approaches fail. Negatives flip signs but multiplication handles them naturally." },
+        { "question": "Output space — can I allocate a new array?", "why": "Always, but the senior signal is the O(1)-extra-space variant where the output array IS the workspace. Confirm the output array isn't counted as 'extra' space." },
+        { "question": "What's the size of n?", "why": "n up to 10^5. O(n) is required. O(n²) brute force times out." },
+        { "question": "Are values bounded for overflow?", "why": "Per spec, products fit in 32-bit int. So you don't need bignum handling." }
+      ],
+
+      "think_out_loud": "Brute force: for each i, multiply all elements except nums[i]. O(n²). Division trick: compute total product, then total/nums[i] — BUT forbidden, AND fails on zeros. The clean solution: build prefix products (product of everything before i) and suffix products (product of everything after i). answer[i] = prefix[i] × suffix[i]. Two passes = O(n) time. Two arrays = O(n) extra space. Optimization: reuse the output array — first pass fills it with prefix products; second pass walks right-to-left multiplying by a running suffix value. O(1) extra space.",
+
+      "edge_cases": [
+        { "category": "Single zero", "details": "[1,2,0,4] → [0, 0, 8, 0]. Only the position where the zero is gets the nonzero product." },
+        { "category": "Two zeros", "details": "[1,0,2,0] → [0, 0, 0, 0]. Two zeros means every position has at least one zero in the product." },
+        { "category": "All zeros", "details": "[0,0,0] → [0, 0, 0]." },
+        { "category": "Two-element minimum", "details": "[2,3] → [3, 2]. Simplest case — each element is just the other." },
+        { "category": "Negatives", "details": "[-1,-2,-3] → [(-2)*(-3), (-1)*(-3), (-1)*(-2)] = [6, 3, 2]. Negatives multiply naturally." }
+      ],
+
+      "common_mistakes": [
+        "Using division — explicitly forbidden by the problem.",
+        "Forgetting to handle zeros if you DO try division (you'd need to special-case 'count of zeros').",
+        "Allocating three arrays (prefix, suffix, output) when two suffice — or one with two passes.",
+        "Off-by-one in the prefix/suffix indices — prefix[i] should be product of nums[0..i-1] (not including i).",
+        "Misreading the spec and including nums[i] in the product for position i."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Product of array except self. Given nums, return an array where answer[i] is the product of every element except nums[i]. No division allowed. O(n) time required.",
+      "introduction_context": "Classic prefix/suffix pattern. The 'no division' constraint is the whole point — forces you into the elegant approach. The O(1)-extra-space optimization separates Hire from Strong Hire.",
+
+      "really_testing": [
+        "Recognition of the prefix/suffix pattern.",
+        "Handling zeros gracefully (the division trap).",
+        "Space optimization: reusing the output array for O(1) extra space.",
+        "Following constraints carefully (no division, O(n) time)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Notices 'no division' and 'O(n)' upfront. Proposes prefix/suffix arrays. Implements with two arrays, then optimizes to O(1) extra by reusing output. Handles zeros without special-casing. ~12 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches the two-array prefix/suffix approach. Correct. May not optimize to O(1) space without prompting." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Proposes division and gets bitten by the no-division constraint. Or stuck at O(n²) brute force." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't reach O(n). Or violates 'no division' even after being told." }
+      ],
+
+      "playbook": [
+        "Restate the problem. Emphasize 'no division' and 'O(n) time'.",
+        "Ask about zeros and whether output array counts as extra space.",
+        "State brute force: nested loop, O(n²). Don't code.",
+        "State the division shortcut, then explain why it fails: forbidden AND fails on zeros.",
+        "Derive prefix/suffix: 'answer[i] = product_before_i × product_after_i. Build two arrays in O(n) each.'",
+        "Walk through [1,2,3,4]: prefix = [1,1,2,6], suffix = [24,12,4,1]. answer = element-wise product.",
+        "Code two-array version first (cleaner to understand).",
+        "Optimize: 'Can I reuse the output array? First pass: fill output with prefix products. Second pass: walk right-to-left maintaining a running suffix value, multiply each output[i] by it.'",
+        "Code O(1)-extra-space version.",
+        "Test on the zero example to confirm correctness."
+      ],
+      "playbook_meta": "Total time: 12-15 min. Optimization to O(1) space is the senior signal. Common follow-up: 'What if division WAS allowed and there were zeros?' (Count zeros, special-case).",
+
+      "dont_do": [
+        "Don't propose division as the solution. Even if you think it's clever, the spec explicitly bans it AND it fails on zeros.",
+        "Don't special-case zeros if you use prefix/suffix — the multiplication handles them naturally.",
+        "Don't allocate three arrays when two (or one + scalar) suffice.",
+        "Don't get confused about indices: prefix[i] is product of [0..i-1] (everything BEFORE i, exclusive).",
+        "Don't include nums[i] in the product for position i. Read carefully."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n²)",
+        "space": "O(n) for output",
+        "code": "def product_except_self(nums):\n    n = len(nums)\n    result = [1] * n\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                result[i] *= nums[j]\n    return result",
+        "explanation": "For each position, multiply all other elements. Quadratic — won't pass n=10^5."
+      },
+      {
+        "name": "Prefix and Suffix Arrays",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def product_except_self(nums):\n    n = len(nums)\n    prefix = [1] * n\n    suffix = [1] * n\n    for i in range(1, n):\n        prefix[i] = prefix[i-1] * nums[i-1]\n    for i in range(n - 2, -1, -1):\n        suffix[i] = suffix[i+1] * nums[i+1]\n    return [prefix[i] * suffix[i] for i in range(n)]",
+        "explanation": "Build two arrays. prefix[i] = product of nums[0..i-1] (everything before i). suffix[i] = product of nums[i+1..n-1] (everything after i). answer[i] = prefix[i] × suffix[i]. Two linear passes, no division, handles zeros naturally."
+      },
+      {
+        "name": "O(1) Extra Space (reuse output)",
+        "time": "O(n)",
+        "space": "O(1) extra (output array doesn't count)",
+        "code": "def product_except_self(nums):\n    n = len(nums)\n    result = [1] * n\n    # First pass: result[i] = prefix product (everything before i)\n    for i in range(1, n):\n        result[i] = result[i-1] * nums[i-1]\n    # Second pass: walk right-to-left, multiply by running suffix product\n    suffix = 1\n    for i in range(n - 1, -1, -1):\n        result[i] *= suffix\n        suffix *= nums[i]\n    return result",
+        "explanation": "The senior optimization. First pass fills result[] with prefix products. Second pass walks right-to-left, maintaining a single scalar 'suffix' that tracks the product of everything after position i. Multiply each result[i] by this suffix. Total: two passes, O(n) time, O(1) extra space (the output array doesn't count toward 'extra')."
+      }
+    ],
+
+    "related_problem_ids": ["maximum-subarray", "subarray-sum-equals-k", "two-sum"]
   },
   {
     "id": "rotate-array",
@@ -1717,35 +1835,268 @@
     "id": "group-anagrams",
     "title": "Group Anagrams",
     "leetcode_url": "https://leetcode.com/problems/group-anagrams/",
+    "leetcode_id": 49,
     "difficulty": "medium",
-    "patterns": [
-      "hash-map"
-    ],
-    "topics": [
-      "hash-table"
-    ],
+
+    "patterns": ["hash-map"],
+    "topics": ["hash-table"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+
+    "constraints": [
+      "1 <= strs.length <= 10^4",
+      "0 <= strs[i].length <= 100",
+      "strs[i] consists of lowercase English letters."
+    ],
+
+    "examples": [
+      { "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]", "output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]", "explanation": "Three groups. 'eat', 'tea', 'ate' all rearrange to the same letters. 'tan' and 'nat' do too. 'bat' is alone." },
+      { "input": "strs = [\"\"]", "output": "[[\"\"]]", "explanation": "A single empty string is its own group." },
+      { "input": "strs = [\"a\"]", "output": "[[\"a\"]]", "explanation": "Single string." }
+    ],
+
+    "function_name": "group_anagrams",
+    "function_signature": "def group_anagrams(strs):",
+    "starter_code": "def group_anagrams(strs):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "single string", "args": [["a"]], "expected": "[['a']]" },
+      { "label": "two anagrams", "args": [["abc", "bca"]], "expected": "[['abc', 'bca']]" },
+      { "label": "two non-anagrams", "args": [["a", "b"]], "expected": "[['a'], ['b']]" },
+      { "label": "different lengths can't be anagrams", "args": [["a", "ab"]], "expected": "[['a'], ['ab']]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Two strings are anagrams iff their letter counts (or sorted forms) are equal. So compute a canonical key for each string, then group by that key in a hash map. The interview signal is choosing the right key — sort-key works (O(m log m) per string) but count-key is faster (O(m) per string).",
+
+      "clarifying_questions": [
+        { "question": "Are all strings lowercase English letters?", "why": "Per constraints, yes. This enables the int[26] count-key optimization. Always confirm — Unicode would require a different approach." },
+        { "question": "Can strings have different lengths?", "why": "Yes — but different lengths can never be anagrams. Acts as a natural pre-filter via the key (different lengths → different keys)." },
+        { "question": "Output order — does it matter?", "why": "Spec says 'any order'. Within each group, order also doesn't matter. Confirm so you don't waste effort sorting." },
+        { "question": "Empty strings allowed?", "why": "Per constraints, length can be 0. Empty string is its own anagram. Single group containing [\"\"]." },
+        { "question": "How big is each string?", "why": "m ≤ 100. Both sort-key (O(m log m)) and count-key (O(m)) are fast. Doesn't really matter for runtime, but signals you're thinking about complexity." }
+      ],
+
+      "think_out_loud": "Brute force: for each string, scan all others, check if anagram. O(n² × m log m). State this but don't code. Better: build a canonical KEY per string. Two natural keys: sorted string ('aet' for 'eat') or letter-count tuple ((1,0,0,0,1,...) for 'eat'). Group by key in a hash map. O(n × m log m) for sort-key, O(n × m) for count-key. Walk through example to show grouping.",
+
+      "edge_cases": [
+        { "category": "Empty string", "details": "[\"\"] → [[\"\"]]. The empty string is its own anagram." },
+        { "category": "All unique (no anagrams)", "details": "[\"a\",\"b\",\"c\"] → [[\"a\"],[\"b\"],[\"c\"]]. Each gets its own singleton group." },
+        { "category": "All same word", "details": "[\"abc\",\"abc\",\"abc\"] → [[\"abc\",\"abc\",\"abc\"]]. Same key for all." },
+        { "category": "Different lengths", "details": "[\"a\",\"ab\",\"abc\"] → 3 separate groups. Length differences mean different keys." },
+        { "category": "Single element", "details": "[\"a\"] → [[\"a\"]]. Just one group with one string." }
+      ],
+
+      "common_mistakes": [
+        "Using a set instead of a list for groups — loses duplicate strings.",
+        "Forgetting that empty string is valid input → potential KeyError if not handled.",
+        "Sorting the result list explicitly when spec says order doesn't matter — wasted work.",
+        "Returning a dict instead of list of lists — read the spec.",
+        "Comparing strings pairwise (O(n²)) when grouping by key is O(n)."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Group anagrams. Given an array of strings, group the ones that are anagrams of each other.",
+      "introduction_context": "Often follows Valid Anagram as the medium-difficulty escalation. Tests hash-map-for-grouping pattern. The interview signal is the optimization from sort-key (O(m log m)) to count-key (O(m)).",
+
+      "really_testing": [
+        "Hash map for grouping multiple values under one key.",
+        "Choosing a canonical 'key' that makes anagrams equivalent.",
+        "Awareness of sort-key vs count-key tradeoff.",
+        "Comfort with the dictionary defaultdict pattern in Python."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Immediately proposes hash map with canonical key. Picks sort-key for simplicity, mentions count-key as the O(m) optimization. Implements with defaultdict cleanly. ~8 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Hash map with sort-key works on first try. May not mention count-key without prompting." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Tries brute force O(n²) comparing every pair. Or builds the groups but with awkward logic (nested loops or set conversions)." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't find a grouping key. Confused by how to use a hash map for multiple values." }
+      ],
+
+      "playbook": [
+        "Restate: 'Group strings that are anagrams of each other.'",
+        "Ask: 'Output order — does it matter?' (no) and 'Lowercase English only?' (yes).",
+        "State brute force out loud: 'For each pair, check if they're anagrams. O(n² × m).'",
+        "Propose hash map with canonical key. Two key choices: sort-key (O(m log m)) or count-key (tuple of letter counts, O(m)).",
+        "Pick sort-key for cleaner code. Mention count-key as the optimization.",
+        "Code: use defaultdict(list); for each string, compute key = ''.join(sorted(s)); append to groups[key]; return list(groups.values()).",
+        "Test on the canonical example. Walk through key assignments.",
+        "Optionally show the count-key version: key = tuple of [count[c] for c in 'abcdefghijklmnopqrstuvwxyz']."
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: 'How would you extend to Unicode?' (hash map of char counts).",
+
+      "dont_do": [
+        "Don't compare every pair (O(n²)) — hash map is the canonical answer.",
+        "Don't use sets — they lose duplicates within groups.",
+        "Don't sort the output unnecessarily — spec says any order.",
+        "Don't use Counter() inline (creates dict not hashable) — convert to tuple if used as key.",
+        "Don't forget to convert dict values to a list before returning."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force Pairwise",
+        "time": "O(n² × m log m)",
+        "space": "O(n × m)",
+        "code": "def group_anagrams(strs):\n    visited = [False] * len(strs)\n    result = []\n    for i in range(len(strs)):\n        if visited[i]:\n            continue\n        group = [strs[i]]\n        visited[i] = True\n        for j in range(i+1, len(strs)):\n            if not visited[j] and sorted(strs[i]) == sorted(strs[j]):\n                group.append(strs[j])\n                visited[j] = True\n        result.append(group)\n    return result",
+        "explanation": "For each string, scan the rest and group anagrams. O(n²) pairs × O(m log m) sort = O(n² × m log m). Correct but slow."
+      },
+      {
+        "name": "Hash Map with Sort-Key",
+        "time": "O(n × m log m)",
+        "space": "O(n × m)",
+        "code": "def group_anagrams(strs):\n    from collections import defaultdict\n    groups = defaultdict(list)\n    for s in strs:\n        key = ''.join(sorted(s))\n        groups[key].append(s)\n    return list(groups.values())",
+        "explanation": "Use the sorted version of each string as a canonical key. All anagrams sort to the same string → same key → same group. defaultdict handles the 'new group' case cleanly. O(m log m) sort per string, O(n) strings total."
+      },
+      {
+        "name": "Hash Map with Count-Key (O(m))",
+        "time": "O(n × m)",
+        "space": "O(n × m)",
+        "code": "def group_anagrams(strs):\n    from collections import defaultdict\n    groups = defaultdict(list)\n    for s in strs:\n        count = [0] * 26\n        for c in s:\n            count[ord(c) - ord('a')] += 1\n        key = tuple(count)\n        groups[key].append(s)\n    return list(groups.values())",
+        "explanation": "Instead of sorting, count letter frequencies. Two anagrams have identical letter counts. Use the 26-int tuple as the hash key. O(m) per string vs O(m log m) for sort. The senior optimization."
+      }
+    ],
+
+    "related_problem_ids": ["valid-anagram", "contains-duplicate", "top-k-frequent-elements"]
   },
   {
     "id": "top-k-frequent-elements",
     "title": "Top K Frequent Elements",
     "leetcode_url": "https://leetcode.com/problems/top-k-frequent-elements/",
+    "leetcode_id": 347,
     "difficulty": "medium",
-    "patterns": [
-      "hash-map"
-    ],
-    "topics": [
-      "hash-table"
-    ],
+
+    "patterns": ["hash-map"],
+    "topics": ["hash-table"],
     "neetcode_category": "Arrays & Hashing",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.",
+
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4",
+      "k is in the range [1, the number of unique elements in the array].",
+      "It is guaranteed that the answer is unique."
+    ],
+
+    "examples": [
+      { "input": "nums = [1,1,1,2,2,3], k = 2", "output": "[1,2]", "explanation": "1 appears 3 times, 2 appears 2 times — those are the top 2." },
+      { "input": "nums = [1], k = 1", "output": "[1]", "explanation": "Only one element, return it." }
+    ],
+
+    "function_name": "top_k_frequent",
+    "function_signature": "def top_k_frequent(nums, k):",
+    "starter_code": "def top_k_frequent(nums, k):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "basic two-element answer", "args": [[1,1,1,2,2,3], 2], "expected": "[1, 2]" },
+      { "label": "single element, k=1", "args": [[1], 1], "expected": "[1]" },
+      { "label": "all unique, k=all", "args": [[1,2,3,4,5], 5], "expected": "[1, 2, 3, 4, 5]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Two-step problem. Step 1: count frequencies with a hash map. Step 2: extract the top k. The interview is in step 2 — which data structure to use? Sort all (O(n log n)), heap of size k (O(n log k)), or bucket sort by frequency (O(n)). Each is a level-up.",
+
+      "clarifying_questions": [
+        { "question": "Is the answer guaranteed to be unique?", "why": "Per constraints, yes. Means no ties to break. If ties were possible, you'd need to clarify the tie-breaker rule (lexicographic? insertion order?)." },
+        { "question": "Order of the output — does it matter?", "why": "Spec says any order. Saves the work of sorting the final k elements." },
+        { "question": "How big is n? What's the range of k?", "why": "n up to 10^5. k between 1 and #unique. If k is small (k=2) and n is large, heap (O(n log k)) is way faster than sort (O(n log n))." },
+        { "question": "Can elements be negative? Bounded value range?", "why": "Range is -10^4 to 10^4 — bounded. Doesn't change algorithm much but worth confirming for the frequency-as-array trick." },
+        { "question": "Should I return the elements or their counts?", "why": "Spec says return elements (the values), not counts. Easy to misread under pressure." }
+      ],
+
+      "think_out_loud": "Step 1: count frequencies via hash map — O(n). Step 2: extract top k. Three options: (a) sort all frequencies O(n log n), (b) min-heap of size k O(n log k), (c) bucket sort by frequency O(n). Pick (b) heap as the default — clean and significantly better than full sort when k << n. Reach for (c) bucket sort if interviewer asks for O(n).",
+
+      "edge_cases": [
+        { "category": "k equals number of unique", "details": "k = 5, all 5 elements unique → return all 5 in any order." },
+        { "category": "Single most-frequent", "details": "[1,1,1,1,2,3], k=1 → [1]." },
+        { "category": "Heavy duplicates", "details": "[1]*100 + [2]*99 + [3]*98, k=2 → [1, 2]." },
+        { "category": "Negative numbers", "details": "[-1,-1,-2,-2,-3], k=2 → [-1, -2]. Hash map handles negatives fine." },
+        { "category": "k=1 small n", "details": "[1, 2], k=1 → [1] or [2] (tied!) — but spec promises uniqueness, so this case shouldn't appear." }
+      ],
+
+      "common_mistakes": [
+        "Returning the frequencies instead of the elements.",
+        "Using max-heap of all elements then popping k times — works but O(n + k log n), not the typical O(n log k).",
+        "Forgetting that Python's heapq is a MIN-heap (need to negate counts or use heapq._heapify_max).",
+        "Iterating dict.items() multiple times — usually fine but if you need order, be explicit.",
+        "Using Counter().most_common(k) — works! But interviewers want to see you implement the underlying algorithm."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Top K Frequent. Given an array of integers, return the k most frequent elements.",
+      "introduction_context": "Classic data structures question. Tests progression: hash map for counts → heap or bucket sort for top-k. The bucket sort O(n) approach is the senior signal.",
+
+      "really_testing": [
+        "Recognition: this is a 'count + select top-k' pattern.",
+        "Heap intuition: when k is small relative to n, heap of size k beats full sort.",
+        "Awareness of bucket sort as the O(n) optimization.",
+        "Comfort with Python heapq (or Java PriorityQueue / C++ priority_queue)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Builds frequency map. Proposes heap of size k (O(n log k)). Mentions bucket sort as the O(n) optimization. Implements heap correctly. ~10 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches heap-based O(n log k). May default to Counter().most_common(k) — works but doesn't show the underlying knowledge." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Sorts the entire frequency map (O(n log n)) when heap would be better. Or uses brute force with nested loops." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't reach a working solution. Doesn't recognize the count + extract pattern." }
+      ],
+
+      "playbook": [
+        "Restate. Confirm 'return elements, not counts' and 'any order'.",
+        "State the two-step structure: count then select top k.",
+        "Step 1: hash map of frequencies (Counter or dict). O(n).",
+        "Step 2 options: sort all O(n log n), heap O(n log k), bucket sort O(n).",
+        "Pick heap of size k. Use a MIN-heap so the smallest k stays on top, easy to evict.",
+        "Code with heapq: for each (num, count), if heap size < k push (count, num); else if count > heap[0][0], replace heap[0].",
+        "Test on the example.",
+        "Mention bucket sort as O(n) alternative if interviewer pushes."
+      ],
+      "playbook_meta": "Total time: 10-15 min. Heap is the default answer. Bucket sort gets you Strong Hire. Common follow-up: 'Can you do this in O(n)?' — that's the bucket sort hint.",
+
+      "dont_do": [
+        "Don't use Counter().most_common(k) without explanation — shows knowledge of the library but not the algorithm.",
+        "Don't sort the full frequency dict when k is small.",
+        "Don't return counts instead of elements.",
+        "Don't use a max-heap of all elements then pop k times — that's O(n log n), not O(n log k).",
+        "Don't forget heapq is a MIN-heap by default — push (-count, val) for max behavior, or just use min-heap with size-k logic."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Count and Sort All",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "def top_k_frequent(nums, k):\n    from collections import Counter\n    counts = Counter(nums)\n    sorted_items = sorted(counts.items(), key=lambda x: -x[1])\n    return [x[0] for x in sorted_items[:k]]",
+        "explanation": "Count frequencies, sort by count descending, take top k. Simple and correct, but sorting all unique elements is overkill when k is small."
+      },
+      {
+        "name": "Min-Heap of Size K",
+        "time": "O(n log k)",
+        "space": "O(n + k)",
+        "code": "def top_k_frequent(nums, k):\n    from collections import Counter\n    import heapq\n    counts = Counter(nums)\n    heap = []\n    for num, freq in counts.items():\n        if len(heap) < k:\n            heapq.heappush(heap, (freq, num))\n        elif freq > heap[0][0]:\n            heapq.heapreplace(heap, (freq, num))\n    return [num for _, num in heap]",
+        "explanation": "Use a min-heap of size k to keep only the top-k frequencies. For each (num, freq): if heap is undersized, add; else if freq beats the min, replace. Each insert/replace is O(log k). Total O(n log k) — way better than O(n log n) when k << n."
+      },
+      {
+        "name": "Bucket Sort (O(n))",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def top_k_frequent(nums, k):\n    from collections import Counter\n    counts = Counter(nums)\n    n = len(nums)\n    # buckets[i] = list of nums with frequency i. Max possible frequency is n.\n    buckets = [[] for _ in range(n + 1)]\n    for num, freq in counts.items():\n        buckets[freq].append(num)\n    # Walk buckets high-to-low, collect top k\n    result = []\n    for freq in range(n, 0, -1):\n        for num in buckets[freq]:\n            result.append(num)\n            if len(result) == k:\n                return result\n    return result",
+        "explanation": "Since the maximum frequency is n (when all elements are equal), we can use n+1 buckets where buckets[f] contains all elements that occur f times. Walk the buckets from highest frequency down, collecting elements until we have k. Each step is O(1) — no comparison sorting needed. Total O(n) time. The senior answer."
+      }
+    ],
+
+    "related_problem_ids": ["group-anagrams", "valid-anagram", "contains-duplicate"]
   },
   {
     "id": "valid-palindrome",
