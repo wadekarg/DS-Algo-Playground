@@ -66,6 +66,10 @@ function _renderAllSections(prob, all) {
  * @param {string} problemId  e.g. 'two-sum'
  */
 function renderProblem(problemId) {
+  // Expose the current problem id to anything else on the page (e.g. the
+  // textarea-persistence script) that needs to key localStorage entries.
+  if (document.body) document.body.dataset.problemId = problemId;
+
   // 1) Try synchronous render from cache (avoids the empty-page flash).
   const cached = _readCacheSync();
   let renderedFromCache = false;
@@ -535,12 +539,14 @@ function renderPracticeEditor(prob) {
     .replace(/\n/g, '&#10;');
 
   // No need to re-render title/summary inside the editor — they already appear
-  // in the topbar and problem-statement card on the left.
+  // in the topbar and problem-statement card on the left. data-problem-id
+  // lets practice.js key the draft-autosave entry by problem.
   slot.innerHTML = `
     <div class="practice-block practice-block--bare"
       data-title="${_esc(prob.title)}"
       data-difficulty="${_esc(prob.difficulty)}"
       data-fn="${_esc(prob.function_name)}"
+      data-problem-id="${_esc(prob.id)}"
       data-starter='${starterEscaped}'
       data-tests='${testsJson}'>
     </div>
@@ -552,6 +558,31 @@ function renderPracticeEditor(prob) {
   if (window.DSA && window.DSA.practice && typeof window.DSA.practice.init === 'function') {
     window.DSA.practice.init();
   }
+
+  // Wire up the Text Editor pane to auto-save drafts to localStorage,
+  // keyed by problem id. Restores on load.
+  _wireTextDraft(prob.id);
+}
+
+/** Auto-save the per-problem Text Editor textarea so refreshing/reopening
+ *  the page preserves whatever the user wrote. Keyed by problem id. */
+function _wireTextDraft(problemId) {
+  const ta = document.querySelector('.editor-pane--text .text-editor');
+  if (!ta) return;
+  const key = 'dsa-draft-text:' + problemId;
+  // Restore
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved !== null) ta.value = saved;
+  } catch (e) { /* localStorage disabled */ }
+  // Save on each keystroke (debounced)
+  let t = null;
+  ta.addEventListener('input', () => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => {
+      try { localStorage.setItem(key, ta.value); } catch (e) {}
+    }, 200);
+  });
 }
 
 /**

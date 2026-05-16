@@ -89,6 +89,12 @@ var DSA = window.DSA || {};
     var tests      = [];
     try { tests = JSON.parse(testsRaw); } catch(e) { tests = []; }
 
+    // Optional draft autosave (used on per-problem pages). When data-problem-id
+    // is present we save/restore the editor's content under
+    // dsa-draft-code:<problemId> so refreshing or revisiting preserves work.
+    var draftId = el.getAttribute('data-problem-id') || '';
+    var draftKey = draftId ? 'dsa-draft-code:' + draftId : '';
+
     // Get description from child .practice-problem or data-description
     var descEl = el.querySelector('.practice-problem');
     var descHTML = descEl ? descEl.innerHTML : (el.getAttribute('data-description') || '');
@@ -154,8 +160,16 @@ var DSA = window.DSA || {};
       }
       // Unescape newlines from data-starter (stored as literal \n in HTML attribute)
       var starterCode = starter.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+      // Restore saved draft if present; otherwise show starter.
+      var initialCode = starterCode;
+      if (draftKey) {
+        try {
+          var saved = localStorage.getItem(draftKey);
+          if (saved !== null) initialCode = saved;
+        } catch (e) {}
+      }
       cmEditor = window.CodeMirror(editorWrap, {
-        value: starterCode,
+        value: initialCode,
         mode: 'python',
         theme: 'dracula',
         lineNumbers: true,
@@ -165,6 +179,17 @@ var DSA = window.DSA || {};
         viewportMargin: Infinity
       });
       statusSpan.textContent = 'Ready';
+
+      // Debounced autosave on edit.
+      if (draftKey) {
+        var saveTimer = null;
+        cmEditor.on('change', function() {
+          if (saveTimer) clearTimeout(saveTimer);
+          saveTimer = setTimeout(function() {
+            try { localStorage.setItem(draftKey, cmEditor.getValue()); } catch (e) {}
+          }, 200);
+        });
+      }
     });
 
     // Run Tests button handler
