@@ -31185,5 +31185,574 @@
       "subsets",
       "longest-palindromic-substring"
     ]
+  },
+  {
+    "id": "search-a-2d-matrix",
+    "title": "Search a 2D Matrix",
+    "leetcode_url": "https://leetcode.com/problems/search-a-2d-matrix/",
+    "leetcode_id": 74,
+    "difficulty": "medium",
+    "patterns": [
+      "binary-search",
+      "matrix"
+    ],
+    "topics": [
+      "binary-search"
+    ],
+    "neetcode_category": "Binary Search",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n matrix where each row is sorted ascending, and each row's first integer is greater than the previous row's last, return True if target is found. O(log(m*n)).",
+    "constraints": [
+      "1 <= m, n <= 100",
+      "-10^4 <= matrix[i][j], target <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3",
+        "output": "True"
+      }
+    ],
+    "function_name": "searchMatrix",
+    "function_signature": "def searchMatrix(matrix, target):",
+    "starter_code": "def searchMatrix(matrix, target):\n    # Treat matrix as a flat sorted array. Binary search on index 0..m*n-1; convert idx -> (row, col).\n    pass",
+    "test_cases": [
+      {
+        "label": "found",
+        "args": [
+          [
+            [
+              1,
+              3,
+              5,
+              7
+            ],
+            [
+              10,
+              11,
+              16,
+              20
+            ],
+            [
+              23,
+              30,
+              34,
+              60
+            ]
+          ],
+          3
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "not found",
+        "args": [
+          [
+            [
+              1,
+              3,
+              5,
+              7
+            ],
+            [
+              10,
+              11,
+              16,
+              20
+            ],
+            [
+              23,
+              30,
+              34,
+              60
+            ]
+          ],
+          13
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single match",
+        "args": [
+          [
+            [
+              1
+            ]
+          ],
+          1
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "below min",
+        "args": [
+          [
+            [
+              5
+            ]
+          ],
+          1
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "above max",
+        "args": [
+          [
+            [
+              5
+            ]
+          ],
+          10
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Single binary search treating the matrix as a flat sorted array. idx \u2192 (idx // n, idx % n). O(log(m*n)).",
+      "clarifying_questions": [
+        {
+          "question": "Both row-sorted and column-jumping?",
+          "why": "Yes \u2014 equivalent to fully sorted flat."
+        }
+      ],
+      "think_out_loud": "Index conversion + binary search.",
+      "edge_cases": [
+        {
+          "category": "1x1",
+          "details": "Trivial."
+        },
+        {
+          "category": "Target out of range",
+          "details": "Search returns False."
+        }
+      ],
+      "common_mistakes": [
+        "Two binary searches (row then col) \u2014 works but more code."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Binary search on a flat matrix.",
+      "introduction_context": "Common at Amazon.",
+      "really_testing": [
+        "Single binary search.",
+        "Index conversion."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Two-pass."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Linear scan."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "m, n = len(matrix), len(matrix[0]). lo, hi = 0, m*n-1. while lo<=hi: mid=(lo+hi)//2. v = matrix[mid//n][mid%n]. if v==target: return True. elif v<target: lo=mid+1. else: hi=mid-1. return False."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't scan linearly.",
+        "Don't forget index conversion."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Single Binary Search (flat)",
+        "time": "O(log(m*n))",
+        "space": "O(1)",
+        "code": "def searchMatrix(matrix, target):\n    m, n = len(matrix), len(matrix[0])\n    lo, hi = 0, m * n - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        v = matrix[mid // n][mid % n]\n        if v == target:\n            return True\n        elif v < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return False",
+        "explanation": "Flatten the matrix view: index k corresponds to (k // n, k % n). Binary search over [0, m*n-1]."
+      }
+    ],
+    "related_problem_ids": [
+      "binary-search",
+      "search-in-rotated-sorted-array"
+    ]
+  },
+  {
+    "id": "time-based-key-value-store",
+    "title": "Time Based Key-Value Store",
+    "leetcode_url": "https://leetcode.com/problems/time-based-key-value-store/",
+    "leetcode_id": 981,
+    "difficulty": "medium",
+    "patterns": [
+      "binary-search",
+      "design",
+      "hash-map"
+    ],
+    "topics": [
+      "binary-search"
+    ],
+    "neetcode_category": "Binary Search",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design TimeMap with set(key, value, timestamp) and get(key, timestamp) which returns the value at the largest timestamp_prev <= timestamp. Timestamps are strictly increasing per set.",
+    "constraints": [
+      "1 <= key.length, value.length <= 100",
+      "1 <= timestamp <= 10^7",
+      "At most 2 * 10^5 calls"
+    ],
+    "examples": [
+      {
+        "input": "set('foo','bar',1), get('foo',1), get('foo',3), set('foo','bar2',4), get('foo',4), get('foo',5)",
+        "output": "['bar', 'bar', 'bar2', 'bar2']"
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "from collections import defaultdict\nfrom bisect import bisect_right\n\nclass TimeMap:\n    def __init__(self):\n        self.store = defaultdict(list)  # key -> list of (timestamp, value)\n    def set(self, key, value, timestamp):\n        pass\n    def get(self, key, timestamp):\n        # Binary search for largest timestamp <= given.\n        pass\n\ndef runOps(ops):\n    tm = TimeMap()\n    out = []\n    for op in ops:\n        if op[0] == 'set': tm.set(op[1], op[2], op[3])\n        else: out.append(tm.get(op[1], op[2]))\n    return out\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "set",
+              "foo",
+              "bar",
+              1
+            ],
+            [
+              "get",
+              "foo",
+              1
+            ],
+            [
+              "get",
+              "foo",
+              3
+            ],
+            [
+              "set",
+              "foo",
+              "bar2",
+              4
+            ],
+            [
+              "get",
+              "foo",
+              4
+            ],
+            [
+              "get",
+              "foo",
+              5
+            ]
+          ]
+        ],
+        "expected": "['bar', 'bar', 'bar2', 'bar2']"
+      },
+      {
+        "label": "before any set",
+        "args": [
+          [
+            [
+              "set",
+              "x",
+              "y",
+              5
+            ],
+            [
+              "get",
+              "x",
+              3
+            ]
+          ]
+        ],
+        "expected": "['']"
+      },
+      {
+        "label": "missing key",
+        "args": [
+          [
+            [
+              "get",
+              "nope",
+              1
+            ]
+          ]
+        ],
+        "expected": "['']"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Per-key sorted list of (timestamp, value). Since set timestamps are increasing, append is O(1). get uses binary search (bisect) to find largest timestamp <= query.",
+      "clarifying_questions": [
+        {
+          "question": "Set strictly increasing?",
+          "why": "Yes \u2014 append safe."
+        },
+        {
+          "question": "Missing key/early query?",
+          "why": "Return ''."
+        }
+      ],
+      "think_out_loud": "bisect_right on a list of timestamps; index-1 is the answer if >= 0.",
+      "edge_cases": [
+        {
+          "category": "Missing key",
+          "details": "Empty list \u2192 ''."
+        },
+        {
+          "category": "Query before first set",
+          "details": "''"
+        }
+      ],
+      "common_mistakes": [
+        "Linear scan per get \u2014 O(n) per query."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Design + binary search.",
+      "introduction_context": "Common at Amazon, Google.",
+      "really_testing": [
+        "bisect usage.",
+        "Per-key storage."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Linear search."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "store = defaultdict(list).",
+        "set: store[key].append((ts, val)).",
+        "get: arr = store[key]. idx = bisect_right(arr, (ts, chr(127)*10)) - 1. return arr[idx][1] if idx >= 0 else ''."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't linear scan.",
+        "Don't store keys in one giant list."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Per-Key List + Bisect",
+        "time": "O(1) set, O(log n) get",
+        "space": "O(n)",
+        "code": "from collections import defaultdict\nfrom bisect import bisect_right\n\nclass TimeMap:\n    def __init__(self):\n        self.timestamps = defaultdict(list)\n        self.values = defaultdict(list)\n    def set(self, key, value, timestamp):\n        self.timestamps[key].append(timestamp)\n        self.values[key].append(value)\n    def get(self, key, timestamp):\n        ts = self.timestamps.get(key, [])\n        if not ts:\n            return ''\n        idx = bisect_right(ts, timestamp) - 1\n        if idx < 0:\n            return ''\n        return self.values[key][idx]\n\ndef runOps(ops):\n    tm = TimeMap()\n    out = []\n    for op in ops:\n        if op[0] == 'set': tm.set(op[1], op[2], op[3])\n        else: out.append(tm.get(op[1], op[2]))\n    return out",
+        "explanation": "Keep two parallel lists per key: timestamps and values (appending in set is O(1) since timestamps are strictly increasing). get uses bisect_right to find the largest timestamp <= query."
+      }
+    ],
+    "related_problem_ids": [
+      "binary-search",
+      "search-in-rotated-sorted-array"
+    ]
+  },
+  {
+    "id": "median-of-two-sorted-arrays",
+    "title": "Median of Two Sorted Arrays",
+    "leetcode_url": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    "leetcode_id": 4,
+    "difficulty": "hard",
+    "patterns": [
+      "binary-search",
+      "array"
+    ],
+    "topics": [
+      "binary-search"
+    ],
+    "neetcode_category": "Binary Search",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two sorted arrays nums1 and nums2 of sizes m and n, return the median of the combined sorted array. O(log(min(m,n))) expected.",
+    "constraints": [
+      "0 <= m, n <= 1000",
+      "1 <= m+n",
+      "-10^6 <= nums1[i], nums2[i] <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "nums1 = [1,3], nums2 = [2]",
+        "output": "2.0"
+      },
+      {
+        "input": "nums1 = [1,2], nums2 = [3,4]",
+        "output": "2.5"
+      }
+    ],
+    "function_name": "findMedianSortedArrays",
+    "function_signature": "def findMedianSortedArrays(nums1, nums2):",
+    "starter_code": "def findMedianSortedArrays(nums1, nums2):\n    # Binary search partition. Ensure nums1 is shorter. Find i in nums1 such that nums1[i-1]<=nums2[j] and nums2[j-1]<=nums1[i].\n    pass",
+    "test_cases": [
+      {
+        "label": "odd total",
+        "args": [
+          [
+            1,
+            3
+          ],
+          [
+            2
+          ]
+        ],
+        "expected": "2.0"
+      },
+      {
+        "label": "even total",
+        "args": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": "2.5"
+      },
+      {
+        "label": "one empty",
+        "args": [
+          [],
+          [
+            1
+          ]
+        ],
+        "expected": "1.0"
+      },
+      {
+        "label": "disjoint",
+        "args": [
+          [
+            1,
+            2
+          ],
+          [
+            10,
+            20
+          ]
+        ],
+        "expected": "6.0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Binary search on the partition of nums1 (the shorter). For each partition i in nums1, j = (m+n+1)/2 - i in nums2. Valid partition requires nums1[i-1] <= nums2[j] AND nums2[j-1] <= nums1[i]. Then the median is determined by the four boundary values.",
+      "clarifying_questions": [
+        {
+          "question": "Total length odd or even?",
+          "why": "Algorithm handles both via single formula."
+        },
+        {
+          "question": "O(log) required?",
+          "why": "Yes \u2014 merge-and-take-median is O(m+n)."
+        }
+      ],
+      "think_out_loud": "Partition both arrays so left halves combined = (m+n+1)/2 elements; then median is (max(left) + min(right))/2 for even, max(left) for odd.",
+      "edge_cases": [
+        {
+          "category": "Empty array",
+          "details": "Use sentinels +inf/-inf for boundary checks."
+        },
+        {
+          "category": "Disjoint",
+          "details": "Partition lies entirely on one side."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one on j formula.",
+        "Forgetting to ensure nums1 is shorter.",
+        "Not handling boundary infinities."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "THE hard binary search.",
+      "introduction_context": "Onsite at Google, Meta, Amazon.",
+      "really_testing": [
+        "Partition idea.",
+        "Boundary handling."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Partition in 20 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Merge approach O(m+n)."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't sort."
+        }
+      ],
+      "playbook": [
+        "if len(nums1) > len(nums2): swap.",
+        "m, n = len(nums1), len(nums2). lo, hi = 0, m. half = (m+n+1)//2.",
+        "while lo <= hi: i = (lo+hi)//2. j = half - i. l1 = nums1[i-1] if i>0 else -inf. r1 = nums1[i] if i<m else inf. l2 = nums2[j-1] if j>0 else -inf. r2 = nums2[j] if j<n else inf.",
+        "  if l1<=r2 and l2<=r1: if (m+n)%2: return max(l1,l2). else return (max(l1,l2)+min(r1,r2))/2.",
+        "  elif l1>r2: hi = i-1. else: lo = i+1."
+      ],
+      "playbook_meta": "Total time: 20-30 min.",
+      "dont_do": [
+        "Don't merge (O(m+n)).",
+        "Don't forget shorter-first swap."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Binary Search Partition",
+        "time": "O(log(min(m,n)))",
+        "space": "O(1)",
+        "code": "def findMedianSortedArrays(nums1, nums2):\n    if len(nums1) > len(nums2):\n        nums1, nums2 = nums2, nums1\n    m, n = len(nums1), len(nums2)\n    lo, hi = 0, m\n    half = (m + n + 1) // 2\n    while lo <= hi:\n        i = (lo + hi) // 2\n        j = half - i\n        l1 = nums1[i - 1] if i > 0 else float('-inf')\n        r1 = nums1[i] if i < m else float('inf')\n        l2 = nums2[j - 1] if j > 0 else float('-inf')\n        r2 = nums2[j] if j < n else float('inf')\n        if l1 <= r2 and l2 <= r1:\n            if (m + n) % 2:\n                return float(max(l1, l2))\n            return (max(l1, l2) + min(r1, r2)) / 2.0\n        elif l1 > r2:\n            hi = i - 1\n        else:\n            lo = i + 1\n    return 0.0",
+        "explanation": "Binary search the partition i in nums1. Use sentinels -inf/+inf at array boundaries. The valid partition has left halves combined of size half and respects the cross-inequalities. Then the median is derived from the four boundary values."
+      }
+    ],
+    "related_problem_ids": [
+      "binary-search",
+      "find-minimum-in-rotated-sorted-array"
+    ]
   }
 ]
