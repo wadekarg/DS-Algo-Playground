@@ -16,9 +16,20 @@
  */
 
 let _problemsCache = null;
+const PROBLEMS_CACHE_KEY = 'dsa-sidebar-problems-cache-v1';
 
-async function _loadProblems() {
-  if (_problemsCache) return _problemsCache;
+function _readCacheSync() {
+  try {
+    const raw = localStorage.getItem(PROBLEMS_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function _writeCacheSync(data) {
+  try { localStorage.setItem(PROBLEMS_CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+async function _fetchProblems() {
   const tryFetch = async (paths) => {
     for (const p of paths) {
       try {
@@ -28,21 +39,10 @@ async function _loadProblems() {
     }
     throw new Error('Could not load: ' + paths.join(' or '));
   };
-  _problemsCache = await tryFetch(['../data/problems.json', 'data/problems.json']);
-  return _problemsCache;
+  return tryFetch(['../data/problems.json', 'data/problems.json']);
 }
 
-/**
- * Top-level entry point — loads data then delegates to per-section renderers.
- * @param {string} problemId  e.g. 'two-sum'
- */
-async function renderProblem(problemId) {
-  const all = await _loadProblems();
-  const prob = all.find(p => p.id === problemId);
-  if (!prob) {
-    console.error(`renderProblem: problem not found: ${problemId}`);
-    return;
-  }
+function _renderAllSections(prob, all) {
   renderTopbar(prob);
   renderProblemStatement(prob);
   renderExamples(prob);
@@ -52,6 +52,47 @@ async function renderProblem(problemId) {
   renderPracticeEditor(prob);
   renderTestCases(prob);
   renderRelatedProblems(prob, all);
+}
+
+/**
+ * Top-level entry point — renders synchronously from localStorage cache when
+ * available so the page appears in one paint; refreshes from the network in
+ * the background and re-renders only if the data changed.
+ * @param {string} problemId  e.g. 'two-sum'
+ */
+function renderProblem(problemId) {
+  // 1) Try synchronous render from cache (avoids the empty-page flash).
+  const cached = _readCacheSync();
+  let renderedFromCache = false;
+  if (cached) {
+    _problemsCache = cached;
+    const prob = cached.find(p => p.id === problemId);
+    if (prob) {
+      _renderAllSections(prob, cached);
+      renderedFromCache = true;
+    }
+  }
+
+  // 2) Background fetch — refresh cache, re-render only if data changed
+  // (or if there was no cache to begin with).
+  _fetchProblems().then(all => {
+    _writeCacheSync(all);
+    if (!renderedFromCache) {
+      _problemsCache = all;
+      const prob = all.find(p => p.id === problemId);
+      if (!prob) {
+        console.error(`renderProblem: problem not found: ${problemId}`);
+        return;
+      }
+      _renderAllSections(prob, all);
+    } else if (cached && JSON.stringify(cached) !== JSON.stringify(all)) {
+      _problemsCache = all;
+      const prob = all.find(p => p.id === problemId);
+      if (prob) _renderAllSections(prob, all);
+    }
+  }).catch(err => {
+    if (!renderedFromCache) console.error(err);
+  });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
