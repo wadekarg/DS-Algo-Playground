@@ -13369,5 +13369,770 @@
       "kth-largest-element-in-a-stream",
       "top-k-frequent-elements"
     ]
+  },
+  {
+    "id": "k-closest-points-to-origin",
+    "title": "K Closest Points to Origin",
+    "leetcode_url": "https://leetcode.com/problems/k-closest-points-to-origin/",
+    "leetcode_id": 973,
+    "difficulty": "medium",
+    "patterns": [
+      "heap",
+      "quickselect"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0). Output order doesn't matter.",
+    "constraints": [
+      "1 <= k <= points.length <= 10^4",
+      "-10^4 < xi, yi < 10^4"
+    ],
+    "examples": [
+      {
+        "input": "points = [[1,3],[-2,2]], k = 1",
+        "output": "[[-2,2]]",
+        "explanation": "Distance(1,3) = sqrt(10) > Distance(-2,2) = sqrt(8). [-2,2] is closer."
+      },
+      {
+        "input": "points = [[3,3],[5,-1],[-2,4]], k = 2",
+        "output": "[[3,3],[-2,4]]",
+        "explanation": "Distances: 3\u221a2, \u221a26, 2\u221a5. The closest 2 are [3,3] and [-2,4]."
+      }
+    ],
+    "function_name": "kClosest",
+    "function_signature": "def kClosest(points, k):",
+    "starter_code": "import heapq\n\ndef kClosest(points, k):\n    # Return the k closest points to origin. Order doesn't matter.\n    # Hint: max-heap of size k (or min-heap of all + take top k).\n    pass",
+    "test_cases": [
+      {
+        "label": "k=1",
+        "args": [
+          [
+            [
+              1,
+              3
+            ],
+            [
+              -2,
+              2
+            ]
+          ],
+          1
+        ],
+        "expected": "[[-2, 2]]"
+      },
+      {
+        "label": "k=2",
+        "args": [
+          [
+            [
+              3,
+              3
+            ],
+            [
+              5,
+              -1
+            ],
+            [
+              -2,
+              4
+            ]
+          ],
+          2
+        ],
+        "expected": "[[3, 3], [-2, 4]]"
+      },
+      {
+        "label": "k = all",
+        "args": [
+          [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          2
+        ],
+        "expected": "[[1, 1], [2, 2]]"
+      },
+      {
+        "label": "single point",
+        "args": [
+          [
+            [
+              7,
+              8
+            ]
+          ],
+          1
+        ],
+        "expected": "[[7, 8]]"
+      },
+      {
+        "label": "negatives included",
+        "args": [
+          [
+            [
+              -1,
+              -1
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          2
+        ],
+        "expected": "[[0, 0], [-1, -1]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Compare points by squared distance (no need to sqrt \u2014 comparison is monotonic). Two approaches: (1) min-heap of all + take k smallest \u2014 O(n + k log n); (2) max-heap of size k, push and pop when size > k \u2014 O(n log k). Approach 2 is better when k << n.",
+      "clarifying_questions": [
+        {
+          "question": "Output order \u2014 does it matter?",
+          "why": "No per spec. Saves work. Output in heap order is fine."
+        },
+        {
+          "question": "Are the k closest unique, or could there be ties?",
+          "why": "Could be ties. Either tied point is valid \u2014 spec just wants k closest by distance."
+        },
+        {
+          "question": "Should I compute actual distance or use squared?",
+          "why": "Squared distance is enough (sqrt is monotonic). Cheaper and avoids floating point."
+        },
+        {
+          "question": "k vs n \u2014 should I optimize for k << n?",
+          "why": "Yes \u2014 max-heap of size k is O(n log k) which beats O(n log n) when k is small."
+        },
+        {
+          "question": "Quickselect is even faster \u2014 O(n) average. Worth it?",
+          "why": "Mention as the optimal solution. Harder to code under pressure; heap is the safe answer."
+        }
+      ],
+      "think_out_loud": "Distance: x\u00b2 + y\u00b2. No sqrt. Heap-of-k approach: max-heap. For each point: push -d\u00b2 (since Python is min-heap). If size > k: pop. The remaining k entries are the closest. Return their points.",
+      "edge_cases": [
+        {
+          "category": "k = 1",
+          "details": "Just the single closest. Heap with 1 element."
+        },
+        {
+          "category": "k = n (all)",
+          "details": "Return all points. No work to do."
+        },
+        {
+          "category": "Origin included",
+          "details": "Point (0,0) is closest possible. Heap handles it."
+        },
+        {
+          "category": "Tied distances",
+          "details": "Either tied point is valid output. Spec doesn't enforce specific tie-break."
+        },
+        {
+          "category": "Negative coordinates",
+          "details": "Doesn't matter \u2014 squared distance is positive."
+        }
+      ],
+      "common_mistakes": [
+        "Computing sqrt \u2014 wastes work and risks floating-point.",
+        "Using a min-heap of size k \u2014 wrong direction (drops large distances instead of dropping small).",
+        "Sorting all points \u2014 O(n log n), wasteful when k << n.",
+        "Forgetting to negate for Python's heapq when using as max-heap.",
+        "Comparing tuples (-d\u00b2, point) \u2014 fine, but watch for tuple comparison on list-typed point if equal d\u00b2."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic top-k problem. Multiple acceptable solutions; the interviewer wants to see which tradeoffs you understand.",
+      "introduction_context": "Common at Amazon, Meta, Google. The basic heap version is the expected answer; quickselect is impressive bonus.",
+      "really_testing": [
+        "Recognizing top-k pattern.",
+        "Squared distance to avoid sqrt.",
+        "Max-heap vs min-heap tradeoff.",
+        "Python's heapq idioms."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Max-heap of size k in 5-7 min. Mentions quickselect as O(n) alternative."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Sorts all points by distance \u2014 works but suboptimal. Refactors to heap when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy heap direction or computes sqrt."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working solution."
+        }
+      ],
+      "playbook": [
+        "Restate: 'k points closest to origin'.",
+        "Distance: 'use x\u00b2+y\u00b2, no sqrt needed'.",
+        "Pitch max-heap of size k.",
+        "Code: heap = []. for x, y in points: d = -(x*x + y*y); heappush(heap, (d, x, y)); if len(heap) > k: heappop(heap). return [[x, y] for _, x, y in heap].",
+        "Walk [[3,3],[5,-1],[-2,4]] k=2: d\u00b2=18, 26, 20. Push (-18, 3, 3), (-26, 5, -1) \u2192 size 2. Push (-20, -2, 4) size 3 \u2192 pop (-26, ...). Heap has (-20, -2, 4) and (-18, 3, 3). Return [[-2, 4], [3, 3]]. \u2713"
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: quickselect for O(n).",
+      "dont_do": [
+        "Don't compute sqrt.",
+        "Don't sort all points if k << n.",
+        "Don't use min-heap of size k (wrong direction).",
+        "Don't return distances \u2014 return the original points."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort by Distance (deterministic order)",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "def kClosest(points, k):\n    points.sort(key=lambda p: p[0] * p[0] + p[1] * p[1])\n    return points[:k]",
+        "explanation": "Sort all points by squared distance, take the first k. Simplest correct answer. O(n log n) \u2014 fine when k is close to n. Returns points in ascending-distance order (deterministic), which is what the test runner compares against."
+      },
+      {
+        "name": "Max-Heap of Size K (optimal when k << n)",
+        "time": "O(n log k)",
+        "space": "O(k)",
+        "code": "import heapq\n\ndef kClosest(points, k):\n    heap = []  # max-heap: store (-distance, x, y)\n    for x, y in points:\n        d2 = x * x + y * y\n        heapq.heappush(heap, (-d2, x, y))\n        if len(heap) > k:\n            heapq.heappop(heap)\n    # Sort output for deterministic order (algorithm itself returns the k closest in any order)\n    result = sorted([[x, y] for _, x, y in heap], key=lambda p: p[0] * p[0] + p[1] * p[1])\n    return result",
+        "explanation": "Max-heap of size k. Negate distance so Python's min-heap behaves as max-heap on distance. For each point: push, then pop if oversized. O(n log k) \u2014 efficient when k << n. The final sort adds O(k log k); skip it if order doesn't matter to your caller."
+      }
+    ],
+    "related_problem_ids": [
+      "kth-largest-element-in-an-array",
+      "kth-largest-element-in-a-stream",
+      "top-k-frequent-elements"
+    ]
+  },
+  {
+    "id": "kth-largest-element-in-an-array",
+    "title": "Kth Largest Element in an Array",
+    "leetcode_url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+    "leetcode_id": 215,
+    "difficulty": "medium",
+    "patterns": [
+      "heap",
+      "quickselect"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an integer array nums and an integer k, return the kth largest element in the array. Note that it is the kth largest in sorted order, not the kth distinct element.",
+    "constraints": [
+      "1 <= k <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "nums = [3,2,1,5,6,4], k = 2",
+        "output": "5",
+        "explanation": "Sorted descending: 6,5,4,3,2,1. 2nd largest = 5."
+      },
+      {
+        "input": "nums = [3,2,3,1,2,4,5,5,6], k = 4",
+        "output": "4",
+        "explanation": "Sorted desc: 6,5,5,4,3,3,2,2,1. 4th largest = 4."
+      }
+    ],
+    "function_name": "findKthLargest",
+    "function_signature": "def findKthLargest(nums, k):",
+    "starter_code": "import heapq\n\ndef findKthLargest(nums, k):\n    # Return the kth largest (1-indexed).\n    pass",
+    "test_cases": [
+      {
+        "label": "k=2",
+        "args": [
+          [
+            3,
+            2,
+            1,
+            5,
+            6,
+            4
+          ],
+          2
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "k=4 with duplicates",
+        "args": [
+          [
+            3,
+            2,
+            3,
+            1,
+            2,
+            4,
+            5,
+            5,
+            6
+          ],
+          4
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "k=1 (max)",
+        "args": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "k=n (min)",
+        "args": [
+          [
+            3,
+            1,
+            2
+          ],
+          3
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            5,
+            5,
+            5,
+            5
+          ],
+          2
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "negatives included",
+        "args": [
+          [
+            -1,
+            -2,
+            -3,
+            0,
+            1
+          ],
+          4
+        ],
+        "expected": "-2"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Three options: sort O(n log n); min-heap of size k O(n log k); quickselect O(n) average. Min-heap is the safe interview answer. Quickselect impresses but is harder to code under pressure.",
+      "clarifying_questions": [
+        {
+          "question": "kth largest in sorted order, including duplicates?",
+          "why": "Yes \u2014 not distinct. [3,3,3] k=2 returns 3, not 'the 2nd unique value'."
+        },
+        {
+          "question": "k always valid (1 \u2264 k \u2264 n)?",
+          "why": "Yes per spec. No need to handle k = 0 or k > n."
+        },
+        {
+          "question": "Should I avoid the obvious 'sort and index' answer?",
+          "why": "Mention it as the easy answer. The interviewer probably wants O(n log k) or O(n) \u2014 sort is the floor."
+        },
+        {
+          "question": "What's quickselect's worst case?",
+          "why": "O(n\u00b2) with bad pivots. Random pivot or median-of-medians keeps it O(n) average / worst. Mention if pushed."
+        },
+        {
+          "question": "Negatives?",
+          "why": "Just compare numerically \u2014 algorithm doesn't care."
+        }
+      ],
+      "think_out_loud": "Three solutions, escalating difficulty. (1) sorted(nums)[-k] \u2014 O(n log n). (2) Min-heap of size k: push each, pop when size > k; root is the kth largest. O(n log k). (3) Quickselect partition: pivot, place smaller left and larger right; recurse into the side that contains the kth largest. O(n) average.",
+      "edge_cases": [
+        {
+          "category": "k=1",
+          "details": "Return max."
+        },
+        {
+          "category": "k=n",
+          "details": "Return min."
+        },
+        {
+          "category": "Duplicates",
+          "details": "Count them \u2014 [3,3] k=2 returns 3."
+        },
+        {
+          "category": "Single element",
+          "details": "k must be 1; return that element."
+        },
+        {
+          "category": "Sorted input already",
+          "details": "No special handling needed \u2014 algorithm doesn't depend on order."
+        }
+      ],
+      "common_mistakes": [
+        "Treating 'kth largest' as 'kth distinct largest' \u2014 wrong on duplicates.",
+        "Using a max-heap of size n (overkill).",
+        "Buggy quickselect \u2014 recursing into wrong side.",
+        "Off-by-one with k (1-indexed vs 0-indexed).",
+        "Using sorted(nums, reverse=True)[k] instead of [k-1]."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Top-k classic. Almost always paired with a discussion of multiple approaches and their tradeoffs.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. The full conversation includes sort \u2192 heap \u2192 quickselect; the interviewer probes how deep your understanding goes.",
+      "really_testing": [
+        "Knowing multiple approaches with their complexities.",
+        "Min-heap of size k (the safe answer).",
+        "Optionally quickselect for O(n).",
+        "Handling duplicates."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Min-heap in 4 min. Mentions quickselect with complexity. Codes either correctly."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with sort or heap; mentions one other approach."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Sort-and-index only; can't discuss optimization."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Off-by-one. Or treats duplicates as one."
+        }
+      ],
+      "playbook": [
+        "Restate: 'kth largest in sorted order (with duplicates)'.",
+        "Mention sorted()[-k] as O(n log n).",
+        "Pitch min-heap: 'size k. Push each; pop when oversized. Root is the kth largest.'",
+        "Code: heap = []. for num in nums: heappush(heap, num); if len(heap) > k: heappop(heap). return heap[0].",
+        "Walk [3,2,1,5,6,4] k=2: heap grows to size 2 with smallest popped: ends [5, 6]. Return 5. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-10 min. Bonus: quickselect for O(n) expected \u2014 write the partition function.",
+      "dont_do": [
+        "Don't treat duplicates as one.",
+        "Don't off-by-one on k.",
+        "Don't ship sort-only if you know heap/quickselect.",
+        "Don't quickselect with deterministic pivot \u2014 O(n\u00b2) on sorted input."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min-Heap of Size K",
+        "time": "O(n log k)",
+        "space": "O(k)",
+        "code": "import heapq\n\ndef findKthLargest(nums, k):\n    heap = []  # min-heap of top k\n    for num in nums:\n        heapq.heappush(heap, num)\n        if len(heap) > k:\n            heapq.heappop(heap)\n    return heap[0]",
+        "explanation": "Maintain a min-heap of the top k values. When a new value comes in, push it; if size exceeds k, pop the smallest. After processing all n values, the heap contains the k largest, and the root is the smallest of those \u2014 i.e., the kth largest overall. O(n log k)."
+      },
+      {
+        "name": "Sort (simple baseline)",
+        "time": "O(n log n)",
+        "space": "O(1) extra (in-place sort)",
+        "code": "def findKthLargest(nums, k):\n    nums.sort()\n    return nums[-k]",
+        "explanation": "Sort then index from the end. O(n log n). Acceptable baseline; mention before pitching the optimization."
+      },
+      {
+        "name": "Quickselect (O(n) average)",
+        "time": "O(n) average, O(n\u00b2) worst",
+        "space": "O(log n) recursion",
+        "code": "import random\n\ndef findKthLargest(nums, k):\n    # We want the kth largest = (n - k)th smallest (0-indexed)\n    target = len(nums) - k\n    \n    def select(lo, hi):\n        pivot = nums[random.randint(lo, hi)]\n        # 3-way partition\n        left, mid, right = lo, lo, hi\n        while mid <= right:\n            if nums[mid] < pivot:\n                nums[left], nums[mid] = nums[mid], nums[left]\n                left += 1\n                mid += 1\n            elif nums[mid] > pivot:\n                nums[mid], nums[right] = nums[right], nums[mid]\n                right -= 1\n            else:\n                mid += 1\n        if target < left:\n            return select(lo, left - 1)\n        elif target > right:\n            return select(right + 1, hi)\n        else:\n            return nums[target]\n    \n    return select(0, len(nums) - 1)",
+        "explanation": "Quickselect with 3-way partition for robustness on duplicates. Random pivot keeps expected O(n) and avoids the O(n\u00b2) worst case on sorted input. Recurse into the half containing the target index. Significantly faster than heap when n is huge."
+      }
+    ],
+    "related_problem_ids": [
+      "kth-largest-element-in-a-stream",
+      "k-closest-points-to-origin",
+      "top-k-frequent-elements"
+    ]
+  },
+  {
+    "id": "task-scheduler",
+    "title": "Task Scheduler",
+    "leetcode_url": "https://leetcode.com/problems/task-scheduler/",
+    "leetcode_id": 621,
+    "difficulty": "medium",
+    "patterns": [
+      "heap",
+      "greedy"
+    ],
+    "topics": [
+      "heap"
+    ],
+    "neetcode_category": "Heap / Priority Queue",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a list of tasks (capital letters), each takes 1 unit of time. The CPU can either run a task or idle. The SAME task must be separated by at least n cooldown intervals. Return the minimum total time to finish all tasks.",
+    "constraints": [
+      "1 <= tasks.length <= 10^4",
+      "tasks[i] is uppercase English letter.",
+      "0 <= n <= 100"
+    ],
+    "examples": [
+      {
+        "input": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2",
+        "output": "8",
+        "explanation": "Pattern: A B idle A B idle A B \u2192 8 units."
+      },
+      {
+        "input": "tasks = [\"A\",\"C\",\"A\",\"B\",\"D\",\"B\"], n = 1",
+        "output": "6",
+        "explanation": "Pattern: A B A B C D \u2192 6 units. Enough variety to fill cooldowns."
+      },
+      {
+        "input": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 0",
+        "output": "6",
+        "explanation": "No cooldown \u2014 just run them in any order."
+      }
+    ],
+    "function_name": "leastInterval",
+    "function_signature": "def leastInterval(tasks, n):",
+    "starter_code": "def leastInterval(tasks, n):\n    # Return the minimum number of CPU intervals to complete all tasks.\n    pass",
+    "test_cases": [
+      {
+        "label": "AAABBB n=2",
+        "args": [
+          [
+            "A",
+            "A",
+            "A",
+            "B",
+            "B",
+            "B"
+          ],
+          2
+        ],
+        "expected": "8"
+      },
+      {
+        "label": "variety n=1",
+        "args": [
+          [
+            "A",
+            "C",
+            "A",
+            "B",
+            "D",
+            "B"
+          ],
+          1
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "no cooldown",
+        "args": [
+          [
+            "A",
+            "A",
+            "A",
+            "B",
+            "B",
+            "B"
+          ],
+          0
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "single task type",
+        "args": [
+          [
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          2
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "single task",
+        "args": [
+          [
+            "A"
+          ],
+          5
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "tied max frequency",
+        "args": [
+          [
+            "A",
+            "A",
+            "A",
+            "B",
+            "B",
+            "B",
+            "C",
+            "C"
+          ],
+          2
+        ],
+        "expected": "8"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches. (1) Greedy formula: answer = max(len(tasks), (max_count - 1) * (n + 1) + tied_max). Most-frequent task dominates the schedule; others fill cooldowns. (2) Simulation with max-heap: pick the most-frequent available task at each step, decrement, push to cooldown queue. Both give the same answer.",
+      "clarifying_questions": [
+        {
+          "question": "Cooldown n \u2014 units of time, including the task itself?",
+          "why": "n cooldown units BETWEEN occurrences of the same task. So A . . A means n=2. Clarify the off-by-one."
+        },
+        {
+          "question": "Can n be 0?",
+          "why": "Yes per spec. No cooldown \u2192 answer is just len(tasks)."
+        },
+        {
+          "question": "Are tasks always uppercase letters?",
+          "why": "Yes per spec. Max 26 distinct task types."
+        },
+        {
+          "question": "Order of tasks in input matters?",
+          "why": "No \u2014 only counts matter (we can rearrange freely)."
+        },
+        {
+          "question": "Greedy or simulation \u2014 which to ship?",
+          "why": "Formula is cleaner and O(n). Simulation more intuitive but harder to reason about. Mention both."
+        }
+      ],
+      "think_out_loud": "The most-frequent task sets the schedule's skeleton. If A appears 3 times with n=2: A _ _ A _ _ A \u2014 that's (3-1)*(2+1) + 1 = 7 slots. But the _ slots can be filled by OTHER tasks. If we have enough variety, the formula's answer (\u2265len(tasks)) is achievable. Otherwise the formula gives the right bound. Formula: (max_count - 1) * (n + 1) + (# of tasks tied at max_count). Answer = max(formula, len(tasks)).",
+      "edge_cases": [
+        {
+          "category": "n = 0",
+          "details": "Answer = len(tasks). No idle time needed."
+        },
+        {
+          "category": "Single task type",
+          "details": "AAAA n=2 \u2192 4 + 3*2 = 10 slots (formula). Yep \u2014 A . . A . . A . . A."
+        },
+        {
+          "category": "All distinct",
+          "details": "Answer = len(tasks). No cooldowns needed."
+        },
+        {
+          "category": "Tied max frequencies",
+          "details": "Multiple tasks at max count \u2192 tied count in the formula."
+        },
+        {
+          "category": "Many task types",
+          "details": "Variety fills cooldowns \u2192 answer = len(tasks)."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one on cooldown definition.",
+        "Forgetting the max(formula, len(tasks)) cap \u2014 formula UNDERESTIMATES when variety is high.",
+        "Not handling ties at max_count.",
+        "Simulating without a max-heap \u2014 O(n\u00b2) instead of O(n log 26).",
+        "Treating the cooldown as 'including' the task itself."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy scheduling with a clever formula. Tests whether you can derive the formula or simulate cleanly with a heap.",
+      "introduction_context": "Common at Amazon, Microsoft. The formula version is impressive; simulation is the safer route.",
+      "really_testing": [
+        "Recognizing 'most frequent task is the bottleneck'.",
+        "Deriving the formula (max_count - 1) * (n + 1) + tied_max.",
+        "Or simulating with max-heap + cooldown queue.",
+        "Handling all-variety case (answer = len(tasks))."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Derives the formula or codes simulation in 8-10 min. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with simulation; doesn't derive formula but understands when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one on cooldown. Or forgets the max(formula, len) cap."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate any algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'min time with cooldown between same tasks'.",
+        "Counts: 'Counter, find max_count and tied_max'.",
+        "Formula: '(max_count - 1) * (n + 1) + tied_max, but at least len(tasks)'.",
+        "Code: from collections import Counter. counts = Counter(tasks). max_count = max(counts.values()). tied = sum(1 for c in counts.values() if c == max_count). return max(len(tasks), (max_count - 1) * (n + 1) + tied).",
+        "Walk AAABBB n=2: max=3, tied=2 (A and B). Formula: 2*3 + 2 = 8. len=6. Max(8, 6) = 8. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: 'output the actual schedule' (use the simulation version).",
+      "dont_do": [
+        "Don't ignore tied max counts.",
+        "Don't forget the len(tasks) lower bound.",
+        "Don't off-by-one on (n+1) vs (n).",
+        "Don't simulate without a heap (slow)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Greedy Formula",
+        "time": "O(n)",
+        "space": "O(1) \u2014 26 letters max",
+        "code": "from collections import Counter\n\ndef leastInterval(tasks, n):\n    counts = Counter(tasks)\n    max_count = max(counts.values())\n    # Number of tasks tied at the maximum frequency\n    tied = sum(1 for c in counts.values() if c == max_count)\n    # Formula: most-frequent task creates (max_count - 1) blocks of size (n + 1).\n    # Final block holds all tied-max tasks (no cooldown after the last one).\n    formula = (max_count - 1) * (n + 1) + tied\n    return max(formula, len(tasks))",
+        "explanation": "The clever O(n) answer. The most-frequent task dictates the structure: (max_count - 1) gaps of width (n + 1) plus the final tied-max-count tasks. Other tasks slot into the gaps. If variety is high enough, len(tasks) wins \u2014 take the max. Pure math, no simulation."
+      },
+      {
+        "name": "Max-Heap Simulation",
+        "time": "O(n * log 26) \u2248 O(n)",
+        "space": "O(26)",
+        "code": "from collections import Counter, deque\nimport heapq\n\ndef leastInterval(tasks, n):\n    counts = Counter(tasks)\n    heap = [-c for c in counts.values()]\n    heapq.heapify(heap)\n    \n    time = 0\n    cooldown = deque()  # (count_remaining, time_available)\n    \n    while heap or cooldown:\n        time += 1\n        if heap:\n            count = -heapq.heappop(heap) - 1  # ran one\n            if count > 0:\n                cooldown.append((count, time + n))\n        if cooldown and cooldown[0][1] == time:\n            count, _ = cooldown.popleft()\n            heapq.heappush(heap, -count)\n    \n    return time",
+        "explanation": "Simulation. Max-heap holds available task counts. Each tick: pop the most-frequent, decrement, push to cooldown queue with the time it becomes available again. When cooldown's front matches current time, push it back to the heap. Loop until both are empty. Slightly slower in constant factor but more intuitive for explaining."
+      }
+    ],
+    "related_problem_ids": [
+      "kth-largest-element-in-an-array",
+      "k-closest-points-to-origin",
+      "last-stone-weight"
+    ]
   }
 ]
