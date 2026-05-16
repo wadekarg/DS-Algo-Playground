@@ -2623,6 +2623,199 @@
         "code": "def subarray_sum(nums, k):\n    count = 0\n    prefix = 0\n    seen = {0: 1}  # prefix sum -> count\n    for x in nums:\n        prefix += x\n        if prefix - k in seen:\n            count += seen[prefix - k]\n        seen[prefix] = seen.get(prefix, 0) + 1\n    return count",
         "explanation": "Maintain a running prefix sum. For each position, ask: 'have I seen a prefix sum equal to (current_prefix - k)?' If yes, that means a subarray ending here sums to k. Hash map gives O(1) lookup."
       }
+    ],
+    "leetcode_id": 560,
+    "summary": "Given an integer array nums and an integer k, return the total number of CONTIGUOUS subarrays whose sum equals k.",
+    "constraints": [
+      "1 <= nums.length <= 2 * 10^4",
+      "-1000 <= nums[i] <= 1000",
+      "-10^7 <= k <= 10^7"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,1,1], k = 2",
+        "output": "2",
+        "explanation": "[1,1] occurs at indices 0-1 and 1-2 \u2014 two subarrays."
+      },
+      {
+        "input": "nums = [1,2,3], k = 3",
+        "output": "2",
+        "explanation": "[3] and [1,2]."
+      }
+    ],
+    "function_name": "subarray_sum",
+    "function_signature": "def subarray_sum(nums, k):",
+    "starter_code": "def subarray_sum(nums, k):\n    # Return the number of contiguous subarrays whose sum equals k.\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,1,1] k=2",
+        "args": [
+          [
+            1,
+            1,
+            1
+          ],
+          2
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "[1,2,3] k=3",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          3
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "single match",
+        "args": [
+          [
+            5
+          ],
+          5
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "no match",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          10
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "negatives",
+        "args": [
+          [
+            1,
+            -1,
+            1,
+            -1
+          ],
+          0
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "zeros allowed",
+        "args": [
+          [
+            1,
+            0,
+            1
+          ],
+          1
+        ],
+        "expected": "4"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Brute force O(n\u00b2) tries every (i, j) pair. Optimal O(n): prefix sums + hash map. For each position, the question 'does any subarray ending here sum to k?' becomes 'have I previously seen a prefix sum equal to (current_prefix - k)?' If yes, count it.",
+      "clarifying_questions": [
+        {
+          "question": "Subarrays \u2014 contiguous, right?",
+          "why": "Yes. Different from subsequence. Prefix-sum trick relies on contiguous."
+        },
+        {
+          "question": "Can nums contain negatives or zeros?",
+          "why": "Yes. That's why we can't use a sliding window \u2014 sums aren't monotonic with negatives."
+        },
+        {
+          "question": "Empty subarray counts?",
+          "why": "No \u2014 subarrays must be non-empty. The seed seen={0: 1} represents 'empty prefix before any element' so a full prefix matching k counts once."
+        },
+        {
+          "question": "Multiple subarrays at different positions count separately?",
+          "why": "Yes. We're counting occurrences, not distinct sum-values."
+        }
+      ],
+      "think_out_loud": "Prefix sums turn subarray-sum questions into 'pair of equal prefix differences'. running_prefix - earlier_prefix == k means there's a subarray between them summing to k. So I maintain seen = {prefix_sum: count}; for each new prefix p, look up (p - k) in seen.",
+      "edge_cases": [
+        {
+          "category": "All zeros, k=0",
+          "details": "Every contiguous slice sums to 0. Algorithm counts them all via duplicate prefix sums."
+        },
+        {
+          "category": "Single element matches k",
+          "details": "Counted once via the seeded {0: 1}."
+        },
+        {
+          "category": "Negatives cancel positives",
+          "details": "Hash map handles \u2014 same prefix value can repeat, count grows."
+        },
+        {
+          "category": "No match",
+          "details": "Return 0."
+        }
+      ],
+      "common_mistakes": [
+        "Using a sliding window \u2014 breaks on negatives.",
+        "Forgetting to seed seen with {0: 1} (misses subarrays starting at index 0).",
+        "Incrementing seen[prefix] before the lookup \u2014 double-counts at empty subarrays.",
+        "Counting subsequences instead of subarrays (different problem)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Prefix sum + hash map classic. Tests recognizing that 'subarray sum equals k' is a pair-of-prefixes question.",
+      "introduction_context": "Common at Amazon, Meta, Google. The 'why doesn't sliding window work?' question often follows.",
+      "really_testing": [
+        "Recognizing prefix-sum pattern.",
+        "Hash map for O(1) prefix lookup.",
+        "Why sliding window fails on negatives.",
+        "Seeding seen={0: 1} for correctness."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Prefix-sum + hash in 6-10 min. Explains why sliding window fails."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Brute force, then derives hash-map with hint."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Tries sliding window without acknowledging negatives. Or misses the seeded {0:1}."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any sub-quadratic approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count contiguous subarrays summing to k'.",
+        "Brute O(n\u00b2) \u2192 mention.",
+        "Insight: 'subarray sum [i..j] = prefix[j+1] - prefix[i]; we want that == k, so prefix[j+1] - k == prefix[i]'.",
+        "Code: count=0; prefix=0; seen={0:1}. for x in nums: prefix += x. if prefix-k in seen: count += seen[prefix-k]. seen[prefix] = seen.get(prefix,0)+1. return count.",
+        "Walk [1,1,1] k=2: prefixes 1, 2, 3. seen starts {0:1}. After 1: prefix=1, look 1-2=-1 not in, add seen[1]=1. After 1: prefix=2, look 2-2=0 \u2192 count+=1; seen[2]=1. After 1: prefix=3, look 3-2=1 \u2192 count+=1; total 2. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: 'longest subarray with sum k' \u2014 same idea, store first index.",
+      "dont_do": [
+        "Don't use sliding window \u2014 fails on negatives.",
+        "Don't forget seen = {0: 1}.",
+        "Don't update seen before the lookup.",
+        "Don't confuse subarray with subsequence."
+      ]
+    },
+    "related_problem_ids": [
+      "two-sum",
+      "maximum-subarray",
+      "product-of-array-except-self"
     ]
   },
   {

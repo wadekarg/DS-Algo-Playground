@@ -123,8 +123,12 @@ function _problemsChanged(a, b) {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-/** Escape <, >, & in text that will appear inside HTML attributes or content. */
+/** Escape <, >, & in text that will appear inside HTML attributes or content.
+ *  Returns '' for null/undefined — otherwise those become the literal string
+ *  "undefined" / "null" inside attributes, which would surface as e.g.
+ *  `data-fn="undefined"` and end up as `def undefined()` in the editor. */
 function _esc(str) {
+  if (str == null) return '';
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
