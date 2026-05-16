@@ -26,30 +26,31 @@
      */
 
     /* ── Site sidebar collapse ─────────────────────────────── */
-    /* Toggle button — fixed at left edge of main content (just right of sidebar) */
+    /* Single toggle button — fixed at top-left corner of viewport (VSCode/GitHub pattern).
+       z-index 110 keeps it above the sidebar (z-index 100) in both open and collapsed states. */
     .sidebar-collapse-btn {
       position: fixed;
       top: 14px;
-      left: calc(var(--sidebar-width) + 8px);
-      z-index: 99;
+      left: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg-card, white);
+      border: 1px solid var(--border-color, #e2e8f0);
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--border-radius-sm);
-      background: var(--bg-secondary);
-      color: var(--text-secondary);
       cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      transition: background var(--transition-speed), color var(--transition-speed), left var(--transition-speed);
-      flex-shrink: 0;
+      z-index: 110;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary, #1e293b);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: background 0.15s, border-color 0.15s;
     }
     .sidebar-collapse-btn:hover {
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
+      background: var(--surface-hover, #f1f5f9);
+      border-color: var(--accent-primary, #6366f1);
     }
 
     /* Collapsed state — hide the sidebar, remove the margin */
@@ -59,32 +60,8 @@
     body.sidebar-collapsed .main {
       margin-left: 0;
     }
-    /* Floating re-expand button that appears when sidebar is hidden */
-    .sidebar-expand-rail {
-      display: none;
-      position: fixed;
-      top: 14px;
-      left: 8px;
-      z-index: 110;
-      width: 28px;
-      height: 28px;
-      border-radius: var(--border-radius-sm);
-      background: var(--bg-sidebar);
-      color: var(--text-sidebar-active);
-      border: none;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      box-shadow: var(--shadow-md);
-    }
-    body.sidebar-collapsed .sidebar-expand-rail {
-      display: flex;
-    }
-    /* Hide the in-header collapse btn when sidebar is already hidden */
-    body.sidebar-collapsed .sidebar-collapse-btn {
-      display: none;
-    }
+    /* The old expand rail is no longer needed — one button handles both states */
+    .sidebar-expand-rail { display: none !important; }
 
     /* ── Main content: no max-width, no auto-margin, no padding ─ */
     .main__content--problem {
@@ -403,6 +380,51 @@
     .clarify-list dt:first-child { margin-top: 0; }
     .clarify-list dd { margin: 4px 0 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
     .clarify-list dd em { color: var(--accent-primary, #6366f1); font-style: normal; font-weight: 600; margin-right: 4px; }
+
+    /* ── FAANG interview rubric card ──────────────────────── */
+    .faang-tips { margin-top: 16px; }
+    .faang-tips .interview-tips__head { background: linear-gradient(135deg, #1e293b, #475569); }
+
+    /* interview-tips used with <details> needs a __head summary variant */
+    .interview-tips__head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid transparent;
+      transition: background var(--transition-speed);
+      list-style: none;
+    }
+    .interview-tips__head::-webkit-details-marker { display: none; }
+    details.interview-tips[open] .interview-tips__head {
+      border-bottom-color: var(--border-color);
+    }
+    .faang-tips .interview-tips__head {
+      color: #f8fafc;
+    }
+    .faang-tips[open] .interview-tips__head {
+      border-bottom-color: rgba(255,255,255,0.15);
+    }
+    .interview-tips__hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .faang-tips .interview-tips__hint {
+      color: rgba(248,250,252,0.65);
+    }
+    .tip-block h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 6px 0;
+    }
 
     /* ── Approaches (condensed) ────────────────────────────── */
     .approaches-note {
@@ -742,6 +764,83 @@
 
               </div>
             </details>
+
+            <details class="interview-tips faang-tips">
+              <summary class="interview-tips__head">
+                <span>🏢 How FAANG interviews this</span>
+                <span class="interview-tips__hint">expand for grading rubric + how to ace it</span>
+              </summary>
+              <div class="interview-tips__body">
+
+                <div class="tip-block">
+                  <h4>📋 How they introduce it</h4>
+                  <p style="margin: 6px 0 0 0; font-size: 13px; font-style: italic; color: var(--text-secondary);">
+                    "Here's a warm-up. Given an array of integers and a target, return the indices of the two numbers that add up to target. Each input has exactly one solution, and you can't use the same element twice."
+                  </p>
+                  <p style="margin: 8px 0 0 0; font-size: 13px;">
+                    Often the first question in a 45-min loop, or a warm-up before a harder follow-up (3Sum, 4Sum, Two Sum II).
+                  </p>
+                </div>
+
+                <div class="tip-block">
+                  <h4>🎯 What they're really testing</h4>
+                  <ul>
+                    <li>Can you turn a vague prompt into a clear contract by asking the right clarifying questions?</li>
+                    <li>Do you instinctively think in complexity tradeoffs (brute force → optimization)?</li>
+                    <li>Can you write clean code under mild pressure (naming, structure, no off-by-ones)?</li>
+                    <li>Do you test your own code on the given example without being asked?</li>
+                    <li>Can you narrate your thought process — "think out loud"?</li>
+                  </ul>
+                </div>
+
+                <div class="tip-block">
+                  <h4>📊 The unofficial grading rubric</h4>
+                  <dl class="clarify-list">
+                    <dt style="color: #16a34a;">Strong Hire</dt>
+                    <dd>Asked 3+ clarifying Qs without prompting. Stated brute force first, immediately proposed hash-map optimization. Walked through the example before AND after coding. Clean code with semantic names. Discussed edge cases (duplicates, negatives) unprompted. Total time: ~10 min.</dd>
+
+                    <dt style="color: #84cc16;">Hire</dt>
+                    <dd>Reached the optimal O(n) solution. May have skipped 1 clarifying question or 1 edge case. Code is correct but might have a minor stylistic issue. Total time: 15-20 min.</dd>
+
+                    <dt style="color: #f59e0b;">Lean No-Hire</dt>
+                    <dd>Jumped to coding without asking questions. Confused indices vs values mid-solution. Needed a nudge to think about the hash map. Tested only after being asked.</dd>
+
+                    <dt style="color: #dc2626;">No-Hire</dt>
+                    <dd>Couldn't reach O(n) even with hints. Couldn't trace through an example. Wrote buggy code and didn't recognize the bugs when reading their own code. Stayed silent for long stretches.</dd>
+                  </dl>
+                </div>
+
+                <div class="tip-block">
+                  <h4>🎓 How to ace it (the 8-step playbook)</h4>
+                  <ol style="margin: 6px 0 0 0; padding-left: 20px; font-size: 13px; line-height: 1.7;">
+                    <li><strong>Restate</strong> the problem in your own words. ("I need indices i, j with nums[i] + nums[j] = target, can't reuse the same index. Right?")</li>
+                    <li><strong>Ask 2-3 clarifying questions</strong> from the list in Interview Tips above. Don't ask 10 — interviewers find that excessive.</li>
+                    <li><strong>Propose brute force out loud.</strong> "Simplest: check every pair. O(n²) time, O(1) space." Don't write it — just state it.</li>
+                    <li><strong>State the optimization.</strong> "I think we can do O(n) with a hash map. Tradeoff: O(n) extra space."</li>
+                    <li><strong>Walk through ONE example before coding.</strong> Show how the hash map fills up and detects the pair. This proves to the interviewer you actually understand it.</li>
+                    <li><strong>Code cleanly.</strong> Variable names: <code>seen</code>, <code>complement</code>. Not <code>d</code>, <code>x</code>, <code>tmp</code>.</li>
+                    <li><strong>Test on the given example AFTER coding.</strong> Walk through it. Confirm output matches expected.</li>
+                    <li><strong>Mention edge cases</strong> you'd handle if pushed: duplicates (e.g., [3,3]), no-answer (return what?), large n. Interviewer may probe one.</li>
+                  </ol>
+                  <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
+                    Total time: 10-15 min for a strong run. Finish faster and they'll ask a follow-up (3Sum, sorted array variant, return all pairs, etc.) — be ready.
+                  </p>
+                </div>
+
+                <div class="tip-block">
+                  <h4>🚫 What NOT to do</h4>
+                  <ul>
+                    <li><strong>Don't code immediately.</strong> A pause to think is mature, not weak.</li>
+                    <li><strong>Don't overoptimize prematurely.</strong> Don't try sorting + binary search — go straight to hash map.</li>
+                    <li><strong>Don't return values instead of indices.</strong> Read the spec twice.</li>
+                    <li><strong>Don't forget the "same element" rule.</strong> nums[i] + nums[i] is NOT valid.</li>
+                    <li><strong>Don't go silent</strong> when stuck. Narrate your thinking — interviewers can't help you if they don't know where you are.</li>
+                    <li><strong>Don't argue with the interviewer.</strong> If they say "what if there are duplicates?", explore it. They're checking how you handle pushback.</li>
+                  </ul>
+                </div>
+
+              </div>
+            </details>
           </div>
 
           <!-- Approaches -->
@@ -858,11 +957,19 @@
 
   <script>
     // ── Sidebar collapse toggle ──────────────────────────────
+    // Single button in the top-left corner toggles between ‹ (collapse) and › (expand).
     (function() {
       var STORAGE_KEY = 'sidebar-collapsed';
       var body = document.body;
       var collapseBtn = document.getElementById('sidebar-collapse-btn');
-      var expandRail  = document.getElementById('sidebar-expand-rail');
+
+      function updateBtnIcon() {
+        if (!collapseBtn) return;
+        var isCollapsed = body.classList.contains('sidebar-collapsed');
+        collapseBtn.innerHTML = isCollapsed ? '&#8250;' : '&#8249;';
+        collapseBtn.setAttribute('aria-label', isCollapsed ? 'Expand navigation sidebar' : 'Collapse navigation sidebar');
+        collapseBtn.setAttribute('title', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      }
 
       function setCollapsed(collapsed) {
         if (collapsed) {
@@ -870,6 +977,7 @@
         } else {
           body.classList.remove('sidebar-collapsed');
         }
+        updateBtnIcon();
         try { localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch(e) {}
       }
 
@@ -880,14 +988,12 @@
         }
       } catch(e) {}
 
+      // Set initial icon to match the restored state
+      updateBtnIcon();
+
       if (collapseBtn) {
         collapseBtn.addEventListener('click', function() {
-          setCollapsed(true);
-        });
-      }
-      if (expandRail) {
-        expandRail.addEventListener('click', function() {
-          setCollapsed(false);
+          setCollapsed(!body.classList.contains('sidebar-collapsed'));
         });
       }
     })();
