@@ -16568,5 +16568,733 @@
       "rotting-oranges",
       "walls-and-gates"
     ]
+  },
+  {
+    "id": "course-schedule-ii",
+    "title": "Course Schedule II",
+    "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/",
+    "leetcode_id": 210,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "topological-sort",
+      "bfs"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "There are numCourses courses labeled 0 to numCourses - 1. Given prerequisites[i] = [a, b] meaning b must be taken before a, return a valid order in which to take all courses. If impossible (cycle), return an empty array.",
+    "constraints": [
+      "1 <= numCourses <= 2000",
+      "0 <= prerequisites.length <= numCourses * (numCourses - 1)",
+      "prerequisites[i].length == 2",
+      "0 <= ai, bi < numCourses",
+      "ai != bi; all pairs unique."
+    ],
+    "examples": [
+      {
+        "input": "numCourses = 2, prerequisites = [[1,0]]",
+        "output": "[0,1]",
+        "explanation": "Take 0 first, then 1."
+      },
+      {
+        "input": "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]",
+        "output": "[0,1,2,3]",
+        "explanation": "0 first; then 1 and 2 (both need 0); then 3 (needs both). Multiple valid orders exist; any is acceptable."
+      },
+      {
+        "input": "numCourses = 1, prerequisites = []",
+        "output": "[0]",
+        "explanation": "Single course, no prereqs."
+      }
+    ],
+    "function_name": "findOrder",
+    "function_signature": "def findOrder(numCourses, prerequisites):",
+    "starter_code": "from collections import deque\n\ndef findOrder(numCourses, prerequisites):\n    # Return a valid topological order of courses, or [] if impossible.\n    pass",
+    "test_cases": [
+      {
+        "label": "simple chain",
+        "args": [
+          2,
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "expected": "[0, 1]"
+      },
+      {
+        "label": "diamond DAG",
+        "args": [
+          4,
+          [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              2
+            ]
+          ]
+        ],
+        "expected": "[0, 1, 2, 3]"
+      },
+      {
+        "label": "single course",
+        "args": [
+          1,
+          []
+        ],
+        "expected": "[0]"
+      },
+      {
+        "label": "cycle",
+        "args": [
+          2,
+          [
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "independent courses",
+        "args": [
+          3,
+          []
+        ],
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "label": "self-loop",
+        "args": [
+          1,
+          [
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "[]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Kahn's algorithm (BFS topological sort). Build graph + in-degree array. Start queue with all zero-in-degree nodes. Repeatedly pop a node, record in order; decrement in-degrees of its neighbors; push any new zeros. If we record all numCourses, return order; else there's a cycle, return [].",
+      "clarifying_questions": [
+        {
+          "question": "Edge direction in [a, b]?",
+          "why": "b must come before a. So edge b \u2192 a in the graph."
+        },
+        {
+          "question": "Multiple valid orders \u2014 which to return?",
+          "why": "Any valid one. Kahn's natural order works."
+        },
+        {
+          "question": "What if cycle?",
+          "why": "Return empty array per spec."
+        },
+        {
+          "question": "DFS post-order vs Kahn's BFS \u2014 preference?",
+          "why": "Both work. Kahn's BFS more natural for this output (record in dequeue order). DFS post-order reverses to get topo order."
+        },
+        {
+          "question": "Single course with no prereqs?",
+          "why": "Return [0]. Kahn's handles it \u2014 in-degree 0 from start."
+        }
+      ],
+      "think_out_loud": "Topological sort with Kahn's algorithm. Build adjacency list. Compute in-degrees. Queue all zero-in-degree nodes. Dequeue \u2192 record \u2192 decrement neighbors \u2192 enqueue new zeros. If recorded count == numCourses, return; else cycle, return [].",
+      "edge_cases": [
+        {
+          "category": "Cycle",
+          "details": "Some courses never reach in-degree 0. Recorded count < numCourses \u2192 return []."
+        },
+        {
+          "category": "Single course",
+          "details": "In-degree 0 from start. Return [0]."
+        },
+        {
+          "category": "Independent courses",
+          "details": "All in-degree 0. All in queue at start. Order is dequeue order."
+        },
+        {
+          "category": "Self-loop [0,0]",
+          "details": "Course 0 has in-degree 1 from itself. Never reaches 0. Return []."
+        },
+        {
+          "category": "Linear chain",
+          "details": "Only 0 in initial queue. Each release unlocks the next."
+        }
+      ],
+      "common_mistakes": [
+        "Wrong edge direction.",
+        "Forgetting to handle cycle case (return [] when recorded < numCourses).",
+        "Using DFS without proper post-order reversal.",
+        "Building wrong adjacency from prerequisites.",
+        "Not initializing queue with ALL zero-in-degree nodes."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Topological sort classic. Output the order, not just feasibility \u2014 Course Schedule's natural follow-up.",
+      "introduction_context": "Onsite at Amazon, Meta. Often follows Course Schedule directly in the same round.",
+      "really_testing": [
+        "Topological sort (Kahn's or DFS post-order).",
+        "Cycle detection as a byproduct.",
+        "Initializing queue with all zero-in-degree.",
+        "Correct edge direction."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes Kahn's in 8-10 min. Handles cycle case. Walks through diamond."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly, possibly with edge-direction confusion fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong edge direction or missing cycle handling."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate topological sort."
+        }
+      ],
+      "playbook": [
+        "Restate: 'topological order, or [] if cycle'.",
+        "Pitch Kahn's: 'queue of zero-in-degree, process one at a time, decrement neighbors'.",
+        "Code: graph = [[] for _ in range(n)]. indeg = [0]*n. for a,b in pre: graph[b].append(a); indeg[a]+=1. q = deque(i for i in range(n) if indeg[i]==0). order = []. while q: u = q.popleft(); order.append(u). for v in graph[u]: indeg[v]-=1. if indeg[v]==0: q.append(v). return order if len(order)==n else [].",
+        "Walk diamond: indeg = [0, 1, 1, 2]. Queue [0]. Pop 0 \u2192 1, 2 become 0. Queue [1, 2]. Pop 1 \u2192 3 becomes 1. Pop 2 \u2192 3 becomes 0. Queue [3]. Pop 3. Order [0,1,2,3]. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Direct extension of Course Schedule.",
+      "dont_do": [
+        "Don't forget to return [] on cycle.",
+        "Don't enqueue only one initial zero-indegree.",
+        "Don't get edge direction wrong.",
+        "Don't use DFS without reversing the post-order."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Kahn's Algorithm (BFS topological sort)",
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "code": "from collections import deque\n\ndef findOrder(numCourses, prerequisites):\n    graph = [[] for _ in range(numCourses)]\n    in_degree = [0] * numCourses\n    for a, b in prerequisites:\n        graph[b].append(a)\n        in_degree[a] += 1\n    \n    queue = deque(i for i in range(numCourses) if in_degree[i] == 0)\n    order = []\n    \n    while queue:\n        u = queue.popleft()\n        order.append(u)\n        for v in graph[u]:\n            in_degree[v] -= 1\n            if in_degree[v] == 0:\n                queue.append(v)\n    \n    return order if len(order) == numCourses else []",
+        "explanation": "Kahn's algorithm directly produces the topological order. We dequeue nodes in increasing dependency-resolved order. If we manage to record all numCourses, the graph is a DAG. Otherwise some nodes are stuck in a cycle and never enter the queue \u2014 return []. O(V + E)."
+      }
+    ],
+    "related_problem_ids": [
+      "course-schedule",
+      "number-of-islands",
+      "clone-graph"
+    ]
+  },
+  {
+    "id": "redundant-connection",
+    "title": "Redundant Connection",
+    "leetcode_url": "https://leetcode.com/problems/redundant-connection/",
+    "leetcode_id": 684,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "union-find"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a graph that started as a tree of n nodes (so n-1 edges) and had one extra edge added (now n edges), find that redundant edge. If multiple are valid, return the one that appears LAST in the input.",
+    "constraints": [
+      "n == edges.length",
+      "3 <= n <= 1000",
+      "edges[i].length == 2",
+      "1 <= ai < bi <= n",
+      "There are no repeated edges; the input is guaranteed to be such an edge list."
+    ],
+    "examples": [
+      {
+        "input": "edges = [[1,2],[1,3],[2,3]]",
+        "output": "[2,3]",
+        "explanation": "Adding 2-3 creates a cycle (1-2-3-1). The redundant edge is the last one."
+      },
+      {
+        "input": "edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]",
+        "output": "[1,4]",
+        "explanation": "Adding 1-4 creates a cycle 1-2-3-4-1. The redundant edge."
+      }
+    ],
+    "function_name": "findRedundantConnection",
+    "function_signature": "def findRedundantConnection(edges):",
+    "starter_code": "def findRedundantConnection(edges):\n    # Process edges in order; the one that creates a cycle is redundant.\n    # Use Union-Find: if endpoints share a root before union, this edge is redundant.\n    pass",
+    "test_cases": [
+      {
+        "label": "triangle",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "[2, 3]"
+      },
+      {
+        "label": "longer cycle",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ]
+          ]
+        ],
+        "expected": "[1, 4]"
+      },
+      {
+        "label": "minimal",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "[2, 3]"
+      },
+      {
+        "label": "redundant at end",
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              1
+            ]
+          ]
+        ],
+        "expected": "[3, 1]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Classic Union-Find application. Iterate edges in order. For each edge (a, b): if find(a) == find(b), they're already in the same component \u2014 this edge is the redundant one. Otherwise union(a, b) and continue.",
+      "clarifying_questions": [
+        {
+          "question": "Multiple cycles \u2014 which edge to return?",
+          "why": "The LAST one in input order that creates a cycle. Union-Find naturally produces this since we iterate forward and return the first edge to detect a cycle (which by the problem's guarantee is the redundant one)."
+        },
+        {
+          "question": "Are nodes 1-indexed?",
+          "why": "Yes per spec. Size the parent array as n+1."
+        },
+        {
+          "question": "Could we use DFS instead?",
+          "why": "Yes \u2014 incrementally add edges and DFS check for path. But Union-Find is much cleaner and faster (nearly O(\u03b1(n)) per operation)."
+        },
+        {
+          "question": "Path compression and union by rank?",
+          "why": "Both optional but standard. They give effectively O(\u03b1(n)) per operation. Without them, worst case is O(n) per find."
+        },
+        {
+          "question": "Is the input guaranteed to have exactly one redundant edge?",
+          "why": "Yes \u2014 spec says 'started as a tree with one extra edge added'. So exactly one edge creates a cycle."
+        }
+      ],
+      "think_out_loud": "Union-Find. Walk edges in order. For each (a, b): if they share a root, return this edge \u2014 it's the redundant one. Else union them. Path compression + union by rank for efficiency.",
+      "edge_cases": [
+        {
+          "category": "Triangle (smallest cycle)",
+          "details": "Third edge creates cycle. Return it."
+        },
+        {
+          "category": "Larger cycle",
+          "details": "The edge that closes the loop is detected via find(a) == find(b)."
+        },
+        {
+          "category": "Multiple redundant candidates (impossible by spec)",
+          "details": "Per spec, exactly one redundant. So first cycle detected = answer."
+        },
+        {
+          "category": "Star graph + extra edge",
+          "details": "Standard handling \u2014 Union-Find catches it."
+        },
+        {
+          "category": "Off-by-one node indexing",
+          "details": "Nodes are 1-indexed; size parent array as n+1."
+        }
+      ],
+      "common_mistakes": [
+        "0-indexed parent array on 1-indexed nodes \u2014 IndexError or wrong unions.",
+        "Skipping path compression \u2014 O(n\u00b2) worst case.",
+        "Returning the WRONG edge when multiple cycles exist (spec says one, but bugs could create multiple).",
+        "Using DFS without optimization \u2014 slow.",
+        "Modifying input edges array."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Canonical Union-Find application. Tests whether you reach for the right data structure.",
+      "introduction_context": "Common at Amazon, Google. The Union-Find pattern shows up in many graph problems; this is a natural intro.",
+      "really_testing": [
+        "Recognizing 'detect cycle when adding edge one-by-one' = Union-Find.",
+        "Implementing find with path compression.",
+        "Implementing union by rank or size.",
+        "1-indexed handling."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Union-Find with optimizations in 8-12 min. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with basic Union-Find; doesn't add optimizations unless prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "DFS-based solution; works but slow."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive cycle detection. Or buggy Union-Find."
+        }
+      ],
+      "playbook": [
+        "Restate: 'find the edge that creates a cycle, given exactly one extra'.",
+        "Pitch Union-Find.",
+        "Code: parent = list(range(n+1)). def find(x): while parent[x] != x: parent[x] = parent[parent[x]] (compression). x = parent[x]. return x. for a, b in edges: ra, rb = find(a), find(b). if ra == rb: return [a, b]. parent[ra] = rb.",
+        "Walk triangle: edge (1,2): roots 1,2 \u2192 union. edge (1,3): roots 1,3 \u2192 union. edge (2,3): roots now find(2) = root, find(3) = same root \u2192 return [2,3]. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-12 min. Follow-up: Number of Connected Components (LC 323).",
+      "dont_do": [
+        "Don't use 0-indexed parent.",
+        "Don't skip path compression.",
+        "Don't DFS from scratch each iteration.",
+        "Don't pre-build full graph \u2014 process edges incrementally."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Union-Find (DSU) with Path Compression",
+        "time": "O(n * \u03b1(n)) \u2248 O(n)",
+        "space": "O(n)",
+        "code": "def findRedundantConnection(edges):\n    n = len(edges)\n    parent = list(range(n + 1))  # 1-indexed nodes\n    \n    def find(x):\n        # Path compression\n        root = x\n        while parent[root] != root:\n            root = parent[root]\n        while parent[x] != root:\n            parent[x], x = root, parent[x]\n        return root\n    \n    for a, b in edges:\n        ra, rb = find(a), find(b)\n        if ra == rb:\n            return [a, b]  # this edge creates a cycle\n        parent[ra] = rb\n    return []  # unreachable per spec",
+        "explanation": "Classic Union-Find application. Process edges one at a time. For each edge (a, b): find the roots of a and b. If they're equal, a and b are already connected \u2014 this edge would create a cycle, so it's the redundant one. Otherwise, union them. Path compression keeps operations near O(1) amortized."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "course-schedule",
+      "clone-graph"
+    ]
+  },
+  {
+    "id": "word-ladder",
+    "title": "Word Ladder",
+    "leetcode_url": "https://leetcode.com/problems/word-ladder/",
+    "leetcode_id": 127,
+    "difficulty": "hard",
+    "patterns": [
+      "graph",
+      "bfs",
+      "string"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given two words beginWord and endWord and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord. Each adjacent pair differs by exactly one letter, and every intermediate word must be in wordList. If no such sequence exists, return 0. The sequence length counts both endpoints.",
+    "constraints": [
+      "1 <= beginWord.length <= 10",
+      "endWord.length == beginWord.length",
+      "1 <= wordList.length <= 5000",
+      "All words are lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]",
+        "output": "5",
+        "explanation": "hit \u2192 hot \u2192 dot \u2192 dog \u2192 cog. 5 words."
+      },
+      {
+        "input": "beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]",
+        "output": "0",
+        "explanation": "endWord 'cog' not in wordList. No valid sequence."
+      }
+    ],
+    "function_name": "ladderLength",
+    "function_signature": "def ladderLength(beginWord, endWord, wordList):",
+    "starter_code": "from collections import deque, defaultdict\n\ndef ladderLength(beginWord, endWord, wordList):\n    # BFS over word transformations. Use a 'pattern' index for fast neighbors.\n    # e.g., 'hot' has patterns '*ot', 'h*t', 'ho*'. Words sharing a pattern are one-letter neighbors.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          "hit",
+          "cog",
+          [
+            "hot",
+            "dot",
+            "dog",
+            "lot",
+            "log",
+            "cog"
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "endWord not in list",
+        "args": [
+          "hit",
+          "cog",
+          [
+            "hot",
+            "dot",
+            "dog",
+            "lot",
+            "log"
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "begin == end (no need to transform)",
+        "args": [
+          "a",
+          "c",
+          [
+            "a",
+            "b",
+            "c"
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "one-letter words",
+        "args": [
+          "a",
+          "a",
+          [
+            "a",
+            "b"
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "disconnected",
+        "args": [
+          "abc",
+          "xyz",
+          [
+            "abd",
+            "abe",
+            "xyz"
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Shortest transformation = BFS over a graph where words are nodes and edges connect words differing by one letter. Na\u00efve: build the graph by O(n\u00b2) pairwise comparison. Better: pattern index \u2014 for each word, generate L 'patterns' (one wildcard each position); words sharing a pattern are neighbors. BFS from beginWord; first time we reach endWord is the answer.",
+      "clarifying_questions": [
+        {
+          "question": "Sequence length counts both endpoints?",
+          "why": "Yes per spec. hit\u2192hot\u2192cog is length 3."
+        },
+        {
+          "question": "Must intermediate words be in wordList?",
+          "why": "Yes per spec. beginWord doesn't need to be."
+        },
+        {
+          "question": "Case-sensitive?",
+          "why": "Per spec, all lowercase. No need to normalize."
+        },
+        {
+          "question": "endWord must be in wordList?",
+          "why": "Per problem, if endWord not in wordList, return 0. Catches a fast early exit."
+        },
+        {
+          "question": "Pattern index \u2014 what's the gain?",
+          "why": "O(n\u00b2) pairwise comparison vs O(n*L\u00b2) pattern build + O(n*L) BFS. For L=10 and n=5000, ~5x faster."
+        }
+      ],
+      "think_out_loud": "Convert to BFS. Build pattern index: for each word, store it under each of its L pattern keys. BFS from beginWord: queue has (word, distance). At each pop, generate the word's patterns, look up all words sharing them, enqueue unvisited ones. First time we pop endWord, return distance. If queue empties, return 0.",
+      "edge_cases": [
+        {
+          "category": "endWord not in wordList",
+          "details": "Return 0. Early exit before BFS."
+        },
+        {
+          "category": "beginWord == endWord",
+          "details": "Return 1. Single-word sequence."
+        },
+        {
+          "category": "Adjacent (one-letter diff)",
+          "details": "Return 2."
+        },
+        {
+          "category": "Disconnected (no path)",
+          "details": "Return 0 after BFS exhausts."
+        },
+        {
+          "category": "Single-letter words",
+          "details": "Works \u2014 pattern '*' is the single pattern."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b2) pairwise comparison \u2014 too slow on large lists.",
+        "BFS without tracking visited \u2014 infinite loops on cycles.",
+        "Counting edges instead of nodes \u2014 off-by-one (length is node count).",
+        "Not returning 0 when endWord absent.",
+        "Building the pattern index incorrectly (wrong wildcard position)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Shortest-path BFS over a word-transformation graph. Tests both BFS and the optimization of building the implicit graph efficiently.",
+      "introduction_context": "Onsite at Amazon, Meta, Google. The pattern-index trick is the discriminator between Hire and Strong Hire.",
+      "really_testing": [
+        "Recognizing word transformation as graph BFS.",
+        "The pattern-index optimization.",
+        "Visited tracking.",
+        "Distance counting (nodes, not edges)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Pattern-index + BFS in 15-18 min. Walks through small example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "BFS with O(n*L) per-step pairwise check (no pattern index). Correct but slower."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "DFS instead of BFS (returns A path, not shortest). Or visited bugs."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot articulate the graph reduction."
+        }
+      ],
+      "playbook": [
+        "Restate: 'shortest transformation length, one-letter diff per step'.",
+        "Insight: 'BFS on a word graph'.",
+        "Optimization: 'pattern index \u2014 *ot groups hot, lot, dot, etc.'",
+        "Code: build defaultdict mapping pattern \u2192 [words]. BFS queue: (word, dist) starting (beginWord, 1). visited = {beginWord}. pop word: if endWord, return dist. For each i: pattern = word[:i] + '*' + word[i+1:]; for nb in patterns[pattern]: if nb not in visited: visited.add(nb); queue.append((nb, dist+1)).",
+        "Walk 'hit' \u2192 'cog': patterns for hit: *it, h*t, hi*. Find 'hot' under 'h*t'. Continue BFS until cog reached. \u2713"
+      ],
+      "playbook_meta": "Total time: 15-22 min. Follow-up: 'return one valid sequence' or 'return all shortest sequences' (Word Ladder II).",
+      "dont_do": [
+        "Don't O(n\u00b2) compare every word pair.",
+        "Don't DFS \u2014 returns any path, not shortest.",
+        "Don't forget visited set.",
+        "Don't count edges; count nodes (length = nodes)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "BFS with Pattern Index",
+        "time": "O(n * L\u00b2) build + O(n * L\u00b2) BFS",
+        "space": "O(n * L)",
+        "code": "from collections import deque, defaultdict\n\ndef ladderLength(beginWord, endWord, wordList):\n    if endWord not in wordList:\n        return 0\n    \n    L = len(beginWord)\n    patterns = defaultdict(list)\n    for word in wordList:\n        for i in range(L):\n            patterns[word[:i] + '*' + word[i+1:]].append(word)\n    \n    visited = {beginWord}\n    queue = deque([(beginWord, 1)])\n    \n    while queue:\n        word, dist = queue.popleft()\n        if word == endWord:\n            return dist\n        for i in range(L):\n            pat = word[:i] + '*' + word[i+1:]\n            for nb in patterns[pat]:\n                if nb not in visited:\n                    visited.add(nb)\n                    queue.append((nb, dist + 1))\n            # Clear the pattern to avoid revisiting via the same key\n            patterns[pat] = []\n    return 0",
+        "explanation": "BFS over a word graph, with an O(1) per-step neighbor lookup via the pattern index. Each word generates L patterns (one wildcard each position). Words sharing a pattern are one-letter neighbors. BFS guarantees shortest path. Clearing each pattern after use prevents re-traversal of the same edges \u2014 keeps it linear in n + edges."
+      }
+    ],
+    "related_problem_ids": [
+      "number-of-islands",
+      "course-schedule",
+      "clone-graph"
+    ]
   }
 ]
