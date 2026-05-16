@@ -2694,18 +2694,129 @@
     "id": "minimum-window-substring",
     "title": "Minimum Window Substring",
     "leetcode_url": "https://leetcode.com/problems/minimum-window-substring/",
+    "leetcode_id": 76,
     "difficulty": "hard",
-    "patterns": [
-      "sliding-window"
-    ],
-    "topics": [
-      "sliding-window"
-    ],
+
+    "patterns": ["sliding-window"],
+    "topics": ["sliding-window"],
     "neetcode_category": "Sliding Window",
-    "frequency_tags": [
-      "blind-75",
-      "faang-common"
-    ]
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string.",
+
+    "constraints": [
+      "m == s.length",
+      "n == t.length",
+      "1 <= m, n <= 10^5",
+      "s and t consist of uppercase and lowercase English letters."
+    ],
+
+    "examples": [
+      { "input": "s = \"ADOBECODEBANC\", t = \"ABC\"", "output": "\"BANC\"", "explanation": "The minimum window 'BANC' contains 'A', 'B', and 'C' from string t." },
+      { "input": "s = \"a\", t = \"a\"", "output": "\"a\"", "explanation": "Entire string is the window." },
+      { "input": "s = \"a\", t = \"aa\"", "output": "\"\"", "explanation": "Both 'a's from t must be in the window. s has only one 'a' — no valid window." }
+    ],
+
+    "function_name": "min_window",
+    "function_signature": "def min_window(s, t):",
+    "starter_code": "def min_window(s, t):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic case", "args": ["ADOBECODEBANC", "ABC"], "expected": "'BANC'" },
+      { "label": "single char match", "args": ["a", "a"], "expected": "'a'" },
+      { "label": "no valid window (insufficient chars)", "args": ["a", "aa"], "expected": "''" },
+      { "label": "exact match", "args": ["abc", "abc"], "expected": "'abc'" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Variable-size sliding window. Expand right until the window contains all characters of t (with correct frequencies). Then SHRINK from the left while maintaining the constraint. Track the smallest valid window seen. Use a character-count map of t and a 'matched count' to know when the window is valid.",
+
+      "clarifying_questions": [
+        { "question": "Are characters case-sensitive?", "why": "Spec says both uppercase and lowercase. So yes — 'A' and 'a' are different. Worth confirming." },
+        { "question": "Do duplicate chars in t need to be matched?", "why": "Yes. If t = 'aab', window must contain at least 2 'a's and 1 'b'. Frequency matters, not just presence." },
+        { "question": "What if multiple windows have the same min length?", "why": "Spec doesn't specify — return any. Most implementations return the first one found." },
+        { "question": "Length constraints?", "why": "Both up to 10^5. O(n) sliding window is required; O(n²) brute force times out." },
+        { "question": "What if there's no valid window?", "why": "Return empty string. Worth confirming the sentinel." }
+      ],
+
+      "think_out_loud": "Use a character-frequency map for t. Use a running map for the window. Track 'matched' — how many DISTINCT characters of t are currently fully satisfied in the window (i.e., window[c] >= t[c]). Expand right: increment window[s[right]], if it now satisfies t[s[right]], increment matched. When matched == number of unique chars in t, try to shrink from left: as long as matched stays maximal, advance left and update the best window. When matched drops, expand right again.",
+
+      "edge_cases": [
+        { "category": "t longer than s", "details": "s='a', t='aa' → no valid window → ''." },
+        { "category": "Exact match", "details": "s='abc', t='abc' → the whole string is the answer." },
+        { "category": "Duplicates in t", "details": "t='aab' requires 2 'a's in the window. A window with just 1 'a' isn't valid." },
+        { "category": "Window must include all of t somewhere", "details": "s='AXXXBC', t='ABC' → 'AXXXBC' is the answer (no shorter window exists)." },
+        { "category": "Empty input edge", "details": "Per constraints, both have length ≥ 1." }
+      ],
+
+      "common_mistakes": [
+        "Tracking only chars in t (ignoring extras in s) but forgetting that extras don't violate the constraint — only missing chars do.",
+        "Forgetting that DUPLICATES matter — 'aab' is not satisfied by a window with just one 'a'.",
+        "Shrinking left too aggressively — must STOP shrinking when matched drops below complete.",
+        "Off-by-one on the best window: store (left, right) bounds, not the substring (saves O(m) substring copies in the inner loop).",
+        "Using a hash set instead of a counter for t — misses duplicates."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Hard sliding window. Given strings s and t, find the smallest substring of s that contains every character of t (with correct frequencies).",
+      "introduction_context": "Classic FAANG hard. Tests advanced sliding window technique (variable size, with frequency constraints). Considered the canonical 'hard sliding window' problem.",
+
+      "really_testing": [
+        "Variable-size sliding window pattern (expand to satisfy, shrink to optimize).",
+        "Frequency-tracking via Counter / dict.",
+        "Maintaining a 'matched count' to know when the window is valid in O(1) per step.",
+        "Distinguishing 'matched all chars of t' from 'every char in window is in t' (it's the FORMER)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Articulates the expand-then-shrink pattern. Maintains a 'matched' count for O(1) window-validity check. Tracks the best as (left, right) indices, not substring copies. ~20 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches the sliding-window approach. May copy substrings in the inner loop (O(n) per copy, total O(n²)). Correctness achieved." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Stuck at brute force O(n² × m). Or doesn't handle frequency correctly (treats t as a set)." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't reach a working sliding window. Doesn't recognize the pattern." }
+      ],
+
+      "playbook": [
+        "Restate: 'find smallest substring of s containing all chars of t with frequencies'.",
+        "Confirm: case-sensitive, duplicates in t count separately.",
+        "State brute force: every (i,j) substring, check if it satisfies t. O(n² × m).",
+        "Propose sliding window. Use Counter for t. Track window counter + matched count.",
+        "Expand right: increment window[c]. If window[c] == t[c], matched++.",
+        "Shrink while matched == len(t Counter): track best (left, right); decrement window[s[left]]; if window[c] < t[c], matched--; advance left.",
+        "Code carefully — the matched check is the trickiest part.",
+        "Walk through 'ADOBECODEBANC' with t='ABC'. Find 'ADOBEC' first, then shrink to 'BEC' (insufficient), expand again..."
+      ],
+      "playbook_meta": "Total time: 18-25 min. Hard but a clear sliding window. Common follow-up: minimum window with at most K distinct characters.",
+
+      "dont_do": [
+        "Don't use a set for t — duplicates would be lost.",
+        "Don't shrink past the matched-complete state — once matched drops, you've gone too far.",
+        "Don't copy substrings in the inner loop. Track (left, right) bounds.",
+        "Don't treat extras in s as violations — only missing chars matter.",
+        "Don't return None or null — return empty string when no window exists."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n² × m)",
+        "space": "O(m)",
+        "code": "def min_window(s, t):\n    from collections import Counter\n    if not t or len(t) > len(s):\n        return ''\n    t_count = Counter(t)\n    best = ''\n    for i in range(len(s)):\n        for j in range(i, len(s)):\n            window = Counter(s[i:j+1])\n            if all(window[c] >= t_count[c] for c in t_count):\n                if not best or (j - i + 1) < len(best):\n                    best = s[i:j+1]\n                break  # any longer window from i won't be smaller\n    return best",
+        "explanation": "Try every (i, j) substring, check if it contains t. Quadratic. Won't pass for n=10^5."
+      },
+      {
+        "name": "Sliding Window with Matched Counter",
+        "time": "O(n + m)",
+        "space": "O(m)",
+        "code": "def min_window(s, t):\n    from collections import Counter\n    if not t or len(t) > len(s):\n        return ''\n    t_count = Counter(t)\n    required = len(t_count)  # number of unique chars in t\n    window = {}\n    matched = 0  # number of t's unique chars currently satisfied\n    left = 0\n    best = (0, 0, float('inf'))  # (left, right, length)\n    for right in range(len(s)):\n        c = s[right]\n        window[c] = window.get(c, 0) + 1\n        if c in t_count and window[c] == t_count[c]:\n            matched += 1\n        # Shrink from left while window is valid\n        while matched == required:\n            if right - left + 1 < best[2]:\n                best = (left, right, right - left + 1)\n            lc = s[left]\n            window[lc] -= 1\n            if lc in t_count and window[lc] < t_count[lc]:\n                matched -= 1\n            left += 1\n    return s[best[0]:best[1]+1] if best[2] != float('inf') else ''",
+        "explanation": "Maintain a window and a 'matched' counter (how many of t's unique characters are fully satisfied). Expand right: update window counter; if a char just hit its required count, matched++. When matched == required, shrink left to find the minimum window starting at this right. As long as matched stays at required, advance left. When matched drops, resume expanding right. O(n) total because each char is added and removed at most once."
+      }
+    ],
+
+    "related_problem_ids": ["longest-substring-without-repeating-characters", "permutation-in-string", "valid-anagram"]
   },
   {
     "id": "permutation-in-string",
@@ -3011,17 +3122,131 @@
     "id": "find-minimum-in-rotated-sorted-array",
     "title": "Find Minimum in Rotated Sorted Array",
     "leetcode_url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+    "leetcode_id": 153,
     "difficulty": "medium",
-    "patterns": [
-      "binary-search"
-    ],
-    "topics": [
-      "binary-search"
-    ],
+
+    "patterns": ["binary-search"],
+    "topics": ["binary-search"],
     "neetcode_category": "Binary Search",
-    "frequency_tags": [
-      "blind-75"
-    ]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Suppose an array of length n sorted in ascending order is rotated between 1 and n times. Given the sorted rotated array nums of unique elements, return the minimum element of this array. You must write an algorithm that runs in O(log n) time.",
+
+    "constraints": [
+      "n == nums.length",
+      "1 <= n <= 5000",
+      "-5000 <= nums[i] <= 5000",
+      "All the integers of nums are unique.",
+      "nums is sorted and rotated between 1 and n times."
+    ],
+
+    "examples": [
+      { "input": "nums = [3,4,5,1,2]", "output": "1", "explanation": "Original array was [1,2,3,4,5], rotated 3 times." },
+      { "input": "nums = [4,5,6,7,0,1,2]", "output": "0", "explanation": "Original array was [0,1,2,4,5,6,7], rotated 4 times." },
+      { "input": "nums = [11,13,15,17]", "output": "11", "explanation": "Original array was [11,13,15,17], rotated 4 times (back to original)." }
+    ],
+
+    "function_name": "find_min",
+    "function_signature": "def find_min(nums):",
+    "starter_code": "def find_min(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "rotated by 3", "args": [[3,4,5,1,2]], "expected": "1" },
+      { "label": "rotated past midpoint", "args": [[4,5,6,7,0,1,2]], "expected": "0" },
+      { "label": "no effective rotation", "args": [[11,13,15,17]], "expected": "11" },
+      { "label": "single element", "args": [[1]], "expected": "1" },
+      { "label": "two elements rotated", "args": [[2,1]], "expected": "1" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Binary search variant. The minimum is the pivot point of the rotation. KEY INSIGHT: at any midpoint, comparing nums[mid] to nums[right] tells you which side the minimum is on. If nums[mid] > nums[right], the minimum is in the right half (the array dipped after mid). Else, the minimum is in the left half (including mid).",
+
+      "clarifying_questions": [
+        { "question": "Are there duplicates?", "why": "Spec says unique. If duplicates existed, you'd need 'Find Min II' variant — duplicates can make nums[mid] == nums[right], requiring a O(n) worst case." },
+        { "question": "Is the array always rotated, or could rotation be 0?", "why": "Spec says rotated between 1 and n times. Rotated n times == original. So a 'sorted' array IS a valid rotated input, and the answer is nums[0]." },
+        { "question": "What's the size of n?", "why": "Up to 5000. O(log n) required by spec. O(n) linear scan would actually pass at 5000 but violates spec." },
+        { "question": "Compare to mid+1 or to right?", "why": "Either works. nums[mid] > nums[right] is more common because nums[right] doesn't need a bounds check (whereas nums[mid+1] does)." },
+        { "question": "Return the value or the index?", "why": "Spec says return the value (the minimum element). Worth confirming." }
+      ],
+
+      "think_out_loud": "The rotation pivot IS the minimum. Binary search: maintain [left, right]. At each mid, ask: 'Is the minimum to my LEFT or RIGHT?' If nums[mid] > nums[right], the array dipped after mid → minimum is in (mid, right]. If nums[mid] < nums[right], the right half is sorted ascending → minimum is in [left, mid] (could be mid itself). Halve the range each step. Terminate when left == right — that's the minimum.",
+
+      "edge_cases": [
+        { "category": "No rotation (rotated n times)", "details": "[1,2,3,4,5] → 1. The array is fully sorted. nums[mid] < nums[right] always → search left. Eventually left lands at 0." },
+        { "category": "Single element", "details": "[5] → 5. Loop doesn't execute, return nums[0]." },
+        { "category": "Two elements", "details": "[2,1] → 1. mid=0, nums[0]=2 > nums[1]=1 → search right. left=right=1, return nums[1]." },
+        { "category": "Rotation at boundary", "details": "[1,2,3,4,5,6] → 1 (no real rotation) or [6,1,2,3,4,5] → 1 (rotated by 1)." },
+        { "category": "Minimum at the very end of left half", "details": "[3,4,5,1,2] → 1. The minimum is at index 3." }
+      ],
+
+      "common_mistakes": [
+        "Comparing nums[mid] to nums[mid+1] without bounds-checking — risk of IndexError on the last mid.",
+        "Off-by-one in pointer updates: left = mid + 1 vs left = mid affect termination.",
+        "Returning nums[mid] when the loop ends — should return nums[left] (the converged position).",
+        "Using nums[mid] vs nums[left] for comparison — only nums[mid] vs nums[right] is the canonical pattern here.",
+        "Assuming the minimum is always at the rotation point — true, but the algorithm must FIND it."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Modified binary search. Find the minimum element of a sorted-then-rotated array in O(log n).",
+      "introduction_context": "Often paired with Search in Rotated Sorted Array. Tests the same 'one half is sorted' invariant but applied to finding an extreme rather than a target.",
+
+      "really_testing": [
+        "Adaptation of binary search to a non-monotonic-but-rotated array.",
+        "Discovery of the nums[mid] vs nums[right] invariant.",
+        "Implementation discipline (off-by-one, bracket invariants).",
+        "Edge case handling (no rotation, single element)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Reaches the binary search variant directly. Articulates the nums[mid] vs nums[right] invariant. Codes correctly first try. ~10 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches O(log n) after some thought. Maybe initially compares wrong indices; catches it during testing." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Linear scan O(n). Or buggy binary search (e.g., off-by-one infinite loop)." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't reach O(log n). Doesn't recognize the binary search adaptation." }
+      ],
+
+      "playbook": [
+        "Restate. Confirm uniqueness, rotation guarantee, O(log n) required.",
+        "State linear scan O(n), acknowledge it fails the spec.",
+        "Propose binary search with the nums[mid] vs nums[right] invariant.",
+        "Articulate: 'If nums[mid] > nums[right], the array dipped after mid → minimum is in (mid, right]. Else the right half is sorted → minimum is in [left, mid].'",
+        "Code: left=0, right=n-1. While left < right: mid = (left+right)//2; if nums[mid] > nums[right]: left = mid+1; else: right = mid. Return nums[left].",
+        "Note: termination is left == right (not left <= right) — we want to converge on a single index.",
+        "Walk through [4,5,6,7,0,1,2]: mid=3, nums=7>2 → left=4. mid=5, nums=1<2 → right=5. mid=4, nums=0<1 → right=4. left==right==4, return nums[4]=0.",
+        "Test on no-rotation [1,2,3] → 1."
+      ],
+      "playbook_meta": "Total time: 8-12 min. Variant of Search in Rotated Sorted Array. Common follow-up: Find Min II (with duplicates).",
+
+      "dont_do": [
+        "Don't linear scan when O(log n) is required.",
+        "Don't compare nums[mid] to nums[mid+1] — risk IndexError, and not the cleanest invariant.",
+        "Don't use left <= right — termination gets harder.",
+        "Don't use left = mid (without +1) — risks infinite loop.",
+        "Don't return nums[mid] at the end — return nums[left] after convergence."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Linear Scan",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def find_min(nums):\n    return min(nums)",
+        "explanation": "Trivial O(n) approach. Correct but fails the O(log n) spec requirement."
+      },
+      {
+        "name": "Binary Search",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "code": "def find_min(nums):\n    left, right = 0, len(nums) - 1\n    while left < right:\n        mid = left + (right - left) // 2\n        if nums[mid] > nums[right]:\n            # Minimum is in the right half (the dip happened after mid)\n            left = mid + 1\n        else:\n            # Right half is sorted; minimum is in [left, mid]\n            right = mid\n    return nums[left]",
+        "explanation": "Compare nums[mid] to nums[right]. If nums[mid] > nums[right], there must be a 'dip' between mid and right (since a sorted ascending array would have nums[mid] ≤ nums[right]) — the minimum is in (mid, right]. Otherwise, the right half from mid to right is monotonically increasing, so the minimum is in [left, mid] (and mid could itself be the minimum). Use `right = mid` (not mid-1) to keep mid as a candidate. Terminate when left == right — that's the minimum."
+      }
+    ],
+
+    "related_problem_ids": ["search-in-rotated-sorted-array", "binary-search", "koko-eating-bananas"]
   },
   {
     "id": "koko-eating-bananas",
@@ -3237,18 +3462,125 @@
     "id": "permutations",
     "title": "Permutations",
     "leetcode_url": "https://leetcode.com/problems/permutations/",
+    "leetcode_id": 46,
     "difficulty": "medium",
-    "patterns": [
-      "backtracking"
-    ],
-    "topics": [
-      "backtracking",
-      "recursion"
-    ],
+
+    "patterns": ["backtracking"],
+    "topics": ["backtracking", "recursion"],
     "neetcode_category": "Backtracking",
-    "frequency_tags": [
-      "blind-75"
-    ]
+    "frequency_tags": ["blind-75", "neetcode-150"],
+
+    "summary": "Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.",
+
+    "constraints": [
+      "1 <= nums.length <= 6",
+      "-10 <= nums[i] <= 10",
+      "All the integers of nums are unique."
+    ],
+
+    "examples": [
+      { "input": "nums = [1,2,3]", "output": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]", "explanation": "All 3! = 6 orderings of [1,2,3]." },
+      { "input": "nums = [0,1]", "output": "[[0,1],[1,0]]", "explanation": "2! = 2 orderings." },
+      { "input": "nums = [1]", "output": "[[1]]", "explanation": "Single element — one permutation." }
+    ],
+
+    "function_name": "permute",
+    "function_signature": "def permute(nums):",
+    "starter_code": "def permute(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "single element", "args": [[1]], "expected": "[[1]]" },
+      { "label": "two elements", "args": [[1,2]], "expected": "[[1, 2], [2, 1]]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Generate all n! orderings of nums. Classic backtracking. At each step, pick any unused element, add to current permutation, recurse, then unpick. Track 'used' via a set or by swapping in place.",
+
+      "clarifying_questions": [
+        { "question": "Are elements distinct or could there be duplicates?", "why": "Spec says distinct. If duplicates existed, you'd need to skip duplicate branches (Permutations II variant). Important distinction." },
+        { "question": "Output order — does it matter?", "why": "Spec says any order. Saves work." },
+        { "question": "How large is n?", "why": "Up to 6. n! = 720 max — very small. No optimization needed beyond correctness." },
+        { "question": "Should I generate permutations in lexicographic order?", "why": "Not required. But there's a classic 'Next Permutation' problem if lex order matters." },
+        { "question": "In-place mutation vs build-new-list?", "why": "Both work. Swapping in place is O(1) per step; building a new list is O(n) per step. Either is fine for n=6." }
+      ],
+
+      "think_out_loud": "Backtracking: at each level of recursion, try every available number. Use a 'used' set or boolean array to track which are in the current permutation. When the current permutation has length n, record it. Then backtrack — pop the last element and try the next option.",
+
+      "edge_cases": [
+        { "category": "Single element", "details": "[1] → [[1]]. Single permutation." },
+        { "category": "Two elements", "details": "[1,2] → [[1,2], [2,1]]." },
+        { "category": "Empty input (not per constraints)", "details": "Spec says n ≥ 1, but defensive: [] → [[]] (the empty permutation)." },
+        { "category": "All negatives", "details": "[-1,-2,-3] — algorithm is value-agnostic, works fine." }
+      ],
+
+      "common_mistakes": [
+        "Appending `current` directly instead of `current[:]` (shared reference bug — all results become the same final permutation).",
+        "Forgetting to mark used/unused around the recursive call.",
+        "Off-by-one on the recursion depth (n vs n-1).",
+        "Trying to dedupe when input has unique elements — wasted check.",
+        "Confusing permutations with combinations or subsets (different problems)."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Backtracking essentials. Generate all permutations of a distinct-integer array.",
+      "introduction_context": "Often paired with Subsets and Combinations as the 'backtracking trio'. Tests the same pattern (choose-recurse-unchoose) with the twist that order matters.",
+
+      "really_testing": [
+        "Backtracking template recall (choose-recurse-unchoose).",
+        "Correct state management — track which elements are used.",
+        "Awareness of the COPY bug (append current[:], not current).",
+        "Understanding that permutations differ from subsets/combinations (order matters)."
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Proposes backtracking immediately. Clean code with 'used' tracking. Correctly copies current. Walks through tree mentally. ~8 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches backtracking. Has the shared-reference bug initially; catches it after testing." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Tries iterative without justification. Or backtracking with off-by-one. Or generates duplicates." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Can't structure the recursion. Confuses permutations with subsets." }
+      ],
+
+      "playbook": [
+        "Restate: 'Generate all n! orderings.'",
+        "Confirm distinct elements, any order output.",
+        "Propose backtracking with 'used' tracking.",
+        "Code: result=[]; current=[]; used=[False]*n.",
+        "Recurse: if len(current) == n, append current[:]. Else for each i: if not used[i]: used[i]=True; current.append(nums[i]); recurse; current.pop(); used[i]=False.",
+        "Walk through [1,2,3]: builds [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1].",
+        "Test on [1] → [[1]] and [1,2] → [[1,2],[2,1]].",
+        "Optionally show the in-place swap variant."
+      ],
+      "playbook_meta": "Total time: 8-12 min. Common follow-ups: Permutations II (with duplicates — need to sort + skip), Next Permutation (single-step in lex order).",
+
+      "dont_do": [
+        "Don't append current directly — copy via current[:].",
+        "Don't forget to unmark used after recursion (the 'unchoose' step).",
+        "Don't dedupe when input is unique — wasted code.",
+        "Don't generate subsets instead of permutations — they're different.",
+        "Don't use itertools.permutations() as your answer — shows library knowledge but not algorithm understanding."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking with Used Array",
+        "time": "O(n × n!)",
+        "space": "O(n) recursion depth",
+        "code": "def permute(nums):\n    result = []\n    current = []\n    used = [False] * len(nums)\n    def backtrack():\n        if len(current) == len(nums):\n            result.append(current[:])\n            return\n        for i in range(len(nums)):\n            if used[i]:\n                continue\n            used[i] = True\n            current.append(nums[i])\n            backtrack()\n            current.pop()\n            used[i] = False\n    backtrack()\n    return result",
+        "explanation": "Classic backtracking. Maintain a 'used' array. At each recursion level, try every unused element. Mark used → recurse → unmark. When current is full, record a COPY (current[:]). Each of n! permutations is built once."
+      },
+      {
+        "name": "Backtracking with In-Place Swap",
+        "time": "O(n × n!)",
+        "space": "O(n) recursion depth",
+        "code": "def permute(nums):\n    result = []\n    def backtrack(start):\n        if start == len(nums):\n            result.append(nums[:])\n            return\n        for i in range(start, len(nums)):\n            nums[start], nums[i] = nums[i], nums[start]\n            backtrack(start + 1)\n            nums[start], nums[i] = nums[i], nums[start]  # swap back\n    backtrack(0)\n    return result",
+        "explanation": "Instead of using an extra 'used' array, swap elements in place. At depth d, fix position d by swapping in each remaining element. Recurse for position d+1. Swap back to undo. More memory-efficient but slightly harder to read."
+      }
+    ],
+
+    "related_problem_ids": ["subsets", "combinations", "n-queens", "word-search"]
   },
   {
     "id": "combinations",
