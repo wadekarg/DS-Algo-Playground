@@ -193,10 +193,138 @@
     "id": "maximum-subarray",
     "title": "Maximum Subarray",
     "leetcode_url": "https://leetcode.com/problems/maximum-subarray/",
+    "leetcode_id": 53,
     "difficulty": "medium",
+
     "patterns": ["kadane"],
     "topics": ["arrays", "dynamic-programming"],
-    "frequency_tags": ["blind-75", "faang-common"],
+    "neetcode_category": "Dynamic Programming",
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.",
+
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4"
+    ],
+
+    "examples": [
+      {
+        "input": "nums = [-2,1,-3,4,-1,2,1,-5,4]",
+        "output": "6",
+        "explanation": "The subarray [4,-1,2,1] has the largest sum 6."
+      },
+      {
+        "input": "nums = [1]",
+        "output": "1",
+        "explanation": "Single element subarray."
+      },
+      {
+        "input": "nums = [5,4,-1,7,8]",
+        "output": "23",
+        "explanation": "The entire array sums to 23."
+      }
+    ],
+
+    "function_name": "max_subarray",
+    "function_signature": "def max_subarray(nums):",
+    "starter_code": "def max_subarray(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "mixed positives and negatives", "args": [[-2,1,-3,4,-1,2,1,-5,4]], "expected": "6" },
+      { "label": "single positive element", "args": [[1]], "expected": "1" },
+      { "label": "all positives — sum the whole array", "args": [[5,4,-1,7,8]], "expected": "23" },
+      { "label": "all negatives — return the least negative", "args": [[-3,-2,-5,-1]], "expected": "-1" },
+      { "label": "single negative", "args": [[-7]], "expected": "-7" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Read the problem carefully — 'contiguous' is the key word. Subsequences don't count, only consecutive elements. Restate in your own words. The trick is to recognize this as a DP-friendly problem before you start coding.",
+
+      "clarifying_questions": [
+        {
+          "question": "Can the array contain all negative numbers?",
+          "why": "Yes. Answer is then the LEAST negative single element. This is THE edge case that breaks naive 'best = 0' initialization. Asking this signals you know the gotcha."
+        },
+        {
+          "question": "Should I return the sum, or the actual subarray (with indices)?",
+          "why": "Spec says sum. Variants ('Maximum Subarray II') ask for the indices or the subarray itself. Always confirm — code structure changes."
+        },
+        {
+          "question": "Does 'at least one number' mean the answer can't be the empty subarray (sum 0)?",
+          "why": "Yes — you must include at least one number. This matters for all-negative inputs: you return the max negative, NOT zero."
+        },
+        {
+          "question": "Are integer overflows a concern?",
+          "why": "n=10^5 and |val|=10^4 → worst-case sum is 10^9, fits in int32 (max 2.1×10^9). Worth checking in languages with strict types (Java, C++)."
+        },
+        {
+          "question": "Should the result use the original indices? Should I preserve input?",
+          "why": "Most variants don't mutate. Confirm — but Kadane's doesn't need mutation anyway."
+        }
+      ],
+
+      "think_out_loud": "State brute force first: try every (i,j) pair as subarray endpoints. O(n²) or O(n³) depending on whether you precompute sums. Then derive Kadane's: 'At each index, I have a choice: extend the previous subarray, or start fresh here. The decision is — extend if the running sum is positive, else start fresh.' This phrasing IS the DP recurrence.",
+
+      "edge_cases": [
+        { "category": "All negative array", "details": "[-3,-2,-5,-1] → -1 (the max single element). The most common failure: returning 0 because best = 0 initialization." },
+        { "category": "Single element", "details": "[5] → 5. [-3] → -3. Base case for any recurrence." },
+        { "category": "All positive — sum the whole thing", "details": "[1,2,3] → 6. Kadane's still works: never restart, just keep extending." },
+        { "category": "One huge negative", "details": "[5, -100, 5] → 5. Restart after the -100 because cur+(-100) is far below the next value." },
+        { "category": "Alternating", "details": "[1,-1,1,-1,1] → 1. Verify Kadane handles oscillation correctly." }
+      ],
+
+      "common_mistakes": [
+        "Initializing best = 0 or cur = 0 instead of nums[0]. Breaks all-negatives case (returns 0, wrong).",
+        "Forgetting the 'at least one number' constraint — interpreting empty subarray as valid with sum 0.",
+        "Off-by-one on the loop (iterating from i=0 vs i=1).",
+        "Confusing 'running sum' with 'best sum' — updating the wrong variable when comparing.",
+        "Trying to use sliding window — but sliding window requires a non-negative invariant. Doesn't fit here."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic dynamic-programming-style problem. Given an integer array, find the contiguous subarray with the largest sum.",
+      "introduction_context": "Almost universally asked. Tests whether you can derive Kadane's algorithm (the 'extend or restart' decision) or recognize it. Common in 45-min loops and screens.",
+
+      "really_testing": [
+        "Can you go from O(n²) brute force to O(n) Kadane's by yourself, or only when prompted?",
+        "Can you articulate the DP recurrence ('extend the running sum or start fresh')?",
+        "Do you initialize correctly for the all-negative case?",
+        "Can you trace through a mixed example confidently?",
+        "Are you systematic about edge cases?"
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asked the all-negative question unprompted. States brute force O(n²) without coding it. Derives Kadane's by articulating the 'extend vs restart' decision out loud. Initializes correctly (best = cur = nums[0]). Traces through example. Handles all-negatives in their first attempt. Total time: ~10 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reaches Kadane's after some thought. May need a nudge on the recurrence. Catches the all-negative initialization issue when probed. Code is correct." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Initializes best = 0 and returns 0 for all-negatives. Needed a hint to derive Kadane's. Or stuck at O(n²) prefix-sum approach without seeing the O(n) optimization." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Couldn't derive O(n) even with hints. Can't articulate the 'extend or restart' decision. Returns wrong answer on all-negatives and doesn't recognize the bug." }
+      ],
+
+      "playbook": [
+        "Restate the problem aloud, emphasizing 'contiguous'.",
+        "Ask the all-negative question. Confirm 'at least one number' means you can't return 0.",
+        "State brute force O(n²): try every start/end pair. Don't code it.",
+        "Derive Kadane: 'At each index, I choose to extend the running subarray or start fresh. The decision is: if the previous running sum is positive, extending helps; if negative, start fresh.'",
+        "State the recurrence: cur = max(x, cur + x); best = max(best, cur). This IS Kadane's.",
+        "Walk through the example [-2,1,-3,4,-1,2,1,-5,4] step by step. Show cur and best at each index.",
+        "Code carefully: initialize best = cur = nums[0]. Iterate from index 1.",
+        "Test on all-negative case [-3,-2,-5,-1] explicitly. Confirm output is -1, not 0."
+      ],
+      "playbook_meta": "Total time: 8-12 min for a strong run. Faster if you immediately recognize Kadane's. Common follow-ups: return the subarray (track indices), max product subarray (different — sign flips matter), 2D max submatrix.",
+
+      "dont_do": [
+        "Don't initialize best = 0 or cur = 0. Breaks all-negatives.",
+        "Don't return 0 if no positives found. Violates 'at least one number'.",
+        "Don't sort the array. Loses contiguity — fatal.",
+        "Don't use a sliding window. Sliding window needs a non-negative invariant; this doesn't have one.",
+        "Don't reach for prefix sums first. They give O(n²), not O(n). Kadane is strictly better.",
+        "Don't go silent while deriving Kadane. Narrate the 'extend or restart' decision out loud — that's the signal interviewers want."
+      ]
+    },
+
     "has_walkthrough": true,
     "approaches": [
       {
@@ -204,25 +332,172 @@
         "time": "O(n²)",
         "space": "O(1)",
         "code": "def max_subarray(nums):\n    best = nums[0]\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            best = max(best, s)\n    return best",
-        "explanation": "Try every starting index, sum forward. Correct but quadratic."
+        "explanation": "Try every starting index, sum forward. Track the best sum encountered. Correct but O(n²) — won't pass n=10^5 in interview time."
       },
       {
         "name": "Kadane's Algorithm",
         "time": "O(n)",
         "space": "O(1)",
         "code": "def max_subarray(nums):\n    best = cur = nums[0]\n    for x in nums[1:]:\n        cur = max(x, cur + x)\n        best = max(best, cur)\n    return best",
-        "explanation": "At each index, decide: extend the previous subarray, or start fresh from here? Track running best. The key insight: if the previous sum is negative, it's useless — start fresh."
+        "explanation": "At each index, decide: extend the previous subarray (cur + x) or start fresh from here (x). Take the max — this is the DP recurrence. Track the global best separately. The key insight: if the previous sum is negative, it can only hurt us, so we start fresh."
       }
-    ]
+    ],
+
+    "related_problem_ids": ["best-time-to-buy-and-sell-stock", "subarray-sum-equals-k", "two-sum"]
   },
   {
     "id": "3sum",
     "title": "3Sum",
     "leetcode_url": "https://leetcode.com/problems/3sum/",
+    "leetcode_id": 15,
     "difficulty": "medium",
+
     "patterns": ["two-pointers"],
     "topics": ["arrays", "two-pointers"],
-    "frequency_tags": ["blind-75", "faang-common"]
+    "neetcode_category": "Two Pointers",
+    "frequency_tags": ["blind-75", "faang-common", "neetcode-150"],
+
+    "summary": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i, j, k are distinct indices and nums[i] + nums[j] + nums[k] == 0. The solution set must not contain duplicate triplets.",
+
+    "constraints": [
+      "3 <= nums.length <= 3000",
+      "-10^5 <= nums[i] <= 10^5"
+    ],
+
+    "examples": [
+      {
+        "input": "nums = [-1,0,1,2,-1,-4]",
+        "output": "[[-1,-1,2],[-1,0,1]]",
+        "explanation": "The triplets are -1 + 0 + 1 = 0 and -1 + -1 + 2 = 0. Note: [-1,-1,2] is counted once even though multiple -1s exist."
+      },
+      {
+        "input": "nums = [0,1,1]",
+        "output": "[]",
+        "explanation": "No three numbers sum to zero."
+      },
+      {
+        "input": "nums = [0,0,0]",
+        "output": "[[0,0,0]]",
+        "explanation": "The only possible triplet sums to zero."
+      }
+    ],
+
+    "function_name": "three_sum",
+    "function_signature": "def three_sum(nums):",
+    "starter_code": "def three_sum(nums):\n    # Your code here\n    pass",
+
+    "test_cases": [
+      { "label": "classic case with duplicates", "args": [[-1,0,1,2,-1,-4]], "expected": "[[-1, -1, 2], [-1, 0, 1]]" },
+      { "label": "no triplet sums to zero", "args": [[0,1,1]], "expected": "[]" },
+      { "label": "all zeros", "args": [[0,0,0]], "expected": "[[0, 0, 0]]" },
+      { "label": "all negatives — no answer", "args": [[-3,-2,-5,-1]], "expected": "[]" }
+    ],
+
+    "interview_tips": {
+      "talk_through_it": "Read the problem carefully — especially 'distinct indices' and 'no duplicate triplets'. Restate it in your own words before coding. Duplicate handling is the entire interview here — it's what separates Strong Hire from Lean No-Hire.",
+
+      "clarifying_questions": [
+        {
+          "question": "What does 'no duplicate triplets' mean — distinct by value or by index?",
+          "why": "By value. [-1,-1,2] counts once even if multiple -1s exist in the input. Critical to confirm — interviewers will explicitly say 'no duplicates' and watch whether you remember to dedupe."
+        },
+        {
+          "question": "Can I sort the input array?",
+          "why": "Sorting unlocks the O(n²) two-pointer approach. Without it, you're stuck with O(n²) hash-set deduplication that's slower in practice. Most candidates skip this question and burn 5 minutes."
+        },
+        {
+          "question": "Are negative numbers allowed? What if all values are positive?",
+          "why": "Negatives are required (otherwise no triplet sums to 0 unless all zeros). If all positive, you can early-exit. Knowing this signals optimization instinct."
+        },
+        {
+          "question": "What's the size of nums?",
+          "why": "n ≤ 3000 means O(n²) = 9M ops, totally fine. If n were 10^5, O(n²) would time out and you'd need a smarter approach (rare for 3Sum)."
+        },
+        {
+          "question": "What's the expected output format — list of lists, set of tuples?",
+          "why": "Spec says list of lists. Ordering within triplets matters for grading. Confirm before assuming."
+        }
+      ],
+
+      "think_out_loud": "Start with brute force: three nested loops, O(n³). State it but don't code it — too slow. Then propose: sort the array, then for each index i, use two pointers (left=i+1, right=n-1) to find pairs summing to -nums[i]. This makes it O(n²) plus the sort. The key insight: sorting unlocks the two-pointer pattern.",
+
+      "edge_cases": [
+        { "category": "All zeros", "details": "[0,0,0] → [[0,0,0]]. Just one triplet, all zeros. Make sure your dup-skip doesn't accidentally remove this." },
+        { "category": "Fewer than 3 elements", "details": "Constraint says n ≥ 3, but defensive code returns []. Show you considered it." },
+        { "category": "All positive or all negative", "details": "Can't sum to zero unless all zeros. Optional early exit after sorting." },
+        { "category": "Many duplicates", "details": "[-1,-1,-1,-1,2,2,2] — the two-pointer dup-skip is critical. Both the outer i AND inner left/right must skip duplicates." },
+        { "category": "Empty array", "details": "Return []. Constraint forbids this but be safe." }
+      ],
+
+      "common_mistakes": [
+        "Not skipping duplicates on the outer i — produces duplicate triplets in output.",
+        "Not skipping duplicates on inner left/right after finding a triplet — produces e.g. [-1,-1,2] twice when input has [-1,-1,-1,2].",
+        "Using a hash set to dedupe instead of sorted skip — works but O(n²) space and slower in practice. Signals weaker pattern recognition.",
+        "Off-by-one on initial left/right pointers (should be i+1 and n-1).",
+        "Modifying the input array (sorting) without asking permission first."
+      ]
+    },
+
+    "faang": {
+      "tier": "A",
+      "introduction": "OK, you've done Two Sum. Let's level up. Given an integer array, find all unique triplets that sum to zero. No duplicate triplets allowed.",
+      "introduction_context": "Almost always comes after Two Sum or as a standalone medium. Tests pattern recognition (sort + two-pointer) and the dup-skip detail — the SINGLE thing that fails most candidates.",
+
+      "really_testing": [
+        "Can you recognize the 'sorted array + two pointers' pattern as a generalization of Two Sum?",
+        "Can you handle duplicate-skipping correctly on first attempt?",
+        "Do you propose the sort+two-pointer approach over hash-set dedup (the inferior alternative)?",
+        "Are you systematic about edge cases (empty, all zeros, all negatives)?"
+      ],
+
+      "rubric": [
+        { "tier": "Strong Hire", "color": "#16a34a", "criteria": "Asked 'can I sort?' unprompted. Stated brute force O(n³) without coding it. Implemented sort + two-pointer with dup-skip on BOTH outer i and inner left/right correctly on first try. Traced through the duplicates example. Total time: ~15 min." },
+        { "tier": "Hire", "color": "#84cc16", "criteria": "Reached the optimal O(n²) sort + two-pointer. May have missed the inner dup-skip initially but caught it after a nudge or while testing. Clean code." },
+        { "tier": "Lean No-Hire", "color": "#f59e0b", "criteria": "Reached the optimal algorithm but used a hash set to dedupe (slower, signals weak pattern recognition). Or got the algorithm right but produced duplicate triplets in output and didn't notice until interviewer pointed it out." },
+        { "tier": "No-Hire", "color": "#dc2626", "criteria": "Stuck at O(n³) brute force. Couldn't see how to leverage sorting. Got confused by duplicate handling. Produced wrong output and couldn't debug." }
+      ],
+
+      "playbook": [
+        "Restate aloud, emphasizing 'unique triplets' and 'distinct indices'.",
+        "Ask: 'Can I sort the input?' — this is THE question. If interviewer says no, you're heading toward hash-set dedup (slower). Most will say yes.",
+        "Propose brute force out loud: 'Three nested loops, O(n³). Won't pass for n=3000.' Don't code it.",
+        "State the optimization: 'Sort the array O(n log n), then for each i, use two pointers left=i+1, right=n-1 to find pairs summing to -nums[i]. Total O(n²).' ",
+        "Walk through the example [-1,0,1,2,-1,-4] after sorting → [-4,-1,-1,0,1,2]. Show two-pointer movement and dup-skip on i.",
+        "Code: outer loop with `if i > 0 and nums[i] == nums[i-1]: continue` (skip dup i). Inner two-pointer with dup-skip on left AND right after each match.",
+        "Test on the duplicates example. Confirm output has each triplet exactly once.",
+        "Mention edge cases: all zeros [[0,0,0]] (test that the code handles 0+0+0), all negatives (no answer, returns [])."
+      ],
+      "playbook_meta": "Total time: 15-20 min for a strong run. Faster if you nail dup-skip on first try. The follow-up is often '4Sum' or 'find all triplets with sum closest to target'.",
+
+      "dont_do": [
+        "Don't use a hash set to dedupe — signals weak pattern recognition. Sort + skip is the textbook answer.",
+        "Don't forget to skip duplicates on the OUTER i. THE most common 3Sum bug.",
+        "Don't forget to skip duplicates on inner left/right AFTER finding a triplet. Subtle but critical.",
+        "Don't code brute force first — interviewers know it's O(n³). Just state and move on.",
+        "Don't sort the input without asking — some interviews care about input immutability.",
+        "Don't use return early on first found triplet — find ALL of them."
+      ]
+    },
+
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "time": "O(n³)",
+        "space": "O(1) extra (not counting output)",
+        "code": "def three_sum(nums):\n    n = len(nums)\n    result = set()\n    for i in range(n):\n        for j in range(i+1, n):\n            for k in range(j+1, n):\n                if nums[i] + nums[j] + nums[k] == 0:\n                    triplet = tuple(sorted([nums[i], nums[j], nums[k]]))\n                    result.add(triplet)\n    return [list(t) for t in result]",
+        "explanation": "Three nested loops, check every possible triplet. Use a set of sorted tuples to dedupe. Correct but O(n³) — won't pass n=3000 in interview time limits."
+      },
+      {
+        "name": "Sort + Two Pointers",
+        "time": "O(n²)",
+        "space": "O(1) extra (or O(n) if sort is not in-place)",
+        "code": "def three_sum(nums):\n    nums.sort()\n    n = len(nums)\n    result = []\n    for i in range(n - 2):\n        # Skip duplicate i\n        if i > 0 and nums[i] == nums[i-1]:\n            continue\n        left, right = i + 1, n - 1\n        while left < right:\n            s = nums[i] + nums[left] + nums[right]\n            if s == 0:\n                result.append([nums[i], nums[left], nums[right]])\n                # Skip duplicates on left\n                while left < right and nums[left] == nums[left+1]:\n                    left += 1\n                # Skip duplicates on right\n                while left < right and nums[right] == nums[right-1]:\n                    right -= 1\n                left += 1\n                right -= 1\n            elif s < 0:\n                left += 1\n            else:\n                right -= 1\n    return result",
+        "explanation": "Sort the array first. For each index i, use two pointers (left=i+1, right=n-1) and squeeze them toward each other based on whether their sum with nums[i] is too small or too large. The duplicate-skip logic (on outer i AND on inner left/right after finding a triplet) is what prevents duplicate triplets in the output. The sorted order makes this cleaner than hash-set dedup."
+      }
+    ],
+
+    "related_problem_ids": ["two-sum", "container-with-most-water", "trapping-rain-water"]
   },
   {
     "id": "container-with-most-water",
