@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problems · DS-Algo Playground</title>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/topic-template.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+  <style>
+    /* ── Problems index page styles ─────────────────────────────── */
+    .problems-hero {
+      padding: 24px 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 18px;
+    }
+    .problems-hero h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+    .problems-hero__lede {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 700px;
+    }
+    .problems-stats {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .problems-group {
+      margin-bottom: 24px;
+    }
+    .problems-group__title {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .problems-group__count {
+      font-weight: 400;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .problems-group__rows {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .problem-index-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.12s;
+      flex-wrap: wrap;
+    }
+    .problem-index-row:hover {
+      background: var(--bg-card);
+    }
+    .problem-index-row__title {
+      flex: 1 1 250px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--accent-primary);
+    }
+    .walkthrough-badge {
+      font-size: 14px;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body data-topic="problems">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <section class="problems-hero">
+        <h1>Problems</h1>
+        <p class="problems-hero__lede">NeetCode-style curated interview problems. Each problem has a Python editor, interview tips, and a FAANG-grading rubric.</p>
+        <p class="problems-stats">
+          <span id="problems-count">&hellip;</span> problems &middot; <span id="walkthroughs-count">&hellip;</span> with full walkthroughs
+        </p>
+      </section>
+
+      <!-- Dynamic problem groups rendered by inline JS below -->
+      <div id="problems-groups"></div>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">Space</span><span>Play / Pause visualization</span>
+        <span class="shortcut-key">&larr;</span><span>Step backward</span>
+        <span class="shortcut-key">&rarr;</span><span>Step forward</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/theme.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/sidebar-nav.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/keyboard.js"></script>
+
+  <script>
+    // NeetCode 150 standard category ordering — fallbacks go to end alphabetically
+    const CATEGORY_ORDER = [
+      'Arrays & Hashing',
+      'Two Pointers',
+      'Sliding Window',
+      'Stack',
+      'Binary Search',
+      'Linked List',
+      'Trees',
+      'Tries',
+      'Heap / Priority Queue',
+      'Backtracking',
+      'Graphs',
+      'Advanced Graphs',
+      '1D DP',
+      '2D DP',
+      'Dynamic Programming',
+      'Greedy',
+      'Intervals',
+      'Math & Geometry',
+      'Bit Manipulation'
+    ];
+
+    const DIFF_ORDER = { easy: 0, medium: 1, hard: 2 };
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function loadAndRender() {
+      let problems;
+      try {
+        const r = await fetch('data/problems.json');
+        problems = await r.json();
+      } catch (e) {
+        document.getElementById('problems-groups').innerHTML = '<p>Failed to load problems.json.</p>';
+        return;
+      }
+
+      document.getElementById('problems-count').textContent = problems.length;
+      document.getElementById('walkthroughs-count').textContent = problems.filter(p => p.has_walkthrough).length;
+
+      // Group by neetcode_category (falls back to first topic if missing, then 'Other')
+      const groups = {};
+      for (const p of problems) {
+        const cat = p.neetcode_category || (p.topics && p.topics[0]) || 'Other';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(p);
+      }
+
+      // Sort each group by difficulty: easy → medium → hard
+      for (const cat in groups) {
+        groups[cat].sort((a, b) => (DIFF_ORDER[a.difficulty] ?? 9) - (DIFF_ORDER[b.difficulty] ?? 9));
+      }
+
+      // Order groups by CATEGORY_ORDER; unknown categories appended alphabetically at end
+      const knownCats = CATEGORY_ORDER.filter(c => groups[c]);
+      const unknownCats = Object.keys(groups).filter(c => !CATEGORY_ORDER.includes(c)).sort();
+      const orderedCats = [...knownCats, ...unknownCats];
+
+      const renderRow = p => {
+        const tags = (p.frequency_tags || [])
+          .map(t => `<span class="pill pill-${esc(t)}">${esc(t.replace(/-/g, ' '))}</span>`)
+          .join('');
+        const walkthroughIcon = p.has_walkthrough
+          ? '<span class="walkthrough-badge" title="Full solution walkthrough available">&#128214;</span>'
+          : '';
+        return `
+          <a class="problem-index-row" href="problems/${esc(p.id)}.html">
+            <span class="problem-index-row__title">${esc(p.title)}</span>
+            <span class="pill pill-${esc(p.difficulty)}">${esc(p.difficulty)}</span>
+            ${tags}
+            ${walkthroughIcon}
+          </a>
+        `;
+      };
+
+      const html = orderedCats.map(cat => {
+        const rows = groups[cat].map(renderRow).join('');
+        return `
+          <section class="problems-group">
+            <h2 class="problems-group__title">${esc(cat)} <span class="problems-group__count">(${groups[cat].length})</span></h2>
+            <div class="problems-group__rows">${rows}</div>
+          </section>
+        `;
+      }).join('');
+
+      document.getElementById('problems-groups').innerHTML = html;
+    }
+
+    loadAndRender();
+  </script>
+</body>
+</html>
