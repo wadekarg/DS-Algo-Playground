@@ -118,8 +118,9 @@ var DSA = window.DSA || {};
     var orderedCats = knownCats.concat(unknownCats);
 
     var state = loadCollapseState();
+    var onProblemsIndex = getCurrentPage() === 'problems.html';
     // Default: top-level expanded if we're on a problems-related page; else collapsed
-    var onProblemsPage = !!currentProblemId || getCurrentPage() === 'problems.html';
+    var onProblemsPage = !!currentProblemId || onProblemsIndex;
     var problemsOpen = state.problems !== undefined ? state.problems : onProblemsPage;
 
     // If the current page is a per-problem page, force-expand its category
@@ -148,7 +149,12 @@ var DSA = window.DSA || {};
     for (var k = 0; k < orderedCats.length; k++) {
       var cat = orderedCats[k];
       var catKey = 'cat:' + cat;
-      var catOpen = state[catKey] !== undefined ? state[catKey] : (cat === currentCategory);
+      // Default open: all categories on problems.html (to mirror the main grid);
+      // only the current category on a per-problem page; nothing elsewhere.
+      // The user's explicit collapse choice always wins via localStorage.
+      var catOpen = state[catKey] !== undefined
+        ? state[catKey]
+        : (onProblemsIndex || cat === currentCategory);
 
       html += '<button type="button" class="sidebar__subcat-toggle' +
         (catOpen ? ' sidebar__subcat-toggle--open' : '') +
