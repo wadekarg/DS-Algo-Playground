@@ -682,40 +682,8 @@
     <!-- Problem page uses a custom full-height layout, bypassing .main__content defaults -->
     <div class="main__content--problem">
 
-      <!-- Top bar: breadcrumbs + title + meta pills + external links -->
-      <div class="problem-topbar">
-        <div class="breadcrumbs" style="font-size:12px;">
-          <a href="../index.html">Home</a>
-          <span class="breadcrumbs__sep">/</span>
-          <a href="../index.html#problems">Problems</a>
-          <span class="breadcrumbs__sep">/</span>
-          <span>Two Sum</span>
-        </div>
-        <div class="problem-title-row">
-          <h1>Two Sum</h1>
-          <div class="problem-meta-pills">
-            <span class="pill pill-easy">Easy</span>
-            <span class="pill pill-pattern">Arrays &amp; Hashing</span>
-            <span class="pill pill-pattern">Hash Map</span>
-            <span class="pill pill-blind-75">Blind 75</span>
-            <span class="pill pill-faang-common">FAANG Common</span>
-          </div>
-          <div class="problem-ext-links">
-            <a href="https://leetcode.com/problems/two-sum/" target="_blank" rel="noopener">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              LeetCode
-            </a>
-            <a href="../topics/arrays.html">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-              Arrays &amp; Hashing
-            </a>
-            <a href="../index.html#problems">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-              All Problems
-            </a>
-          </div>
-        </div>
-      </div>
+      <!-- Top bar: populated by problem-renderer.js -->
+      <div class="problem-topbar" data-section="topbar"></div>
 
       <!-- Split panes -->
       <div class="problem-split">
@@ -723,263 +691,12 @@
         <!-- ── Left: problem content column ─────────────────── -->
         <div class="problem-col">
 
-          <!-- Problem Statement -->
-          <div class="ps-section">
-            <div class="ps-section__title">Problem</div>
-            <div class="problem-statement">
-              <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return <strong>indices of the two numbers</strong> such that they add up to <code>target</code>.</p>
-              <p style="margin-top:8px;">You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice. You can return the answer in any order.</p>
-              <div class="problem-constraints">
-                <div class="problem-constraints__label">Constraints</div>
-                <ul>
-                  <li>2 &lt;= nums.length &lt;= 10<sup>4</sup></li>
-                  <li>-10<sup>9</sup> &lt;= nums[i] &lt;= 10<sup>9</sup></li>
-                  <li>-10<sup>9</sup> &lt;= target &lt;= 10<sup>9</sup></li>
-                  <li>Only one valid answer exists.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Examples -->
-          <div class="ps-section">
-            <div class="ps-section__title">Examples</div>
-            <div class="examples-list">
-              <div class="example-row">
-                <div class="example-row__num">Example 1</div>
-                <div class="example-row__io">
-                  <span><span class="io-label">Input: </span><span class="io-value">nums = [2,7,11,15], target = 9</span></span>
-                  <span><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></span>
-                </div>
-                <div class="example-row__explanation">nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].</div>
-              </div>
-              <div class="example-row">
-                <div class="example-row__num">Example 2</div>
-                <div class="example-row__io">
-                  <span><span class="io-label">Input: </span><span class="io-value">nums = [3,2,4], target = 6</span></span>
-                  <span><span class="io-label">Output: </span><span class="io-value">[1, 2]</span></span>
-                </div>
-              </div>
-              <div class="example-row">
-                <div class="example-row__num">Example 3</div>
-                <div class="example-row__io">
-                  <span><span class="io-label">Input: </span><span class="io-value">nums = [3,3], target = 6</span></span>
-                  <span><span class="io-label">Output: </span><span class="io-value">[0, 1]</span></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Interview Tips (collapsible, collapsed by default) -->
-          <div class="ps-section">
-            <div class="ps-section__title">Interview Tips</div>
-            <details class="interview-tips">
-              <summary class="interview-tips__toggle">
-                <span class="toggle-icon">&#9654;</span>
-                How to ace this in an interview
-                <span class="tip-badge">Expand</span>
-              </summary>
-              <div class="interview-tips__body">
-
-                <div class="tip-block">
-                  <div class="tip-block__head">&#128483; Talk through it</div>
-                  <p class="tip-block__text">Read the problem aloud. Restate it in your own words. Confirm your understanding with the interviewer before writing any code.</p>
-                </div>
-
-                <div class="tip-block">
-                  <h4>❓ Clarifying questions <span style="font-weight:400;color:var(--text-secondary);font-size:13px;">(and why we ask each)</span></h4>
-                  <dl class="clarify-list">
-                    <dt>What's the size of the array?</dt>
-                    <dd><em>Why:</em> Determines acceptable complexity. n ≤ 10⁴ → O(n²) brute force is OK. n ≤ 10⁶ → need O(n) or O(n log n). The constraint dictates the algorithm.</dd>
-
-                    <dt>Are negative numbers, zeros, or duplicates allowed?</dt>
-                    <dd><em>Why:</em> Negatives are fine for hash-map (any int can be a key) but break some range-based tricks. Zeros mean a value can be its own complement (target=0, value=0). Duplicates mean the same value can appear at different indices — the answer might pair two equal numbers (e.g., [3,3] target 6).</dd>
-
-                    <dt>Is exactly one valid answer guaranteed, or could there be zero / many?</dt>
-                    <dd><em>Why:</em> If guaranteed unique, you can return on the first match. If multiple are valid, the question changes ("any one" vs "all pairs"). If none guaranteed, you need a sentinel return value — usually an empty list or [-1, -1].</dd>
-
-                    <dt>Can I modify the input array?</dt>
-                    <dd><em>Why:</em> Some algorithms (sort-then-two-pointer) mutate. Interviewers may expect immutability for code-cleanliness reasons. Always ask — costs nothing, prevents wasted work if they say "no".</dd>
-
-                    <dt>What should I return — indices, values, or a boolean?</dt>
-                    <dd><em>Why:</em> Two Sum returns indices, but the variants don't. "Two Sum II" returns 1-indexed positions. "Two Sum IV — Input is a BST" returns a boolean. Misreading the return spec is a classic interview face-plant.</dd>
-                  </dl>
-                </div>
-
-                <div class="tip-block">
-                  <div class="tip-block__head">&#129504; Think out loud</div>
-                  <p class="tip-block__text">Start with brute force — nested loops, O(n&sup2;) time. Estimate its complexity and say it. Then explain how to do better: "I can trade space for time using a hash map." State the tradeoff explicitly. Implement the simpler-to-explain approach first, not the cleverest. Test on the given example before touching edge cases.</p>
-                </div>
-
-                <div class="tip-block">
-                  <div class="tip-block__head">&#9888; Common mistakes</div>
-                  <ul>
-                    <li>Using the same element twice (e.g. <code>[3,3], target=6</code> is fine, but don't reuse a single element).</li>
-                    <li>Off-by-one when returning indices — double-check on Example 2.</li>
-                    <li>Hashing the values array instead of tracking <em>indices</em> — you need to return positions, not values.</li>
-                  </ul>
-                </div>
-
-                <div class="tip-block">
-                  <h4>🎯 How to think about edge cases</h4>
-                  <p style="margin: 6px 0 8px 0; font-size: 13px;">Before you say "I'm done," walk through these categories. For each, ask: <em>does my code handle this gracefully?</em></p>
-                  <dl class="clarify-list">
-                    <dt>Minimum-size input</dt>
-                    <dd>Constraint says <code>n ≥ 2</code>. Test <code>[1,2]</code> with target 3 — does it return <code>[0,1]</code>?</dd>
-
-                    <dt>Duplicates (same value, different indices)</dt>
-                    <dd>Test <code>[3,3]</code> with target 6 — your hash map must NOT block the second 3 from finding the first. Most off-by-one bugs hide here.</dd>
-
-                    <dt>Negative numbers and zero</dt>
-                    <dd>Test <code>[-1, 1, 0]</code> with target 0. Does <code>complement = target - x</code> work when target is 0 or negative? It should — but verify.</dd>
-
-                    <dt>Solution at the boundaries</dt>
-                    <dd>What if the answer is the first two elements (e.g., <code>[1,2,...]</code> target 3) or the last two (<code>[...,9,10]</code> target 19)? Walk through both mentally.</dd>
-
-                    <dt>Single-element edge: same element twice</dt>
-                    <dd>Constraint says "may not use the same element twice." A hash map naturally enforces this if you check the map BEFORE inserting the current value. Confirm your ordering.</dd>
-
-                    <dt>What's the answer if no pair exists?</dt>
-                    <dd>Problem says exactly one solution is guaranteed, so this shouldn't happen. But if I asked you to extend the problem to handle "no answer", what would you return? Knowing the answer signals seniority.</dd>
-                  </dl>
-
-                  <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
-                    <strong>General framework</strong>: empty / minimum / maximum input, extreme values (min/max int, negative, zero), duplicates,
-                    solution-at-boundary, no-solution, multiple-solutions, ordering matters?, mutability allowed?
-                  </p>
-                </div>
-
-              </div>
-            </details>
-
-            <details class="interview-tips faang-tips">
-              <summary class="interview-tips__head">
-                <span>🏢 How FAANG interviews this</span>
-                <span class="interview-tips__hint">expand for grading rubric + how to ace it</span>
-              </summary>
-              <div class="interview-tips__body">
-
-                <div class="tip-block">
-                  <h4>📋 How they introduce it</h4>
-                  <p style="margin: 6px 0 0 0; font-size: 13px; font-style: italic; color: var(--text-secondary);">
-                    "Here's a warm-up. Given an array of integers and a target, return the indices of the two numbers that add up to target. Each input has exactly one solution, and you can't use the same element twice."
-                  </p>
-                  <p style="margin: 8px 0 0 0; font-size: 13px;">
-                    Often the first question in a 45-min loop, or a warm-up before a harder follow-up (3Sum, 4Sum, Two Sum II).
-                  </p>
-                </div>
-
-                <div class="tip-block">
-                  <h4>🎯 What they're really testing</h4>
-                  <ul>
-                    <li>Can you turn a vague prompt into a clear contract by asking the right clarifying questions?</li>
-                    <li>Do you instinctively think in complexity tradeoffs (brute force → optimization)?</li>
-                    <li>Can you write clean code under mild pressure (naming, structure, no off-by-ones)?</li>
-                    <li>Do you test your own code on the given example without being asked?</li>
-                    <li>Can you narrate your thought process — "think out loud"?</li>
-                  </ul>
-                </div>
-
-                <div class="tip-block">
-                  <h4>📊 The unofficial grading rubric</h4>
-                  <dl class="clarify-list">
-                    <dt style="color: #16a34a;">Strong Hire</dt>
-                    <dd>Asked 3+ clarifying Qs without prompting. Stated brute force first, immediately proposed hash-map optimization. Walked through the example before AND after coding. Clean code with semantic names. Discussed edge cases (duplicates, negatives) unprompted. Total time: ~10 min.</dd>
-
-                    <dt style="color: #84cc16;">Hire</dt>
-                    <dd>Reached the optimal O(n) solution. May have skipped 1 clarifying question or 1 edge case. Code is correct but might have a minor stylistic issue. Total time: 15-20 min.</dd>
-
-                    <dt style="color: #f59e0b;">Lean No-Hire</dt>
-                    <dd>Jumped to coding without asking questions. Confused indices vs values mid-solution. Needed a nudge to think about the hash map. Tested only after being asked.</dd>
-
-                    <dt style="color: #dc2626;">No-Hire</dt>
-                    <dd>Couldn't reach O(n) even with hints. Couldn't trace through an example. Wrote buggy code and didn't recognize the bugs when reading their own code. Stayed silent for long stretches.</dd>
-                  </dl>
-                </div>
-
-                <div class="tip-block">
-                  <h4>🎓 How to ace it (the 8-step playbook)</h4>
-                  <ol style="margin: 6px 0 0 0; padding-left: 20px; font-size: 13px; line-height: 1.7;">
-                    <li><strong>Restate</strong> the problem in your own words. ("I need indices i, j with nums[i] + nums[j] = target, can't reuse the same index. Right?")</li>
-                    <li><strong>Ask 2-3 clarifying questions</strong> from the list in Interview Tips above. Don't ask 10 — interviewers find that excessive.</li>
-                    <li><strong>Propose brute force out loud.</strong> "Simplest: check every pair. O(n²) time, O(1) space." Don't write it — just state it.</li>
-                    <li><strong>State the optimization.</strong> "I think we can do O(n) with a hash map. Tradeoff: O(n) extra space."</li>
-                    <li><strong>Walk through ONE example before coding.</strong> Show how the hash map fills up and detects the pair. This proves to the interviewer you actually understand it.</li>
-                    <li><strong>Code cleanly.</strong> Variable names: <code>seen</code>, <code>complement</code>. Not <code>d</code>, <code>x</code>, <code>tmp</code>.</li>
-                    <li><strong>Test on the given example AFTER coding.</strong> Walk through it. Confirm output matches expected.</li>
-                    <li><strong>Mention edge cases</strong> you'd handle if pushed: duplicates (e.g., [3,3]), no-answer (return what?), large n. Interviewer may probe one.</li>
-                  </ol>
-                  <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
-                    Total time: 10-15 min for a strong run. Finish faster and they'll ask a follow-up (3Sum, sorted array variant, return all pairs, etc.) — be ready.
-                  </p>
-                </div>
-
-                <div class="tip-block">
-                  <h4>🚫 What NOT to do</h4>
-                  <ul>
-                    <li><strong>Don't code immediately.</strong> A pause to think is mature, not weak.</li>
-                    <li><strong>Don't overoptimize prematurely.</strong> Don't try sorting + binary search — go straight to hash map.</li>
-                    <li><strong>Don't return values instead of indices.</strong> Read the spec twice.</li>
-                    <li><strong>Don't forget the "same element" rule.</strong> nums[i] + nums[i] is NOT valid.</li>
-                    <li><strong>Don't go silent</strong> when stuck. Narrate your thinking — interviewers can't help you if they don't know where you are.</li>
-                    <li><strong>Don't argue with the interviewer.</strong> If they say "what if there are duplicates?", explore it. They're checking how you handle pushback.</li>
-                  </ul>
-                </div>
-
-              </div>
-            </details>
-          </div>
-
-          <!-- Approaches -->
-          <div class="ps-section">
-            <div class="ps-section__title">Approaches</div>
-            <p class="approaches-note">Expand each approach to see the code and the reasoning you'd walk through in an interview.</p>
-
-            <div class="walkthrough-card">
-              <div class="walkthrough-head">Solution Walkthroughs</div>
-
-              <!-- Brute Force -->
-              <details class="approach-block">
-                <summary class="approach-summary">
-                  <span class="approach-name">Brute Force</span>
-                  <span class="approach-O-time approach-O-bad">Time: O(n&sup2;)</span>
-                  <span class="approach-O-space approach-O-good">Space: O(1)</span>
-                </summary>
-                <div class="approach-body">
-                  <pre>def two_sum(nums, target):
-    for i in range(len(nums)):
-        for j in range(i + 1, len(nums)):
-            if nums[i] + nums[j] == target:
-                return [i, j]</pre>
-                  <p class="approach-why">
-                    Check every possible pair. For each element at index <code>i</code>, scan all elements after it to find a complement. This is the first thing you'd say in an interview — it shows you understand the problem before jumping to the optimal approach. Slow, but provably correct. O(n&sup2;) time because of the nested loop; O(1) space because you only store loop indices.
-                  </p>
-                </div>
-              </details>
-
-              <!-- Hash Map -->
-              <details class="approach-block">
-                <summary class="approach-summary">
-                  <span class="approach-name">Hash Map (Optimal)</span>
-                  <span class="approach-O-time approach-O-good">Time: O(n)</span>
-                  <span class="approach-O-space approach-O-bad">Space: O(n)</span>
-                </summary>
-                <div class="approach-body">
-                  <pre>def two_sum(nums, target):
-    seen = {}
-    for i, x in enumerate(nums):
-        complement = target - x
-        if complement in seen:
-            return [seen[complement], i]
-        seen[x] = i</pre>
-                  <p class="approach-why">
-                    For each number <code>x</code>, ask: "have I already seen <code>target - x</code>?" If yes, we have our pair — return its stored index and the current index. If no, store <code>x</code> with its index for future lookups. A single pass through the array, O(n) time. We trade O(n) space (the hash map) for the speed gain. The key insight: instead of looking forward for a pair, we look backward at what we've already seen.
-                  </p>
-                </div>
-              </details>
-
-            </div>
-          </div>
+          <!-- Populated by problem-renderer.js -->
+          <div data-section="problem-statement"></div>
+          <div data-section="examples"></div>
+          <div data-section="interview-tips"></div>
+          <div data-section="faang-tips"></div>
+          <div data-section="approaches"></div>
 
         </div><!-- /.problem-col -->
 
@@ -992,22 +709,9 @@
             <button class="editor-tab" data-pane="text" role="tab" aria-selected="false">📝 Text Editor</button>
           </div>
 
-          <!-- Pane 1: existing code editor (practice-block) -->
+          <!-- Pane 1: code editor — populated by problem-renderer.js -->
           <div class="editor-pane active" data-pane="code">
-            <div class="practice-block"
-              data-title="Two Sum"
-              data-difficulty="easy"
-              data-fn="two_sum"
-              data-starter='def two_sum(nums, target):\n    # Your code here\n    pass'
-              data-tests='[
-                {"args": [[2,7,11,15], 9],  "expected": "[0, 1]", "label": "[2,7,11,15], target=9  →  [0, 1]"},
-                {"args": [[3,2,4], 6],       "expected": "[1, 2]", "label": "[3,2,4], target=6  →  [1, 2]"},
-                {"args": [[3,3], 6],         "expected": "[0, 1]", "label": "[3,3], target=6  →  [0, 1]"}
-              ]'>
-              <div class="practice-problem">
-                Given <code>nums</code> and <code>target</code>, return indices of the two numbers that add up to <code>target</code>.
-              </div>
-            </div>
+            <div data-section="practice-editor"></div>
           </div>
 
           <!-- Pane 2: plain text editor -->
@@ -1019,28 +723,10 @@
             <div class="text-editor__hint">No syntax highlighting. No autocomplete. No run button. Just you, the prompt, and the cursor.</div>
           </div>
 
-          <!-- Related problems + topic info below editor -->
+          <!-- Related problems + topic info — populated by problem-renderer.js -->
           <div class="editor-related">
             <div class="editor-related__head">Related Problems &amp; Topics</div>
-            <div class="related-item">
-              <span class="pill pill-easy" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Easy</span>
-              <span class="related-item__title"><a href="contains-duplicate.html">Contains Duplicate</a></span>
-            </div>
-            <div class="related-item">
-              <span class="pill pill-medium" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Med</span>
-              <span class="related-item__title"><a href="group-anagrams.html">Group Anagrams</a></span>
-            </div>
-            <div class="related-item">
-              <span class="pill pill-medium" style="flex-shrink:0;font-size:10px;padding:1px 6px;">Med</span>
-              <span class="related-item__title"><a href="longest-consecutive-sequence.html">Longest Consecutive Sequence</a></span>
-            </div>
-            <div class="related-item" style="border-bottom:none;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-              <span class="related-item__title"><a href="../topics/arrays.html">Arrays &amp; Hashing</a></span>
-              &nbsp;|&nbsp;
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-              <span class="related-item__title"><a href="../topics/hash-table.html">Hash Table</a></span>
-            </div>
+            <div data-section="related-problems"></div>
           </div>
 
         </div><!-- /.editor-col -->
@@ -1058,6 +744,10 @@
   <script src="../js/search.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/keyboard.js"></script>
+
+  <!-- Problem renderer: loads data/problems.json and populates slot divs -->
+  <script src="../js/problem-renderer.js"></script>
+  <script>renderProblem('two-sum');</script>
 
   <script>
     // ── Sidebar collapse toggle ──────────────────────────────
@@ -1101,60 +791,6 @@
         });
       }
     })();
-
-    // ── Problem data (prototype — will migrate to problems.json) ──
-    const problem = {
-      id: 'two-sum',
-      title: 'Two Sum',
-      leetcode_url: 'https://leetcode.com/problems/two-sum/',
-      difficulty: 'easy',
-      topics: ['arrays', 'hash-table'],
-      patterns: ['hash-map'],
-      frequency_tags: ['blind-75', 'faang-common'],
-      neetcode_category: 'Arrays & Hashing',
-      summary: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
-      constraints: [
-        '2 <= nums.length <= 10^4',
-        '-10^9 <= nums[i] <= 10^9',
-        '-10^9 <= target <= 10^9',
-        'Only one valid answer exists.'
-      ],
-      examples: [
-        { input: 'nums = [2,7,11,15], target = 9', output: '[0, 1]', explanation: 'nums[0] + nums[1] = 2 + 7 = 9, so return [0, 1].' },
-        { input: 'nums = [3,2,4], target = 6',     output: '[1, 2]', explanation: '' },
-        { input: 'nums = [3,3], target = 6',        output: '[0, 1]', explanation: '' }
-      ],
-      starter_code: 'def two_sum(nums, target):\n    # Your code here\n    pass',
-      test_cases: [
-        { input: { nums: [2,7,11,15], target: 9 }, expected: '[0, 1]' },
-        { input: { nums: [3,2,4],     target: 6 }, expected: '[1, 2]' },
-        { input: { nums: [3,3],       target: 6 }, expected: '[0, 1]' }
-      ],
-      approaches: [
-        {
-          name: 'Brute Force',
-          time: 'O(n²)',
-          space: 'O(1)',
-          code: 'def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]',
-          explanation: 'Check every pair. Slow but correct.'
-        },
-        {
-          name: 'Hash Map',
-          time: 'O(n)',
-          space: 'O(n)',
-          code: 'def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        complement = target - x\n        if complement in seen:\n            return [seen[complement], i]\n        seen[x] = i',
-          explanation: 'Single pass. For each x, check if target-x was seen before. Trade space for time.'
-        }
-      ],
-      related_problem_ids: ['contains-duplicate', 'group-anagrams', 'longest-consecutive-sequence']
-    };
-
-    // Init practice blocks (handles editor + test runner)
-    document.addEventListener('DOMContentLoaded', function() {
-      if (window.DSA && DSA.practice) {
-        DSA.practice.init();
-      }
-    });
   </script>
 
   <script>
