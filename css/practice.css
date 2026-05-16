@@ -19,6 +19,32 @@
   margin-top: 0;
 }
 
+/* Dismissible warning shown when CodeMirror or Pyodide fail to load
+   (network blocked, CDN unreachable, etc.). */
+.practice-block__banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff7ed;
+  border-bottom: 1px solid #fdba74;
+  color: #9a3412;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.practice-block__banner-close {
+  background: transparent;
+  border: none;
+  color: #9a3412;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.practice-block__banner-close:hover { opacity: 0.7; }
+
 .practice-block__header {
   display: flex;
   flex-direction: row;

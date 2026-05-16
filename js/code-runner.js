@@ -3,96 +3,10 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // --- Singleton state ---
-  var cmLoaded = false;
-  var cmLoading = false;
-  var cmCallbacks = [];
-
-  var pyodideLoading = false;
-  var pyodideCallbacks = [];
-
-  // --- Asset URLs (CodeMirror self-hosted; Pyodide stays on CDN) ---
-  function vendorPath(filename) {
-    var p = window.location.pathname;
-    var prefix = (p.indexOf('/topics/') !== -1 || p.indexOf('/problems/') !== -1) ? '../' : '';
-    return prefix + 'vendor/codemirror/' + filename;
-  }
-  var CM_CSS      = vendorPath('codemirror.min.css');
-  var CM_JS       = vendorPath('codemirror.min.js');
-  var CM_PYTHON   = vendorPath('python.min.js');
-  var CM_CLOSE    = vendorPath('closebrackets.min.js');
-  var PY_JS       = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
-  var PY_INDEX    = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/';
-
-  // --- Loader helpers ---
-  function loadCSS(url) {
-    if (document.querySelector('link[href="' + url + '"]')) return;
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    document.head.appendChild(link);
-  }
-
-  function loadScript(url, callback) {
-    if (document.querySelector('script[src="' + url + '"]')) {
-      if (callback) callback();
-      return;
-    }
-    var s = document.createElement('script');
-    s.src = url;
-    s.onload = function() { if (callback) callback(); };
-    s.onerror = function() { if (callback) callback(new Error('Failed to load: ' + url)); };
-    document.head.appendChild(s);
-  }
-
-  function loadCodeMirror(callback) {
-    if (cmLoaded) { callback(); return; }
-    cmCallbacks.push(callback);
-    if (cmLoading) return;
-    cmLoading = true;
-
-    loadCSS(CM_CSS);
-
-    loadScript(CM_JS, function(err) {
-      if (err) { flushCmCallbacks(err); return; }
-      loadScript(CM_PYTHON, function(err2) {
-        if (err2) { flushCmCallbacks(err2); return; }
-        loadScript(CM_CLOSE, function(err3) {
-          cmLoaded = !err3;
-          flushCmCallbacks(err3 || null);
-        });
-      });
-    });
-  }
-
-  function flushCmCallbacks(err) {
-    var cbs = cmCallbacks.slice();
-    cmCallbacks = [];
-    for (var i = 0; i < cbs.length; i++) { cbs[i](err); }
-  }
-
-  function loadPyodide(callback) {
-    if (window.__dsaPyodide) { callback(null, window.__dsaPyodide); return; }
-    pyodideCallbacks.push(callback);
-    if (pyodideLoading) return;
-    pyodideLoading = true;
-
-    loadScript(PY_JS, function(err) {
-      if (err) { flushPyCallbacks(err, null); return; }
-      window.loadPyodide({ indexURL: PY_INDEX }).then(function(py) {
-        window.__dsaPyodide = py;
-        flushPyCallbacks(null, py);
-      }).catch(function(e) {
-        flushPyCallbacks(e, null);
-      });
-    });
-  }
-
-  function flushPyCallbacks(err, py) {
-    var cbs = pyodideCallbacks.slice();
-    pyodideCallbacks = [];
-    for (var i = 0; i < cbs.length; i++) { cbs[i](err, py); }
-  }
+  // CodeMirror + Pyodide loaders live in js/cdn-loader.js (DSA.cdnLoader.*)
+  // so practice.js and code-runner.js share the same singletons.
+  function loadCodeMirror(cb) { DSA.cdnLoader.loadCodeMirror(cb); }
+  function loadPyodide(cb)    { DSA.cdnLoader.loadPyodide(cb); }
 
   // --- Get Python source from a code block ---
   function getPythonSource(block) {

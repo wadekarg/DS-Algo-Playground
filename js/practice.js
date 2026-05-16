@@ -3,97 +3,30 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // --- Asset URLs ---
-  // CodeMirror is self-hosted so it works on networks that block cdnjs (common
-  // on corporate Mac/Windows laptops). Pyodide stays on jsdelivr because the
-  // full distribution is ~10MB and we don't want to ship that with the site.
-  function vendorPath(filename) {
-    // sidebar-nav.getBasePath logic, inlined to avoid coupling
-    var p = window.location.pathname;
-    var prefix = (p.indexOf('/topics/') !== -1 || p.indexOf('/problems/') !== -1) ? '../' : '';
-    return prefix + 'vendor/codemirror/' + filename;
-  }
-  var CM_CSS     = vendorPath('codemirror.min.css');
-  // Dracula theme is inlined in css/code-runner.css with !important, so we
-  // don't need to load the theme CSS separately at all.
-  var CM_JS      = vendorPath('codemirror.min.js');
-  var CM_PYTHON  = vendorPath('python.min.js');
-  var CM_CLOSE   = vendorPath('closebrackets.min.js');
-  var PY_JS      = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
-  var PY_INDEX   = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/';
+  // CodeMirror + Pyodide loaders live in js/cdn-loader.js (DSA.cdnLoader.*)
+  // so practice.js and code-runner.js share the same singletons.
+  function loadCodeMirror(cb) { DSA.cdnLoader.loadCodeMirror(cb); }
+  function loadPyodide(cb)    { DSA.cdnLoader.loadPyodide(cb); }
 
-  // --- Singleton loader state ---
-  var cmLoaded = false;
-  var cmLoading = false;
-  var cmCallbacks = [];
-
-  var pyLoading = false;
-  var pyCallbacks = [];
-
-  function loadCSS(url) {
-    if (document.querySelector('link[href="' + url + '"]')) return;
-    var link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    document.head.appendChild(link);
-  }
-
-  function loadScript(url, callback) {
-    if (document.querySelector('script[src="' + url + '"]')) {
-      if (callback) callback();
-      return;
-    }
-    var s = document.createElement('script');
-    s.src = url;
-    s.onload = function() { if (callback) callback(); };
-    s.onerror = function() { if (callback) callback(new Error('Failed: ' + url)); };
-    document.head.appendChild(s);
-  }
-
-  function loadCodeMirror(callback) {
-    if (window.CodeMirror && cmLoaded) { callback(); return; }
-    if (window.CodeMirror) { cmLoaded = true; callback(); return; }
-    cmCallbacks.push(callback);
-    if (cmLoading) return;
-    cmLoading = true;
-    loadCSS(CM_CSS);
-    loadScript(CM_JS, function(err) {
-      if (err) { flushCm(err); return; }
-      loadScript(CM_PYTHON, function(err2) {
-        if (err2) { flushCm(err2); return; }
-        loadScript(CM_CLOSE, function(err3) {
-          cmLoaded = !err3;
-          flushCm(err3 || null);
-        });
-      });
-    });
-  }
-
-  function flushCm(err) {
-    var cbs = cmCallbacks.slice(); cmCallbacks = [];
-    for (var i = 0; i < cbs.length; i++) cbs[i](err);
-  }
-
-  function loadPyodide(callback) {
-    // Shared singleton with code-runner.js via window.__dsaPyodide
-    if (window.__dsaPyodide) { callback(null, window.__dsaPyodide); return; }
-    pyCallbacks.push(callback);
-    if (pyLoading) return;
-    pyLoading = true;
-    loadScript(PY_JS, function(err) {
-      if (err) { flushPy(err, null); return; }
-      window.loadPyodide({ indexURL: PY_INDEX }).then(function(py) {
-        window.__dsaPyodide = py;
-        flushPy(null, py);
-      }).catch(function(e) {
-        flushPy(e, null);
-      });
-    });
-  }
-
-  function flushPy(err, py) {
-    var cbs = pyCallbacks.slice(); pyCallbacks = [];
-    for (var i = 0; i < cbs.length; i++) cbs[i](err, py);
+  // --- Failure banner: prepend a dismissible warning above the practice block
+  //     so users on locked-down networks see an actionable hint. ---
+  function showBanner(block, kind, message) {
+    if (block.querySelector('.practice-block__banner[data-banner="' + kind + '"]')) return;
+    var banner = document.createElement('div');
+    banner.className = 'practice-block__banner';
+    banner.setAttribute('data-banner', kind);
+    banner.setAttribute('role', 'alert');
+    var msg = document.createElement('span');
+    msg.textContent = message;
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'practice-block__banner-close';
+    close.setAttribute('aria-label', 'Dismiss');
+    close.textContent = '×';
+    close.addEventListener('click', function() { banner.remove(); });
+    banner.appendChild(msg);
+    banner.appendChild(close);
+    block.insertBefore(banner, block.firstChild);
   }
 
   // --- Python repr helper for JS values ---
@@ -215,6 +148,8 @@ var DSA = window.DSA || {};
     loadCodeMirror(function(err) {
       if (err) {
         statusSpan.textContent = 'Editor failed to load';
+        showBanner(el, 'editor',
+          'Code editor failed to load. This usually means your network is blocking the local script — try refreshing, or paste your solution into the Text Editor tab on the right.');
         return;
       }
       // Unescape newlines from data-starter (stored as literal \n in HTML attribute)
@@ -243,6 +178,8 @@ var DSA = window.DSA || {};
       loadPyodide(function(pyErr, py) {
         if (pyErr) {
           statusSpan.textContent = 'Pyodide failed to load';
+          showBanner(el, 'pyodide',
+            'Python runtime failed to load (about 10MB from cdn.jsdelivr.net). Check your network — corporate firewalls sometimes block this CDN. Your code is preserved; click Run again once you reconnect.');
           runBtn.disabled = false;
           return;
         }

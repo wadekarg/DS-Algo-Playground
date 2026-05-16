@@ -90,7 +90,7 @@ function renderProblem(problemId) {
         return;
       }
       _renderAllSections(prob, all);
-    } else if (cached && JSON.stringify(cached) !== JSON.stringify(all)) {
+    } else if (cached && _problemsChanged(cached, all)) {
       _problemsCache = all;
       const prob = all.find(p => p.id === problemId);
       if (prob) _renderAllSections(prob, all);
@@ -98,6 +98,23 @@ function renderProblem(problemId) {
   }).catch(err => {
     if (!renderedFromCache) console.error(err);
   });
+}
+
+/**
+ * Cheap deep-ish compare: short-circuit on length, then on id-fingerprint,
+ * then JSON.stringify only on the few problems whose ids match. Avoids
+ * round-tripping ~600KB of JSON on every problem page just to detect
+ * that nothing changed.
+ */
+function _problemsChanged(a, b) {
+  if (a === b) return false;
+  if (!a || !b) return true;
+  if (a.length !== b.length) return true;
+  for (let i = 0; i < a.length; i++) {
+    if (!a[i] || !b[i] || a[i].id !== b[i].id) return true;
+  }
+  // Same ids in same order — compare bodies. (Rare to reach here.)
+  return JSON.stringify(a) !== JSON.stringify(b);
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -113,11 +130,21 @@ function _esc(str) {
 
 /**
  * Heuristic: is this Big-O expression "good" (worth a green badge)?
- * O(1), O(log n), O(n) are good; O(n²), O(n^2), O(2^n), O(n!) are bad.
+ * Good:  O(1), O(log n), O(n), O(n log n), O(n+m), O(n*m), O(k log n).
+ * Bad:   O(n²), O(n^2), O(2^n), O(n!), O(n^3), O(m^n).
  */
 function _isGoodComplexity(expr) {
   const e = expr.toLowerCase().replace(/\s/g, '');
-  if (/n[\^²2]/.test(e) || /2\^n/.test(e) || /n!/.test(e) || /n\*n/.test(e)) return false;
+  // Quadratic-or-worse polynomial: variable raised to a power ≥ 2.
+  // Matches n^2, n², n^3, m^2, etc. — but NOT n*n (handled below) or n*log(...).
+  if (/[a-z][\^²³]/.test(e)) return false;
+  if (/[a-z]\^[2-9]/.test(e)) return false;
+  // Exponential: 2^n, base^var.
+  if (/[0-9]\^[a-z]/.test(e) || /[a-z]\^[a-z]/.test(e)) return false;
+  // Factorial.
+  if (/[a-z]!/.test(e)) return false;
+  // Same variable multiplied by itself: n*n, m*m.
+  if (/([a-z])\*\1\b/.test(e)) return false;
   return true;
 }
 
