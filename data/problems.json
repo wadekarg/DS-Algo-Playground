@@ -30732,5 +30732,458 @@
       "reverse-linked-list",
       "merge-two-sorted-lists"
     ]
+  },
+  {
+    "id": "combination-sum",
+    "title": "Combination Sum",
+    "leetcode_url": "https://leetcode.com/problems/combination-sum/",
+    "leetcode_id": 39,
+    "difficulty": "medium",
+    "patterns": [
+      "backtracking"
+    ],
+    "topics": [
+      "backtracking"
+    ],
+    "neetcode_category": "Backtracking",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an array of distinct integers candidates and a target integer, return all unique combinations of candidates that sum to target. The same number may be used unlimited times.",
+    "constraints": [
+      "1 <= candidates.length <= 30",
+      "2 <= candidates[i] <= 40",
+      "All distinct",
+      "1 <= target <= 40"
+    ],
+    "examples": [
+      {
+        "input": "candidates = [2,3,6,7], target = 7",
+        "output": "[[2,2,3],[7]]"
+      },
+      {
+        "input": "candidates = [2,3,5], target = 8",
+        "output": "[[2,2,2,2],[2,3,3],[3,5]]"
+      }
+    ],
+    "function_name": "combinationSum",
+    "function_signature": "def combinationSum(candidates, target):",
+    "starter_code": "def combinationSum(candidates, target):\n    # Backtrack. Pass start index to allow same num reuse but avoid duplicates.\n    pass",
+    "test_cases": [
+      {
+        "label": "target 7",
+        "args": [
+          [
+            2,
+            3,
+            6,
+            7
+          ],
+          7
+        ],
+        "expected": "[[2, 2, 3], [7]]"
+      },
+      {
+        "label": "target 8",
+        "args": [
+          [
+            2,
+            3,
+            5
+          ],
+          8
+        ],
+        "expected": "[[2, 2, 2, 2], [2, 3, 3], [3, 5]]"
+      },
+      {
+        "label": "no solution",
+        "args": [
+          [
+            2
+          ],
+          1
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "exact match",
+        "args": [
+          [
+            1
+          ],
+          3
+        ],
+        "expected": "[[1, 1, 1]]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Backtracking with reuse. Maintain current list and remaining target. For each i from start to end: append candidates[i], recurse with start=i (reuse allowed) and target - candidates[i]. Pop. Base: target==0 \u2192 record; target<0 \u2192 prune.",
+      "clarifying_questions": [
+        {
+          "question": "Reuse allowed?",
+          "why": "Yes \u2014 unlimited times."
+        },
+        {
+          "question": "Distinct candidates?",
+          "why": "Yes \u2014 no dedup needed."
+        },
+        {
+          "question": "Order in output?",
+          "why": "Combinations as sorted lists. Non-decreasing within each via start index."
+        }
+      ],
+      "think_out_loud": "Backtrack with start index to keep combinations sorted (avoid permutations).",
+      "edge_cases": [
+        {
+          "category": "No solution",
+          "details": "[]."
+        },
+        {
+          "category": "Single match",
+          "details": "Found via direct path."
+        }
+      ],
+      "common_mistakes": [
+        "Allowing start to go back \u2014 produces permutations.",
+        "Not pruning when target < 0."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic backtracking.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "Reuse via start index.",
+        "Pruning."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Produces permutations."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "result=[]. def back(start, path, rem): if rem==0: result.append(path[:]); return. if rem<0: return. for i in range(start, len(c)): path.append(c[i]); back(i, path, rem-c[i]); path.pop(). back(0, [], target). return result."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't reset start to 0.",
+        "Don't forget the rem<0 prune."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking with Start Index",
+        "time": "exponential, exact bound complex",
+        "space": "O(target)",
+        "code": "def combinationSum(candidates, target):\n    result = []\n    def back(start, path, rem):\n        if rem == 0:\n            result.append(path[:]); return\n        if rem < 0:\n            return\n        for i in range(start, len(candidates)):\n            path.append(candidates[i])\n            back(i, path, rem - candidates[i])\n            path.pop()\n    back(0, [], target)\n    return result",
+        "explanation": "Backtracking with reuse. start index ensures combinations (not permutations) \u2014 we can use the current index again to allow reuse, but never an earlier one. Prune on negative remaining."
+      }
+    ],
+    "related_problem_ids": [
+      "subsets",
+      "permutations",
+      "combinations"
+    ]
+  },
+  {
+    "id": "letter-combinations-of-a-phone-number",
+    "title": "Letter Combinations of a Phone Number",
+    "leetcode_url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+    "leetcode_id": 17,
+    "difficulty": "medium",
+    "patterns": [
+      "backtracking",
+      "string"
+    ],
+    "topics": [
+      "backtracking"
+    ],
+    "neetcode_category": "Backtracking",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a string of digits (2-9), return all possible letter combinations the number could represent (T9 mapping).",
+    "constraints": [
+      "0 <= digits.length <= 4",
+      "digits[i] in '2'-'9'"
+    ],
+    "examples": [
+      {
+        "input": "digits = \"23\"",
+        "output": "[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]"
+      }
+    ],
+    "function_name": "letterCombinations",
+    "function_signature": "def letterCombinations(digits):",
+    "starter_code": "def letterCombinations(digits):\n    # T9 map. Backtrack by digit; choose each letter; recurse.\n    if not digits: return []\n    pass",
+    "test_cases": [
+      {
+        "label": "23",
+        "args": [
+          "23"
+        ],
+        "expected": "['ad', 'ae', 'af', 'bd', 'be', 'bf', 'cd', 'ce', 'cf']"
+      },
+      {
+        "label": "empty",
+        "args": [
+          ""
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single 2",
+        "args": [
+          "2"
+        ],
+        "expected": "['a', 'b', 'c']"
+      },
+      {
+        "label": "7 (4 letters)",
+        "args": [
+          "7"
+        ],
+        "expected": "['p', 'q', 'r', 's']"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Standard backtrack. T9 mapping dict. Recurse on digit index; for each letter, append and recurse to next digit.",
+      "clarifying_questions": [
+        {
+          "question": "Empty input?",
+          "why": "Return []."
+        },
+        {
+          "question": "T9 mapping?",
+          "why": "2=abc, 3=def, 4=ghi, 5=jkl, 6=mno, 7=pqrs, 8=tuv, 9=wxyz."
+        }
+      ],
+      "think_out_loud": "Cartesian product via backtracking.",
+      "edge_cases": [
+        {
+          "category": "Empty",
+          "details": "[]."
+        },
+        {
+          "category": "Single digit",
+          "details": "Return letters."
+        }
+      ],
+      "common_mistakes": [
+        "Iterative product with bugs.",
+        "Not handling empty input."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "T9 enumeration.",
+      "introduction_context": "Phone screen.",
+      "really_testing": [
+        "Backtracking pattern."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Bug in empty case."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "mapping = {...}. result = []. def back(i, path): if i == len(digits): result.append(''.join(path)); return. for ch in mapping[digits[i]]: path.append(ch); back(i+1, path); path.pop(). if digits: back(0, []). return result."
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't forget empty."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking on Digits",
+        "time": "O(3^n * 4^m)",
+        "space": "O(n)",
+        "code": "def letterCombinations(digits):\n    if not digits:\n        return []\n    mapping = {'2': 'abc', '3': 'def', '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs', '8': 'tuv', '9': 'wxyz'}\n    result = []\n    def back(i, path):\n        if i == len(digits):\n            result.append(''.join(path)); return\n        for ch in mapping[digits[i]]:\n            path.append(ch); back(i + 1, path); path.pop()\n    back(0, [])\n    return result",
+        "explanation": "Backtrack one digit at a time. Each digit contributes its T9 letters; recursion builds the cartesian product."
+      }
+    ],
+    "related_problem_ids": [
+      "combinations",
+      "permutations",
+      "subsets"
+    ]
+  },
+  {
+    "id": "palindrome-partitioning",
+    "title": "Palindrome Partitioning",
+    "leetcode_url": "https://leetcode.com/problems/palindrome-partitioning/",
+    "leetcode_id": 131,
+    "difficulty": "medium",
+    "patterns": [
+      "backtracking",
+      "string"
+    ],
+    "topics": [
+      "backtracking"
+    ],
+    "neetcode_category": "Backtracking",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given a string s, partition it such that every substring is a palindrome. Return all possible partitions.",
+    "constraints": [
+      "1 <= s.length <= 16",
+      "s contains lowercase English letters"
+    ],
+    "examples": [
+      {
+        "input": "s = \"aab\"",
+        "output": "[[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]"
+      }
+    ],
+    "function_name": "partition",
+    "function_signature": "def partition(s):",
+    "starter_code": "def partition(s):\n    # Backtrack on split positions. At each step, choose a prefix [start, end] that's a palindrome; recurse.\n    pass",
+    "test_cases": [
+      {
+        "label": "aab",
+        "args": [
+          "aab"
+        ],
+        "expected": "[['a', 'a', 'b'], ['aa', 'b']]"
+      },
+      {
+        "label": "single",
+        "args": [
+          "a"
+        ],
+        "expected": "[['a']]"
+      },
+      {
+        "label": "all same",
+        "args": [
+          "aaa"
+        ],
+        "expected": "[['a', 'a', 'a'], ['a', 'aa'], ['aa', 'a'], ['aaa']]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Backtrack on split points. For each start position, try every end where s[start:end+1] is a palindrome; recurse from end+1. Base: start == n \u2192 record.",
+      "clarifying_questions": [
+        {
+          "question": "All palindromic partitions?",
+          "why": "Yes \u2014 count all."
+        },
+        {
+          "question": "Min cut?",
+          "why": "No \u2014 that's a different problem."
+        }
+      ],
+      "think_out_loud": "Decision tree of splits.",
+      "edge_cases": [
+        {
+          "category": "Single char",
+          "details": "[[s]]."
+        },
+        {
+          "category": "All same chars",
+          "details": "Multiple partitions."
+        }
+      ],
+      "common_mistakes": [
+        "Inefficient palindrome check (could precompute).",
+        "Off-by-one on substring."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Backtracking + palindrome check.",
+      "introduction_context": "Common at Amazon, Meta.",
+      "really_testing": [
+        "Split decision tree.",
+        "Palindrome substring check."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "result = []. def back(start, path): if start == len(s): result.append(path[:]); return. for end in range(start, len(s)): if s[start:end+1] == s[start:end+1][::-1]: path.append(s[start:end+1]); back(end+1, path); path.pop(). back(0, []). return result."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't forget palindrome check.",
+        "Don't off-by-one."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking on Splits",
+        "time": "O(n * 2^n)",
+        "space": "O(n)",
+        "code": "def partition(s):\n    result = []\n    def back(start, path):\n        if start == len(s):\n            result.append(path[:])\n            return\n        for end in range(start, len(s)):\n            sub = s[start:end + 1]\n            if sub == sub[::-1]:\n                path.append(sub)\n                back(end + 1, path)\n                path.pop()\n    back(0, [])\n    return result",
+        "explanation": "For each starting position, try every palindromic prefix; recurse on the suffix. Each leaf is a complete partition."
+      }
+    ],
+    "related_problem_ids": [
+      "combinations",
+      "subsets",
+      "longest-palindromic-substring"
+    ]
   }
 ]

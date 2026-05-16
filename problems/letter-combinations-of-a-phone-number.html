@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letter Combinations of a Phone Number - DS-Algo-Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+  <link rel="stylesheet" href="../css/practice.css">
+  <link rel="stylesheet" href="../css/code-runner.css">
+  <style>
+    /* ── Problem page: full-viewport 3-column split layout ─── */
+
+    /*
+     * Layout overview
+     * ───────────────
+     * body already sets display:flex (from layout.css).
+     * The site .sidebar is fixed; .main gets margin-left: var(--sidebar-width).
+     *
+     * Inside .main we override the default single-column .main__content and
+     * introduce a two-pane split: problem-col | editor-col.
+     * When the site sidebar is collapsed (body.sidebar-collapsed), the
+     * .main margin-left drops to 0 and both panes get more room.
+     */
+
+    /* ── Site sidebar collapse ─────────────────────────────── */
+    /* Single toggle button that moves based on sidebar state:
+         - Sidebar OPEN:    sits at the right edge of the sidebar
+         - Sidebar CLOSED:  sits in the header to the LEFT of the search bar
+       Direct child of <body> so it escapes the header's stacking context.
+       z-index 110 keeps it above the sidebar (z-index 100). */
+    .sidebar-collapse-btn {
+      position: fixed;
+      top: 14px;
+      /* Default = sidebar open: right edge of the sidebar (8px inset from boundary) */
+      left: calc(var(--sidebar-width) - 44px);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg-card, white);
+      border: 1px solid var(--border-color, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 110;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary, #1e293b);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: left 0.25s ease, background 0.15s, border-color 0.15s;
+    }
+    .sidebar-collapse-btn:hover {
+      background: var(--surface-hover, #f1f5f9);
+      border-color: var(--accent-primary, #6366f1);
+    }
+
+    /* Collapsed state — hide the sidebar, remove the margin, move button to header (left of search) */
+    body.sidebar-collapsed .sidebar {
+      transform: translateX(-100%);
+    }
+    body.sidebar-collapsed .main {
+      margin-left: 0;
+    }
+    body.sidebar-collapsed .sidebar-collapse-btn {
+      /* Slides into the header area, sits just before the search bar */
+      left: 12px;
+    }
+    /* When collapsed, push header content right to make room for the toggle button */
+    body.sidebar-collapsed .main__header {
+      padding-left: 60px;
+    }
+    /* The old expand rail is no longer needed — one button handles both states */
+    .sidebar-expand-rail { display: none !important; }
+
+    /* ── Main content: no max-width, no auto-margin, no padding ─ */
+    .main__content--problem {
+      padding: 0;
+      max-width: none;
+      margin: 0;
+      height: calc(100vh - var(--header-height));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Thin top bar for breadcrumbs + title + meta */
+    .problem-topbar {
+      padding: 8px 16px 6px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      flex-shrink: 0;
+    }
+    .problem-topbar .breadcrumbs {
+      margin-bottom: 4px;
+    }
+    .problem-title-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .problem-title-row h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .problem-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+    .problem-ext-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-left: auto;
+    }
+    .problem-ext-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      transition: background var(--transition-speed), border-color var(--transition-speed);
+      white-space: nowrap;
+    }
+    .problem-ext-links a:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-primary);
+    }
+
+    /* ── Split panes ───────────────────────────────────────── */
+    .problem-split {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Left: problem content (scrollable) */
+    .problem-col {
+      flex: 1 1 50%;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 14px 18px 24px;
+      padding-right: 12px;
+      border-right: 1px solid var(--border-color);
+    }
+
+    /* Right: editor column — entire column scrolls as one unit */
+    .editor-col {
+      flex: 1 1 50%;
+      min-width: 340px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Practice-block sits naturally in the column (no internal scrolling) */
+    .editor-col .practice-block {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+    /* Taller editor in split view */
+    .editor-col .practice-block__editor-wrap .CodeMirror {
+      height: 340px;
+    }
+    .editor-col .code-runner-panel__editor-wrap .CodeMirror {
+      height: 340px;
+    }
+
+    /* Related problems panel — sits at bottom, flows with column scroll */
+    .editor-related {
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+    }
+    .editor-related__head {
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .related-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .related-item:last-child { border-bottom: none; }
+    .related-item__title { flex: 1; font-weight: 500; }
+    .related-item__title a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+    .related-item__title a:hover { text-decoration: underline; }
+
+    /* ── Problem statement card (condensed) ───────────────── */
+    .problem-statement {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      line-height: 1.65;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    .problem-constraints {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+    .problem-constraints__label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .problem-constraints ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+    .problem-constraints li {
+      font-size: 12px;
+      font-family: var(--font-mono, monospace);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ── Examples (compact inline format) ─────────────────── */
+    .examples-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .example-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .example-row__num {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 3px;
+    }
+    .example-row__io {
+      font-family: var(--font-mono, monospace);
+      font-size: 12.5px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 20px;
+      line-height: 1.6;
+    }
+    .example-row__io .io-label { color: var(--text-secondary); }
+    .example-row__io .io-value { color: var(--text-primary); font-weight: 500; }
+    .example-row__explanation {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ── Section headers (compact) ─────────────────────────── */
+    .ps-section {
+      margin-bottom: 14px;
+    }
+    .ps-section__title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* ── Interview Tips card ───────────────────────────────── */
+    .interview-tips {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent-secondary);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .interview-tips__toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid transparent;
+      transition: background var(--transition-speed);
+      list-style: none;
+    }
+    .interview-tips__toggle::-webkit-details-marker { display: none; }
+    details.interview-tips[open] .interview-tips__toggle {
+      border-bottom-color: var(--border-color);
+      background: var(--bg-secondary);
+    }
+    .interview-tips__toggle .toggle-icon {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      transition: transform var(--transition-speed);
+      flex-shrink: 0;
+    }
+    details.interview-tips[open] .toggle-icon {
+      transform: rotate(90deg);
+    }
+    .interview-tips__toggle .tip-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(139, 92, 246, 0.12);
+      color: #6d28d9;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .interview-tips__body {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tip-block__head {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .tip-block__text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .tip-block ul {
+      margin: 4px 0 0;
+      padding-left: 16px;
+    }
+    .tip-block li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .clarify-list dt { font-weight: 600; margin-top: 10px; font-size: 14px; }
+    .clarify-list dt:first-child { margin-top: 0; }
+    .clarify-list dd { margin: 4px 0 0 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+    .clarify-list dd em { color: var(--accent-primary, #6366f1); font-style: normal; font-weight: 600; margin-right: 4px; }
+
+    /* ── FAANG interview rubric card ──────────────────────── */
+    .faang-tips { margin-top: 16px; }
+    .faang-tips .interview-tips__head { background: linear-gradient(135deg, #1e293b, #475569); }
+
+    /* interview-tips used with <details> needs a __head summary variant */
+    .interview-tips__head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid transparent;
+      transition: background var(--transition-speed);
+      list-style: none;
+    }
+    .interview-tips__head::-webkit-details-marker { display: none; }
+    details.interview-tips[open] .interview-tips__head {
+      border-bottom-color: var(--border-color);
+    }
+    .faang-tips .interview-tips__head {
+      color: #f8fafc;
+    }
+    .faang-tips[open] .interview-tips__head {
+      border-bottom-color: rgba(255,255,255,0.15);
+    }
+    .interview-tips__hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .faang-tips .interview-tips__hint {
+      color: rgba(248,250,252,0.65);
+    }
+    .tip-block h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 6px 0;
+    }
+
+    /* ── Approaches (condensed) ────────────────────────────── */
+    .approaches-note {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+    .walkthrough-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .walkthrough-head {
+      padding: 8px 14px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+    .approach-block {
+      border-top: 1px solid var(--border-color);
+    }
+    .approach-block:first-of-type { border-top: none; }
+    .approach-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      list-style: none;
+      user-select: none;
+    }
+    .approach-summary::-webkit-details-marker { display: none; }
+    .approach-summary::before {
+      content: '▶';
+      font-size: 9px;
+      color: var(--text-tertiary);
+      transition: transform var(--transition-speed);
+      flex-shrink: 0;
+    }
+    details[open] .approach-summary::before { transform: rotate(90deg); }
+    .approach-name { font-weight: 600; flex: 1; }
+    .approach-O-time, .approach-O-space {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .approach-O-good { background: rgba(34, 197, 94, 0.12); color: #166534; }
+    .approach-O-bad  { background: rgba(239, 68, 68, 0.12); color: #991b1b; }
+    .approach-body {
+      padding: 10px 14px 14px;
+      border-top: 1px solid var(--border-color);
+    }
+    .approach-body pre {
+      background: var(--bg-code);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 0 0 8px;
+    }
+    .approach-body .approach-why {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Responsive: narrow viewport → stack vertically ────── */
+    @media (max-width: 1023px) {
+      /* On mobile the hamburger handles sidebar toggle; hide our collapse button */
+      .sidebar-collapse-btn {
+        display: none !important;
+      }
+      .main__content--problem {
+        height: auto;
+        overflow: visible;
+      }
+      .problem-split {
+        flex-direction: column;
+        overflow: visible;
+      }
+      .problem-col {
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 14px 18px;
+      }
+      .editor-col {
+        flex: none;
+        min-width: 0;
+        max-width: none;
+        overflow: visible;
+      }
+      .editor-col .practice-block {
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        margin: 14px;
+      }
+      .editor-col .practice-block__editor-wrap .CodeMirror {
+        height: 260px;
+      }
+      .editor-related {
+        max-height: none;
+        overflow: visible;
+        margin: 0 14px 14px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        border-top: 1px solid var(--border-color);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .problem-title-row { flex-direction: column; align-items: flex-start; }
+      .problem-ext-links { margin-left: 0; }
+    }
+
+    /* ── Editor tabs ───────────────────────────────────────── */
+    .editor-tabs {
+      display: flex;
+      gap: 0;
+      flex-shrink: 0;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .editor-tab {
+      padding: 8px 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .editor-tab:hover { color: var(--text-primary); }
+    .editor-tab.active {
+      color: var(--accent-primary, #6366f1);
+      border-bottom-color: var(--accent-primary, #6366f1);
+    }
+
+    /* ── Editor panes ──────────────────────────────────────── */
+    /* Block-level, sizes to content; the .editor-col handles scroll. */
+    .editor-pane { display: block; }
+    .editor-pane[hidden] { display: none; }
+    .editor-pane--text { padding: 10px 12px; }
+    .editor-pane--text [data-section="test-cases"] { margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+    .editor-pane__note {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid #f59e0b;
+      padding: 8px 12px;
+      margin: 10px 12px 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── Plain text editor (auto-expanding to content) ──────── */
+    .text-editor {
+      width: calc(100% - 24px);
+      min-height: 220px;   /* ~10 lines */
+      padding: 14px;
+      font-family: var(--font-mono, 'Menlo', 'Monaco', monospace);
+      font-size: 13.5px;
+      line-height: 1.5;
+      background: var(--bg-card, white);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      resize: none;         /* JS auto-grows it */
+      overflow-y: hidden;   /* no inner scrollbar — let it grow */
+      tab-size: 4;
+      -moz-tab-size: 4;
+      outline: none;
+      transition: border-color 0.15s, height 0.05s;
+      box-sizing: border-box;
+      margin: 0 12px;
+      display: block;
+    }
+    .text-editor:focus {
+      border-color: var(--accent-primary, #6366f1);
+    }
+    .text-editor__hint {
+      flex-shrink: 0;
+      margin: 6px 12px 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* ── Test Cases pane ───────────────────────────────────── */
+    .test-cases {
+      padding: 14px 16px;
+      overflow-y: auto;
+    }
+    .test-cases__title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: var(--text-primary);
+    }
+    .test-cases__count {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 0 0 14px 0;
+    }
+    .test-case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono, monospace);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .test-case-card__header {
+      font-family: var(--font-sans, system-ui, sans-serif);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-case-card__label {
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .test-case-card__row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .test-case-card__row-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      min-width: 70px;
+      flex-shrink: 0;
+    }
+    .test-case-card__row-value {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body data-topic="problems">
+
+  <!-- Sidebar collapse toggle — direct child of body so it escapes the header's stacking context.
+       Single button; icon flips between ‹ (open) and › (collapsed). -->
+  <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse navigation sidebar" title="Collapse sidebar">&#8249;</button>
+
+  <!-- Site Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <!-- Mobile hamburger (existing, shows on < 1024px) -->
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <!-- Problem page uses a custom full-height layout, bypassing .main__content defaults -->
+    <div class="main__content--problem">
+
+      <!-- Top bar: populated by problem-renderer.js -->
+      <div class="problem-topbar" data-section="topbar"></div>
+
+      <!-- Split panes -->
+      <div class="problem-split">
+
+        <!-- ── Left: problem content column ─────────────────── -->
+        <div class="problem-col">
+
+          <!-- Populated by problem-renderer.js -->
+          <div data-section="problem-statement"></div>
+          <div data-section="examples"></div>
+          <div data-section="interview-tips"></div>
+          <div data-section="faang-tips"></div>
+          <div data-section="approaches"></div>
+
+        </div><!-- /.problem-col -->
+
+        <!-- ── Right: editor column ──────────────────────────── -->
+        <div class="editor-col">
+
+          <!-- Tabs strip -->
+          <div class="editor-tabs" role="tablist">
+            <button class="editor-tab active" data-pane="code" role="tab" aria-selected="true">🐍 Code Editor</button>
+            <button class="editor-tab" data-pane="text" role="tab" aria-selected="false">📝 Text Editor</button>
+          </div>
+
+          <!-- Pane 1: code editor — populated by problem-renderer.js -->
+          <div class="editor-pane active" data-pane="code">
+            <div data-section="practice-editor"></div>
+          </div>
+
+          <!-- Pane 2: plain text editor + test cases reference below -->
+          <div class="editor-pane editor-pane--text" data-pane="text" hidden>
+            <p class="editor-pane__note">
+              💡 In a real FAANG interview, you often write code in a plain-text doc (Google Docs, CoderPad's plain mode). No syntax highlighting, no autocomplete, no tests. Practice clean code without IDE crutches.
+            </p>
+            <textarea class="text-editor" spellcheck="false" placeholder="Write your solution here from scratch — as if in a shared doc."></textarea>
+            <div class="text-editor__hint">No syntax highlighting. No autocomplete. No run button. Just you, the prompt, and the cursor.</div>
+            <!-- Test cases shown below text editor as quick reference -->
+            <div data-section="test-cases"></div>
+          </div>
+
+          <!-- Related problems + topic info — populated by problem-renderer.js -->
+          <div class="editor-related">
+            <div class="editor-related__head">Related Problems &amp; Topics</div>
+            <div data-section="related-problems"></div>
+          </div>
+
+        </div><!-- /.editor-col -->
+
+      </div><!-- /.problem-split -->
+
+    </div><!-- /.main__content--problem -->
+  </div><!-- /.main -->
+
+  <!-- Scripts — same order as topic pages -->
+  <script src="../js/practice.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/keyboard.js"></script>
+
+  <!-- Problem renderer: loads data/problems.json and populates slot divs -->
+  <script src="../js/problem-progress.js"></script>
+  <script src="../js/problem-renderer.js"></script>
+  <script>renderProblem('letter-combinations-of-a-phone-number');</script>
+
+  <script>
+    // ── Sidebar collapse toggle ──────────────────────────────
+    // Single button in the top-left corner toggles between ‹ (collapse) and › (expand).
+    (function() {
+      var STORAGE_KEY = 'sidebar-collapsed';
+      var body = document.body;
+      var collapseBtn = document.getElementById('sidebar-collapse-btn');
+
+      function updateBtnIcon() {
+        if (!collapseBtn) return;
+        var isCollapsed = body.classList.contains('sidebar-collapsed');
+        collapseBtn.innerHTML = isCollapsed ? '&#8250;' : '&#8249;';
+        collapseBtn.setAttribute('aria-label', isCollapsed ? 'Expand navigation sidebar' : 'Collapse navigation sidebar');
+        collapseBtn.setAttribute('title', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+      }
+
+      function setCollapsed(collapsed) {
+        if (collapsed) {
+          body.classList.add('sidebar-collapsed');
+        } else {
+          body.classList.remove('sidebar-collapsed');
+        }
+        updateBtnIcon();
+        try { localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch(e) {}
+      }
+
+      // Restore persisted state
+      try {
+        if (localStorage.getItem(STORAGE_KEY) === '1') {
+          body.classList.add('sidebar-collapsed');
+        }
+      } catch(e) {}
+
+      // Set initial icon to match the restored state
+      updateBtnIcon();
+
+      if (collapseBtn) {
+        collapseBtn.addEventListener('click', function() {
+          setCollapsed(!body.classList.contains('sidebar-collapsed'));
+        });
+      }
+    })();
+  </script>
+
+  <script>
+    // ── Editor tab switching ─────────────────────────────────
+    (function() {
+      var tabs = document.querySelectorAll('.editor-tab');
+      var panes = document.querySelectorAll('.editor-pane');
+
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var target = tab.dataset.pane;
+          tabs.forEach(function(t) {
+            var isActive = t === tab;
+            t.classList.toggle('active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+          panes.forEach(function(p) {
+            if (p.dataset.pane === target) {
+              p.hidden = false;
+            } else {
+              p.hidden = true;
+            }
+          });
+        });
+      });
+    })();
+
+    // ── Auto-grow text editor (Google-Docs style) ──────────────
+    // As the user types, height tracks scrollHeight so the textarea expands
+    // downward. Everything below (test cases, related problems) gets pushed
+    // down inside the scrollable editor column. We also scroll the column so
+    // the line the user is typing on stays visible.
+    (function() {
+      var ta = document.querySelector('.text-editor');
+      var col = document.querySelector('.editor-col');
+      if (!ta) return;
+
+      function resize() {
+        if (ta.offsetParent === null) return; // skip while pane is hidden
+        ta.style.height = 'auto';
+        ta.style.height = (ta.scrollHeight + 2) + 'px';
+      }
+
+      function keepCursorInView() {
+        if (!col || ta.offsetParent === null) return;
+        // Compute the y-position of the cursor inside the textarea by counting
+        // newlines before the caret. Approximation, good enough.
+        var beforeCaret = ta.value.substring(0, ta.selectionEnd);
+        var lineNum = (beforeCaret.match(/\n/g) || []).length;
+        var lineHeight = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+        var paddingTop = parseFloat(getComputedStyle(ta).paddingTop) || 14;
+        var taRect = ta.getBoundingClientRect();
+        var colRect = col.getBoundingClientRect();
+        var cursorY = taRect.top + paddingTop + (lineNum + 1) * lineHeight;
+        // If the cursor is below the visible bottom of the column, scroll down
+        var pad = 24; // breathing room
+        if (cursorY > colRect.bottom - pad) {
+          col.scrollTop += (cursorY - (colRect.bottom - pad));
+        }
+        // If above the visible top (user navigated up), scroll up
+        if (cursorY < colRect.top + paddingTop + pad) {
+          col.scrollTop -= ((colRect.top + paddingTop + pad) - cursorY);
+        }
+      }
+
+      function onInput() {
+        resize();
+        keepCursorInView();
+      }
+
+      ta.addEventListener('input', onInput);
+      ta.addEventListener('keyup', keepCursorInView); // arrow-key nav
+      ta.addEventListener('click', keepCursorInView); // mouse-click nav
+
+      // Resize when the Text Editor tab becomes active (first reveal
+      // gives accurate scrollHeight measurements).
+      var textTab = document.querySelector('.editor-tab[data-pane="text"]');
+      if (textTab) {
+        textTab.addEventListener('click', function() {
+          window.requestAnimationFrame(resize);
+        });
+      }
+      window.addEventListener('resize', resize);
+      window.requestAnimationFrame(resize);
+    })();
+  </script>
+</body>
+</html>
