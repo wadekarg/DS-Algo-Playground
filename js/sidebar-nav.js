@@ -69,6 +69,23 @@ var DSA = window.DSA || {};
 
   var DIFF_ORDER = { easy: 0, medium: 1, hard: 2 };
 
+  // Persisted collapse state
+  var STATE_KEY = 'dsa-sidebar-collapse-v2';
+  function loadCollapseState() {
+    try {
+      return JSON.parse(localStorage.getItem(STATE_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+  function saveCollapseState(state) {
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function chevron() {
+    return '<svg class="sidebar__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  }
+
   function buildProblemsSection(problems, base, currentProblemId) {
     if (!problems || !problems.length) return '';
 
@@ -80,7 +97,6 @@ var DSA = window.DSA || {};
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(p);
     }
-    // Sort within group by difficulty
     for (var c in groups) {
       groups[c].sort(function(a, b) {
         return (DIFF_ORDER[a.difficulty] || 9) - (DIFF_ORDER[b.difficulty] || 9);
@@ -92,14 +108,49 @@ var DSA = window.DSA || {};
     }).sort();
     var orderedCats = knownCats.concat(unknownCats);
 
-    var html = '<div class="sidebar__section-title">Problems</div>';
+    var state = loadCollapseState();
+    // Default: top-level expanded if we're on a problems-related page; else collapsed
+    var onProblemsPage = !!currentProblemId || getCurrentPage() === 'problems.html';
+    var problemsOpen = state.problems !== undefined ? state.problems : onProblemsPage;
+
+    // If the current page is a per-problem page, force-expand its category
+    var currentCategory = null;
+    if (currentProblemId) {
+      for (var i2 = 0; i2 < problems.length; i2++) {
+        if (problems[i2].id === currentProblemId) {
+          currentCategory = problems[i2].neetcode_category || (problems[i2].topics && problems[i2].topics[0]) || 'Other';
+          break;
+        }
+      }
+    }
+
+    var html = '<button type="button" class="sidebar__section-toggle' +
+      (problemsOpen ? ' sidebar__section-toggle--open' : '') +
+      '" data-collapse-key="problems">' +
+      '<span>Problems</span>' + chevron() +
+      '</button>';
+
+    html += '<div class="sidebar__collapse-body' + (problemsOpen ? '' : ' sidebar__collapse-body--hidden') + '" data-collapse-body="problems">';
+
     html += '<a href="' + base + 'problems.html" class="sidebar__link sidebar__link--problems-index' +
       (getCurrentPage() === 'problems.html' ? ' sidebar__link--active' : '') +
       '">All Problems</a>';
 
     for (var k = 0; k < orderedCats.length; k++) {
       var cat = orderedCats[k];
-      html += '<div class="sidebar__subcat">' + cat + '</div>';
+      var catKey = 'cat:' + cat;
+      var catOpen = state[catKey] !== undefined ? state[catKey] : (cat === currentCategory);
+
+      html += '<button type="button" class="sidebar__subcat-toggle' +
+        (catOpen ? ' sidebar__subcat-toggle--open' : '') +
+        '" data-collapse-key="' + catKey.replace(/"/g, '&quot;') + '">' +
+        '<span>' + cat + '</span>' +
+        '<span class="sidebar__subcat-count">' + groups[cat].length + '</span>' +
+        chevron() +
+        '</button>';
+      html += '<div class="sidebar__collapse-body sidebar__collapse-body--nested' +
+        (catOpen ? '' : ' sidebar__collapse-body--hidden') +
+        '" data-collapse-body="' + catKey.replace(/"/g, '&quot;') + '">';
       for (var j = 0; j < groups[cat].length; j++) {
         var prob = groups[cat][j];
         var status = (DSA.problemProgress && DSA.problemProgress.getStatus(prob.id)) || 'unattempted';
@@ -112,8 +163,31 @@ var DSA = window.DSA || {};
           '<span class="sidebar__link__title">' + prob.title + '</span>' +
           '</a>';
       }
+      html += '</div>';
     }
+    html += '</div>';
     return html;
+  }
+
+  function wireCollapse() {
+    var nav = document.getElementById('sidebar-nav');
+    if (!nav || nav.dataset.collapseWired === '1') return;
+    nav.dataset.collapseWired = '1';
+    nav.addEventListener('click', function(e) {
+      var toggle = e.target.closest('.sidebar__section-toggle, .sidebar__subcat-toggle');
+      if (!toggle) return;
+      var key = toggle.dataset.collapseKey;
+      var body = nav.querySelector('[data-collapse-body="' + key.replace(/"/g, '\\"') + '"]');
+      if (!body) return;
+      var openClass = toggle.classList.contains('sidebar__section-toggle')
+        ? 'sidebar__section-toggle--open'
+        : 'sidebar__subcat-toggle--open';
+      var isOpen = toggle.classList.toggle(openClass);
+      body.classList.toggle('sidebar__collapse-body--hidden', !isOpen);
+      var state = loadCollapseState();
+      state[key] = isOpen;
+      saveCollapseState(state);
+    });
   }
 
   function buildSidebar(topics, problems) {
@@ -171,6 +245,7 @@ var DSA = window.DSA || {};
     html += buildProblemsSection(problems, base, getCurrentProblemId());
 
     nav.innerHTML = html;
+    wireCollapse();
   }
 
   function fetchJson(url, cb) {
