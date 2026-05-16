@@ -18108,5 +18108,670 @@
       "clone-graph",
       "number-of-islands"
     ]
+  },
+  {
+    "id": "climbing-stairs",
+    "title": "Climbing Stairs",
+    "leetcode_url": "https://leetcode.com/problems/climbing-stairs/",
+    "leetcode_id": 70,
+    "difficulty": "easy",
+    "patterns": [
+      "dp",
+      "1d-dp",
+      "fibonacci"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "You are climbing a staircase with n steps. Each time you can climb 1 or 2 steps. How many distinct ways can you reach the top?",
+    "constraints": [
+      "1 <= n <= 45"
+    ],
+    "examples": [
+      {
+        "input": "n = 2",
+        "output": "2",
+        "explanation": "Two ways: (1+1) or (2)."
+      },
+      {
+        "input": "n = 3",
+        "output": "3",
+        "explanation": "Three ways: 1+1+1, 1+2, 2+1."
+      }
+    ],
+    "function_name": "climbStairs",
+    "function_signature": "def climbStairs(n):",
+    "starter_code": "def climbStairs(n):\n    # dp[i] = dp[i-1] + dp[i-2]. Use O(1) variables instead of an array.\n    pass",
+    "test_cases": [
+      {
+        "label": "n=2",
+        "args": [
+          2
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "n=3",
+        "args": [
+          3
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "n=1",
+        "args": [
+          1
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "n=5",
+        "args": [
+          5
+        ],
+        "expected": "8"
+      },
+      {
+        "label": "n=10",
+        "args": [
+          10
+        ],
+        "expected": "89"
+      },
+      {
+        "label": "n=45 max",
+        "args": [
+          45
+        ],
+        "expected": "1836311903"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Fibonacci in disguise. ways(n) = ways(n-1) + ways(n-2) (last step was 1 or 2). Base: ways(1) = 1, ways(2) = 2. Bottom-up with two rolling variables \u2192 O(n) time, O(1) space.",
+      "clarifying_questions": [
+        {
+          "question": "Can I climb 3 steps at a time?",
+          "why": "No per spec \u2014 only 1 or 2. Generalizes easily (just add more terms in the recurrence)."
+        },
+        {
+          "question": "n bounded?",
+          "why": "n \u2264 45. Big enough to need DP, small enough that O(n) is fine."
+        },
+        {
+          "question": "Recursive memoization or iterative DP?",
+          "why": "Either works. Iterative bottom-up is shorter; recursive with memo is more general. Bottom-up wins for clarity."
+        },
+        {
+          "question": "Can I do O(log n) with matrix exponentiation?",
+          "why": "Yes \u2014 Fibonacci's closed form. Mention as the optimal asymptotic; rarely required."
+        },
+        {
+          "question": "Closed form (Binet's)?",
+          "why": "Yes for Fibonacci but uses sqrt(5); float precision issues. Avoid in production."
+        }
+      ],
+      "think_out_loud": "Standard 1D DP. State: dp[i] = ways to reach step i. Transition: dp[i] = dp[i-1] + dp[i-2] (last move was 1 or 2). Base: dp[1] = 1, dp[2] = 2. Roll with two variables to save space.",
+      "edge_cases": [
+        {
+          "category": "n=1",
+          "details": "1 way."
+        },
+        {
+          "category": "n=2",
+          "details": "2 ways."
+        },
+        {
+          "category": "Large n (45)",
+          "details": "~1.8 billion ways. Int is fine in Python."
+        },
+        {
+          "category": "n=0 (out of spec)",
+          "details": "Defensive: 1 (empty path). Spec says n >= 1."
+        },
+        {
+          "category": "Negative n",
+          "details": "Not in spec. Don't need to handle."
+        }
+      ],
+      "common_mistakes": [
+        "Allocating O(n) array when O(1) suffices.",
+        "Off-by-one on initialization (dp[0] vs dp[1]).",
+        "Pure recursion without memoization \u2014 exponential.",
+        "Returning dp[n-1] instead of dp[n] (off-by-one).",
+        "Trying to enumerate all paths \u2014 n! style explosion."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The simplest 1D DP problem. The classic 'recognize Fibonacci structure' interview filter.",
+      "introduction_context": "Phone screen at virtually every FAANG. The bar: solve in 1-2 minutes. Slower = caution.",
+      "really_testing": [
+        "Recognizing 1D DP structure.",
+        "Bottom-up implementation with O(1) space.",
+        "Knowing memoization vs tabulation.",
+        "Fibonacci connection."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 1-2 min. O(1) space. Mentions Fibonacci."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization first, then iterative. Correct in 5 min."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one or doesn't reach iterative."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Tries pure recursion; says it's optimal."
+        }
+      ],
+      "playbook": [
+        "Restate: 'count ways to reach step n, taking 1 or 2 steps'.",
+        "Insight: 'dp[i] = dp[i-1] + dp[i-2]'.",
+        "Bottom-up with two vars: if n <= 2: return n. prev2, prev1 = 1, 2. for i in range(3, n+1): cur = prev1 + prev2; prev2, prev1 = prev1, cur. return prev1.",
+        "Walk n=5: 1,2,3,5,8. Return 8. \u2713"
+      ],
+      "playbook_meta": "Total time: 2-4 min. Generalization: 'climb 1, 2, or 3 steps' \u2014 sum of three previous.",
+      "dont_do": [
+        "Don't use O(n) array.",
+        "Don't recurse without memo.",
+        "Don't off-by-one initial values."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative DP, O(1) Space",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def climbStairs(n):\n    if n <= 2:\n        return n\n    prev2, prev1 = 1, 2\n    for _ in range(3, n + 1):\n        cur = prev1 + prev2\n        prev2, prev1 = prev1, cur\n    return prev1",
+        "explanation": "Bottom-up Fibonacci with two rolling variables. dp[i] = dp[i-1] + dp[i-2]. Initialize prev2=ways(1)=1, prev1=ways(2)=2. Iterate from 3 to n, computing the new value as the sum of the previous two. O(n) time, O(1) extra space."
+      },
+      {
+        "name": "Recursive with Memoization",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def climbStairs(n):\n    memo = {}\n    def ways(i):\n        if i <= 2:\n            return i\n        if i in memo:\n            return memo[i]\n        memo[i] = ways(i - 1) + ways(i - 2)\n        return memo[i]\n    return ways(n)",
+        "explanation": "Top-down with memoization. Equivalent correctness. More natural to read for some; uses O(n) stack and dict space. Useful pattern to teach DP, but iterative is preferred."
+      }
+    ],
+    "related_problem_ids": [
+      "house-robber",
+      "min-cost-climbing-stairs",
+      "coin-change"
+    ]
+  },
+  {
+    "id": "house-robber",
+    "title": "House Robber",
+    "leetcode_url": "https://leetcode.com/problems/house-robber/",
+    "leetcode_id": 198,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "You are a professional robber planning to rob houses along a street. Each house has some amount of money. The only constraint is adjacent houses have connected security systems \u2014 you cannot rob two adjacent houses. Given an integer array nums representing the amount of money in each house, return the maximum amount you can rob without alerting police.",
+    "constraints": [
+      "1 <= nums.length <= 100",
+      "0 <= nums[i] <= 400"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,2,3,1]",
+        "output": "4",
+        "explanation": "Rob house 1 (money=1) and house 3 (money=3). Total = 4."
+      },
+      {
+        "input": "nums = [2,7,9,3,1]",
+        "output": "12",
+        "explanation": "Rob 2 + 9 + 1 = 12."
+      }
+    ],
+    "function_name": "rob",
+    "function_signature": "def rob(nums):",
+    "starter_code": "def rob(nums):\n    # dp[i] = max(dp[i-1], dp[i-2] + nums[i]). O(1) space with two vars.\n    pass",
+    "test_cases": [
+      {
+        "label": "[1,2,3,1]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "[2,7,9,3,1]",
+        "args": [
+          [
+            2,
+            7,
+            9,
+            3,
+            1
+          ]
+        ],
+        "expected": "12"
+      },
+      {
+        "label": "single house",
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": "7"
+      },
+      {
+        "label": "two houses pick max",
+        "args": [
+          [
+            3,
+            1
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "two houses second bigger",
+        "args": [
+          [
+            1,
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "all zero",
+        "args": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "At each house i, choose: rob it (dp[i-2] + nums[i]) or skip it (dp[i-1]). dp[i] is the max of those two. Bottom-up with two rolling variables.",
+      "clarifying_questions": [
+        {
+          "question": "Strictly adjacent houses forbidden together?",
+          "why": "Yes \u2014 robbing house i means not robbing i-1 or i+1. Spec only says 'adjacent'."
+        },
+        {
+          "question": "Can I skip many houses in a row?",
+          "why": "Yes \u2014 no requirement to rob. Sometimes skipping is best."
+        },
+        {
+          "question": "Can amounts be zero or negative?",
+          "why": "Zero per spec (\u2265 0). Algorithm still handles negatives \u2014 skip them if worse than skipping."
+        },
+        {
+          "question": "Single house?",
+          "why": "Rob it. Return nums[0]."
+        },
+        {
+          "question": "Can the houses be in a circle? (LC 213)",
+          "why": "Different problem. Solve linear first, then handle circular by splitting."
+        }
+      ],
+      "think_out_loud": "Classic 1D DP. Two choices at each house: rob (and skip neighbor) or skip. dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Base: dp[0] = nums[0], dp[1] = max(nums[0], nums[1]). Roll with prev2, prev1.",
+      "edge_cases": [
+        {
+          "category": "Single house",
+          "details": "Rob it. Return nums[0]."
+        },
+        {
+          "category": "Two houses",
+          "details": "Return max(nums[0], nums[1])."
+        },
+        {
+          "category": "All zero",
+          "details": "Return 0."
+        },
+        {
+          "category": "Strictly increasing",
+          "details": "Skipping low ones to reach high ones may be optimal."
+        },
+        {
+          "category": "All same value",
+          "details": "Take every other \u2192 \u2308n/2\u2309 * v."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy: 'always rob the bigger of i and i+1' \u2014 fails on [2,7,9,3,1].",
+        "Allocating O(n) array \u2014 O(1) with two vars.",
+        "Off-by-one initialization for dp[1].",
+        "Trying to rob every other house starting from 0 \u2014 fails when nums[1] is huge.",
+        "Forgetting the option to skip both at start."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic 1D DP. The 'two choices per position' template.",
+      "introduction_context": "Onsite at Amazon, Meta, Microsoft. Quick after Climbing Stairs.",
+      "really_testing": [
+        "Recognizing 'take or skip' as a DP state.",
+        "Bottom-up DP with O(1) space.",
+        "Resisting the greedy temptation.",
+        "Base case handling (n=1, n=2)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DP in 4-5 min. O(1) space. Walks through [2,7,9,3,1]."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization solution; converts to iterative when asked."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy approach; can't fix when it fails."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any working DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'max sum non-adjacent subset'.",
+        "Pitch: 'at each house, rob (dp[i-2] + nums[i]) or skip (dp[i-1])'.",
+        "Code: if not nums: return 0. if len(nums) == 1: return nums[0]. prev2, prev1 = 0, nums[0]. for i in range(1, len(nums)): cur = max(prev1, prev2 + nums[i]); prev2, prev1 = prev1, cur. return prev1.",
+        "Walk [2,7,9,3,1]: prev2=0, prev1=2. i=1: cur=max(2, 0+7)=7. prev2=2, prev1=7. i=2: cur=max(7, 2+9)=11. prev2=7, prev1=11. i=3: cur=max(11, 7+3)=11. i=4: cur=max(11, 11+1)=12. Return 12. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min. Follow-up: House Robber II (circular), House Robber III (tree).",
+      "dont_do": [
+        "Don't greedy \u2014 fails on adversarial.",
+        "Don't allocate O(n) array.",
+        "Don't off-by-one on base.",
+        "Don't always rob every other house."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative DP, O(1) Space",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def rob(nums):\n    if not nums:\n        return 0\n    if len(nums) == 1:\n        return nums[0]\n    prev2 = 0  # max rob through index -1 (none)\n    prev1 = nums[0]\n    for i in range(1, len(nums)):\n        cur = max(prev1, prev2 + nums[i])\n        prev2, prev1 = prev1, cur\n    return prev1",
+        "explanation": "Bottom-up DP with two rolling variables. At each house i, either rob (prev2 + nums[i]) or skip (prev1). The maximum becomes the new prev1; the old prev1 shifts to prev2. O(n) time, O(1) space."
+      }
+    ],
+    "related_problem_ids": [
+      "climbing-stairs",
+      "house-robber-ii",
+      "coin-change"
+    ]
+  },
+  {
+    "id": "coin-change",
+    "title": "Coin Change",
+    "leetcode_url": "https://leetcode.com/problems/coin-change/",
+    "leetcode_id": 322,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp",
+      "unbounded-knapsack"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an integer array coins representing coins of different denominations and an integer amount, return the fewest number of coins needed to make up that amount. If impossible, return -1. You can use each coin an unlimited number of times.",
+    "constraints": [
+      "1 <= coins.length <= 12",
+      "1 <= coins[i] <= 2^31 - 1",
+      "0 <= amount <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "coins = [1,2,5], amount = 11",
+        "output": "3",
+        "explanation": "11 = 5 + 5 + 1. Three coins."
+      },
+      {
+        "input": "coins = [2], amount = 3",
+        "output": "-1",
+        "explanation": "Can't make 3 from only 2s."
+      },
+      {
+        "input": "coins = [1], amount = 0",
+        "output": "0",
+        "explanation": "Zero amount needs zero coins."
+      }
+    ],
+    "function_name": "coinChange",
+    "function_signature": "def coinChange(coins, amount):",
+    "starter_code": "def coinChange(coins, amount):\n    # dp[i] = min coins to make amount i. Initialize dp[0] = 0, rest = infinity.\n    # Transition: dp[i] = 1 + min(dp[i - coin]) over all coins where i - coin >= 0 and dp[i-coin] reachable.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            2,
+            5
+          ],
+          11
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "impossible",
+        "args": [
+          [
+            2
+          ],
+          3
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "amount 0",
+        "args": [
+          [
+            1
+          ],
+          0
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single coin works",
+        "args": [
+          [
+            1
+          ],
+          5
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "large amount",
+        "args": [
+          [
+            1,
+            2,
+            5
+          ],
+          100
+        ],
+        "expected": "20"
+      },
+      {
+        "label": "exact single",
+        "args": [
+          [
+            5
+          ],
+          5
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Unbounded knapsack DP. dp[i] = min coins to make amount i. Initialize dp[0] = 0, dp[i] = infinity for i > 0. For each i from 1 to amount: dp[i] = 1 + min(dp[i - c]) over all coins c where i - c >= 0 and dp[i - c] != infinity. Return dp[amount] if reachable, else -1.",
+      "clarifying_questions": [
+        {
+          "question": "Coins are reusable?",
+          "why": "Yes \u2014 unlimited supply per spec. That makes it unbounded knapsack."
+        },
+        {
+          "question": "What if amount = 0?",
+          "why": "Return 0 \u2014 zero coins needed. dp[0] = 0 handles."
+        },
+        {
+          "question": "Can coins have duplicate denominations?",
+          "why": "Doesn't matter \u2014 duplicates don't change the DP."
+        },
+        {
+          "question": "Greedy doesn't work?",
+          "why": "Correct \u2014 greedy fails on denominations like [1, 3, 4] for amount 6: greedy says 4+1+1, but 3+3 is optimal."
+        },
+        {
+          "question": "BFS as an alternative?",
+          "why": "Yes \u2014 BFS from 0, each layer adds a coin. First time we reach amount is the answer. Same complexity, different framing."
+        }
+      ],
+      "think_out_loud": "Bottom-up DP. For each amount i from 1 to target, try every coin. The fewest coins to make i is 1 + fewest to make (i - coin). Use a sentinel (amount + 1) for 'infinity' to keep arithmetic simple. Return dp[amount] if it's still \u2264 amount, else -1.",
+      "edge_cases": [
+        {
+          "category": "amount = 0",
+          "details": "Return 0."
+        },
+        {
+          "category": "amount unreachable",
+          "details": "Return -1. Common if all coins > amount."
+        },
+        {
+          "category": "Coin = amount",
+          "details": "Return 1."
+        },
+        {
+          "category": "Single coin denomination",
+          "details": "Reachable iff amount % coin == 0."
+        },
+        {
+          "category": "Greedy edge cases",
+          "details": "Real coin denominations (US) are greedy-safe; arbitrary denominations are not."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy \u2014 fails on [1,3,4] amount 6.",
+        "Not handling unreachable (return -1).",
+        "Initializing dp[0] != 0.",
+        "Using actual float('inf') and doing arithmetic \u2014 sometimes overflows or compares poorly. Use amount + 1 as sentinel.",
+        "Trying recursion without memo \u2014 exponential."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Unbounded knapsack \u2014 one of the most common DP problems. Tests whether you can resist greedy.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. The 'why doesn't greedy work?' question is a frequent follow-up.",
+      "really_testing": [
+        "Recognizing unbounded knapsack.",
+        "DP recurrence: dp[i] = 1 + min(dp[i - coin]).",
+        "Handling unreachable case (-1).",
+        "Why greedy fails (denomination-dependent)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DP in 8-10 min. Walks through example. Argues greedy fails."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization version; convert to bottom-up when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Greedy first; can't fix even with counterexample."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive any sub-exponential algorithm."
+        }
+      ],
+      "playbook": [
+        "Restate: 'min coins to make amount; -1 if impossible'.",
+        "Insight: 'DP \u2014 dp[i] = min over coins c of (1 + dp[i - c])'.",
+        "Code: dp = [amount + 1] * (amount + 1); dp[0] = 0. for i in range(1, amount + 1): for c in coins: if c <= i: dp[i] = min(dp[i], 1 + dp[i - c]). return dp[amount] if dp[amount] <= amount else -1.",
+        "Walk [1,2,5] amount=11: dp[1]=1, dp[2]=1, dp[5]=1, dp[10]=2, dp[11]=3. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Coin Change II (count ways, not min coins).",
+      "dont_do": [
+        "Don't greedy.",
+        "Don't recurse without memo.",
+        "Don't forget the -1 case.",
+        "Don't use float('inf') for sentinel \u2014 use amount + 1."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up DP",
+        "time": "O(amount * len(coins))",
+        "space": "O(amount)",
+        "code": "def coinChange(coins, amount):\n    # Sentinel: amount + 1 is larger than any possible answer\n    dp = [amount + 1] * (amount + 1)\n    dp[0] = 0\n    for i in range(1, amount + 1):\n        for c in coins:\n            if c <= i:\n                dp[i] = min(dp[i], 1 + dp[i - c])\n    return dp[amount] if dp[amount] <= amount else -1",
+        "explanation": "dp[i] = min coins to make amount i. Initialize dp[0]=0, rest to sentinel (amount + 1, larger than any valid answer). For each amount i, try every coin: if c fits, candidate is 1 + dp[i - c]. After filling, check if dp[amount] is still sentinel (unreachable) and return -1, else return dp[amount]."
+      },
+      {
+        "name": "BFS (alternative framing)",
+        "time": "O(amount * len(coins))",
+        "space": "O(amount)",
+        "code": "from collections import deque\n\ndef coinChange(coins, amount):\n    if amount == 0:\n        return 0\n    queue = deque([(0, 0)])  # (current_sum, coins_used)\n    visited = {0}\n    while queue:\n        s, count = queue.popleft()\n        for c in coins:\n            ns = s + c\n            if ns == amount:\n                return count + 1\n            if ns < amount and ns not in visited:\n                visited.add(ns)\n                queue.append((ns, count + 1))\n    return -1",
+        "explanation": "BFS variant. Each level adds one more coin. First time we reach `amount` is the minimum coin count. Same complexity as DP but different mental model \u2014 useful when the interviewer asks 'can you frame this as graph search?'."
+      }
+    ],
+    "related_problem_ids": [
+      "climbing-stairs",
+      "house-robber",
+      "longest-increasing-subsequence"
+    ]
   }
 ]
