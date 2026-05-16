@@ -592,6 +592,10 @@
     /* ── Editor panes ──────────────────────────────────────── */
     .editor-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
     .editor-pane[hidden] { display: none; }
+    /* Text-editor pane scrolls vertically so the test-cases reference below stays reachable */
+    .editor-pane--text { overflow-y: auto; padding: 10px 12px; }
+    .editor-pane--text .text-editor { min-height: 280px; }
+    .editor-pane--text [data-section="test-cases"] { margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 10px; }
     .editor-pane__note {
       background: rgba(245, 158, 11, 0.08);
       border-left: 3px solid #f59e0b;
@@ -765,7 +769,6 @@
           <div class="editor-tabs" role="tablist">
             <button class="editor-tab active" data-pane="code" role="tab" aria-selected="true">🐍 Code Editor</button>
             <button class="editor-tab" data-pane="text" role="tab" aria-selected="false">📝 Text Editor</button>
-            <button class="editor-tab" data-pane="tests" role="tab" aria-selected="false">🧪 Test Cases</button>
           </div>
 
           <!-- Pane 1: code editor — populated by problem-renderer.js -->
@@ -773,17 +776,14 @@
             <div data-section="practice-editor"></div>
           </div>
 
-          <!-- Pane 2: plain text editor -->
-          <div class="editor-pane" data-pane="text" hidden>
+          <!-- Pane 2: plain text editor + test cases reference below -->
+          <div class="editor-pane editor-pane--text" data-pane="text" hidden>
             <p class="editor-pane__note">
               💡 In a real FAANG interview, you often write code in a plain-text doc (Google Docs, CoderPad's plain mode). No syntax highlighting, no autocomplete, no tests. Practice clean code without IDE crutches.
             </p>
             <textarea class="text-editor" spellcheck="false" placeholder="Write your solution here from scratch — as if in a shared doc."></textarea>
             <div class="text-editor__hint">No syntax highlighting. No autocomplete. No run button. Just you, the prompt, and the cursor.</div>
-          </div>
-
-          <!-- Pane 3: test cases — populated by problem-renderer.js -->
-          <div class="editor-pane" data-pane="tests" hidden>
+            <!-- Test cases shown below text editor as quick reference -->
             <div data-section="test-cases"></div>
           </div>
 
