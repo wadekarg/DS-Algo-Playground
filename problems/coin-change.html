@@ -167,17 +167,17 @@
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
+      padding: 14px 18px 24px 14px;
+      box-sizing: border-box;
     }
 
     /* Practice-block sits naturally in the column (no internal scrolling) */
     .editor-col .practice-block {
       display: flex;
       flex-direction: column;
-      margin: 0;
-      border-radius: 0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
+      margin: 0 0 14px;
+      border-radius: 8px;
+      overflow: hidden;
     }
     /* Taller editor in split view */
     .editor-col .practice-block__editor-wrap .CodeMirror {
@@ -189,8 +189,10 @@
 
     /* Related problems panel — sits at bottom, flows with column scroll */
     .editor-related {
-      border-top: 1px solid var(--border-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       background: var(--bg-secondary);
+      overflow: hidden;
     }
     .editor-related__head {
       padding: 6px 14px;
