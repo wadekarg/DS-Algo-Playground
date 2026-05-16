@@ -30183,5 +30183,554 @@
       "linked-list-cycle-ii",
       "happy-number"
     ]
+  },
+  {
+    "id": "lru-cache",
+    "title": "LRU Cache",
+    "leetcode_url": "https://leetcode.com/problems/lru-cache/",
+    "leetcode_id": 146,
+    "difficulty": "medium",
+    "patterns": [
+      "linked-list",
+      "hash-map",
+      "design"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Design a data structure for an LRU (least recently used) cache. Operations get(key) and put(key, value) both run in O(1).",
+    "constraints": [
+      "1 <= capacity <= 3000",
+      "At most 10^5 calls"
+    ],
+    "examples": [
+      {
+        "input": "ops: put(1,1), put(2,2), get(1), put(3,3), get(2), put(4,4), get(1)",
+        "output": "[1, -1, -1]",
+        "explanation": "After put(3,3), key 2 evicted. After put(4,4), key 1 evicted."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(capacity, ops):",
+    "starter_code": "class Node:\n    def __init__(self, k=0, v=0):\n        self.k, self.v = k, v\n        self.prev = self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity):\n        # Use a dict + doubly linked list (head = most recent, tail = least recent).\n        pass\n    def get(self, key):\n        # If exists, move to head; return value. Else -1.\n        pass\n    def put(self, key, value):\n        # If exists, update + move to head. Else insert; evict tail if over capacity.\n        pass\n\ndef runOps(capacity, ops):\n    cache = LRUCache(capacity)\n    out = []\n    for op in ops:\n        if op[0] == 'put': cache.put(op[1], op[2])\n        else: out.append(cache.get(op[1]))\n    return out\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          2,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              2,
+              2
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "put",
+              3,
+              3
+            ],
+            [
+              "get",
+              2
+            ],
+            [
+              "put",
+              4,
+              4
+            ],
+            [
+              "get",
+              1
+            ]
+          ]
+        ],
+        "expected": "[1, -1, -1]"
+      },
+      {
+        "label": "missing key",
+        "args": [
+          1,
+          [
+            [
+              "get",
+              1
+            ]
+          ]
+        ],
+        "expected": "[-1]"
+      },
+      {
+        "label": "overwrite",
+        "args": [
+          2,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              1,
+              2
+            ],
+            [
+              "get",
+              1
+            ]
+          ]
+        ],
+        "expected": "[2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Hash map (key \u2192 node) + doubly linked list (head=recent, tail=stale). get: lookup, splice to head. put: update or insert; evict tail if full.",
+      "clarifying_questions": [
+        {
+          "question": "O(1) both ops?",
+          "why": "Yes \u2014 that's the design challenge."
+        },
+        {
+          "question": "Update on put?",
+          "why": "Yes \u2014 move to head."
+        }
+      ],
+      "think_out_loud": "Standard O(1) LRU.",
+      "edge_cases": [
+        {
+          "category": "Missing key",
+          "details": "Return -1."
+        },
+        {
+          "category": "Capacity 1",
+          "details": "Evict every put."
+        }
+      ],
+      "common_mistakes": [
+        "Singly linked list \u2014 can't splice O(1).",
+        "Forgetting to move on get.",
+        "OrderedDict shortcut works but interviewer may want DLL."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "THE design problem.",
+      "introduction_context": "Onsite at FAANG.",
+      "really_testing": [
+        "Hash + DLL.",
+        "Pointer manipulation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "DLL + map in 15-20 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "OrderedDict shortcut."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Bugs in splice."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't combine structures."
+        }
+      ],
+      "playbook": [
+        "Sentinel head/tail. Helpers add(node) at head, remove(node) anywhere. get/put use them."
+      ],
+      "playbook_meta": "Total time: 15-22 min.",
+      "dont_do": [
+        "Don't singly link.",
+        "Don't forget to update on get."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Hash Map + Doubly Linked List",
+        "time": "O(1)/op",
+        "space": "O(capacity)",
+        "code": "class Node:\n    def __init__(self, k=0, v=0):\n        self.k, self.v = k, v\n        self.prev = self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity):\n        self.cap = capacity\n        self.cache = {}\n        self.head = Node(); self.tail = Node()\n        self.head.next = self.tail; self.tail.prev = self.head\n    def _remove(self, node):\n        node.prev.next = node.next; node.next.prev = node.prev\n    def _add_to_head(self, node):\n        node.next = self.head.next; node.prev = self.head\n        self.head.next.prev = node; self.head.next = node\n    def get(self, key):\n        if key not in self.cache: return -1\n        node = self.cache[key]\n        self._remove(node); self._add_to_head(node)\n        return node.v\n    def put(self, key, value):\n        if key in self.cache:\n            node = self.cache[key]\n            node.v = value\n            self._remove(node); self._add_to_head(node)\n        else:\n            node = Node(key, value)\n            self.cache[key] = node\n            self._add_to_head(node)\n            if len(self.cache) > self.cap:\n                lru = self.tail.prev\n                self._remove(lru)\n                del self.cache[lru.k]\n\ndef runOps(capacity, ops):\n    cache = LRUCache(capacity)\n    out = []\n    for op in ops:\n        if op[0] == 'put': cache.put(op[1], op[2])\n        else: out.append(cache.get(op[1]))\n    return out",
+        "explanation": "Hash map points to nodes in a doubly linked list. Head sentinel = most recent; tail sentinel = least recent. All operations are O(1) splice."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-two-sorted-lists",
+      "reverse-linked-list"
+    ]
+  },
+  {
+    "id": "merge-k-sorted-lists",
+    "title": "Merge k Sorted Lists",
+    "leetcode_url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+    "leetcode_id": 23,
+    "difficulty": "hard",
+    "patterns": [
+      "linked-list",
+      "heap",
+      "divide-and-conquer"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Merge k sorted linked lists into one sorted list.",
+    "constraints": [
+      "k == lists.length",
+      "0 <= k <= 10^4",
+      "0 <= lists[i].length <= 500",
+      "-10^4 <= Node.val <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "lists = [[1,4,5],[1,3,4],[2,6]]",
+        "output": "[1,1,2,3,4,4,5,6]"
+      }
+    ],
+    "function_name": "mergeKLists",
+    "function_signature": "def mergeKLists(value_lists):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\nimport heapq\n\ndef mergeKLists(value_lists):\n    lists = [build_list(v) for v in value_lists]\n    # Min-heap of (val, idx, node). Pop, append, push next.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "3 lists",
+        "args": [
+          [
+            [
+              1,
+              4,
+              5
+            ],
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              2,
+              6
+            ]
+          ]
+        ],
+        "expected": "[1, 1, 2, 3, 4, 4, 5, 6]"
+      },
+      {
+        "label": "empty input",
+        "args": [
+          []
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "all empty",
+        "args": [
+          [
+            [],
+            []
+          ]
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": "[1, 2, 3]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches: (1) Min-heap of (val, idx, node) \u2014 pop, append, push next. O(N log k). (2) Pairwise merge \u2014 log k rounds of merging adjacent pairs. Same complexity.",
+      "clarifying_questions": [
+        {
+          "question": "Total elements bound?",
+          "why": "k * 500. Both approaches handle."
+        }
+      ],
+      "think_out_loud": "Min-heap is cleaner; pairwise is more elegant.",
+      "edge_cases": [
+        {
+          "category": "Empty list",
+          "details": "Skip in heap init."
+        },
+        {
+          "category": "All empty",
+          "details": "None."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting tie-breaker (idx) \u2014 comparison fails on ListNode.",
+        "O(Nk) naive \u2014 too slow."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Multi-way merge.",
+      "introduction_context": "Onsite at Amazon, Meta, Google.",
+      "really_testing": [
+        "Min-heap or divide-and-conquer.",
+        "Comparable wrapper for nodes."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Heap in 10-12 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Pairwise merge."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Concat-then-sort."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "heap = []. for i, h in enumerate(lists): if h: heapq.heappush(heap, (h.val, i, h)). dummy = ListNode(). tail = dummy. while heap: v, i, n = heappop(heap). tail.next = n; tail = tail.next. if n.next: heappush(heap, (n.next.val, i, n.next)). return dummy.next."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't forget tie-breaker.",
+        "Don't concat-then-sort."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min-Heap Multi-Way Merge",
+        "time": "O(N log k)",
+        "space": "O(k)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\nimport heapq\n\ndef mergeKLists(value_lists):\n    lists = [build_list(v) for v in value_lists]\n    heap = []\n    for i, h in enumerate(lists):\n        if h:\n            heapq.heappush(heap, (h.val, i, h))\n    dummy = ListNode()\n    tail = dummy\n    while heap:\n        v, i, n = heapq.heappop(heap)\n        tail.next = n\n        tail = tail.next\n        if n.next:\n            heapq.heappush(heap, (n.next.val, i, n.next))\n    return list_to_values(dummy.next)",
+        "explanation": "Min-heap with (val, list_index, node). The list_index breaks ties so ListNode never gets compared directly. Pop smallest, append, push its successor. Each node touched once."
+      }
+    ],
+    "related_problem_ids": [
+      "merge-two-sorted-lists",
+      "kth-largest-element-in-an-array"
+    ]
+  },
+  {
+    "id": "reverse-nodes-in-k-group",
+    "title": "Reverse Nodes in k-Group",
+    "leetcode_url": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+    "leetcode_id": 25,
+    "difficulty": "hard",
+    "patterns": [
+      "linked-list",
+      "recursion"
+    ],
+    "topics": [
+      "linked-list"
+    ],
+    "neetcode_category": "Linked List",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Reverse the nodes of a linked list in groups of k. If the remaining tail is shorter than k, leave it as-is.",
+    "constraints": [
+      "1 <= n <= 5000",
+      "0 <= Node.val <= 1000",
+      "1 <= k <= n"
+    ],
+    "examples": [
+      {
+        "input": "head = [1,2,3,4,5], k = 2",
+        "output": "[2,1,4,3,5]"
+      },
+      {
+        "input": "head = [1,2,3,4,5], k = 3",
+        "output": "[3,2,1,4,5]"
+      }
+    ],
+    "function_name": "reverseKGroup",
+    "function_signature": "def reverseKGroup(values, k):",
+    "starter_code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reverseKGroup(values, k):\n    head = build_list(values)\n    # Walk; verify next k nodes exist; reverse them; link back. Dummy head simplifies.\n    pass\n",
+    "test_cases": [
+      {
+        "label": "k=2",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          2
+        ],
+        "expected": "[2, 1, 4, 3, 5]"
+      },
+      {
+        "label": "k=3",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          3
+        ],
+        "expected": "[3, 2, 1, 4, 5]"
+      },
+      {
+        "label": "k=1",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          1
+        ],
+        "expected": "[1, 2, 3]"
+      },
+      {
+        "label": "k=n",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          3
+        ],
+        "expected": "[3, 2, 1]"
+      },
+      {
+        "label": "k>n leftover",
+        "args": [
+          [
+            1,
+            2
+          ],
+          3
+        ],
+        "expected": "[1, 2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Use a dummy head. group_prev points to node BEFORE the current k-group. Find k-th node (kth) ahead; if exists, reverse [group_prev.next .. kth] inclusively; advance group_prev to the original first node (now the tail of reversed group). Repeat.",
+      "clarifying_questions": [
+        {
+          "question": "Last incomplete group?",
+          "why": "Leave as is."
+        },
+        {
+          "question": "k=1?",
+          "why": "Identity \u2014 no-op."
+        }
+      ],
+      "think_out_loud": "Group-wise reversal with proper splicing.",
+      "edge_cases": [
+        {
+          "category": "k > n",
+          "details": "Whole list unchanged."
+        },
+        {
+          "category": "k = n",
+          "details": "Reverse entire list."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one identifying group end.",
+        "Forgetting to re-splice before next group."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Hard LL reversal.",
+      "introduction_context": "Onsite at Amazon, Google, Meta.",
+      "really_testing": [
+        "Group-by-group reversal.",
+        "Splicing precision."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "15-20 min iterative."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Splice bugs."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "dummy with next=head. group_prev = dummy. while True: find kth ahead; if not enough, break. reverse the group; re-splice; advance group_prev."
+      ],
+      "playbook_meta": "Total time: 15-22 min.",
+      "dont_do": [
+        "Don't reverse before checking k-group exists.",
+        "Don't lose connections."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Group Reverse Iterative",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef build_list(values):\n    if not values: return None\n    head = ListNode(values[0])\n    curr = head\n    for v in values[1:]:\n        curr.next = ListNode(v); curr = curr.next\n    return head\n\ndef list_to_values(head):\n    result = []\n    while head:\n        result.append(head.val); head = head.next\n    return result\n\ndef reverseKGroup(values, k):\n    head = build_list(values)\n    dummy = ListNode(0, head)\n    group_prev = dummy\n    while True:\n        kth = group_prev\n        for _ in range(k):\n            kth = kth.next\n            if not kth:\n                return list_to_values(dummy.next)\n        group_next = kth.next\n        # Reverse [group_prev.next .. kth] inclusive\n        prev = group_next\n        curr = group_prev.next\n        while curr != group_next:\n            nxt = curr.next\n            curr.next = prev\n            prev = curr\n            curr = nxt\n        new_group_prev = group_prev.next  # was the original first, now the tail\n        group_prev.next = kth\n        group_prev = new_group_prev\n    # Unreachable",
+        "explanation": "Iterative. Track group_prev (before current group). Find kth ahead; if list ends early, leave the rest. Reverse the group in-place; re-splice with group_prev and the next group's start. Advance group_prev."
+      }
+    ],
+    "related_problem_ids": [
+      "reverse-linked-list",
+      "merge-two-sorted-lists"
+    ]
   }
 ]
