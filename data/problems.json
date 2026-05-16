@@ -7591,5 +7591,760 @@
       "n-queens",
       "combinations"
     ]
+  },
+  {
+    "id": "valid-parentheses",
+    "title": "Valid Parentheses",
+    "leetcode_url": "https://leetcode.com/problems/valid-parentheses/",
+    "leetcode_id": 20,
+    "difficulty": "easy",
+    "patterns": [
+      "stack"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid. A string is valid if every opening bracket has a matching closing bracket of the same type, and brackets close in the correct order.",
+    "constraints": [
+      "1 <= s.length <= 10^4",
+      "s consists of parentheses only '()[]{}'."
+    ],
+    "examples": [
+      {
+        "input": "s = \"()\"",
+        "output": "True",
+        "explanation": "Simple matching pair."
+      },
+      {
+        "input": "s = \"()[]{}\"",
+        "output": "True",
+        "explanation": "Three separate matched pairs in sequence."
+      },
+      {
+        "input": "s = \"(]\"",
+        "output": "False",
+        "explanation": "'(' is closed by ']', wrong type."
+      },
+      {
+        "input": "s = \"([)]\"",
+        "output": "False",
+        "explanation": "Brackets overlap instead of properly nesting."
+      }
+    ],
+    "function_name": "isValid",
+    "function_signature": "def isValid(s):",
+    "starter_code": "def isValid(s):\n    # Return True if every bracket has a matching pair, properly nested.\n    pass",
+    "test_cases": [
+      {
+        "label": "()",
+        "args": [
+          "()"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "()[]{}",
+        "args": [
+          "()[]{}"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "(]",
+        "args": [
+          "(]"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "([)]",
+        "args": [
+          "([)]"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "{[]}",
+        "args": [
+          "{[]}"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single open",
+        "args": [
+          "("
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single close",
+        "args": [
+          ")"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "deep nesting",
+        "args": [
+          "((()))"
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Stack problem #1. Push every opening bracket onto a stack. For every closing bracket, the stack's top must be the matching opener \u2014 pop it. If it doesn't match (or the stack is empty), invalid. After processing, the stack must be empty for the string to be valid.",
+      "clarifying_questions": [
+        {
+          "question": "Are there any non-bracket characters?",
+          "why": "Per constraints, no \u2014 only brackets. If yes, we'd need to skip them. Worth confirming so you can keep the loop simple."
+        },
+        {
+          "question": "Is an empty string valid?",
+          "why": "Per constraints, length >= 1. But the algorithm handles empty correctly (stack stays empty \u2192 True). Worth confirming."
+        },
+        {
+          "question": "Do we have to return a Boolean, or report which position is wrong?",
+          "why": "Spec says Boolean. Confirms scope \u2014 saves you from over-engineering a position-reporting variant."
+        },
+        {
+          "question": "Can string be longer than 10^4?",
+          "why": "Per constraints, capped at 10^4. O(n) handles this fine. Worth confirming for time budget."
+        }
+      ],
+      "think_out_loud": "Classic stack pattern. I'll use a dict mapping closing brackets to their matching opener. Iterate the string: if it's an opening bracket, push. If closing, pop and verify it matches. Two failure modes: stack empty when we try to pop (closing without opener), or top doesn't match (mismatched type). At the end, stack must be empty (no unclosed openers).",
+      "edge_cases": [
+        {
+          "category": "Empty string",
+          "details": "Stack stays empty \u2192 return True. Defensive but handled."
+        },
+        {
+          "category": "Single open bracket",
+          "details": "Stack has 1 item left \u2192 False."
+        },
+        {
+          "category": "Single close bracket",
+          "details": "Try to pop empty stack \u2192 False."
+        },
+        {
+          "category": "Wrong order ([)]",
+          "details": "Pop sequence doesn't match. Critical: just counting brackets isn't enough; ORDER matters."
+        },
+        {
+          "category": "Deeply nested",
+          "details": "((())) \u2192 all opens, then all matches. Stack grows to n/2 then drains."
+        }
+      ],
+      "common_mistakes": [
+        "Counting bracket types instead of tracking order \u2014 '([)]' has equal counts but is invalid.",
+        "Forgetting to check 'stack empty' before popping \u2014 IndexError on close-first inputs like ')'.",
+        "Forgetting to verify the stack is empty at the end \u2014 '((' would falsely pass.",
+        "Using a list and accessing by index for matching \u2014 works but harder to read than a dict mapping.",
+        "Trying to do it without a stack (regex, counters) \u2014 works for one bracket type, fails for three."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "The canonical 'use a stack' interview problem. Mostly tests whether you reach for a stack at all, and whether you handle the three failure modes (mismatch, close-without-open, unclosed-at-end).",
+      "introduction_context": "Phone screen at almost every FAANG \u2014 Amazon, Meta, Microsoft, Google. Solving it cleanly in 5 min is the bar; fumbling it sets a hard tone for the rest of the interview.",
+      "really_testing": [
+        "Recognizing the stack pattern from 'matching brackets/quotes/tags' phrasing.",
+        "Handling all three failure modes correctly.",
+        "Using a dict to map close \u2192 open instead of nested if/elif chains.",
+        "Confirming stack-empty-at-end (the 'unclosed' check)."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Reaches for stack immediately, codes it cleanly in 3-5 min, handles all 3 failure modes, walks through a worst case."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one small bug caught on self-review."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses the stack-empty-at-end check, or buggy close-without-open handling."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Tries to solve with counters or regex; cannot derive the stack approach."
+        }
+      ],
+      "playbook": [
+        "Restate: 'matching brackets, three types, must close in correct order'.",
+        "Pitch: 'stack \u2014 push opens, pop on close and verify match'.",
+        "Code: pairs = {')':'(', ']':'[', '}':'{'}. stack = []. for ch in s: if ch in pairs.values(): stack.append(ch). else: if not stack or stack.pop() != pairs[ch]: return False. return not stack.",
+        "Walk on '([)]': push '(', push '[', then ')' pops '[' \u2014 mismatch \u2192 False. \u2713",
+        "Walk on '(': push '(', loop ends, stack non-empty \u2192 False."
+      ],
+      "playbook_meta": "Total time: 3-5 min. Follow-up: Min Stack (track min via auxiliary stack). Generate Parentheses (build valid combos).",
+      "dont_do": [
+        "Don't count brackets \u2014 '([)]' has matched counts but is invalid.",
+        "Don't forget the final 'is stack empty?' check.",
+        "Don't pop without checking empty first \u2014 crashes on ')'.",
+        "Don't try regex or two-pointer hacks \u2014 stack is the right tool.",
+        "Don't compare 'opener + 1 == closer' \u2014 relies on ASCII tricks that fail on '{' '}' (separated by '|')."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Stack with Dict Mapping",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def isValid(s):\n    pairs = {')': '(', ']': '[', '}': '{'}\n    stack = []\n    for ch in s:\n        if ch in '([{':\n            stack.append(ch)\n        else:\n            if not stack or stack.pop() != pairs[ch]:\n                return False\n    return len(stack) == 0",
+        "explanation": "Push every opening bracket. On a closing bracket, the stack's top must be the matching opener \u2014 pop and verify. Empty stack at the moment of a close means a stray closer (False). Non-empty stack at end means an unclosed opener (False). All three failure modes covered."
+      }
+    ],
+    "related_problem_ids": [
+      "min-stack",
+      "evaluate-reverse-polish-notation",
+      "generate-parentheses"
+    ]
+  },
+  {
+    "id": "min-stack",
+    "title": "Min Stack",
+    "leetcode_url": "https://leetcode.com/problems/min-stack/",
+    "leetcode_id": 155,
+    "difficulty": "medium",
+    "patterns": [
+      "stack"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Design a stack that supports push, pop, top, and retrieving the minimum element \u2014 all in O(1) time. (For testability here, the function receives a list of operations and returns the output of each getMin call.)",
+    "constraints": [
+      "-2^31 <= val <= 2^31 - 1",
+      "Methods pop, top, getMin are always called on non-empty stacks.",
+      "At most 3 * 10^4 calls total."
+    ],
+    "examples": [
+      {
+        "input": "ops = [['push',-2],['push',0],['push',-3],['getMin'],['pop'],['top'],['getMin']]",
+        "output": "[-3, 0, -2]",
+        "explanation": "After pushes, min is -3. Pop removes -3. Top is 0. Min is now -2."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "class MinStack:\n    def __init__(self):\n        # Initialize main stack and aux structure for min tracking.\n        pass\n    def push(self, val):\n        pass\n    def pop(self):\n        pass\n    def top(self):\n        pass\n    def getMin(self):\n        pass\n\ndef runOps(ops):\n    # Test runner: replay a list of operations.\n    # Each op is [name, ...args]. Collects outputs from top/getMin.\n    s = MinStack()\n    out = []\n    for op in ops:\n        name = op[0]\n        if name == 'push':\n            s.push(op[1])\n        elif name == 'pop':\n            s.pop()\n        elif name == 'top':\n            out.append(s.top())\n        elif name == 'getMin':\n            out.append(s.getMin())\n    return out",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          [
+            [
+              "push",
+              -2
+            ],
+            [
+              "push",
+              0
+            ],
+            [
+              "push",
+              -3
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "pop"
+            ],
+            [
+              "top"
+            ],
+            [
+              "getMin"
+            ]
+          ]
+        ],
+        "expected": "[-3, 0, -2]"
+      },
+      {
+        "label": "single push and getMin",
+        "args": [
+          [
+            [
+              "push",
+              5
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "top"
+            ]
+          ]
+        ],
+        "expected": "[5, 5]"
+      },
+      {
+        "label": "increasing pushes",
+        "args": [
+          [
+            [
+              "push",
+              1
+            ],
+            [
+              "push",
+              2
+            ],
+            [
+              "push",
+              3
+            ],
+            [
+              "getMin"
+            ]
+          ]
+        ],
+        "expected": "[1]"
+      },
+      {
+        "label": "duplicates at min",
+        "args": [
+          [
+            [
+              "push",
+              0
+            ],
+            [
+              "push",
+              1
+            ],
+            [
+              "push",
+              0
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "pop"
+            ],
+            [
+              "getMin"
+            ]
+          ]
+        ],
+        "expected": "[0, 0]"
+      },
+      {
+        "label": "pop reveals old min",
+        "args": [
+          [
+            [
+              "push",
+              2
+            ],
+            [
+              "push",
+              0
+            ],
+            [
+              "push",
+              3
+            ],
+            [
+              "push",
+              0
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "pop"
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "pop"
+            ],
+            [
+              "getMin"
+            ],
+            [
+              "pop"
+            ],
+            [
+              "getMin"
+            ]
+          ]
+        ],
+        "expected": "[0, 0, 0, 2]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Use TWO stacks. The main stack holds values; an auxiliary stack holds the minimum-so-far at each level. On push, also push min(val, current_min) onto the aux stack. On pop, pop both. getMin is just the top of the aux stack \u2014 O(1). The aux stack stays in sync with the main, so 'what's the min if I were to pop all the way down to here?' is always answered.",
+      "clarifying_questions": [
+        {
+          "question": "Do all four operations need to be O(1)?",
+          "why": "Yes. push/pop/top trivially are; getMin is the interesting one \u2014 that's what the two-stack design solves."
+        },
+        {
+          "question": "Are duplicates of the minimum value possible?",
+          "why": "Yes. The aux stack must handle them correctly \u2014 push the min even when equal, so pop doesn't lose the second copy too early."
+        },
+        {
+          "question": "Can the stack be empty when pop/top/getMin is called?",
+          "why": "Per constraints, no. But defensive code (guarding against IndexError) is cheap insurance."
+        },
+        {
+          "question": "Can I use extra memory?",
+          "why": "Yes \u2014 O(n) extra for the aux stack is acceptable. If they say O(1) extra, you can use the encoded-pair-delta trick (more complex, mention as a follow-up)."
+        }
+      ],
+      "think_out_loud": "Naive: scan the stack on every getMin \u2014 O(n) per call. Better: track min as a single variable \u2014 but if we pop the current min, how do we find the new one? Two stacks: main holds values; aux holds 'minimum if we pop down to this level'. They grow and shrink together, so the aux top is always the running min. push(v): main.push(v); aux.push(min(v, aux.top() if aux else v)). pop: pop both. getMin: aux[-1]. All O(1).",
+      "edge_cases": [
+        {
+          "category": "Empty stack init",
+          "details": "First push: aux is empty, so just push val itself as min."
+        },
+        {
+          "category": "Push value larger than current min",
+          "details": "Aux pushes the existing min (unchanged). Pop will reveal the right min later."
+        },
+        {
+          "category": "Push value equal to current min",
+          "details": "Aux pushes the same value again. Critical \u2014 otherwise popping one occurrence loses the min."
+        },
+        {
+          "category": "Pop revealing earlier min",
+          "details": "Just pop both stacks; aux top correctly resumes the previous min."
+        },
+        {
+          "category": "Push-pop pairs",
+          "details": "Both stacks shrink correctly; getMin always reflects current state."
+        }
+      ],
+      "common_mistakes": [
+        "Using a single 'min' variable instead of a stack \u2014 can't recover when current min is popped.",
+        "Skipping the aux push when val > current min \u2014 saves memory but breaks pop/min tracking.",
+        "Comparing val < aux.top() (strict) \u2014 loses duplicates of min.",
+        "Forgetting to handle the empty-stack init case (first push).",
+        "Trying to use a heap \u2014 gives O(log n) for pop's min update, not O(1)."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic stack design problem. The interviewer is watching for the 'two stacks' insight \u2014 using an aux structure to maintain a derived property in O(1).",
+      "introduction_context": "Common at Amazon, Meta, Microsoft. The na\u00efve solution is obvious; the optimal one tests whether you can think with auxiliary data structures.",
+      "really_testing": [
+        "Recognizing that running min requires auxiliary tracking, not a single variable.",
+        "The two-stacks pattern (aux stack mirroring main).",
+        "Handling duplicates of the minimum correctly.",
+        "Designing for O(1) on every operation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Proposes two-stacks immediately. Handles duplicates correctly. Codes cleanly in 8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Starts with single-variable, recognizes the pop problem when prompted, derives two-stacks."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Single-variable solution; can't fix the 'what if min is popped' problem even with hints."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Suggests scanning the stack on every getMin (O(n)) and defends it as fine."
+        }
+      ],
+      "playbook": [
+        "Restate: 'stack with push/pop/top/getMin \u2014 all O(1)'.",
+        "Walk through na\u00efve: 'single min var works until I pop it'.",
+        "Pitch: 'aux stack tracking the running min \u2014 same size as main'.",
+        "Code: main = []; aux = []. push(v): main.append(v); aux.append(min(v, aux[-1]) if aux else v). pop: main.pop(); aux.pop(). top: main[-1]. getMin: aux[-1].",
+        "Walk through [-2, 0, -3]: main=[-2,0,-3], aux=[-2,-2,-3]. getMin \u2192 -3. pop \u2192 main=[-2,0], aux=[-2,-2]. getMin \u2192 -2. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: 'do it in O(1) extra space' (use delta-encoding tricks).",
+      "dont_do": [
+        "Don't propose O(n) getMin (scan the stack).",
+        "Don't use a heap \u2014 wrong complexity for pop.",
+        "Don't skip pushing duplicates to aux \u2014 breaks pop.",
+        "Don't forget the first-push init case (aux empty)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two Stacks (main + min-aux)",
+        "time": "O(1) per operation",
+        "space": "O(n)",
+        "code": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.min_stack = []  # aux: running min at each level\n    \n    def push(self, val):\n        self.stack.append(val)\n        cur_min = min(val, self.min_stack[-1]) if self.min_stack else val\n        self.min_stack.append(cur_min)\n    \n    def pop(self):\n        self.stack.pop()\n        self.min_stack.pop()\n    \n    def top(self):\n        return self.stack[-1]\n    \n    def getMin(self):\n        return self.min_stack[-1]\n\ndef runOps(ops):\n    s = MinStack()\n    out = []\n    for op in ops:\n        name = op[0]\n        if name == 'push':\n            s.push(op[1])\n        elif name == 'pop':\n            s.pop()\n        elif name == 'top':\n            out.append(s.top())\n        elif name == 'getMin':\n            out.append(s.getMin())\n    return out",
+        "explanation": "The canonical answer. Main stack stores all values; aux stack mirrors it with the running minimum at each level. Both grow/shrink together, so the aux top is always the current minimum. Every operation is O(1)."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "evaluate-reverse-polish-notation"
+    ]
+  },
+  {
+    "id": "evaluate-reverse-polish-notation",
+    "title": "Evaluate Reverse Polish Notation",
+    "leetcode_url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
+    "leetcode_id": 150,
+    "difficulty": "medium",
+    "patterns": [
+      "stack"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Evaluate the value of an arithmetic expression in Reverse Polish Notation (postfix). Valid operators are +, -, *, /. Each operand may be an integer or another expression. Integer division truncates toward zero.",
+    "constraints": [
+      "1 <= tokens.length <= 10^4",
+      "tokens[i] is either an operator: '+', '-', '*', or '/', or an integer in the range [-200, 200].",
+      "The given input represents a valid RPN expression."
+    ],
+    "examples": [
+      {
+        "input": "tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]",
+        "output": "9",
+        "explanation": "((2 + 1) * 3) = 9."
+      },
+      {
+        "input": "tokens = [\"4\",\"13\",\"5\",\"/\",\"+\"]",
+        "output": "6",
+        "explanation": "(4 + (13 / 5)) = 6."
+      }
+    ],
+    "function_name": "evalRPN",
+    "function_signature": "def evalRPN(tokens):",
+    "starter_code": "def evalRPN(tokens):\n    # Evaluate the postfix expression and return the integer result.\n    pass",
+    "test_cases": [
+      {
+        "label": "(2+1)*3",
+        "args": [
+          [
+            "2",
+            "1",
+            "+",
+            "3",
+            "*"
+          ]
+        ],
+        "expected": "9"
+      },
+      {
+        "label": "4+(13/5)",
+        "args": [
+          [
+            "4",
+            "13",
+            "5",
+            "/",
+            "+"
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "single number",
+        "args": [
+          [
+            "42"
+          ]
+        ],
+        "expected": "42"
+      },
+      {
+        "label": "negative number",
+        "args": [
+          [
+            "-3",
+            "2",
+            "+"
+          ]
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "division truncates toward zero",
+        "args": [
+          [
+            "7",
+            "-3",
+            "/"
+          ]
+        ],
+        "expected": "-2"
+      },
+      {
+        "label": "longer expression",
+        "args": [
+          [
+            "10",
+            "6",
+            "9",
+            "3",
+            "+",
+            "-11",
+            "*",
+            "/",
+            "*",
+            "17",
+            "+",
+            "5",
+            "+"
+          ]
+        ],
+        "expected": "22"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Stack problem. Push numbers as you see them. When you hit an operator, pop the top two, apply the op (mind operand order!), push the result. After processing all tokens, the stack has exactly one value \u2014 the answer.",
+      "clarifying_questions": [
+        {
+          "question": "Operand order matters \u2014 which one is the left operand?",
+          "why": "For '-' and '/', the FIRST popped value is the right operand (since the second-to-top was pushed first). Get this wrong and division/subtraction silently swap. Critical question."
+        },
+        {
+          "question": "How should integer division behave on negatives?",
+          "why": "Spec says 'truncates toward zero'. Python's // rounds toward -infinity (\u20131 // 2 = \u20131, not 0). Must use int(a / b) or handle signs manually."
+        },
+        {
+          "question": "Can tokens be empty or just one number?",
+          "why": "Per spec, expression is valid. Single number returns itself. Empty would be malformed."
+        },
+        {
+          "question": "Are inputs always valid?",
+          "why": "Yes \u2014 spec guarantees. So no need to defend against malformed RPN."
+        },
+        {
+          "question": "What's the value range \u2014 overflow concerns?",
+          "why": "Operands \u2264 200, expression length \u2264 10^4. Intermediate values can be large; in Python ints are unbounded so safe. In Java you'd want long."
+        }
+      ],
+      "think_out_loud": "Classic stack-based evaluator. Iterate left to right. If the token is a number, push. If an operator, pop right then left (note order!), apply, push result. Watch for the integer-division semantics \u2014 Python's // rounds toward negative infinity, but the problem wants truncation toward zero. Use int(a / b) for safe behavior.",
+      "edge_cases": [
+        {
+          "category": "Single number",
+          "details": "['42'] \u2192 42. Stack has one value at end; just return it."
+        },
+        {
+          "category": "Negative operands",
+          "details": "Tokens like '-3' should be parsed as numbers, not as a '-' op. The check 'is operator' must be exact (e.g., token in '+-*/' AND len > 1 is a number)."
+        },
+        {
+          "category": "Division: -1 // 2",
+          "details": "Python yields -1 (toward -inf); RPN spec wants 0 (toward zero). Use int(a / b) \u2014 but watch for float precision on huge ints."
+        },
+        {
+          "category": "Order matters",
+          "details": "['7', '3', '-'] = 7 - 3 = 4. NOT 3 - 7 = -4. Pop order: b first, a second. a OP b."
+        },
+        {
+          "category": "Long expression",
+          "details": "Up to 10^4 tokens. O(n) handles it; stack grows up to n/2."
+        }
+      ],
+      "common_mistakes": [
+        "Reversing operand order on subtract/divide \u2014 '7 3 -' returns -4 instead of 4.",
+        "Using Python's // for division when the answer should truncate toward zero. -7 // 2 = -4 in Python; RPN wants -3.",
+        "Mistaking '-3' for an operator. Use `token in {'+','-','*','/'} and len(token) == 1`, or just `token not in {'+','-','*','/'}` first.",
+        "Pushing the result as a string instead of an int \u2014 next operation fails.",
+        "Forgetting to int() the final result if you used float division."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Stack-based expression evaluator. Tests whether you can implement a small parser cleanly and handle the integer-division and operand-order traps.",
+      "introduction_context": "Common at Amazon, Bloomberg, Microsoft. Appears as a 'short coding question' or as a warm-up before a parser problem.",
+      "really_testing": [
+        "Stack pattern recognition.",
+        "Operand-order discipline (right-first pop).",
+        "Integer-division semantics matching the spec.",
+        "Distinguishing operators from negative numbers in input parsing."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Asks the operand-order and division-rounding questions before coding. Solves in 8-10 min, walks through a negative-division test."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly; needs prompting on division rounding."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Swaps operand order or uses // and produces wrong answers on negatives."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive the stack approach. Tries to evaluate left-to-right as infix."
+        }
+      ],
+      "playbook": [
+        "Restate: 'postfix expression with +, -, *, / and integers'.",
+        "Ask: 'truncation toward zero or toward -inf?' \u2192 use int(a / b).",
+        "Ask: 'operand order? right is popped first, right?' Confirm.",
+        "Pitch stack: push numbers, pop two on operator, apply, push result.",
+        "Code: stack = []. for t in tokens: if t in {'+','-','*','/'}: b = stack.pop(); a = stack.pop(); apply; push. else: push(int(t)). return stack[0].",
+        "Walk '2 1 + 3 *': push 2, push 1, '+' \u2192 pop 1, pop 2, push 3. push 3, '*' \u2192 pop 3, pop 3, push 9. Return 9. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Basic Calculator (infix \u2192 eval).",
+      "dont_do": [
+        "Don't swap operand order on - or /.",
+        "Don't use // \u2014 wrong on negatives.",
+        "Don't keep numbers as strings.",
+        "Don't forget to int(token) before pushing.",
+        "Don't try to convert to infix and reuse a calculator \u2014 overkill."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Stack Evaluator",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def evalRPN(tokens):\n    stack = []\n    OPS = {'+', '-', '*', '/'}\n    for t in tokens:\n        if t in OPS:\n            b = stack.pop()\n            a = stack.pop()\n            if t == '+':\n                stack.append(a + b)\n            elif t == '-':\n                stack.append(a - b)\n            elif t == '*':\n                stack.append(a * b)\n            else:\n                # Truncate toward zero (not Python's default //)\n                stack.append(int(a / b))\n        else:\n            stack.append(int(t))\n    return stack[0]",
+        "explanation": "Single pass over tokens. Numbers go onto the stack as ints; operators pop two (right then left), apply, push result. The `int(a / b)` handles the truncation-toward-zero rule that Python's // gets wrong for negatives. At the end, the stack has exactly one value \u2014 the final result."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "min-stack",
+      "generate-parentheses"
+    ]
   }
 ]
