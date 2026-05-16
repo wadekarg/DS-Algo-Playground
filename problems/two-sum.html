@@ -505,6 +505,10 @@
 
     /* ── Responsive: narrow viewport → stack vertically ────── */
     @media (max-width: 1023px) {
+      /* On mobile the hamburger handles sidebar toggle; hide our collapse button */
+      .sidebar-collapse-btn {
+        display: none !important;
+      }
       .main__content--problem {
         height: auto;
         overflow: visible;
@@ -551,8 +555,9 @@
 </head>
 <body data-topic="problems">
 
-  <!-- Floating re-expand button (shown when sidebar is collapsed) -->
-  <button class="sidebar-expand-rail" id="sidebar-expand-rail" aria-label="Expand navigation" title="Expand navigation">&#9776;</button>
+  <!-- Sidebar collapse toggle — direct child of body so it escapes the header's stacking context.
+       Single button; icon flips between ‹ (open) and › (collapsed). -->
+  <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse navigation sidebar" title="Collapse sidebar">&#8249;</button>
 
   <!-- Site Navigation Sidebar -->
   <aside class="sidebar">
@@ -577,9 +582,6 @@
       <button class="hamburger" aria-label="Toggle menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-
-      <!-- Desktop sidebar collapse toggle (hidden on mobile, handled by hamburger) -->
-      <button class="sidebar-collapse-btn" id="sidebar-collapse-btn" aria-label="Collapse navigation sidebar" title="Collapse sidebar (more space)">&#8249;</button>
 
       <div class="search-container">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
