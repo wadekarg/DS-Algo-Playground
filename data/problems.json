@@ -18773,5 +18773,694 @@
       "house-robber",
       "longest-increasing-subsequence"
     ]
+  },
+  {
+    "id": "min-cost-climbing-stairs",
+    "title": "Min Cost Climbing Stairs",
+    "leetcode_url": "https://leetcode.com/problems/min-cost-climbing-stairs/",
+    "leetcode_id": 746,
+    "difficulty": "easy",
+    "patterns": [
+      "dp",
+      "1d-dp"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an integer array cost where cost[i] is the cost of stepping on step i. Once you pay the cost, you can climb one or two steps. You can start from index 0 or index 1. Return the minimum cost to reach the TOP (beyond the last step).",
+    "constraints": [
+      "2 <= cost.length <= 1000",
+      "0 <= cost[i] <= 999"
+    ],
+    "examples": [
+      {
+        "input": "cost = [10,15,20]",
+        "output": "15",
+        "explanation": "Start at index 1 (pay 15), jump 2 to past the top. Total 15."
+      },
+      {
+        "input": "cost = [1,100,1,1,1,100,1,1,100,1]",
+        "output": "6",
+        "explanation": "Pay 1,1,1,1,1,1 (indices 0,2,4,6,7,9). Total 6."
+      }
+    ],
+    "function_name": "minCostClimbingStairs",
+    "function_signature": "def minCostClimbingStairs(cost):",
+    "starter_code": "def minCostClimbingStairs(cost):\n    # dp[i] = min cost to REACH step i (paying as you step ON it).\n    # Top is index n (past the last). dp[n] = min(dp[n-1], dp[n-2]).\n    pass",
+    "test_cases": [
+      {
+        "label": "[10,15,20]",
+        "args": [
+          [
+            10,
+            15,
+            20
+          ]
+        ],
+        "expected": "15"
+      },
+      {
+        "label": "[1,100,1,1,1,100,1,1,100,1]",
+        "args": [
+          [
+            1,
+            100,
+            1,
+            1,
+            1,
+            100,
+            1,
+            1,
+            100,
+            1
+          ]
+        ],
+        "expected": "6"
+      },
+      {
+        "label": "two steps",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            5,
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "zero costs allowed",
+        "args": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": "0"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Variant of Climbing Stairs: instead of counting ways, minimize cost. dp[i] = min cost to land ON step i = cost[i] + min(dp[i-1], dp[i-2]). Top is index n; dp[n] = min(dp[n-1], dp[n-2]) (no cost beyond top).",
+      "clarifying_questions": [
+        {
+          "question": "Cost is paid when stepping ON, then you can jump 1 or 2?",
+          "why": "Yes. So dp[i] includes the cost AT i."
+        },
+        {
+          "question": "Top is at index n (one past last)?",
+          "why": "Yes \u2014 'reach the top' means past the array. No cost beyond."
+        },
+        {
+          "question": "Can start at index 0 or 1?",
+          "why": "Yes \u2014 base cases dp[0] = cost[0], dp[1] = cost[1]."
+        },
+        {
+          "question": "Can costs be zero?",
+          "why": "Yes per spec. Algorithm handles."
+        },
+        {
+          "question": "Recurrence vs iterative?",
+          "why": "Iterative bottom-up \u2014 same as Climbing Stairs but with cost added."
+        }
+      ],
+      "think_out_loud": "dp[i] = cost[i] + min(dp[i-1], dp[i-2]). Final answer: min(dp[n-1], dp[n-2]). Roll with two variables.",
+      "edge_cases": [
+        {
+          "category": "Length 2",
+          "details": "Min(cost[0], cost[1])."
+        },
+        {
+          "category": "All same cost",
+          "details": "Pay every other or take 2-jumps."
+        },
+        {
+          "category": "Zero costs",
+          "details": "Total 0."
+        },
+        {
+          "category": "Big spike in the middle",
+          "details": "Algorithm correctly avoids."
+        },
+        {
+          "category": "Start = 0 vs 1",
+          "details": "Initial dp values handle it."
+        }
+      ],
+      "common_mistakes": [
+        "Off-by-one \u2014 confusion about 'top' position.",
+        "Allocating O(n) \u2014 O(1) with two vars works.",
+        "Forgetting the final min(dp[n-1], dp[n-2]) \u2014 you can jump from either of the last two."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Climbing Stairs with cost. Tests the iterative-DP-O(1)-space pattern.",
+      "introduction_context": "Common phone screen. Warm-up before harder DP.",
+      "really_testing": [
+        "Adapting Climbing Stairs recurrence to a min-cost variant.",
+        "Iterative DP with O(1) space.",
+        "Final 'top' handling."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes in 3-5 min, O(1) space."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with array; refactors to O(1)."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Off-by-one on top handling."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive recurrence."
+        }
+      ],
+      "playbook": [
+        "Restate: 'min cost to reach top, pay when stepping'.",
+        "Recurrence: 'dp[i] = cost[i] + min(dp[i-1], dp[i-2])'.",
+        "Code: a, b = cost[0], cost[1]. for i in range(2, len(cost)): a, b = b, cost[i] + min(a, b). return min(a, b).",
+        "Walk [10,15,20]: a=10, b=15. i=2: a=15, b=20+10=30. min(15,30)=15. \u2713"
+      ],
+      "playbook_meta": "Total time: 3-5 min.",
+      "dont_do": [
+        "Don't off-by-one the 'top'.",
+        "Don't allocate full O(n)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Iterative DP, O(1) Space",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def minCostClimbingStairs(cost):\n    a, b = cost[0], cost[1]\n    for i in range(2, len(cost)):\n        a, b = b, cost[i] + min(a, b)\n    return min(a, b)",
+        "explanation": "Rolling two variables. a = min cost to reach step i-2, b = min cost to reach step i-1. For each new step, compute its min cost and shift. Final answer is min of the last two (you can jump from either to the top)."
+      }
+    ],
+    "related_problem_ids": [
+      "climbing-stairs",
+      "house-robber",
+      "coin-change"
+    ]
+  },
+  {
+    "id": "house-robber-ii",
+    "title": "House Robber II",
+    "leetcode_url": "https://leetcode.com/problems/house-robber-ii/",
+    "leetcode_id": 213,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Same as House Robber, but houses are arranged in a CIRCLE \u2014 house 0 and house n-1 are also adjacent. Return the maximum money you can rob.",
+    "constraints": [
+      "1 <= nums.length <= 100",
+      "0 <= nums[i] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "nums = [2,3,2]",
+        "output": "3",
+        "explanation": "Can't rob both 2 (index 0) and 2 (index 2) \u2014 they're adjacent in the circle. So just rob 3."
+      },
+      {
+        "input": "nums = [1,2,3,1]",
+        "output": "4",
+        "explanation": "Rob 1 (index 0) + 3 (index 2). Adjacent rule respected."
+      }
+    ],
+    "function_name": "rob",
+    "function_signature": "def rob(nums):",
+    "starter_code": "def rob(nums):\n    # Circular adjacency means either skip first OR skip last.\n    # Run linear House Robber on nums[1:] and nums[:-1]. Return the larger.\n    pass",
+    "test_cases": [
+      {
+        "label": "[2,3,2]",
+        "args": [
+          [
+            2,
+            3,
+            2
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "[1,2,3,1]",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "single house",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "two houses",
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "all zero",
+        "args": [
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "long ring",
+        "args": [
+          [
+            2,
+            7,
+            9,
+            3,
+            1
+          ]
+        ],
+        "expected": "11"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Key insight: in a circle, the first and last house can't both be robbed. So consider two cases: (1) skip first \u2192 linear House Robber on nums[1:], (2) skip last \u2192 linear House Robber on nums[:-1]. Answer is the max of the two.",
+      "clarifying_questions": [
+        {
+          "question": "Adjacency in a circle?",
+          "why": "Yes \u2014 house n-1 is adjacent to house 0 AND to house n-2."
+        },
+        {
+          "question": "Single house \u2014 does the circle rule apply?",
+          "why": "Trivially: rob it. The 'two slices' approach handles it (nums[1:] is empty, nums[:-1] is empty; max of 0, nums[0] is nums[0])."
+        },
+        {
+          "question": "Can I solve in one pass with state?",
+          "why": "Yes \u2014 track whether you robbed house 0 as state. But the two-slice approach is cleaner."
+        },
+        {
+          "question": "Why two slices and not three or more?",
+          "why": "Only the first-last connection is the new constraint. Skipping one of them removes it. Linear works on the remaining."
+        },
+        {
+          "question": "Edge case n=1?",
+          "why": "Both slices empty; result should be nums[0]. Handle as a separate case."
+        }
+      ],
+      "think_out_loud": "Reduce to House Robber I twice. Once excluding house 0, once excluding house n-1. The max of the two is the answer. The recurrence inside each linear case is dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
+      "edge_cases": [
+        {
+          "category": "Single house",
+          "details": "Return nums[0]. Don't slice."
+        },
+        {
+          "category": "Two houses",
+          "details": "Return max(nums[0], nums[1])."
+        },
+        {
+          "category": "All zeros",
+          "details": "Return 0."
+        },
+        {
+          "category": "Long ring",
+          "details": "Algorithm handles correctly."
+        },
+        {
+          "category": "First and last are tiny vs middle peaks",
+          "details": "Algorithm picks the bigger slice."
+        }
+      ],
+      "common_mistakes": [
+        "Trying full linear House Robber without handling the circular wrap \u2014 counts first and last both.",
+        "Recursing without memoization.",
+        "Not handling n=1 separately.",
+        "Slicing wrong (nums[1:] vs nums[:-1] confusion)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "House Robber with circular constraint. Tests adapting a known DP.",
+      "introduction_context": "Direct follow-up at Amazon, Microsoft.",
+      "really_testing": [
+        "Recognizing the circular wraparound.",
+        "Two-slice reduction.",
+        "Reusing the linear DP.",
+        "Single-house edge case."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Two-slice idea in 3-4 min, codes in 7."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly with one base-case fix."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Tries to extend the linear DP with extra state; gets confused."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "Restate: 'circular adjacency: first and last can't both be robbed'.",
+        "Reduction: 'two cases \u2014 skip first OR skip last, take max'.",
+        "Code: if len(nums) == 1: return nums[0]. def lin(arr): prev2, prev1 = 0, 0; for x in arr: prev2, prev1 = prev1, max(prev1, prev2 + x); return prev1. return max(lin(nums[1:]), lin(nums[:-1])).",
+        "Walk [1,2,3,1]: lin([2,3,1]) = 4. lin([1,2,3]) = 4. Max = 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 5-8 min.",
+      "dont_do": [
+        "Don't ignore the circular constraint.",
+        "Don't try complex single-pass DP with state \u2014 two slices is cleaner.",
+        "Don't forget single-house edge case."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Two-Slice Reduction",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def rob(nums):\n    if len(nums) == 1:\n        return nums[0]\n    \n    def linear_rob(arr):\n        prev2, prev1 = 0, 0\n        for x in arr:\n            prev2, prev1 = prev1, max(prev1, prev2 + x)\n        return prev1\n    \n    # Either skip the first house or skip the last; take the max.\n    return max(linear_rob(nums[1:]), linear_rob(nums[:-1]))",
+        "explanation": "Reduce circular case to two linear cases. Run linear House Robber excluding either the first or the last house \u2014 that breaks the wrap-around constraint. Maximum of the two is the answer. O(n) time, O(1) space within each linear call."
+      }
+    ],
+    "related_problem_ids": [
+      "house-robber",
+      "climbing-stairs",
+      "coin-change"
+    ]
+  },
+  {
+    "id": "longest-increasing-subsequence",
+    "title": "Longest Increasing Subsequence",
+    "leetcode_url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+    "leetcode_id": 300,
+    "difficulty": "medium",
+    "patterns": [
+      "dp",
+      "1d-dp",
+      "binary-search"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "1D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given an integer array nums, return the length of the longest STRICTLY INCREASING subsequence. A subsequence preserves relative order but doesn't have to be contiguous.",
+    "constraints": [
+      "1 <= nums.length <= 2500",
+      "-10^4 <= nums[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "nums = [10,9,2,5,3,7,101,18]",
+        "output": "4",
+        "explanation": "One LIS is [2,3,7,101] \u2014 length 4."
+      },
+      {
+        "input": "nums = [0,1,0,3,2,3]",
+        "output": "4",
+        "explanation": "[0,1,2,3] is one such LIS."
+      },
+      {
+        "input": "nums = [7,7,7,7,7,7,7]",
+        "output": "1",
+        "explanation": "Strictly increasing \u2014 duplicates don't count."
+      }
+    ],
+    "function_name": "lengthOfLIS",
+    "function_signature": "def lengthOfLIS(nums):",
+    "starter_code": "def lengthOfLIS(nums):\n    # O(n^2) DP: dp[i] = LIS ending at i.\n    # O(n log n): patience sorting with binary search (bisect).\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            10,
+            9,
+            2,
+            5,
+            3,
+            7,
+            101,
+            18
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "duplicates included",
+        "args": [
+          [
+            0,
+            1,
+            0,
+            3,
+            2,
+            3
+          ]
+        ],
+        "expected": "4"
+      },
+      {
+        "label": "all same",
+        "args": [
+          [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single element",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "strictly increasing",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "strictly decreasing",
+        "args": [
+          [
+            5,
+            4,
+            3,
+            2,
+            1
+          ]
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two approaches. (1) O(n\u00b2) DP: dp[i] = LIS length ending at i. For each i, scan j < i; if nums[j] < nums[i], dp[i] = max(dp[i], dp[j] + 1). Answer: max(dp). (2) O(n log n) patience sort: maintain a 'tails' array where tails[k] = smallest possible tail of an increasing subsequence of length k+1. For each num, binary-search to replace (or append). tails length = LIS length.",
+      "clarifying_questions": [
+        {
+          "question": "Strictly increasing, or non-decreasing?",
+          "why": "Strictly per spec. Duplicates don't extend. Use < (not \u2264)."
+        },
+        {
+          "question": "Subsequence (preserve order, not contiguous)?",
+          "why": "Yes per spec. Different from substring."
+        },
+        {
+          "question": "Return length or the sequence?",
+          "why": "Just length per spec. Saves work."
+        },
+        {
+          "question": "O(n\u00b2) acceptable or do you want O(n log n)?",
+          "why": "n \u2264 2500 \u2192 O(n\u00b2) = ~6 million, fine. But the patience-sort version is impressive."
+        },
+        {
+          "question": "Negatives or large values?",
+          "why": "Algorithm is purely comparison-based. Range doesn't matter."
+        }
+      ],
+      "think_out_loud": "Start with O(n\u00b2) DP: for each i, find max LIS ending at i by scanning back. Answer is max over all dp[i]. For O(n log n): keep a 'tails' array \u2014 tails[k] is the smallest possible ending value for an LIS of length k+1. For each num, find the first tails[k] >= num (bisect_left) and replace. If num is larger than all tails, append. Final length of tails is LIS length.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "LIS length 1."
+        },
+        {
+          "category": "Strictly increasing",
+          "details": "LIS = whole array."
+        },
+        {
+          "category": "Strictly decreasing",
+          "details": "LIS = 1."
+        },
+        {
+          "category": "All same values",
+          "details": "LIS = 1 (strict)."
+        },
+        {
+          "category": "Duplicates allowed in input",
+          "details": "Strict comparison handles them \u2014 each duplicate doesn't extend."
+        }
+      ],
+      "common_mistakes": [
+        "Using <= instead of < (allows duplicates to extend).",
+        "Confusing subsequence with substring (contiguous).",
+        "O(n\u00b2) DP that resets dp[i] to 1 every time \u2014 should remain 1 by default.",
+        "Patience sort with wrong bisect side \u2014 should be bisect_left for strict increase.",
+        "Returning the sequence instead of just length."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic LIS. Often paired with the 'can you do it in O(n log n)?' follow-up.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. The O(n\u00b2) is the entry bar; O(n log n) is impressive.",
+      "really_testing": [
+        "Recognizing 1D DP structure.",
+        "Strict vs non-strict comparison.",
+        "Patience-sort technique with binary search.",
+        "Subsequence vs substring distinction."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "O(n\u00b2) DP in 5 min, then O(n log n) via patience-sort. Walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "O(n\u00b2) solid. Knows O(n log n) exists, can describe but maybe not code."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong inequality. Or treats as substring."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive DP."
+        }
+      ],
+      "playbook": [
+        "Restate: 'longest STRICTLY increasing SUBSEQUENCE'.",
+        "Pitch O(n\u00b2) DP.",
+        "Code: dp = [1] * len(nums). for i in range(len(nums)): for j in range(i): if nums[j] < nums[i]: dp[i] = max(dp[i], dp[j] + 1). return max(dp).",
+        "Pitch O(n log n): 'patience sort \u2014 tails[k] = smallest possible end of length-(k+1) LIS'.",
+        "Code: from bisect import bisect_left. tails = []. for x in nums: idx = bisect_left(tails, x). if idx == len(tails): tails.append(x). else: tails[idx] = x. return len(tails).",
+        "Walk [10,9,2,5,3,7,101,18]: tails grows to [2, 3, 7, 18]. Length 4. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-15 min. Follow-up: 'return the actual sequence' (track predecessors).",
+      "dont_do": [
+        "Don't use \u2264.",
+        "Don't treat as substring.",
+        "Don't claim tails IS the LIS \u2014 it's not; just the same length.",
+        "Don't bisect_right (would give non-decreasing version)."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "DP O(n\u00b2)",
+        "time": "O(n\u00b2)",
+        "space": "O(n)",
+        "code": "def lengthOfLIS(nums):\n    if not nums:\n        return 0\n    dp = [1] * len(nums)  # dp[i] = LIS length ending at index i\n    for i in range(len(nums)):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp)",
+        "explanation": "Classic 1D DP. dp[i] = length of LIS ending at index i. For each i, scan all earlier j; if nums[j] < nums[i], we can extend dp[j]. Initialize all dp[i] = 1 (subsequence of just nums[i]). Answer is max(dp). O(n\u00b2)."
+      },
+      {
+        "name": "Patience Sort with Binary Search, O(n log n)",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "from bisect import bisect_left\n\ndef lengthOfLIS(nums):\n    tails = []  # tails[k] = smallest possible tail of an LIS of length k+1\n    for x in nums:\n        idx = bisect_left(tails, x)\n        if idx == len(tails):\n            tails.append(x)  # extend\n        else:\n            tails[idx] = x  # replace \u2014 smaller tail keeps options open\n    return len(tails)",
+        "explanation": "Patience-sort algorithm. Maintain 'tails' where tails[k] is the smallest possible ending value of any increasing subsequence of length k+1. For each new value, find its position via bisect_left (since strict, we replace equals). Append if it extends; otherwise replace to lower the tail. Length of tails is the LIS length. O(n log n)."
+      }
+    ],
+    "related_problem_ids": [
+      "climbing-stairs",
+      "house-robber",
+      "coin-change"
+    ]
   }
 ]
