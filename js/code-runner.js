@@ -11,11 +11,16 @@ var DSA = window.DSA || {};
   var pyodideLoading = false;
   var pyodideCallbacks = [];
 
-  // --- CDN URLs ---
-  var CM_CSS      = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css';
-  var CM_JS       = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js';
-  var CM_PYTHON   = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js';
-  var CM_CLOSE    = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js';
+  // --- Asset URLs (CodeMirror self-hosted; Pyodide stays on CDN) ---
+  function vendorPath(filename) {
+    var p = window.location.pathname;
+    var prefix = (p.indexOf('/topics/') !== -1 || p.indexOf('/problems/') !== -1) ? '../' : '';
+    return prefix + 'vendor/codemirror/' + filename;
+  }
+  var CM_CSS      = vendorPath('codemirror.min.css');
+  var CM_JS       = vendorPath('codemirror.min.js');
+  var CM_PYTHON   = vendorPath('python.min.js');
+  var CM_CLOSE    = vendorPath('closebrackets.min.js');
   var PY_JS       = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
   var PY_INDEX    = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/';
 

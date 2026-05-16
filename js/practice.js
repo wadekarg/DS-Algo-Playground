@@ -3,12 +3,21 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // --- CDN URLs (shared with code-runner.js) ---
-  var CM_CSS     = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css';
-  var CM_DRACULA = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/theme/dracula.min.css';
-  var CM_JS      = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js';
-  var CM_PYTHON  = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/python/python.min.js';
-  var CM_CLOSE   = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/edit/closebrackets.min.js';
+  // --- Asset URLs ---
+  // CodeMirror is self-hosted so it works on networks that block cdnjs (common
+  // on corporate Mac/Windows laptops). Pyodide stays on jsdelivr because the
+  // full distribution is ~10MB and we don't want to ship that with the site.
+  function vendorPath(filename) {
+    // sidebar-nav.getBasePath logic, inlined to avoid coupling
+    var p = window.location.pathname;
+    var prefix = (p.indexOf('/topics/') !== -1 || p.indexOf('/problems/') !== -1) ? '../' : '';
+    return prefix + 'vendor/codemirror/' + filename;
+  }
+  var CM_CSS     = vendorPath('codemirror.min.css');
+  var CM_DRACULA = vendorPath('dracula.min.css');
+  var CM_JS      = vendorPath('codemirror.min.js');
+  var CM_PYTHON  = vendorPath('python.min.js');
+  var CM_CLOSE   = vendorPath('closebrackets.min.js');
   var PY_JS      = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
   var PY_INDEX   = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/';
 
