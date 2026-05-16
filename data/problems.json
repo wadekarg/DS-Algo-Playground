@@ -23500,5 +23500,625 @@
       "word-search",
       "longest-common-subsequence"
     ]
+  },
+  {
+    "id": "design-add-and-search-words-data-structure",
+    "title": "Design Add and Search Words Data Structure",
+    "leetcode_url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+    "leetcode_id": 211,
+    "difficulty": "medium",
+    "patterns": [
+      "trie",
+      "dfs",
+      "design"
+    ],
+    "topics": [
+      "tries"
+    ],
+    "neetcode_category": "Tries",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design a data structure that supports adding words and searching them. search(word) may contain '.' which matches any single letter. The data structure must support both efficiently.",
+    "constraints": [
+      "1 <= word.length <= 25",
+      "addWord/search consist of lowercase English letters and '.' for search.",
+      "At most 10^4 calls combined."
+    ],
+    "examples": [
+      {
+        "input": "ops: addWord('bad'), addWord('dad'), addWord('mad'), search('pad'), search('bad'), search('.ad'), search('b..')",
+        "output": "[False, True, True, True]",
+        "explanation": "Wildcard '.' matches any letter."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "class WordDictionary:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n    def addWord(self, word):\n        pass\n    def search(self, word):\n        # '.' matches any single letter \u2014 DFS branches when '.' is encountered\n        pass\n\ndef runOps(ops):\n    d = WordDictionary()\n    out = []\n    for op in ops:\n        if op[0] == 'addWord':\n            d.addWord(op[1])\n        else:\n            out.append(d.search(op[1]))\n    return out\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "addWord",
+              "bad"
+            ],
+            [
+              "addWord",
+              "dad"
+            ],
+            [
+              "addWord",
+              "mad"
+            ],
+            [
+              "search",
+              "pad"
+            ],
+            [
+              "search",
+              "bad"
+            ],
+            [
+              "search",
+              ".ad"
+            ],
+            [
+              "search",
+              "b.."
+            ]
+          ]
+        ],
+        "expected": "[False, True, True, True]"
+      },
+      {
+        "label": "all dots",
+        "args": [
+          [
+            [
+              "addWord",
+              "abc"
+            ],
+            [
+              "search",
+              "..."
+            ]
+          ]
+        ],
+        "expected": "[True]"
+      },
+      {
+        "label": "wrong length",
+        "args": [
+          [
+            [
+              "addWord",
+              "abc"
+            ],
+            [
+              "search",
+              "ab"
+            ]
+          ]
+        ],
+        "expected": "[False]"
+      },
+      {
+        "label": "no match",
+        "args": [
+          [
+            [
+              "addWord",
+              "a"
+            ],
+            [
+              "search",
+              "b"
+            ]
+          ]
+        ],
+        "expected": "[False]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Trie + DFS for wildcards. addWord is identical to Trie's insert. search becomes a recursive DFS: for each '.', try every child; otherwise walk a single child if present.",
+      "clarifying_questions": [
+        {
+          "question": "Wildcard is just '.'?",
+          "why": "Yes per spec. No '*' or character classes."
+        },
+        {
+          "question": "Word length bound?",
+          "why": "\u2264 25. Recursion depth fine."
+        },
+        {
+          "question": "DFS or BFS for wildcards?",
+          "why": "DFS \u2014 natural fit. BFS works but more state."
+        }
+      ],
+      "think_out_loud": "Trie with DFS-search. On '.', try every child node recursively. On a letter, follow that child if it exists. Return True iff some recursion path completes at is_end.",
+      "edge_cases": [
+        {
+          "category": "All dots",
+          "details": "Matches any word of that length."
+        },
+        {
+          "category": "Wrong length",
+          "details": "DFS exhausts string before reaching is_end \u2192 False."
+        },
+        {
+          "category": "Word not added",
+          "details": "False."
+        }
+      ],
+      "common_mistakes": [
+        "Iterative search \u2014 doesn't handle wildcards.",
+        "Forgetting is_end check at recursion's end.",
+        "Not branching on '.' at every level.",
+        "Recursion without proper base case (string end + is_end)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Trie + DFS variant. Tests adapting standard trie to handle wildcards.",
+      "introduction_context": "Common at Amazon, Google.",
+      "really_testing": [
+        "Trie + recursive search with branching.",
+        "Wildcard logic.",
+        "Recursion depth handling."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes both in 10-12 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct with minor bug."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses wildcard branching."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't extend trie."
+        }
+      ],
+      "playbook": [
+        "Trie skeleton.",
+        "search: recursive DFS with (node, index). If index == len, return node.is_end. If word[i] == '.': any(dfs(child, i+1)). Else: dfs(children.get(word[i]), i+1)."
+      ],
+      "playbook_meta": "Total time: 10-15 min.",
+      "dont_do": [
+        "Don't iterate when wildcards present.",
+        "Don't forget is_end at terminator."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Trie with Recursive DFS Search",
+        "time": "O(M) per add, O(26^k * M) worst case per search (k = wildcards)",
+        "space": "O(total chars)",
+        "code": "class WordDictionary:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n    \n    def addWord(self, word):\n        node = self\n        for ch in word:\n            if ch not in node.children:\n                node.children[ch] = WordDictionary()\n            node = node.children[ch]\n        node.is_end = True\n    \n    def search(self, word):\n        def dfs(node, i):\n            if i == len(word):\n                return node.is_end\n            ch = word[i]\n            if ch == '.':\n                return any(dfs(child, i + 1) for child in node.children.values())\n            if ch not in node.children:\n                return False\n            return dfs(node.children[ch], i + 1)\n        return dfs(self, 0)\n\ndef runOps(ops):\n    d = WordDictionary()\n    out = []\n    for op in ops:\n        if op[0] == 'addWord':\n            d.addWord(op[1])\n        else:\n            out.append(d.search(op[1]))\n    return out",
+        "explanation": "Trie addWord is standard. search uses recursive DFS \u2014 at '.', try every child. At a letter, follow it if present. Return is_end at the string's end."
+      }
+    ],
+    "related_problem_ids": [
+      "implement-trie-prefix-tree",
+      "word-search",
+      "valid-anagram"
+    ]
+  },
+  {
+    "id": "word-search-ii",
+    "title": "Word Search II",
+    "leetcode_url": "https://leetcode.com/problems/word-search-ii/",
+    "leetcode_id": 212,
+    "difficulty": "hard",
+    "patterns": [
+      "trie",
+      "dfs",
+      "backtracking",
+      "grid"
+    ],
+    "topics": [
+      "tries"
+    ],
+    "neetcode_category": "Tries",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an m \u00d7 n board of characters and a list of words, return all words from the list that can be constructed by adjacent (4-directional) board cells, where each cell is used at most once per word. Output may be in any order.",
+    "constraints": [
+      "m == board.length, n == board[i].length",
+      "1 <= m, n <= 12",
+      "1 <= words.length <= 3 * 10^4",
+      "1 <= words[i].length <= 10",
+      "All words are unique lowercase English letters."
+    ],
+    "examples": [
+      {
+        "input": "board, words = ['oath','pea','eat','rain']",
+        "output": "['eat','oath']",
+        "explanation": "Two words found in board."
+      }
+    ],
+    "function_name": "findWords",
+    "function_signature": "def findWords(board, words):",
+    "starter_code": "def findWords(board, words):\n    # Build a Trie of words. DFS from each board cell, walking trie + board simultaneously.\n    # Collect words at each terminal trie node hit. Sort output for deterministic order.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "o",
+              "a",
+              "a",
+              "n"
+            ],
+            [
+              "e",
+              "t",
+              "a",
+              "e"
+            ],
+            [
+              "i",
+              "h",
+              "k",
+              "r"
+            ],
+            [
+              "i",
+              "f",
+              "l",
+              "v"
+            ]
+          ],
+          [
+            "oath",
+            "pea",
+            "eat",
+            "rain"
+          ]
+        ],
+        "expected": "['eat', 'oath']"
+      },
+      {
+        "label": "no matches",
+        "args": [
+          [
+            [
+              "a",
+              "b"
+            ],
+            [
+              "c",
+              "d"
+            ]
+          ],
+          [
+            "abcd"
+          ]
+        ],
+        "expected": "[]"
+      },
+      {
+        "label": "single cell match",
+        "args": [
+          [
+            [
+              "a"
+            ]
+          ],
+          [
+            "a"
+          ]
+        ],
+        "expected": "['a']"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Build a Trie of all words. DFS from each cell on the board, walking the Trie in lockstep. When we hit a Trie node with end=True, record that word (deduplicated). Mark cells visited (e.g., temporarily). The Trie lets us prune impossible paths early.",
+      "clarifying_questions": [
+        {
+          "question": "4-directional?",
+          "why": "Yes."
+        },
+        {
+          "question": "Each cell once per word, but reusable across words?",
+          "why": "Yes."
+        },
+        {
+          "question": "Return order?",
+          "why": "Any. Sort for determinism."
+        }
+      ],
+      "think_out_loud": "Naive: DFS per word \u2014 O(words * m*n*4^len). Trie: DFS once per cell; Trie tracks all words simultaneously. Each cell's DFS walks the Trie; matches found at end-nodes; remove found words from Trie to prune.",
+      "edge_cases": [
+        {
+          "category": "No matches",
+          "details": "Empty list."
+        },
+        {
+          "category": "Single-cell match",
+          "details": "Just the letter."
+        },
+        {
+          "category": "Word longer than board",
+          "details": "Skipped naturally."
+        }
+      ],
+      "common_mistakes": [
+        "Per-word DFS \u2014 too slow.",
+        "Not marking visited (cycles within one word).",
+        "Forgetting to unmark on backtrack.",
+        "Duplicates in output."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Trie + DFS backtracking on a grid. Combines two patterns elegantly.",
+      "introduction_context": "Onsite at Amazon, Google, Meta.",
+      "really_testing": [
+        "Trie construction.",
+        "DFS with backtracking.",
+        "Grid traversal.",
+        "Trie pruning during DFS."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Trie + DFS in 15-20 min. Mentions pruning."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves correctly but doesn't optimize."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Per-word DFS only; TLE."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't structure."
+        }
+      ],
+      "playbook": [
+        "Build Trie of all words.",
+        "DFS from each cell: walk Trie + board. At end-node, record word.",
+        "Mark visited (mutate to '#' or use set), restore after.",
+        "Sort output for determinism."
+      ],
+      "playbook_meta": "Total time: 15-22 min.",
+      "dont_do": [
+        "Don't per-word DFS.",
+        "Don't forget backtracking.",
+        "Don't duplicate matches."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Trie + DFS",
+        "time": "O(m*n*4^L)",
+        "space": "O(total chars in words)",
+        "code": "def findWords(board, words):\n    # Build trie\n    root = {}\n    for w in words:\n        node = root\n        for ch in w:\n            node = node.setdefault(ch, {})\n        node['$'] = w  # store the word at the terminal\n    \n    m, n = len(board), len(board[0])\n    found = set()\n    \n    def dfs(r, c, node):\n        ch = board[r][c]\n        if ch not in node:\n            return\n        next_node = node[ch]\n        if '$' in next_node:\n            found.add(next_node['$'])\n        board[r][c] = '#'\n        for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < m and 0 <= nc < n and board[nr][nc] != '#':\n                dfs(nr, nc, next_node)\n        board[r][c] = ch\n    \n    for r in range(m):\n        for c in range(n):\n            dfs(r, c, root)\n    \n    return sorted(found)",
+        "explanation": "Build a Trie of all target words. From each board cell, DFS walking the Trie and board in lockstep. When we reach a Trie terminal node (marked with '$'), record the word. Mutate board cells to '#' during recursion to prevent cycles; restore on backtrack. Sort the final set for deterministic output."
+      }
+    ],
+    "related_problem_ids": [
+      "implement-trie-prefix-tree",
+      "design-add-and-search-words-data-structure",
+      "word-search"
+    ]
+  },
+  {
+    "id": "jump-game",
+    "title": "Jump Game",
+    "leetcode_url": "https://leetcode.com/problems/jump-game/",
+    "leetcode_id": 55,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "dp"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given an integer array nums. You start at index 0. Each element represents the maximum jump length at that position. Return True if you can reach the last index.",
+    "constraints": [
+      "1 <= nums.length <= 10^4",
+      "0 <= nums[i] <= 10^5"
+    ],
+    "examples": [
+      {
+        "input": "nums = [2,3,1,1,4]",
+        "output": "True",
+        "explanation": "Jump 1 step from 0 to 1, then 3 steps to last."
+      },
+      {
+        "input": "nums = [3,2,1,0,4]",
+        "output": "False",
+        "explanation": "Always stuck at index 3 (value 0)."
+      }
+    ],
+    "function_name": "canJump",
+    "function_signature": "def canJump(nums):",
+    "starter_code": "def canJump(nums):\n    # Greedy: track max_reach. Iterate; if i > max_reach we're stuck. Update max_reach = max(max_reach, i + nums[i]).\n    pass",
+    "test_cases": [
+      {
+        "label": "reachable",
+        "args": [
+          [
+            2,
+            3,
+            1,
+            1,
+            4
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "stuck",
+        "args": [
+          [
+            3,
+            2,
+            1,
+            0,
+            4
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "two reach",
+        "args": [
+          [
+            1,
+            0
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "leading zero blocks",
+        "args": [
+          [
+            0,
+            1
+          ]
+        ],
+        "expected": "False"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Greedy. Track the furthest index reachable so far. Walk left to right; if current index > furthest, we're stuck. Otherwise update furthest = max(furthest, i + nums[i]). If furthest reaches or exceeds n-1, return True.",
+      "clarifying_questions": [
+        {
+          "question": "Start at index 0?",
+          "why": "Yes."
+        },
+        {
+          "question": "Reach exactly n-1 or beyond?",
+          "why": "Either \u2014 covering n-1 is enough."
+        },
+        {
+          "question": "Negative jumps?",
+          "why": "No \u2014 non-negative per spec."
+        }
+      ],
+      "think_out_loud": "Naive: BFS/DFS from each cell \u2014 O(n\u00b2). Greedy: single pass tracking max_reach. If max_reach ever falls behind current index, return False.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "Already at last index \u2014 True."
+        },
+        {
+          "category": "Leading zero",
+          "details": "Stuck at index 0 unless n=1."
+        },
+        {
+          "category": "Big first jump",
+          "details": "Reach the end in one move."
+        },
+        {
+          "category": "All ones",
+          "details": "Always reachable."
+        }
+      ],
+      "common_mistakes": [
+        "Recursion without memo \u2014 O(2^n).",
+        "DP O(n\u00b2) \u2014 works but suboptimal.",
+        "Off-by-one (n-1 vs n).",
+        "Missing the early-exit when i > max_reach."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Greedy classic. The single-pass max-reach trick.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "Greedy max-reach insight.",
+        "Single-pass implementation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Greedy in 3-5 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DP first; refactors to greedy."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Exponential recursion."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "Restate: 'reach last index from 0'.",
+        "Greedy: 'max_reach = 0. for i, x in enumerate(nums): if i > max_reach: return False. max_reach = max(max_reach, i + x). if max_reach >= n-1: return True. return True.'",
+        "Walk [2,3,1,1,4]: reaches end. \u2713"
+      ],
+      "playbook_meta": "Total time: 4-7 min.",
+      "dont_do": [
+        "Don't recurse.",
+        "Don't over-engineer with DP."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Greedy Max-Reach",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def canJump(nums):\n    max_reach = 0\n    n = len(nums)\n    for i in range(n):\n        if i > max_reach:\n            return False\n        max_reach = max(max_reach, i + nums[i])\n        if max_reach >= n - 1:\n            return True\n    return True",
+        "explanation": "Greedy. max_reach tracks the furthest index we can possibly reach. If we ever step past max_reach, we're stuck. Otherwise update max_reach with each jump option. Early-exit if max_reach reaches end."
+      }
+    ],
+    "related_problem_ids": [
+      "jump-game-ii",
+      "house-robber",
+      "maximum-subarray"
+    ]
   }
 ]
