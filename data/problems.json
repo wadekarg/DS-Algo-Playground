@@ -22801,5 +22801,704 @@
       "course-schedule",
       "longest-increasing-subsequence"
     ]
+  },
+  {
+    "id": "burst-balloons",
+    "title": "Burst Balloons",
+    "leetcode_url": "https://leetcode.com/problems/burst-balloons/",
+    "leetcode_id": 312,
+    "difficulty": "hard",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "interval-dp"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "You are given n balloons in a row, each with a number nums[i] painted on it. When you burst the i-th balloon, you earn nums[i-1] * nums[i] * nums[i+1] coins. After bursting, the gap closes. Return the maximum coins. (Out-of-range neighbors are treated as 1.)",
+    "constraints": [
+      "n == nums.length",
+      "1 <= n <= 300",
+      "0 <= nums[i] <= 100"
+    ],
+    "examples": [
+      {
+        "input": "nums = [3,1,5,8]",
+        "output": "167",
+        "explanation": "Burst order: 1, 5, 3, 8. Coins: 3*1*5 + 3*5*8 + 1*3*8 + 1*8*1 = 15 + 120 + 24 + 8 = 167."
+      },
+      {
+        "input": "nums = [1,5]",
+        "output": "10",
+        "explanation": "Burst 1 first: 1*1*5 = 5. Burst 5: 1*5*1 = 5. Total 10. Or burst 5 first: 1*5*1 = 5; burst 1: 1*1*1 = 1. Total 6. So burst 1 first = 10."
+      }
+    ],
+    "function_name": "maxCoins",
+    "function_signature": "def maxCoins(nums):",
+    "starter_code": "def maxCoins(nums):\n    # Reverse the thinking: instead of choosing which to burst FIRST,\n    # decide which is the LAST one to burst in each subinterval (i, j).\n    # dp[i][j] = max coins from bursting all balloons strictly between i and j.\n    # Pad with 1s on both ends to simplify boundary cases.\n    pass",
+    "test_cases": [
+      {
+        "label": "[3,1,5,8]",
+        "args": [
+          [
+            3,
+            1,
+            5,
+            8
+          ]
+        ],
+        "expected": "167"
+      },
+      {
+        "label": "[1,5]",
+        "args": [
+          [
+            1,
+            5
+          ]
+        ],
+        "expected": "10"
+      },
+      {
+        "label": "single balloon",
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": "5"
+      },
+      {
+        "label": "single zero",
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "all ones",
+        "args": [
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": "3"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "The trick: instead of choosing which to burst FIRST, choose which is the LAST to burst in each subinterval. With the 'last' fixed, its neighbors are well-defined (the original boundary balloons, not modified by previous bursts). Pad nums with [1] on both ends. dp[i][j] = max coins from bursting all balloons in OPEN interval (i, j). For each k in (i, j) as the LAST balloon to burst there, dp[i][j] = max over k of dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j].",
+      "clarifying_questions": [
+        {
+          "question": "What about boundaries \u2014 what's outside the array?",
+          "why": "Treat as 1. So padding with [1] simplifies. The first and last 'burst' multiplies by 1 on the missing side."
+        },
+        {
+          "question": "Burst order matters how?",
+          "why": "Bursting changes the neighbors. So greedy fails \u2014 you can't just pick max each step."
+        },
+        {
+          "question": "Why 'last to burst' not 'first to burst'?",
+          "why": "Last-to-burst has stable neighbors (the original ones at the open-interval endpoints). First-to-burst's neighbors depend on what's already gone \u2014 much harder to track."
+        },
+        {
+          "question": "Time complexity expected?",
+          "why": "O(n\u00b3). For each (i, j, k) where i \u2264 k \u2264 j. With n=300, that's ~27 million \u2014 fast enough."
+        },
+        {
+          "question": "Is this a classical 'interval DP'?",
+          "why": "Yes \u2014 it's the textbook interval DP problem along with Matrix Chain Multiplication."
+        }
+      ],
+      "think_out_loud": "Interval DP. Pad nums with 1 on both ends. Build dp[i][j] for open intervals (i, j). For length len from 2 (so j - i = 2, one ball between) to n+1, iterate i: j = i + len. For each k between i and j: dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j]). Answer: dp[0][n+1].",
+      "edge_cases": [
+        {
+          "category": "Single balloon",
+          "details": "Just nums[0] * 1 * 1 = nums[0]."
+        },
+        {
+          "category": "All same value",
+          "details": "Bursting in any order. Algorithm finds optimal."
+        },
+        {
+          "category": "Zeros included",
+          "details": "Zero balloons may be best to burst last (or never matter \u2014 their contribution at burst time is 0)."
+        },
+        {
+          "category": "Empty array (out of spec)",
+          "details": "Return 0. Defensive check."
+        },
+        {
+          "category": "Two balloons",
+          "details": "Two orderings \u2014 algorithm tries both."
+        }
+      ],
+      "common_mistakes": [
+        "Greedy max each step \u2014 fails.",
+        "DP on 'first to burst' \u2014 neighbors change as you burst, hard to track.",
+        "Forgetting to pad with 1s \u2014 off-by-one boundary issues.",
+        "Indexing inclusive when open intervals are exclusive (off-by-one in k loops).",
+        "Recursion without memoization \u2014 O(2^n)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Interval DP. The 'reverse the thinking' trick is the entire test.",
+      "introduction_context": "Onsite at Google, Meta. Famous as one of the harder DPs \u2014 most candidates struggle without seeing it before.",
+      "really_testing": [
+        "Recognizing interval DP.",
+        "The 'last to burst' inversion.",
+        "Padding boundary with sentinel.",
+        "O(n\u00b3) complexity awareness."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Inversion in 3-5 min. Codes in 15 min. Walks through small example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Stuck on 'first to burst', refactors after hint."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stays stuck on greedy or 'first-to-burst' DP."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive."
+        }
+      ],
+      "playbook": [
+        "Restate: 'burst all balloons; coins from each burst depend on current neighbors'.",
+        "Key insight: 'pick LAST to burst \u2014 its neighbors at burst time are the open-interval endpoints'.",
+        "Padding: nums = [1] + nums + [1].",
+        "Code: nums = [1] + nums + [1]. n = len(nums). dp = [[0]*n for _ in range(n)]. for length in range(2, n): for i in range(n - length): j = i + length. for k in range(i+1, j): dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + nums[i]*nums[k]*nums[j]). return dp[0][n-1]."
+      ],
+      "playbook_meta": "Total time: 15-22 min.",
+      "dont_do": [
+        "Don't greedy.",
+        "Don't 'first-to-burst' DP.",
+        "Don't skip the padding.",
+        "Don't recurse without memo."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Interval DP, Last-to-Burst",
+        "time": "O(n\u00b3)",
+        "space": "O(n\u00b2)",
+        "code": "def maxCoins(nums):\n    # Pad with 1s on both ends to simplify boundary multiplication\n    nums = [1] + nums + [1]\n    n = len(nums)\n    \n    # dp[i][j] = max coins from bursting balloons in OPEN interval (i, j)\n    dp = [[0] * n for _ in range(n)]\n    \n    # length is the gap between the open-interval endpoints\n    for length in range(2, n):\n        for i in range(n - length):\n            j = i + length\n            for k in range(i + 1, j):\n                # k is the LAST balloon to burst in (i, j)\n                dp[i][j] = max(\n                    dp[i][j],\n                    dp[i][k] + dp[k][j] + nums[i] * nums[k] * nums[j]\n                )\n    return dp[0][n - 1]",
+        "explanation": "Interval DP with the key inversion: instead of choosing which balloon to burst FIRST, choose which to burst LAST in each open interval. When k bursts last in (i, j), its neighbors are exactly nums[i] and nums[j] (the boundary balloons of the interval haven't been touched yet by definition). dp[i][k] and dp[k][j] are the optimal subproblems on the left and right halves. O(n\u00b3) \u2014 three nested loops over n."
+      }
+    ],
+    "related_problem_ids": [
+      "coin-change",
+      "edit-distance",
+      "longest-common-subsequence"
+    ]
+  },
+  {
+    "id": "regular-expression-matching",
+    "title": "Regular Expression Matching",
+    "leetcode_url": "https://leetcode.com/problems/regular-expression-matching/",
+    "leetcode_id": 10,
+    "difficulty": "hard",
+    "patterns": [
+      "dp",
+      "2d-dp",
+      "string"
+    ],
+    "topics": [
+      "dynamic-programming"
+    ],
+    "neetcode_category": "2D DP",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an input string s and a pattern p, implement regular expression matching with support for '.' (matches any single character) and '*' (matches zero or more of the preceding element). The match must cover the ENTIRE input string.",
+    "constraints": [
+      "1 <= s.length <= 20",
+      "1 <= p.length <= 20",
+      "s contains only lowercase English letters.",
+      "p contains only lowercase English letters, '.', and '*'.",
+      "It is guaranteed that for each '*', there is a previous valid character."
+    ],
+    "examples": [
+      {
+        "input": "s = \"aa\", p = \"a\"",
+        "output": "False",
+        "explanation": "'a' matches only one 'a'."
+      },
+      {
+        "input": "s = \"aa\", p = \"a*\"",
+        "output": "True",
+        "explanation": "'a*' matches zero or more 'a's."
+      },
+      {
+        "input": "s = \"ab\", p = \".*\"",
+        "output": "True",
+        "explanation": "'.*' matches zero or more of any character."
+      }
+    ],
+    "function_name": "isMatch",
+    "function_signature": "def isMatch(s, p):",
+    "starter_code": "def isMatch(s, p):\n    # dp[i][j] = does s[:i] match p[:j].\n    # Case: p[j-1] == '*' \u2192 either zero (dp[i][j-2]) or one+ (dp[i-1][j] if char matches).\n    # Case: p[j-1] == s[i-1] or '.' \u2192 dp[i-1][j-1].\n    pass",
+    "test_cases": [
+      {
+        "label": "aa vs a (no match)",
+        "args": [
+          "aa",
+          "a"
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "aa vs a*",
+        "args": [
+          "aa",
+          "a*"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "ab vs .*",
+        "args": [
+          "ab",
+          ".*"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "mississippi",
+        "args": [
+          "mississippi",
+          "mis*is*p*."
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "empty s, empty p",
+        "args": [
+          "",
+          ""
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "empty s, vanishing p",
+        "args": [
+          "",
+          "a*"
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single dot",
+        "args": [
+          "a",
+          "."
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "complex match",
+        "args": [
+          "aab",
+          "c*a*b"
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "2D DP. dp[i][j] = does s[:i] match p[:j]? Base: dp[0][0] = True. Cases for dp[i][j] depend on p[j-1]: (1) If p[j-1] is a literal/'.' AND matches s[i-1]: dp[i][j] = dp[i-1][j-1]. (2) If p[j-1] is '*': either zero occurrences (dp[i][j-2]) or one+ occurrences (s[i-1] matches p[j-2] AND dp[i-1][j]).",
+      "clarifying_questions": [
+        {
+          "question": "What characters does '.' match?",
+          "why": "Any SINGLE character, not zero. '.' alone matches exactly one char."
+        },
+        {
+          "question": "What does '*' modify?",
+          "why": "The preceding element (single char or '.'). '*' alone is invalid; spec guarantees it's preceded by a valid element."
+        },
+        {
+          "question": "Must match the ENTIRE s?",
+          "why": "Yes per spec. dp[len(s)][len(p)] is the answer."
+        },
+        {
+          "question": "Anchored at start?",
+          "why": "Yes \u2014 implicit. No partial matches."
+        },
+        {
+          "question": "Common gotchas?",
+          "why": "Empty s matching a*: True. Empty p matching anything but empty s: False. '*' zero-occurrence case is the trickiest."
+        }
+      ],
+      "think_out_loud": "Build a 2D DP table of size (|s|+1) x (|p|+1). dp[0][0] = True (empty matches empty). For empty s: dp[0][j] is True iff pattern up to j vanishes (e.g., 'a*b*'). For general (i, j): handle the cases above. The '*' two-branch logic (zero or one+ occurrences) is the core complexity.",
+      "edge_cases": [
+        {
+          "category": "Both empty",
+          "details": "True."
+        },
+        {
+          "category": "Empty s, pattern with *s",
+          "details": "Pattern can collapse \u2014 dp[0][j] propagates only if p[j-1] == '*'."
+        },
+        {
+          "category": "Single dot vs single char",
+          "details": "True."
+        },
+        {
+          "category": "* over non-matching char",
+          "details": "Zero occurrences keeps it alive."
+        },
+        {
+          "category": "'.*' anywhere",
+          "details": "Greedy \u2014 matches anything."
+        }
+      ],
+      "common_mistakes": [
+        "Treating '*' as 'one or more' instead of 'zero or more'.",
+        "Forgetting the dp[0][j] initialization (pattern can collapse).",
+        "Off-by-one indexing (s[i] vs s[i-1]).",
+        "Mismatched logic order \u2014 must check '*' before checking literal match.",
+        "Recursing without memoization."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Hard string DP. THE pattern matching problem.",
+      "introduction_context": "Onsite at Amazon, Google. Tests whether you can derive a multi-case recurrence cleanly.",
+      "really_testing": [
+        "Multi-case DP transitions.",
+        "'*' zero-or-one+ branching.",
+        "Empty-string pattern collapse.",
+        "Off-by-one discipline."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Cases enumerated in 5 min, codes in 15-18 min. Walks through tricky case."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Memoization first; refactors to bottom-up."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Wrong '*' semantics; misses zero-occurrence case."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive recurrence."
+        }
+      ],
+      "playbook": [
+        "Restate: 'regex matching with . and *'.",
+        "Enumerate cases for p[j-1]: literal/dot vs '*'.",
+        "For '*': zero (dp[i][j-2]) or one+ (s[i-1] matches p[j-2] and dp[i-1][j]).",
+        "Code: m, n = len(s), len(p). dp = [[False]*(n+1) for _ in range(m+1)]. dp[0][0] = True. for j in range(1, n+1): if p[j-1] == '*': dp[0][j] = dp[0][j-2]. for i in range(1, m+1): for j in range(1, n+1): if p[j-1] == '*': dp[i][j] = dp[i][j-2] or (dp[i-1][j] and (p[j-2] == s[i-1] or p[j-2] == '.')). else: dp[i][j] = dp[i-1][j-1] and (p[j-1] == s[i-1] or p[j-1] == '.'). return dp[m][n]."
+      ],
+      "playbook_meta": "Total time: 15-25 min. Follow-up: extend to '+' or '?'.",
+      "dont_do": [
+        "Don't treat '*' as one or more.",
+        "Don't skip dp[0][j] init.",
+        "Don't recurse without memo.",
+        "Don't forget the dot-matches-any-single-char rule."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Bottom-Up 2D DP",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "code": "def isMatch(s, p):\n    m, n = len(s), len(p)\n    dp = [[False] * (n + 1) for _ in range(m + 1)]\n    dp[0][0] = True\n    \n    # Empty s vs p \u2014 only true if pattern collapses (e.g., 'a*b*c*')\n    for j in range(1, n + 1):\n        if p[j - 1] == '*':\n            dp[0][j] = dp[0][j - 2]\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if p[j - 1] == '*':\n                # Zero occurrences OR one+ (current char matches and previous dp[i-1][j])\n                dp[i][j] = dp[i][j - 2]\n                if p[j - 2] == s[i - 1] or p[j - 2] == '.':\n                    dp[i][j] = dp[i][j] or dp[i - 1][j]\n            else:\n                # Literal match (or '.' wildcard)\n                if p[j - 1] == s[i - 1] or p[j - 1] == '.':\n                    dp[i][j] = dp[i - 1][j - 1]\n    return dp[m][n]",
+        "explanation": "2D DP. dp[i][j] = does s[:i] match p[:j]? '*' is the tricky case: it allows zero occurrences (collapse, jump j by 2) OR one+ occurrences (if current pair matches, extend from dp[i-1][j]). The base row dp[0][j] handles patterns that can match empty s (a*b*c* etc). O(m*n) time and space."
+      }
+    ],
+    "related_problem_ids": [
+      "edit-distance",
+      "longest-common-subsequence",
+      "interleaving-string"
+    ]
+  },
+  {
+    "id": "implement-trie-prefix-tree",
+    "title": "Implement Trie (Prefix Tree)",
+    "leetcode_url": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+    "leetcode_id": 208,
+    "difficulty": "medium",
+    "patterns": [
+      "trie",
+      "design"
+    ],
+    "topics": [
+      "tries"
+    ],
+    "neetcode_category": "Tries",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Design a data structure that supports the following operations on a set of strings: insert(word), search(word) \u2014 returns True iff word is in the trie, startsWith(prefix) \u2014 returns True iff any word starts with prefix.",
+    "constraints": [
+      "1 <= word.length, prefix.length <= 2000",
+      "word and prefix consist only of lowercase English letters.",
+      "At most 3 * 10^4 calls combined."
+    ],
+    "examples": [
+      {
+        "input": "ops: insert('apple'), search('apple'), search('app'), startsWith('app'), insert('app'), search('app')",
+        "output": "[True, False, True, True]",
+        "explanation": "After insert 'apple': search 'apple' True; search 'app' False (no terminal); startsWith 'app' True. After insert 'app': search 'app' True."
+      }
+    ],
+    "function_name": "runOps",
+    "function_signature": "def runOps(ops):",
+    "starter_code": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n    def insert(self, word):\n        # Walk the trie, creating nodes; mark final node as end.\n        pass\n    def search(self, word):\n        # Walk; return is_end of the final node.\n        pass\n    def startsWith(self, prefix):\n        # Walk; return True if traversal completes.\n        pass\n\ndef runOps(ops):\n    t = Trie()\n    out = []\n    for op in ops:\n        if op[0] == 'insert':\n            t.insert(op[1])\n        elif op[0] == 'search':\n            out.append(t.search(op[1]))\n        elif op[0] == 'startsWith':\n            out.append(t.startsWith(op[1]))\n    return out\n",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              "insert",
+              "apple"
+            ],
+            [
+              "search",
+              "apple"
+            ],
+            [
+              "search",
+              "app"
+            ],
+            [
+              "startsWith",
+              "app"
+            ],
+            [
+              "insert",
+              "app"
+            ],
+            [
+              "search",
+              "app"
+            ]
+          ]
+        ],
+        "expected": "[True, False, True, True]"
+      },
+      {
+        "label": "search missing",
+        "args": [
+          [
+            [
+              "insert",
+              "a"
+            ],
+            [
+              "search",
+              "b"
+            ]
+          ]
+        ],
+        "expected": "[False]"
+      },
+      {
+        "label": "startsWith no insert",
+        "args": [
+          [
+            [
+              "startsWith",
+              "x"
+            ]
+          ]
+        ],
+        "expected": "[False]"
+      },
+      {
+        "label": "single letter",
+        "args": [
+          [
+            [
+              "insert",
+              "a"
+            ],
+            [
+              "search",
+              "a"
+            ],
+            [
+              "startsWith",
+              "a"
+            ]
+          ]
+        ],
+        "expected": "[True, True]"
+      },
+      {
+        "label": "shared prefix",
+        "args": [
+          [
+            [
+              "insert",
+              "car"
+            ],
+            [
+              "insert",
+              "cat"
+            ],
+            [
+              "search",
+              "ca"
+            ],
+            [
+              "startsWith",
+              "ca"
+            ]
+          ]
+        ],
+        "expected": "[False, True]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Trie with 26-ary tree (or dict-based). Each node has children dict and an `is_end` flag marking end of an inserted word. Insert: walk down, creating nodes; mark end. Search: walk; verify is_end at final. StartsWith: walk; just verify traversal succeeded.",
+      "clarifying_questions": [
+        {
+          "question": "Lowercase English letters only?",
+          "why": "Yes per spec. Could use 26-element array for speed; dict is fine and simpler."
+        },
+        {
+          "question": "Words can be prefixes of other words?",
+          "why": "Yes. 'app' and 'apple' both insertable; is_end flag distinguishes them."
+        },
+        {
+          "question": "Empty string?",
+          "why": "Per constraints, length >= 1. Defensive code can mark root as is_end if empty inserted."
+        },
+        {
+          "question": "Trie vs hash set?",
+          "why": "Hash set supports insert and search but NOT startsWith efficiently. Trie wins for prefix operations."
+        },
+        {
+          "question": "Memory concerns?",
+          "why": "Dict-of-dicts is fine for 30k operations \u00d7 2000 char words. Array-based would be slightly faster but uses more memory."
+        }
+      ],
+      "think_out_loud": "Simple Trie. Each node: children (dict) + is_end (bool). Insert walks chars, creating missing children, marks end at the final node. Search walks chars; returns False if path breaks; True if path completes AND last node is_end. startsWith is like search but doesn't require is_end.",
+      "edge_cases": [
+        {
+          "category": "Insert prefix of existing",
+          "details": "Just mark intermediate node as is_end."
+        },
+        {
+          "category": "Insert word containing existing prefix",
+          "details": "Extend the trie. Both words coexist."
+        },
+        {
+          "category": "Search non-existent",
+          "details": "Path breaks \u2192 False."
+        },
+        {
+          "category": "startsWith of non-prefix",
+          "details": "Path breaks \u2192 False."
+        },
+        {
+          "category": "Single character",
+          "details": "Standard handling \u2014 one node child of root."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting is_end flag \u2014 can't distinguish 'apple' from 'app' insertions.",
+        "Confusing search with startsWith.",
+        "Using a hash set \u2014 fails on startsWith.",
+        "Off-by-one walking the trie.",
+        "Memory bloat with 26-element arrays at each node \u2014 fine but dict is cleaner."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Trie design classic. Foundation for many prefix-based problems.",
+      "introduction_context": "Onsite at Amazon, Google, Meta. Quick if you've seen tries; struggle otherwise.",
+      "really_testing": [
+        "Trie structure with is_end flag.",
+        "Insert/search/startsWith implementations.",
+        "Knowing trie's tradeoff vs hash set.",
+        "Clean code with proper helper methods."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Codes all three methods in 8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct with one method bug fixed."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Tries hash set; can't fix startsWith."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't articulate trie structure."
+        }
+      ],
+      "playbook": [
+        "Restate: 'insert, search (exact), startsWith (prefix)'.",
+        "Pitch trie with dict-based children + is_end flag.",
+        "Code Trie class with __init__, insert, search, startsWith.",
+        "insert: node = self. for ch in word: if ch not in node.children: node.children[ch] = TrieNode(). node = node.children[ch]. node.is_end = True.",
+        "search: walk; if any char missing \u2192 False. End: return node.is_end.",
+        "startsWith: walk; if any char missing \u2192 False. End: return True (regardless of is_end)."
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-up: Design Add and Search Words (LC 211), Word Search II (LC 212).",
+      "dont_do": [
+        "Don't use hash set.",
+        "Don't omit is_end.",
+        "Don't confuse search and startsWith.",
+        "Don't allocate 26 children per node unless asked for speed."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Dict-Based Trie",
+        "time": "O(m) per operation where m = word/prefix length",
+        "space": "O(total chars in all words)",
+        "code": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n    \n    def insert(self, word):\n        node = self\n        for ch in word:\n            if ch not in node.children:\n                node.children[ch] = Trie()\n            node = node.children[ch]\n        node.is_end = True\n    \n    def search(self, word):\n        node = self._walk(word)\n        return node is not None and node.is_end\n    \n    def startsWith(self, prefix):\n        return self._walk(prefix) is not None\n    \n    def _walk(self, s):\n        node = self\n        for ch in s:\n            if ch not in node.children:\n                return None\n            node = node.children[ch]\n        return node\n\ndef runOps(ops):\n    t = Trie()\n    out = []\n    for op in ops:\n        if op[0] == 'insert':\n            t.insert(op[1])\n        elif op[0] == 'search':\n            out.append(t.search(op[1]))\n        elif op[0] == 'startsWith':\n            out.append(t.startsWith(op[1]))\n    return out",
+        "explanation": "Standard dict-based Trie. Each node has a children dict and is_end flag. _walk is a helper that traverses the trie returning the final node (or None if any char missing). search uses _walk + is_end check; startsWith just uses _walk. Each operation is O(m) where m is the input length."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-anagram",
+      "word-search",
+      "longest-common-subsequence"
+    ]
   }
 ]
