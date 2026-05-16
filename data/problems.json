@@ -25884,5 +25884,610 @@
       "insert-interval",
       "meeting-rooms"
     ]
+  },
+  {
+    "id": "meeting-rooms",
+    "title": "Meeting Rooms",
+    "leetcode_url": "https://leetcode.com/problems/meeting-rooms/",
+    "leetcode_id": 252,
+    "difficulty": "easy",
+    "patterns": [
+      "intervals",
+      "sorting"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array of meeting time intervals, determine if a person could attend all meetings (no overlaps).",
+    "constraints": [
+      "0 <= intervals.length <= 10^4",
+      "intervals[i].length == 2",
+      "0 <= start < end <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[0,30],[5,10],[15,20]]",
+        "output": "False",
+        "explanation": "[0,30] overlaps with both others."
+      },
+      {
+        "input": "intervals = [[7,10],[2,4]]",
+        "output": "True",
+        "explanation": "No overlap after sorting."
+      }
+    ],
+    "function_name": "canAttendMeetings",
+    "function_signature": "def canAttendMeetings(intervals):",
+    "starter_code": "def canAttendMeetings(intervals):\n    # Sort by start; check consecutive pairs for overlap.\n    pass",
+    "test_cases": [
+      {
+        "label": "overlapping",
+        "args": [
+          [
+            [
+              0,
+              30
+            ],
+            [
+              5,
+              10
+            ],
+            [
+              15,
+              20
+            ]
+          ]
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "non-overlapping",
+        "args": [
+          [
+            [
+              7,
+              10
+            ],
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "empty",
+        "args": [
+          []
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "touching",
+        "args": [
+          [
+            [
+              1,
+              5
+            ],
+            [
+              5,
+              10
+            ]
+          ]
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              1,
+              5
+            ]
+          ]
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Sort by start. Check each adjacent pair: if next.start < prev.end, overlap \u2192 False.",
+      "clarifying_questions": [
+        {
+          "question": "Touching allowed?",
+          "why": "Yes \u2014 same instant is fine."
+        },
+        {
+          "question": "Sort by start or end?",
+          "why": "Start \u2014 natural ordering for checking adjacency."
+        }
+      ],
+      "think_out_loud": "Sort intervals. Walk pairs.",
+      "edge_cases": [
+        {
+          "category": "Empty",
+          "details": "True."
+        },
+        {
+          "category": "Touching",
+          "details": "True (use strict <)."
+        },
+        {
+          "category": "Single",
+          "details": "True."
+        }
+      ],
+      "common_mistakes": [
+        "Using <= for overlap check.",
+        "Forgetting to sort."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Quick interval check.",
+      "introduction_context": "Phone screen at Amazon, Meta.",
+      "really_testing": [
+        "Sort + scan.",
+        "Overlap definition."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "3 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Strict/non-strict bug."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "intervals.sort(). for i in range(1, len(intervals)): if intervals[i][0] < intervals[i-1][1]: return False. return True."
+      ],
+      "playbook_meta": "Total time: 3-5 min.",
+      "dont_do": [
+        "Don't use <=.",
+        "Don't forget sort."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort + Adjacent Check",
+        "time": "O(n log n)",
+        "space": "O(1)",
+        "code": "def canAttendMeetings(intervals):\n    intervals.sort(key=lambda x: x[0])\n    for i in range(1, len(intervals)):\n        if intervals[i][0] < intervals[i - 1][1]:\n            return False\n    return True",
+        "explanation": "Sort by start. Adjacent meetings overlap iff next starts before previous ends. Strict < to allow touching."
+      }
+    ],
+    "related_problem_ids": [
+      "meeting-rooms-ii",
+      "merge-intervals",
+      "insert-interval"
+    ]
+  },
+  {
+    "id": "meeting-rooms-ii",
+    "title": "Meeting Rooms II",
+    "leetcode_url": "https://leetcode.com/problems/meeting-rooms-ii/",
+    "leetcode_id": 253,
+    "difficulty": "medium",
+    "patterns": [
+      "intervals",
+      "heap",
+      "sweep-line"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an array of meeting time intervals, return the minimum number of conference rooms required.",
+    "constraints": [
+      "1 <= intervals.length <= 10^4",
+      "intervals[i].length == 2",
+      "0 <= start < end <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[0,30],[5,10],[15,20]]",
+        "output": "2",
+        "explanation": "Two rooms needed (e.g., [0,30] and [5,10] overlap)."
+      }
+    ],
+    "function_name": "minMeetingRooms",
+    "function_signature": "def minMeetingRooms(intervals):",
+    "starter_code": "import heapq\n\ndef minMeetingRooms(intervals):\n    # Sort by start. Min-heap of end times of active rooms.\n    # For each new meeting: if earliest-ending room is free (end <= new start), reuse. Else add room.\n    pass",
+    "test_cases": [
+      {
+        "label": "two rooms",
+        "args": [
+          [
+            [
+              0,
+              30
+            ],
+            [
+              5,
+              10
+            ],
+            [
+              15,
+              20
+            ]
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "one room",
+        "args": [
+          [
+            [
+              7,
+              10
+            ],
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              1,
+              5
+            ]
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "all overlap",
+        "args": [
+          [
+            [
+              1,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              7
+            ]
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "touching",
+        "args": [
+          [
+            [
+              1,
+              5
+            ],
+            [
+              5,
+              10
+            ]
+          ]
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Sort by start. Use min-heap of end-times of currently-occupied rooms. For each meeting: if heap[0] (earliest end) <= start, that room frees up \u2014 pop. Push current end. Heap size = rooms in use; track max.",
+      "clarifying_questions": [
+        {
+          "question": "Touching allowed in same room?",
+          "why": "Yes (end == next start)."
+        },
+        {
+          "question": "Maximum overlap count?",
+          "why": "Yes \u2014 that's what this counts."
+        }
+      ],
+      "think_out_loud": "Sweep with priority queue. Heap holds end times of rooms in use. New meeting: free any room ending before its start, add new room.",
+      "edge_cases": [
+        {
+          "category": "All same time",
+          "details": "n rooms."
+        },
+        {
+          "category": "Sequential",
+          "details": "1 room."
+        },
+        {
+          "category": "Touching",
+          "details": "1 room (start >= prev end)."
+        }
+      ],
+      "common_mistakes": [
+        "Sweep-line bug (strict vs non-strict).",
+        "Not heapifying."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic priority-queue / sweep problem.",
+      "introduction_context": "Onsite at Amazon, Google, Meta.",
+      "really_testing": [
+        "Min-heap of end times.",
+        "Sweep order."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Min-heap in 8-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Sweep-line with start/end events."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck without hint."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Brute force only."
+        }
+      ],
+      "playbook": [
+        "intervals.sort(key=lambda x: x[0]). heap = []. for s, e in intervals: if heap and heap[0] <= s: heapq.heappop(heap). heapq.heappush(heap, e). return len(heap)."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't brute force.",
+        "Don't use max-heap."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min-Heap of End Times",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "import heapq\n\ndef minMeetingRooms(intervals):\n    intervals.sort(key=lambda x: x[0])\n    heap = []\n    for s, e in intervals:\n        if heap and heap[0] <= s:\n            heapq.heappop(heap)\n        heapq.heappush(heap, e)\n    return len(heap)",
+        "explanation": "Sort by start. Min-heap holds end times of currently-occupied rooms. New meeting reuses the earliest-ending room iff its end time <= this meeting's start. Heap size at end is the max concurrent rooms needed."
+      }
+    ],
+    "related_problem_ids": [
+      "meeting-rooms",
+      "merge-intervals",
+      "insert-interval"
+    ]
+  },
+  {
+    "id": "minimum-interval-to-include-each-query",
+    "title": "Minimum Interval to Include Each Query",
+    "leetcode_url": "https://leetcode.com/problems/minimum-interval-to-include-each-query/",
+    "leetcode_id": 1851,
+    "difficulty": "hard",
+    "patterns": [
+      "intervals",
+      "heap",
+      "sorting"
+    ],
+    "topics": [
+      "intervals"
+    ],
+    "neetcode_category": "Intervals",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given intervals and queries, for each query q find the smallest interval (by length) that contains q. Return -1 if no interval contains q.",
+    "constraints": [
+      "1 <= intervals.length <= 10^5",
+      "1 <= queries.length <= 10^5",
+      "intervals[i].length == 2",
+      "1 <= left <= right <= 10^7",
+      "1 <= queries[i] <= 10^7"
+    ],
+    "examples": [
+      {
+        "input": "intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5]",
+        "output": "[3,3,1,4]",
+        "explanation": "For 2: smallest containing is [2,4] len 3. For 3: [2,4] len 3. For 4: [4,4] len 1. For 5: [3,6] len 4."
+      }
+    ],
+    "function_name": "minInterval",
+    "function_signature": "def minInterval(intervals, queries):",
+    "starter_code": "import heapq\n\ndef minInterval(intervals, queries):\n    # Sort intervals by start. Sort queries (with original index).\n    # For each query, push qualifying intervals to min-heap (keyed by length).\n    # Pop expired (right < query) from top. Top = answer for this query.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          [
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": "[3, 3, 1, 4]"
+      },
+      {
+        "label": "no match",
+        "args": [
+          [
+            [
+              1,
+              2
+            ]
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": "[-1]"
+      },
+      {
+        "label": "single contains",
+        "args": [
+          [
+            [
+              1,
+              10
+            ]
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": "[10]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Offline processing: sort intervals by start, sort queries (with original index for output). For each query: push all intervals starting <= query to a min-heap keyed by (length, end). Pop entries whose end < query (no longer cover). Top of heap is the smallest covering interval.",
+      "clarifying_questions": [
+        {
+          "question": "Inclusive bounds?",
+          "why": "Yes \u2014 [left, right] includes both."
+        },
+        {
+          "question": "Multiple shortest?",
+          "why": "Any one. Spec says length."
+        },
+        {
+          "question": "Offline OK?",
+          "why": "Yes \u2014 we batch-process."
+        }
+      ],
+      "think_out_loud": "Two pointers + min-heap. Sort intervals by start, queries (carry original index). For each query in sorted order: advance interval pointer pushing into heap; pop expired; answer = top length.",
+      "edge_cases": [
+        {
+          "category": "No covering interval",
+          "details": "Return -1 after popping all."
+        },
+        {
+          "category": "Single contains",
+          "details": "Trivial."
+        },
+        {
+          "category": "Equal-length covers",
+          "details": "Any."
+        }
+      ],
+      "common_mistakes": [
+        "Online per-query scan \u2014 O(nq).",
+        "Not heapify-ing.",
+        "Storing wrong key."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Offline interval + heap.",
+      "introduction_context": "Amazon, Google.",
+      "really_testing": [
+        "Offline sort.",
+        "Heap with composite key."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Offline heap approach in 15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Brute force O(nq); refactors."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Stuck."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "Sort intervals by start.",
+        "qs = sorted((q, i) for i, q in enumerate(queries)).",
+        "result = [-1]*len(queries). heap = []. j = 0.",
+        "for q, idx in qs:",
+        "  while j < n and intervals[j][0] <= q: l, r = intervals[j]; heapq.heappush(heap, (r-l+1, r)); j += 1.",
+        "  while heap and heap[0][1] < q: heapq.heappop(heap).",
+        "  if heap: result[idx] = heap[0][0].",
+        "return result."
+      ],
+      "playbook_meta": "Total time: 15-20 min.",
+      "dont_do": [
+        "Don't process online.",
+        "Don't forget to record original index."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Offline Sort + Min-Heap",
+        "time": "O((n + q) log (n + q))",
+        "space": "O(n + q)",
+        "code": "import heapq\n\ndef minInterval(intervals, queries):\n    intervals.sort(key=lambda x: x[0])\n    qs = sorted((q, i) for i, q in enumerate(queries))\n    result = [-1] * len(queries)\n    heap = []  # (length, end)\n    j = 0\n    for q, idx in qs:\n        while j < len(intervals) and intervals[j][0] <= q:\n            l, r = intervals[j]\n            heapq.heappush(heap, (r - l + 1, r))\n            j += 1\n        while heap and heap[0][1] < q:\n            heapq.heappop(heap)\n        if heap:\n            result[idx] = heap[0][0]\n    return result",
+        "explanation": "Offline. Sort intervals by start and queries by value (keeping original indices). For each query, push all intervals starting at-or-before it into a min-heap keyed by length. Pop intervals whose end is before the query (no longer covering). Top = shortest covering interval."
+      }
+    ],
+    "related_problem_ids": [
+      "meeting-rooms-ii",
+      "merge-intervals",
+      "insert-interval"
+    ]
   }
 ]
