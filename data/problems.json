@@ -8346,5 +8346,690 @@
       "min-stack",
       "generate-parentheses"
     ]
+  },
+  {
+    "id": "generate-parentheses",
+    "title": "Generate Parentheses",
+    "leetcode_url": "https://leetcode.com/problems/generate-parentheses/",
+    "leetcode_id": 22,
+    "difficulty": "medium",
+    "patterns": [
+      "backtracking",
+      "stack"
+    ],
+    "topics": [
+      "backtracking"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150",
+      "blind-75"
+    ],
+    "summary": "Given n pairs of parentheses, return all combinations of well-formed parentheses of length 2n.",
+    "constraints": [
+      "1 <= n <= 8"
+    ],
+    "examples": [
+      {
+        "input": "n = 3",
+        "output": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+        "explanation": "Five distinct well-formed combinations using three pairs of parens."
+      },
+      {
+        "input": "n = 1",
+        "output": "[\"()\"]",
+        "explanation": "Only one valid combination for a single pair."
+      }
+    ],
+    "function_name": "generateParenthesis",
+    "function_signature": "def generateParenthesis(n):",
+    "starter_code": "def generateParenthesis(n):\n    # Return all well-formed parenthesis strings of length 2n.\n    pass",
+    "test_cases": [
+      {
+        "label": "n = 3",
+        "args": [
+          3
+        ],
+        "expected": "['((()))', '(()())', '(())()', '()(())', '()()()']"
+      },
+      {
+        "label": "n = 1",
+        "args": [
+          1
+        ],
+        "expected": "['()']"
+      },
+      {
+        "label": "n = 2",
+        "args": [
+          2
+        ],
+        "expected": "['(())', '()()']"
+      },
+      {
+        "label": "n = 4 count check (14 Catalan)",
+        "args": [
+          4
+        ],
+        "expected": "['(((())))', '((()()))', '((())())', '((()))()', '(()(()))', '(()()())', '(()())()', '(())(())', '(())()()', '()((()))', '()(()())', '()(())()', '()()(())', '()()()()']"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Backtracking with two simple constraints. Track how many '(' and ')' you've placed. You can place '(' if open_count < n. You can place ')' if close_count < open_count (else you'd close more than you've opened). When the string has length 2n, record it.",
+      "clarifying_questions": [
+        {
+          "question": "Output order \u2014 does it matter?",
+          "why": "Spec accepts any order. But standard backtracking produces a natural lexicographic-ish order ('(' before ')') so just go with it."
+        },
+        {
+          "question": "Are duplicates possible in the output?",
+          "why": "No. Each path in the recursion produces a unique string, so the output is naturally deduplicated."
+        },
+        {
+          "question": "What's the bound on n?",
+          "why": "n \u2264 8. Catalan(8) = 1430 \u2014 manageable. Confirms we don't need to worry about overflow or extreme pruning."
+        },
+        {
+          "question": "Is the empty string valid for n=0?",
+          "why": "Per spec, n \u2265 1, so moot. But defensively [''] is the right answer for n=0."
+        }
+      ],
+      "think_out_loud": "Backtracking. Maintain `current` (string built so far), `open` (count of '(' placed), `close` (count of ')' placed). Two recursive branches: append '(' if open < n; append ')' if close < open. When len(current) == 2n, append a copy to result. The 'close < open' constraint is what guarantees well-formed at every step \u2014 no need to validate at the end.",
+      "edge_cases": [
+        {
+          "category": "n = 1",
+          "details": "Single result: '()'."
+        },
+        {
+          "category": "n = 2",
+          "details": "['(())', '()()']."
+        },
+        {
+          "category": "Trying to place ')' before any '('",
+          "details": "Constraint 'close < open' rejects it. So you never produce ')(', '())' style starts."
+        },
+        {
+          "category": "All '(' first",
+          "details": "Reaches n opens, then forced to close. Produces '(((...)))'."
+        },
+        {
+          "category": "Pruning saves work",
+          "details": "Catalan(n) results. No invalid paths explored thanks to the two constraints."
+        }
+      ],
+      "common_mistakes": [
+        "Generating all 2^(2n) strings and filtering with isValid \u2014 works but ~4x slower and shows you missed the elegant constraints.",
+        "Forgetting the close < open check \u2014 produces invalid like '())(' style strings.",
+        "Off-by-one on the length termination (2n vs n).",
+        "Not appending a copy when recording \u2014 same mutable string reference appears multiple times.",
+        "Using mutable list and forgetting to pop after recursion \u2014 depends on how you build the current string."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Classic constrained-backtracking. Tests whether you recognize the two simple invariants ('open \u2264 n', 'close \u2264 open') that prune the search to exactly the Catalan number of valid strings.",
+      "introduction_context": "Common at Meta, Amazon, Bloomberg. Often a 'medium that should be solved in 10 min'.",
+      "really_testing": [
+        "Backtracking with state (two counters).",
+        "Deriving constraints that keep all generated paths valid.",
+        "Clean recursion with proper base case.",
+        "Distinguishing 'generate valid' from 'generate all + filter'."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "States the two constraints upfront. Codes cleanly in 6-8 min. Walks through n=3."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Produces all 2^(2n) candidates and filters; refactors to constraint-based when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Misses the 'close < open' constraint and produces invalid strings."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot structure recursion. Or claims it's not possible without checking validity at the end."
+        }
+      ],
+      "playbook": [
+        "Restate: 'all well-formed parens of length 2n'.",
+        "Pitch: 'backtracking with two counters \u2014 open and close'.",
+        "Constraints: 'add ( if open < n; add ) if close < open'.",
+        "Code: result = []; def back(cur, o, c): if len(cur) == 2*n: result.append(cur); return. if o < n: back(cur+'(', o+1, c). if c < o: back(cur+')', o, c+1). back('', 0, 0). return result.",
+        "Walk n=2: '(' \u2192 '((' \u2192 '(()' \u2192 '(())' \u2713. Backtrack \u2192 '()' \u2192 '()(' \u2192 '()()' \u2713."
+      ],
+      "playbook_meta": "Total time: 6-10 min. Follow-up: Valid Parentheses (validate one string).",
+      "dont_do": [
+        "Don't generate all strings and filter \u2014 wasteful.",
+        "Don't forget 'close < open' \u2014 produces invalid output.",
+        "Don't pass mutable state without copy.",
+        "Don't over-engineer with a stack \u2014 the counter approach is simpler."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Backtracking with Open/Close Counters",
+        "time": "O(4^n / sqrt(n)) \u2014 Catalan growth",
+        "space": "O(n) recursion depth",
+        "code": "def generateParenthesis(n):\n    result = []\n    \n    def backtrack(cur, open_count, close_count):\n        if len(cur) == 2 * n:\n            result.append(cur)\n            return\n        if open_count < n:\n            backtrack(cur + '(', open_count + 1, close_count)\n        if close_count < open_count:\n            backtrack(cur + ')', open_count, close_count + 1)\n    \n    backtrack('', 0, 0)\n    return result",
+        "explanation": "The canonical answer. Two counters track placed '(' and ')'. The invariants (open \u2264 n; close \u2264 open) ensure every recursive path produces a valid string \u2014 no wasted work, no validation pass. Recursion depth is 2n; total number of leaves is the n-th Catalan number."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "subsets",
+      "combinations"
+    ]
+  },
+  {
+    "id": "daily-temperatures",
+    "title": "Daily Temperatures",
+    "leetcode_url": "https://leetcode.com/problems/daily-temperatures/",
+    "leetcode_id": 739,
+    "difficulty": "medium",
+    "patterns": [
+      "stack",
+      "monotonic-stack"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an integer array temperatures of daily temperatures, return an array answer where answer[i] is the number of days you have to wait after day i for a warmer temperature. If there is no such day in the future, answer[i] = 0.",
+    "constraints": [
+      "1 <= temperatures.length <= 10^5",
+      "30 <= temperatures[i] <= 100"
+    ],
+    "examples": [
+      {
+        "input": "temperatures = [73,74,75,71,69,72,76,73]",
+        "output": "[1,1,4,2,1,1,0,0]",
+        "explanation": "Day 0 (73): next warmer is day 1 (74). Day 2 (75): next warmer is day 6 (76), so 4 days. Day 6 (76): nothing warmer, so 0."
+      },
+      {
+        "input": "temperatures = [30,40,50,60]",
+        "output": "[1,1,1,0]",
+        "explanation": "Strictly increasing; each day's next is the next index."
+      }
+    ],
+    "function_name": "dailyTemperatures",
+    "function_signature": "def dailyTemperatures(temperatures):",
+    "starter_code": "def dailyTemperatures(temperatures):\n    # Return list where ans[i] = days until a warmer temp (0 if none).\n    pass",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          [
+            73,
+            74,
+            75,
+            71,
+            69,
+            72,
+            76,
+            73
+          ]
+        ],
+        "expected": "[1, 1, 4, 2, 1, 1, 0, 0]"
+      },
+      {
+        "label": "strictly increasing",
+        "args": [
+          [
+            30,
+            40,
+            50,
+            60
+          ]
+        ],
+        "expected": "[1, 1, 1, 0]"
+      },
+      {
+        "label": "strictly decreasing",
+        "args": [
+          [
+            60,
+            50,
+            40,
+            30
+          ]
+        ],
+        "expected": "[0, 0, 0, 0]"
+      },
+      {
+        "label": "all equal",
+        "args": [
+          [
+            50,
+            50,
+            50,
+            50
+          ]
+        ],
+        "expected": "[0, 0, 0, 0]"
+      },
+      {
+        "label": "single element",
+        "args": [
+          [
+            80
+          ]
+        ],
+        "expected": "[0]"
+      },
+      {
+        "label": "two elements warming",
+        "args": [
+          [
+            40,
+            50
+          ]
+        ],
+        "expected": "[1, 0]"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Monotonic stack. For each day, while the stack's top has a temperature LESS than today's, pop it and record (current_day - that_day) as its answer. Then push today onto the stack. The stack always holds days waiting for a warmer day \u2014 monotonically decreasing temperatures. Each day pushed and popped at most once \u2192 O(n).",
+      "clarifying_questions": [
+        {
+          "question": "Strictly warmer, or warmer-or-equal?",
+          "why": "Strictly. So if temps[i] == temps[j], j doesn't count. Use < (not <=) in the pop condition."
+        },
+        {
+          "question": "What should the answer be if no warmer day follows?",
+          "why": "0 \u2014 same as the default. The values left on the stack at the end never get assigned, so initializing the result to 0 handles them automatically."
+        },
+        {
+          "question": "Can temperatures be empty?",
+          "why": "Per constraints, length >= 1. Defensive empty-input handling is cheap."
+        },
+        {
+          "question": "Are there bounds on temperature?",
+          "why": "[30, 100]. So a 26-bucket counting approach could work, but monotonic stack is cleaner and the canonical answer."
+        },
+        {
+          "question": "Should I store temperatures or indices on the stack?",
+          "why": "Indices \u2014 you need them for the day-diff arithmetic. You can look up the temperature from the array."
+        }
+      ],
+      "think_out_loud": "Brute force: for each i, scan forward \u2014 O(n\u00b2). On 10^5 inputs that's 10^10 \u2192 TLE. Better: maintain a stack of indices of days waiting for a warmer one. When today's temp beats the top, that top has found its answer. Pop, record, repeat. Push today. Each index is pushed and popped once \u2192 O(n).",
+      "edge_cases": [
+        {
+          "category": "Strictly increasing",
+          "details": "Every day's next is the next index. Stack stays size 1."
+        },
+        {
+          "category": "Strictly decreasing",
+          "details": "No day is ever warmer. Stack grows to n; all answers stay 0."
+        },
+        {
+          "category": "All equal",
+          "details": "Strict comparison means nothing pops; all answers 0."
+        },
+        {
+          "category": "Single element",
+          "details": "Just [0]. Loop runs once, stack pushed, nothing popped."
+        },
+        {
+          "category": "Plateau followed by rise",
+          "details": "[50, 50, 60]: day 0 and day 1 both pop on day 2. Both get answers."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b2) brute force \u2014 TLE on 10^5.",
+        "Using <= instead of < in pop condition \u2014 counts equal temperatures as warmer.",
+        "Storing temperatures on the stack instead of indices \u2014 can't compute day-difference.",
+        "Forgetting to initialize result with zeros \u2014 answers for never-popped indices missing.",
+        "Off-by-one in (current_day - top_day) \u2014 easy to get the +1 / -1 wrong."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Monotonic stack archetype. Tests whether you can recognize 'next greater element' style problems and apply the stack pattern that makes them O(n).",
+      "introduction_context": "Common at Amazon, Meta, Bloomberg. Often paired with 'now what if I asked for next SMALLER?' or 'previous greater?' as a follow-up.",
+      "really_testing": [
+        "Spotting 'next greater element' shape under different phrasings.",
+        "Monotonic decreasing stack implementation.",
+        "Storing indices, not values.",
+        "Strict vs non-strict comparison discipline."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Mentions monotonic stack within 1-2 min, codes it in 8-10 min, handles strict comparison correctly, walks through example."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with O(n\u00b2) first, optimizes to stack when prompted. Correct."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Buggy stack \u2014 wrong comparison, stores values not indices, or off-by-one in day-diff."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot derive O(n) approach. Defends O(n\u00b2) as optimal."
+        }
+      ],
+      "playbook": [
+        "Restate: 'for each day, days until a strictly warmer day, else 0'.",
+        "Brute force O(n\u00b2), then pitch: 'monotonic decreasing stack \u2014 pop when current beats top'.",
+        "Code: ans = [0] * n. stack = []. for i, t in enumerate(temperatures): while stack and t > temperatures[stack[-1]]: j = stack.pop(); ans[j] = i - j. stack.append(i). return ans.",
+        "Walk [73,74,...]: i=0 push 0. i=1, 74 > 73: pop 0, ans[0]=1. Push 1. ...continue.",
+        "Edge: strictly decreasing \u2014 nothing ever pops; stack grows to n; all answers stay 0. \u2713"
+      ],
+      "playbook_meta": "Total time: 8-12 min. Follow-ups: Next Greater Element I/II, Stock Span (LC 901), Sum of Subarray Minimums (advanced).",
+      "dont_do": [
+        "Don't O(n\u00b2) brute force.",
+        "Don't store values on the stack.",
+        "Don't use <= when spec says strictly warmer.",
+        "Don't forget to initialize answer array to zeros.",
+        "Don't pop without recording the answer for the popped index."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Monotonic Decreasing Stack",
+        "time": "O(n)",
+        "space": "O(n)",
+        "code": "def dailyTemperatures(temperatures):\n    n = len(temperatures)\n    answer = [0] * n\n    stack = []  # indices of days waiting for a warmer day\n    \n    for i, t in enumerate(temperatures):\n        while stack and t > temperatures[stack[-1]]:\n            j = stack.pop()\n            answer[j] = i - j\n        stack.append(i)\n    \n    return answer",
+        "explanation": "Maintain a stack of indices where temperatures are monotonically decreasing. When we see a warmer temperature than the top of the stack, that top has found its answer \u2014 pop it and write (i - j). Repeat until the stack is again monotonic or empty, then push i. Each index is pushed and popped at most once \u2192 O(n)."
+      },
+      {
+        "name": "Brute Force (Don't ship this)",
+        "time": "O(n\u00b2)",
+        "space": "O(1)",
+        "code": "def dailyTemperatures(temperatures):\n    n = len(temperatures)\n    answer = [0] * n\n    for i in range(n):\n        for j in range(i + 1, n):\n            if temperatures[j] > temperatures[i]:\n                answer[i] = j - i\n                break\n    return answer",
+        "explanation": "For each day, linearly scan forward until a warmer day is found. Correct but O(n\u00b2) \u2014 TLEs at n = 10^5. Useful only as a stepping stone in conversation before pitching the stack."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "min-stack",
+      "car-fleet"
+    ]
+  },
+  {
+    "id": "car-fleet",
+    "title": "Car Fleet",
+    "leetcode_url": "https://leetcode.com/problems/car-fleet/",
+    "leetcode_id": 853,
+    "difficulty": "medium",
+    "patterns": [
+      "stack",
+      "sorting"
+    ],
+    "topics": [
+      "stack"
+    ],
+    "neetcode_category": "Stack",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "N cars drive toward the same destination on a single-lane road. Each has a position and speed. A faster car catches a slower one and they form a 'fleet' moving at the slower car's speed. Return the number of fleets that arrive at the target.",
+    "constraints": [
+      "n == position.length == speed.length",
+      "1 <= n <= 10^5",
+      "0 < target <= 10^6",
+      "0 <= position[i] < target",
+      "All position values are unique.",
+      "1 <= speed[i] <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "target = 12, position = [10,8,0,5,3], speed = [2,4,1,1,3]",
+        "output": "3",
+        "explanation": "Car at 10 arrives in 1s; car at 8 arrives in 1s (catches car at 10, fleet). Car at 5 arrives in 7s; car at 3 arrives in 3s (catches car at 5 BEFORE target, fleet). Car at 0 arrives in 12s alone. Three fleets total."
+      },
+      {
+        "input": "target = 10, position = [3], speed = [3]",
+        "output": "1",
+        "explanation": "Single car. One fleet."
+      }
+    ],
+    "function_name": "carFleet",
+    "function_signature": "def carFleet(target, position, speed):",
+    "starter_code": "def carFleet(target, position, speed):\n    # Return the number of car fleets that arrive at target.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic example",
+        "args": [
+          12,
+          [
+            10,
+            8,
+            0,
+            5,
+            3
+          ],
+          [
+            2,
+            4,
+            1,
+            1,
+            3
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single car",
+        "args": [
+          10,
+          [
+            3
+          ],
+          [
+            3
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "three cars merge into one fleet",
+        "args": [
+          10,
+          [
+            0,
+            4,
+            2
+          ],
+          [
+            2,
+            1,
+            3
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "two cars two fleets (lead faster)",
+        "args": [
+          10,
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "everyone alone",
+        "args": [
+          10,
+          [
+            6,
+            8
+          ],
+          [
+            3,
+            2
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "all same speed",
+        "args": [
+          100,
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": "3"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Sort cars by position descending (closest to target first). For each car compute arrival_time = (target - position) / speed. Walk through them in order: if the current car's arrival is \u2264 the slowest arrival seen so far, it merges into that fleet. Otherwise, it forms a new fleet and becomes the new 'slowest'. Count the fleets.",
+      "clarifying_questions": [
+        {
+          "question": "If a car catches another exactly at the target, do they form a fleet?",
+          "why": "Yes, by LC's convention (use \u2264 in the merge check). Worth clarifying \u2014 affects the inequality."
+        },
+        {
+          "question": "Are positions unique?",
+          "why": "Per spec, yes. So sorting by position gives a unique order. Otherwise we'd need a tiebreaker (which car wins)."
+        },
+        {
+          "question": "Can a slower car overtake a faster car ahead?",
+          "why": "No. A slower car ahead caps a faster car behind. The catch happens only if the faster one (behind) catches up before target."
+        },
+        {
+          "question": "What if a fleet's lead has reached target \u2014 should we still count cars merging into it?",
+          "why": "Once a car has reached target, no more cars can merge into 'it' physically. The arrival_time comparison still works: if the next car's arrival > target_arrival, it's a separate fleet."
+        },
+        {
+          "question": "Why sort by position descending?",
+          "why": "We process closest-to-target first. That car's arrival sets the floor for whether cars behind it can catch up."
+        }
+      ],
+      "think_out_loud": "The key insight: a car behind a slower car can only catch it BEFORE the target. If the catch happens after target, they arrive separately. Equivalently: behind-car merges into ahead-car if behind-car's natural arrival \u2264 ahead-car's arrival. So: sort by position descending, walk through, track 'current fleet's arrival time' (the slowest one so far). For each new car: if its arrival \u2264 slowest, merge. Else, new fleet \u2014 update slowest.",
+      "edge_cases": [
+        {
+          "category": "Single car",
+          "details": "Always 1 fleet."
+        },
+        {
+          "category": "All same speed",
+          "details": "Each is its own fleet (no catching) \u2192 n fleets."
+        },
+        {
+          "category": "Strictly increasing speeds vs position",
+          "details": "Catches happen \u2014 fewer fleets."
+        },
+        {
+          "category": "Strictly decreasing speeds vs position",
+          "details": "Lead is fastest; nobody catches \u2192 n fleets."
+        },
+        {
+          "category": "Empty input",
+          "details": "Per spec n >= 1. Defensive check: 0 cars \u2192 0 fleets."
+        }
+      ],
+      "common_mistakes": [
+        "Sorting by position ascending \u2014 leads to wrong order (must process closest-to-target first).",
+        "Comparing arrival times with strict < instead of \u2264 \u2014 misses cars catching exactly at target.",
+        "Iterating cars in input order without sorting \u2014 wrong fleet count entirely.",
+        "Tracking actual collision positions instead of arrival times \u2014 much harder math.",
+        "Forgetting that integer division loses precision \u2014 use floating-point or fractions."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Stack/simulation hybrid. Tests whether you can map a physics-y story onto a simple monotonic-stack problem.",
+      "introduction_context": "Asked at Amazon, Google. The challenge is mostly framing \u2014 once you see 'sort by position, compare arrival times', the code is short.",
+      "really_testing": [
+        "Reformulating the geometry as arrival-time comparisons.",
+        "Choosing the right sort order (descending by position).",
+        "The 'fleet count = number of times arrival time strictly exceeds the running slowest' insight.",
+        "Stack vs simple running-max \u2014 both work; stack is canonical."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Reframes as arrival-time comparison in minutes. Codes cleanly in 8-12 min. Handles edge cases."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Reaches the right approach with one hint; correct code."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Tries to simulate physically (positions over time); gives up or runs O(n\u00b2)."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Cannot reframe the problem. Argues it requires continuous simulation."
+        }
+      ],
+      "playbook": [
+        "Restate: 'cars merge into fleets behind slower lead cars; count final fleets'.",
+        "Insight: 'if behind-car's arrival \u2264 ahead-car's, they catch \u2014 merge. Otherwise separate fleet.'",
+        "Code: pairs = sorted(zip(position, speed), reverse=True). stack = []. for p, s in pairs: t = (target - p) / s. if not stack or t > stack[-1]: stack.append(t). return len(stack).",
+        "Walk example: sorted by pos desc: [(10,2),(8,4),(5,1),(3,3),(0,1)]. Times: 1, 1, 7, 3, 12. Stack: [1] \u2192 (8,4) t=1, not > 1 \u2192 skip. (5,1) t=7 > 1 \u2192 push [1,7]. (3,3) t=3 not > 7 \u2192 skip. (0,1) t=12 > 7 \u2192 push [1,7,12]. Answer 3. \u2713"
+      ],
+      "playbook_meta": "Total time: 10-15 min. Follow-up: Asteroid Collision (LC 735) \u2014 similar 'process in order, watch what survives' pattern.",
+      "dont_do": [
+        "Don't simulate positions over time \u2014 way too complex.",
+        "Don't sort ascending \u2014 wrong direction.",
+        "Don't use strict < when \u2264 is required.",
+        "Don't forget to cast to float for arrival time precision."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Sort by Position + Stack of Arrival Times",
+        "time": "O(n log n) for the sort",
+        "space": "O(n)",
+        "code": "def carFleet(target, position, speed):\n    # Pair up cars and sort by position descending (closest to target first)\n    cars = sorted(zip(position, speed), reverse=True)\n    \n    stack = []  # arrival times of distinct fleet leaders\n    for pos, spd in cars:\n        t = (target - pos) / spd\n        # If this car's arrival > current fleet leader's arrival, it can't catch up \u2192 new fleet\n        if not stack or t > stack[-1]:\n            stack.append(t)\n    \n    return len(stack)",
+        "explanation": "Sort cars by position descending. Walk them in that order. The stack holds arrival times of each distinct fleet leader (slowest-so-far). For each new car: if its arrival time exceeds the current leader's, it can't catch up \u2014 new fleet. Otherwise it merges (and arrives at the leader's slower pace). The final stack size is the fleet count. O(n log n) dominated by the sort."
+      },
+      {
+        "name": "Running Max (no stack needed)",
+        "time": "O(n log n)",
+        "space": "O(n) for the sort result",
+        "code": "def carFleet(target, position, speed):\n    cars = sorted(zip(position, speed), reverse=True)\n    fleets = 0\n    slowest = 0  # arrival time of the current fleet leader\n    for pos, spd in cars:\n        t = (target - pos) / spd\n        if t > slowest:\n            slowest = t\n            fleets += 1\n    return fleets",
+        "explanation": "Same algorithm, but realize we only need the current leader's arrival time (the slowest seen so far). Replace the stack with a single variable + counter. Equivalent O(n) extra logic; cleaner if you don't want a stack."
+      }
+    ],
+    "related_problem_ids": [
+      "valid-parentheses",
+      "daily-temperatures",
+      "min-stack"
+    ]
   }
 ]
