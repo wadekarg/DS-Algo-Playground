@@ -32261,5 +32261,354 @@
       "course-schedule-ii",
       "clone-graph"
     ]
+  },
+  {
+    "id": "min-cost-to-connect-all-points",
+    "title": "Min Cost to Connect All Points",
+    "leetcode_url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+    "leetcode_id": 1584,
+    "difficulty": "medium",
+    "patterns": [
+      "graph",
+      "mst",
+      "prim",
+      "kruskal"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Advanced Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given n points on a 2D plane, return the minimum cost to connect all points (Manhattan distance edges). MST problem.",
+    "constraints": [
+      "1 <= points.length <= 1000",
+      "points[i].length == 2",
+      "-10^6 <= xi, yi <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "points = [[0,0],[2,2],[3,10],[5,2],[7,0]]",
+        "output": "20"
+      }
+    ],
+    "function_name": "minCostConnectPoints",
+    "function_signature": "def minCostConnectPoints(points):",
+    "starter_code": "import heapq\n\ndef minCostConnectPoints(points):\n    # Prim's MST. Start at point 0. Min-heap of (cost, next_point). Track visited.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              10
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              7,
+              0
+            ]
+          ]
+        ],
+        "expected": "20"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "two points",
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              3,
+              4
+            ]
+          ]
+        ],
+        "expected": "7"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Prim's MST. Min-heap of (dist, point). Start at 0. Pop smallest; if unvisited, add to MST and push all edges to unvisited. O(n\u00b2 log n).",
+      "clarifying_questions": [
+        {
+          "question": "Manhattan distance?",
+          "why": "Yes per spec \u2014 |x1-x2| + |y1-y2|."
+        },
+        {
+          "question": "Connected = single tree?",
+          "why": "Yes \u2014 n-1 edges."
+        }
+      ],
+      "think_out_loud": "Prim or Kruskal. Prim cleaner without building all edges upfront.",
+      "edge_cases": [
+        {
+          "category": "Single point",
+          "details": "0 cost."
+        },
+        {
+          "category": "Two points",
+          "details": "Manhattan distance."
+        }
+      ],
+      "common_mistakes": [
+        "Forgetting Manhattan vs Euclidean.",
+        "Visiting all edges (O(n\u00b2) heap)."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "MST problem.",
+      "introduction_context": "Amazon, Google.",
+      "really_testing": [
+        "MST recognition.",
+        "Prim's or Kruskal's implementation."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Prim in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Kruskal."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Brute force."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't."
+        }
+      ],
+      "playbook": [
+        "n = len(points). visited = set(). heap = [(0, 0)]. total = 0.",
+        "while len(visited) < n: cost, u = heappop(heap). if u in visited: continue. visited.add(u). total += cost.",
+        "  for v in range(n): if v not in visited: d = abs(points[u][0]-points[v][0]) + abs(points[u][1]-points[v][1]). heappush(heap, (d, v)).",
+        "return total."
+      ],
+      "playbook_meta": "Total time: 12-15 min.",
+      "dont_do": [
+        "Don't compute all edges upfront for Prim.",
+        "Don't forget visited check."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Prim's MST",
+        "time": "O(n\u00b2 log n)",
+        "space": "O(n\u00b2)",
+        "code": "import heapq\n\ndef minCostConnectPoints(points):\n    n = len(points)\n    visited = set()\n    heap = [(0, 0)]\n    total = 0\n    while len(visited) < n:\n        cost, u = heapq.heappop(heap)\n        if u in visited:\n            continue\n        visited.add(u)\n        total += cost\n        for v in range(n):\n            if v not in visited:\n                d = abs(points[u][0] - points[v][0]) + abs(points[u][1] - points[v][1])\n                heapq.heappush(heap, (d, v))\n    return total",
+        "explanation": "Prim's algorithm. Min-heap of (distance, point). Always pull the smallest edge into the MST. Each iteration adds one new point until all are visited."
+      }
+    ],
+    "related_problem_ids": [
+      "network-delay-time",
+      "course-schedule",
+      "clone-graph"
+    ]
+  },
+  {
+    "id": "swim-in-rising-water",
+    "title": "Swim in Rising Water",
+    "leetcode_url": "https://leetcode.com/problems/swim-in-rising-water/",
+    "leetcode_id": 778,
+    "difficulty": "hard",
+    "patterns": [
+      "dijkstra",
+      "binary-search",
+      "graph"
+    ],
+    "topics": [
+      "graphs"
+    ],
+    "neetcode_category": "Advanced Graphs",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "On an n\u00d7n grid where grid[i][j] is the elevation, find the minimum time to reach bottom-right from top-left. At time t, you can swim through cells with elevation <= t.",
+    "constraints": [
+      "n == grid.length == grid[i].length",
+      "1 <= n <= 50",
+      "0 <= grid[i][j] < n\u00b2",
+      "all distinct"
+    ],
+    "examples": [
+      {
+        "input": "grid = [[0,2],[1,3]]",
+        "output": "3"
+      }
+    ],
+    "function_name": "swimInWater",
+    "function_signature": "def swimInWater(grid):",
+    "starter_code": "import heapq\n\ndef swimInWater(grid):\n    # Dijkstra-like: min-heap of (max-elevation-on-path, r, c). Track visited.\n    pass",
+    "test_cases": [
+      {
+        "label": "small",
+        "args": [
+          [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "single cell",
+        "args": [
+          [
+            [
+              0
+            ]
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "3x3",
+        "args": [
+          [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ],
+            [
+              6,
+              7,
+              8
+            ]
+          ]
+        ],
+        "expected": "8"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Modified Dijkstra. Min-heap of (max_elev_on_path_so_far, row, col). Pop smallest; for each neighbor, push max(current_max, neighbor_elev). First pop of (n-1, n-1) gives the answer.",
+      "clarifying_questions": [
+        {
+          "question": "Max along path matters, not sum?",
+          "why": "Yes \u2014 we wait until water rises to the max elevation on the path."
+        },
+        {
+          "question": "Standard min-heap?",
+          "why": "Yes, with max-on-path as the key."
+        }
+      ],
+      "think_out_loud": "Dijkstra on max-edge instead of sum.",
+      "edge_cases": [
+        {
+          "category": "1x1",
+          "details": "0."
+        },
+        {
+          "category": "Strict monotone path",
+          "details": "max = end value."
+        }
+      ],
+      "common_mistakes": [
+        "Trying BFS (ignores elevation).",
+        "Using sum instead of max."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Dijkstra variant on max-path.",
+      "introduction_context": "Onsite at Google.",
+      "really_testing": [
+        "Modified Dijkstra.",
+        "Min-heap on max-so-far."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Dijkstra in 12-15 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Binary search + BFS."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "BFS without elevation."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Stuck."
+        }
+      ],
+      "playbook": [
+        "n = len(grid). visited = set(). heap = [(grid[0][0], 0, 0)]. while heap: t, r, c = heappop(heap). if (r,c) in visited: continue. visited.add((r,c)). if r == n-1 and c == n-1: return t. for nr, nc in 4-dirs: if 0<=nr<n and 0<=nc<n and (nr,nc) not in visited: heappush(heap, (max(t, grid[nr][nc]), nr, nc))."
+      ],
+      "playbook_meta": "Total time: 12-18 min.",
+      "dont_do": [
+        "Don't BFS without weights.",
+        "Don't sum elevations."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Min-Heap Dijkstra on Max-Path",
+        "time": "O(n\u00b2 log n)",
+        "space": "O(n\u00b2)",
+        "code": "import heapq\n\ndef swimInWater(grid):\n    n = len(grid)\n    visited = set()\n    heap = [(grid[0][0], 0, 0)]\n    while heap:\n        t, r, c = heapq.heappop(heap)\n        if (r, c) in visited:\n            continue\n        visited.add((r, c))\n        if r == n - 1 and c == n - 1:\n            return t\n        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in visited:\n                heapq.heappush(heap, (max(t, grid[nr][nc]), nr, nc))\n    return -1",
+        "explanation": "Dijkstra where the 'distance' is max elevation along the path. Heap key = max-so-far. First time we pop the destination, that's the optimal answer."
+      }
+    ],
+    "related_problem_ids": [
+      "network-delay-time",
+      "rotting-oranges",
+      "pacific-atlantic-water-flow"
+    ]
   }
 ]
