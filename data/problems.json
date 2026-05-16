@@ -24120,5 +24120,582 @@
       "house-robber",
       "maximum-subarray"
     ]
+  },
+  {
+    "id": "jump-game-ii",
+    "title": "Jump Game II",
+    "leetcode_url": "https://leetcode.com/problems/jump-game-ii/",
+    "leetcode_id": 45,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "dp"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given nums of non-negative ints, you start at 0; nums[i] is max jump from i. Return MIN number of jumps to reach last index. You're guaranteed to be able to reach it.",
+    "constraints": [
+      "1 <= nums.length <= 10^4",
+      "0 <= nums[i] <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "nums = [2,3,1,1,4]",
+        "output": "2",
+        "explanation": "0 \u2192 1 \u2192 4. Two jumps."
+      }
+    ],
+    "function_name": "jump",
+    "function_signature": "def jump(nums):",
+    "starter_code": "def jump(nums):\n    # Greedy BFS-like. Track current jump's reach and the farthest reachable from THIS jump.\n    # When we step past current reach, take another jump (= use the farthest seen).\n    pass",
+    "test_cases": [
+      {
+        "label": "[2,3,1,1,4]",
+        "args": [
+          [
+            2,
+            3,
+            1,
+            1,
+            4
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "[2,3,0,1,4]",
+        "args": [
+          [
+            2,
+            3,
+            0,
+            1,
+            4
+          ]
+        ],
+        "expected": "2"
+      },
+      {
+        "label": "single",
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "one jump",
+        "args": [
+          [
+            1,
+            1
+          ]
+        ],
+        "expected": "1"
+      },
+      {
+        "label": "big first jump",
+        "args": [
+          [
+            5,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": "1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Greedy 'BFS by levels'. Track current_end (the furthest index in the current jump's reach) and farthest (the best reach we've seen scanning this level). When i hits current_end, we must take another jump \u2192 set current_end = farthest, increment jumps.",
+      "clarifying_questions": [
+        {
+          "question": "Guaranteed reachable?",
+          "why": "Yes per spec. No need to return -1."
+        },
+        {
+          "question": "Min jumps?",
+          "why": "Yes. Greedy gives optimal here."
+        },
+        {
+          "question": "Index 0 counts as 'taken' jump or not?",
+          "why": "Not \u2014 0 jumps if already at last index."
+        }
+      ],
+      "think_out_loud": "Imagine BFS where each level is one jump. Level 0 covers indices [0, nums[0]]. Level 1 extends to max(i + nums[i]) over level 0. Repeat until reaching n-1.",
+      "edge_cases": [
+        {
+          "category": "Single element",
+          "details": "0 jumps."
+        },
+        {
+          "category": "First jump reaches end",
+          "details": "1 jump."
+        },
+        {
+          "category": "All zeros after big first jump",
+          "details": "Depends on whether first jump covers."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b2) DP \u2014 works but slow.",
+        "Forgetting to skip when already past last index."
+      ]
+    },
+    "faang": {
+      "tier": "A",
+      "introduction": "Greedy with BFS-like levels.",
+      "introduction_context": "Onsite at Amazon, Meta.",
+      "really_testing": [
+        "Greedy levels/jumps.",
+        "current_end and farthest tracking."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Greedy in 6-10 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "DP O(n\u00b2) version; refactors when prompted."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Recursion only."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "jumps=0; current_end=0; farthest=0. for i in range(n-1): farthest=max(farthest, i+nums[i]). if i==current_end: jumps+=1; current_end=farthest. return jumps."
+      ],
+      "playbook_meta": "Total time: 6-10 min.",
+      "dont_do": [
+        "Don't iterate to n (only to n-1).",
+        "Don't forget to update current_end."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Greedy BFS-by-Levels",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def jump(nums):\n    jumps = 0\n    current_end = 0\n    farthest = 0\n    for i in range(len(nums) - 1):\n        farthest = max(farthest, i + nums[i])\n        if i == current_end:\n            jumps += 1\n            current_end = farthest\n    return jumps",
+        "explanation": "Greedy. As you scan, track the farthest you could reach within the current jump's range. When you exhaust the current range (i == current_end), you must take another jump \u2014 set current_end to farthest. O(n)."
+      }
+    ],
+    "related_problem_ids": [
+      "jump-game",
+      "gas-station",
+      "house-robber"
+    ]
+  },
+  {
+    "id": "gas-station",
+    "title": "Gas Station",
+    "leetcode_url": "https://leetcode.com/problems/gas-station/",
+    "leetcode_id": 134,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "n gas stations on a circular route. gas[i] is the amount of gas at station i. cost[i] is gas needed to travel from i to i+1. Return the starting station index to complete one circuit, or -1 if impossible.",
+    "constraints": [
+      "n == gas.length == cost.length",
+      "1 <= n <= 10^5",
+      "0 <= gas[i], cost[i] <= 10^4"
+    ],
+    "examples": [
+      {
+        "input": "gas = [1,2,3,4,5], cost = [3,4,5,1,2]",
+        "output": "3",
+        "explanation": "Start at 3, complete circuit."
+      }
+    ],
+    "function_name": "canCompleteCircuit",
+    "function_signature": "def canCompleteCircuit(gas, cost):",
+    "starter_code": "def canCompleteCircuit(gas, cost):\n    # If total gas >= total cost, a solution exists.\n    # Greedy: when tank goes negative, restart from the next station.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            3,
+            4,
+            5,
+            1,
+            2
+          ]
+        ],
+        "expected": "3"
+      },
+      {
+        "label": "impossible",
+        "args": [
+          [
+            2,
+            3,
+            4
+          ],
+          [
+            3,
+            4,
+            3
+          ]
+        ],
+        "expected": "-1"
+      },
+      {
+        "label": "single station works",
+        "args": [
+          [
+            5
+          ],
+          [
+            4
+          ]
+        ],
+        "expected": "0"
+      },
+      {
+        "label": "single station fails",
+        "args": [
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "expected": "-1"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "Two insights: (1) if sum(gas) < sum(cost), impossible. (2) When the running tank dips below 0 at some i, NO station in [start..i] can be the start \u2014 restart from i+1. This makes it O(n).",
+      "clarifying_questions": [
+        {
+          "question": "Unique answer if exists?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Circular travel?",
+          "why": "Yes \u2014 wrap around."
+        },
+        {
+          "question": "Why does the restart trick work?",
+          "why": "If we hit -1 at index i starting from start, every j in [start..i] would also fail (they have even less tank). So restart from i+1."
+        }
+      ],
+      "think_out_loud": "If total gas < total cost, return -1. Else find start: walk; maintain tank = +gas[i] - cost[i]. When tank < 0, restart start = i+1, reset tank.",
+      "edge_cases": [
+        {
+          "category": "Single station",
+          "details": "Works iff gas[0] >= cost[0]."
+        },
+        {
+          "category": "Impossible",
+          "details": "sum(gas) < sum(cost) \u2192 -1."
+        },
+        {
+          "category": "Tied at zero",
+          "details": "Algorithm finds valid start."
+        }
+      ],
+      "common_mistakes": [
+        "O(n\u00b2) try-every-start.",
+        "Forgetting the impossibility check.",
+        "Resetting start to i instead of i+1."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy with restart trick.",
+      "introduction_context": "Common at Amazon, Bloomberg.",
+      "really_testing": [
+        "Restart insight.",
+        "Impossibility shortcut."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Both insights in 5-8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "O(n\u00b2); refactors with hint."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Bug in restart logic."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Brute force only."
+        }
+      ],
+      "playbook": [
+        "if sum(gas) < sum(cost): return -1.",
+        "tank=0; start=0. for i: tank += gas[i]-cost[i]. if tank<0: tank=0; start=i+1. return start."
+      ],
+      "playbook_meta": "Total time: 6-10 min.",
+      "dont_do": [
+        "Don't try every start.",
+        "Don't forget impossibility check."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Greedy with Restart",
+        "time": "O(n)",
+        "space": "O(1)",
+        "code": "def canCompleteCircuit(gas, cost):\n    if sum(gas) < sum(cost):\n        return -1\n    tank = 0\n    start = 0\n    for i in range(len(gas)):\n        tank += gas[i] - cost[i]\n        if tank < 0:\n            start = i + 1\n            tank = 0\n    return start",
+        "explanation": "If total gas < total cost, no solution. Otherwise walk once. When tank dips negative, every start from old start through current i is impossible \u2192 restart from i+1. Total fuel non-negative guarantees a valid start exists."
+      }
+    ],
+    "related_problem_ids": [
+      "jump-game",
+      "maximum-subarray",
+      "house-robber"
+    ]
+  },
+  {
+    "id": "hand-of-straights",
+    "title": "Hand of Straights",
+    "leetcode_url": "https://leetcode.com/problems/hand-of-straights/",
+    "leetcode_id": 846,
+    "difficulty": "medium",
+    "patterns": [
+      "greedy",
+      "heap",
+      "hash-map"
+    ],
+    "topics": [
+      "greedy"
+    ],
+    "neetcode_category": "Greedy",
+    "frequency_tags": [
+      "faang-common",
+      "neetcode-150"
+    ],
+    "summary": "Given an integer array hand and an integer groupSize, return True if you can rearrange hand into groups of groupSize CONSECUTIVE integers.",
+    "constraints": [
+      "1 <= hand.length <= 10^4",
+      "0 <= hand[i] <= 10^9",
+      "1 <= groupSize <= hand.length"
+    ],
+    "examples": [
+      {
+        "input": "hand = [1,2,3,6,2,3,4,7,8], groupSize = 3",
+        "output": "True",
+        "explanation": "Groups [1,2,3], [2,3,4], [6,7,8]."
+      },
+      {
+        "input": "hand = [1,2,3,4,5], groupSize = 4",
+        "output": "False",
+        "explanation": "5 is not divisible by 4."
+      }
+    ],
+    "function_name": "isNStraightHand",
+    "function_signature": "def isNStraightHand(hand, groupSize):",
+    "starter_code": "def isNStraightHand(hand, groupSize):\n    # Count occurrences. Iterate smallest first; greedily form a group of groupSize starting at it.\n    pass",
+    "test_cases": [
+      {
+        "label": "classic",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            6,
+            2,
+            3,
+            4,
+            7,
+            8
+          ],
+          3
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "not divisible",
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          4
+        ],
+        "expected": "False"
+      },
+      {
+        "label": "single group",
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          3
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "size 1",
+        "args": [
+          [
+            5,
+            7,
+            9
+          ],
+          1
+        ],
+        "expected": "True"
+      },
+      {
+        "label": "gaps",
+        "args": [
+          [
+            1,
+            2,
+            4,
+            5
+          ],
+          2
+        ],
+        "expected": "True"
+      }
+    ],
+    "interview_tips": {
+      "talk_through_it": "If len(hand) % groupSize != 0, False. Use a Counter. Iterate cards in sorted order. For each card with positive count, form a group of groupSize consecutive \u2014 decrement each. If any number missing, False.",
+      "clarifying_questions": [
+        {
+          "question": "Consecutive integers (n, n+1, ..., n+k-1)?",
+          "why": "Yes per spec."
+        },
+        {
+          "question": "Each card used once?",
+          "why": "Yes \u2014 partition."
+        },
+        {
+          "question": "Counter or sorted list?",
+          "why": "Counter for lookups; sorted iteration via sorted(set(hand))."
+        }
+      ],
+      "think_out_loud": "Greedy: smallest unused card must start a group. Form that group, decrement each. Repeat. If any required card is missing or count 0, return False.",
+      "edge_cases": [
+        {
+          "category": "Group size 1",
+          "details": "Always True."
+        },
+        {
+          "category": "Length not divisible",
+          "details": "False."
+        },
+        {
+          "category": "Gaps in numbers",
+          "details": "Groups can skip gaps if each group is consecutive."
+        }
+      ],
+      "common_mistakes": [
+        "Sorting hand directly and iterating \u2014 works but slow.",
+        "Forgetting the divisibility check.",
+        "Not skipping zero-count cards."
+      ]
+    },
+    "faang": {
+      "tier": "B",
+      "introduction": "Greedy with hash count.",
+      "introduction_context": "Common at Amazon, Bloomberg.",
+      "really_testing": [
+        "Greedy 'smallest starts a group'.",
+        "Counter usage."
+      ],
+      "rubric": [
+        {
+          "tier": "Strong Hire",
+          "color": "#16a34a",
+          "criteria": "Greedy + Counter in 8 min."
+        },
+        {
+          "tier": "Hire",
+          "color": "#84cc16",
+          "criteria": "Solves with sort + linear scan."
+        },
+        {
+          "tier": "Lean No-Hire",
+          "color": "#f59e0b",
+          "criteria": "Tries to enumerate groups."
+        },
+        {
+          "tier": "No-Hire",
+          "color": "#dc2626",
+          "criteria": "Can't derive."
+        }
+      ],
+      "playbook": [
+        "if len(hand) % gs != 0: return False.",
+        "count = Counter(hand). for card in sorted(count): while count[card] > 0: for k in range(gs): if count[card+k] < count[card]+... actually iterate: take group starting at card, decrement each."
+      ],
+      "playbook_meta": "Total time: 8-12 min.",
+      "dont_do": [
+        "Don't skip divisibility check.",
+        "Don't iterate without sort."
+      ]
+    },
+    "has_walkthrough": true,
+    "approaches": [
+      {
+        "name": "Counter + Greedy Sorted",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "code": "from collections import Counter\n\ndef isNStraightHand(hand, groupSize):\n    if len(hand) % groupSize != 0:\n        return False\n    count = Counter(hand)\n    for card in sorted(count):\n        c = count[card]\n        if c > 0:\n            for k in range(groupSize):\n                if count[card + k] < c:\n                    return False\n                count[card + k] -= c\n    return True",
+        "explanation": "Sort unique cards ascending. For each, if count > 0, it must be the start of `count` distinct groups \u2014 verify each of [card, card+1, ..., card+gs-1] has at least `count` remaining, then subtract `count` from each. Linear in unique values \u00d7 groupSize."
+      }
+    ],
+    "related_problem_ids": [
+      "jump-game",
+      "gas-station",
+      "merge-intervals"
+    ]
   }
 ]
