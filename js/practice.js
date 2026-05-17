@@ -141,20 +141,37 @@ var DSA = window.DSA || {};
     actions.appendChild(addTestBtn);
     actions.appendChild(statusSpan);
 
+    // Pull example values from the FIRST built-in test (if any) so the form's
+    // placeholders show what valid input/output for THIS problem actually
+    // looks like. Users were confused trying to guess what to type.
+    var exampleArgs = '[1, 2, 3]';
+    var exampleExpected = '6';
+    if (tests.length > 0) {
+      try { exampleArgs = JSON.stringify(tests[0].args); } catch (e) {}
+      exampleExpected = tests[0].expected || exampleExpected;
+    }
+
     // Custom test form (hidden by default; toggled by Add Test)
     var customForm = document.createElement('div');
     customForm.className = 'practice-block__custom-form';
     customForm.style.display = 'none';
     customForm.innerHTML =
-      '<div class="practice-custom__row">' +
-        '<label>args (JSON array): <input class="practice-custom__args" type="text" placeholder="[1, 2, 3]" spellcheck="false"></label>' +
+      '<div class="practice-custom__intro">' +
+        'Format follows the built-in tests for this problem:<br>' +
+        '<code>args</code> = a JSON array of values you\'d pass to <code>' + escapeHtml(fnName) + '</code>; ' +
+        '<code>expected</code> = the Python <code>repr()</code> of what the function should return ' +
+        '(strings shown with quotes, lists as <code>[1, 2, 3]</code> with spaces after commas).' +
       '</div>' +
       '<div class="practice-custom__row">' +
-        '<label>expected (Python repr): <input class="practice-custom__expected" type="text" placeholder="6" spellcheck="false"></label>' +
+        '<label>args: <input class="practice-custom__args" type="text" placeholder="' + escapeHtml(exampleArgs) + '" spellcheck="false"></label>' +
+      '</div>' +
+      '<div class="practice-custom__row">' +
+        '<label>expected: <input class="practice-custom__expected" type="text" placeholder="' + escapeHtml(exampleExpected) + '" spellcheck="false"></label>' +
       '</div>' +
       '<div class="practice-custom__row">' +
         '<button type="button" class="btn btn--sm btn--primary practice-custom__save">Save test</button> ' +
         '<button type="button" class="btn btn--sm btn--ghost practice-custom__cancel">Cancel</button> ' +
+        '<button type="button" class="btn btn--sm btn--ghost practice-custom__fill" title="Pre-fill with the first built-in test as a starting point">Fill example</button>' +
         '<span class="practice-custom__error"></span>' +
       '</div>';
 
@@ -232,6 +249,14 @@ var DSA = window.DSA || {};
       customForm.style.display = 'none';
       customForm.querySelector('.practice-custom__error').textContent = '';
     });
+    var fillBtn = customForm.querySelector('.practice-custom__fill');
+    if (fillBtn) {
+      fillBtn.addEventListener('click', function() {
+        customForm.querySelector('.practice-custom__args').value = exampleArgs;
+        customForm.querySelector('.practice-custom__expected').value = exampleExpected;
+        customForm.querySelector('.practice-custom__error').textContent = '';
+      });
+    }
     customForm.querySelector('.practice-custom__save').addEventListener('click', function() {
       var argsRaw = customForm.querySelector('.practice-custom__args').value.trim();
       var expected = customForm.querySelector('.practice-custom__expected').value.trim();
@@ -316,6 +341,14 @@ var DSA = window.DSA || {};
 
       // Combine built-in tests with saved custom tests
       var allTests = tests.concat(loadCustomTests());
+      // Ensure 'Running...' is visible for at least 400ms even on quick runs
+      // — otherwise it flashes too fast to notice on re-runs.
+      var runStart = Date.now();
+      function finish(callback) {
+        var elapsed = Date.now() - runStart;
+        var delay = Math.max(0, 400 - elapsed);
+        setTimeout(callback, delay);
+      }
 
       loadPyodide(function(pyErr, py) {
         if (pyErr) {
@@ -331,18 +364,20 @@ var DSA = window.DSA || {};
         }
         statusSpan.textContent = 'Running…';
         runAllTests(py, userCode, fnName, allTests, function(testResults) {
-          var passed = 0;
-          for (var i = 0; i < testResults.length; i++) {
-            if (testResults[i].pass) passed++;
-          }
-          renderResults(results, testResults, passed, allTests.length);
-          results.style.display = '';
-          var summaryClass = passed === allTests.length ? 'pass' :
-                             passed > 0 ? 'partial' : 'fail';
-          statusSpan.textContent = passed + ' / ' + allTests.length + ' tests passed';
-          statusSpan.className = 'practice-block__status practice-block__summary--' + summaryClass;
-          runBtn.disabled = false;
-          runBtn.textContent = DEFAULT_RUN_LABEL;
+          finish(function() {
+            var passed = 0;
+            for (var i = 0; i < testResults.length; i++) {
+              if (testResults[i].pass) passed++;
+            }
+            renderResults(results, testResults, passed, allTests.length, allTests);
+            results.style.display = '';
+            var summaryClass = passed === allTests.length ? 'pass' :
+                               passed > 0 ? 'partial' : 'fail';
+            statusSpan.textContent = passed + ' / ' + allTests.length + ' tests passed';
+            statusSpan.className = 'practice-block__status practice-block__summary--' + summaryClass;
+            runBtn.disabled = false;
+            runBtn.textContent = DEFAULT_RUN_LABEL;
+          });
         });
       });
     });
@@ -359,6 +394,7 @@ var DSA = window.DSA || {};
         results.push({
           pass: pass,
           label: t.label || ('Test ' + idx),
+          args: t.args,
           expected: t.expected,
           actual: err ? ('ERROR: ' + err) : output
         });
@@ -372,8 +408,8 @@ var DSA = window.DSA || {};
     container.innerHTML = '';
     var summaryClass = passed === total ? 'pass' : passed > 0 ? 'partial' : 'fail';
 
-    // Wrap individual results in <details> — collapsed by default if everything
-    // passes; auto-expanded when any test fails so the user immediately sees what.
+    // Outer collapsible container: summary always visible; the per-test list
+    // is collapsed when all pass and auto-expanded otherwise.
     var details = document.createElement('details');
     details.className = 'practice-block__results-details practice-block__results-details--' + summaryClass;
     if (summaryClass !== 'pass') details.open = true;
@@ -390,29 +426,32 @@ var DSA = window.DSA || {};
     list.className = 'practice-block__results-list';
     for (var i = 0; i < testResults.length; i++) {
       var r = testResults[i];
-      var row = document.createElement('div');
-      row.className = 'practice-result ' + (r.pass ? 'practice-result--pass' : 'practice-result--fail');
+      // Each individual test is now its own <details> so the user can expand
+      // a row and see Input / Expected / Got laid out clearly. Failed tests
+      // are auto-expanded so the problem jumps out.
+      var rowDetails = document.createElement('details');
+      rowDetails.className = 'practice-result-row ' + (r.pass ? 'practice-result-row--pass' : 'practice-result-row--fail');
+      if (!r.pass) rowDetails.open = true;
 
-      var icon = document.createElement('i');
-      icon.className = 'practice-result__icon';
-      icon.textContent = r.pass ? '\u2713' : '\u2717';
+      var rowSummary = document.createElement('summary');
+      rowSummary.className = 'practice-result-row__summary';
+      rowSummary.innerHTML =
+        '<span class="practice-result-row__icon">' + (r.pass ? '✓' : '✗') + '</span>' +
+        '<span class="practice-result-row__label">' + escapeHtml(r.label) + '</span>' +
+        '<span class="practice-result-row__chevron">▸</span>';
+      rowDetails.appendChild(rowSummary);
 
-      var labelSpan = document.createElement('span');
-      labelSpan.className = 'practice-result__label';
-      labelSpan.textContent = r.label;
-
-      var detail = document.createElement('span');
-      detail.className = 'practice-result__detail';
-      if (r.pass) {
-        detail.textContent = '\u2192 ' + r.actual;
-      } else {
-        detail.textContent = 'expected: ' + r.expected + '  got: ' + r.actual;
-      }
-
-      row.appendChild(icon);
-      row.appendChild(labelSpan);
-      row.appendChild(detail);
-      list.appendChild(row);
+      var body = document.createElement('div');
+      body.className = 'practice-result-row__body';
+      var argsRepr;
+      try { argsRepr = JSON.stringify(r.args); }
+      catch (e) { argsRepr = String(r.args); }
+      body.innerHTML =
+        '<div class="practice-result-row__field"><span class="practice-result-row__field-label">Input:</span> <code>' + escapeHtml(argsRepr) + '</code></div>' +
+        '<div class="practice-result-row__field"><span class="practice-result-row__field-label">Expected:</span> <code>' + escapeHtml(r.expected) + '</code></div>' +
+        '<div class="practice-result-row__field"><span class="practice-result-row__field-label">Got:</span> <code class="' + (r.pass ? 'practice-got--ok' : 'practice-got--bad') + '">' + escapeHtml(r.actual) + '</code></div>';
+      rowDetails.appendChild(body);
+      list.appendChild(rowDetails);
     }
     details.appendChild(list);
     container.appendChild(details);
