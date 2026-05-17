@@ -204,3 +204,159 @@
   flex-direction: column;
   gap: var(--space-md);
 }
+
+/* --- Running indicator (shown after click while Pyodide loads + executes) --- */
+.practice-block__status--running {
+  color: var(--accent-warning, #d97706);
+  font-style: italic;
+}
+.practice-block__running {
+  padding: 10px 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 13px;
+}
+.practice-block__running::before {
+  content: '⏳ ';
+  margin-right: 4px;
+}
+.practice-block__run-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* --- Add Test button --- */
+.practice-block__add-test-btn {
+  margin-left: 8px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.practice-block__add-test-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* --- Custom test form --- */
+.practice-block__custom-form {
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.practice-custom__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.practice-custom__row:last-child { margin-bottom: 0; }
+.practice-custom__row label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.practice-custom__args, .practice-custom__expected {
+  flex: 1;
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+.practice-custom__args:focus, .practice-custom__expected:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+.practice-custom__error {
+  color: var(--accent-danger, #dc2626);
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+/* --- Saved custom-tests list --- */
+.practice-block__custom-list:not(:empty) {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+.practice-block__custom-header {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.practice-custom-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border-radius: 4px;
+}
+.practice-custom-item:hover { background: var(--bg-tertiary); }
+.practice-custom-item__args, .practice-custom-item__expected {
+  color: var(--text-primary);
+}
+.practice-custom-item__arrow { color: var(--text-tertiary); }
+.practice-custom-item__del {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.practice-custom-item__del:hover { color: var(--accent-danger, #dc2626); }
+
+/* --- Collapsible results --- */
+.practice-block__results-details > summary {
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+.practice-block__results-details > summary::-webkit-details-marker { display: none; }
+.practice-block__results-details > summary::after {
+  content: '▸';
+  margin-left: auto;
+  color: var(--text-tertiary);
+  transition: transform 0.18s ease;
+}
+.practice-block__results-details[open] > summary::after {
+  transform: rotate(90deg);
+}
+.practice-block__summary-icon {
+  font-weight: 700;
+  font-size: 14px;
+}
+.practice-block__results-details--pass .practice-block__summary-icon { color: #16a34a; }
+.practice-block__results-details--fail .practice-block__summary-icon { color: #dc2626; }
+.practice-block__results-details--partial .practice-block__summary-icon { color: #d97706; }
+.practice-block__summary-text { flex: 0 1 auto; }
+.practice-block__summary-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  margin-left: 8px;
+}
+.practice-block__results-list {
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--border-color);
+}

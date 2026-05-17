@@ -129,11 +129,38 @@ var DSA = window.DSA || {};
     var runBtn = document.createElement('button');
     runBtn.className = 'btn btn--success btn--sm practice-block__run-btn';
     runBtn.textContent = '\u25b6 Run Tests';
+    var addTestBtn = document.createElement('button');
+    addTestBtn.className = 'btn btn--ghost btn--sm practice-block__add-test-btn';
+    addTestBtn.type = 'button';
+    addTestBtn.textContent = '+ Add Test';
+    addTestBtn.title = 'Add a custom test case (saved locally per problem)';
     var statusSpan = document.createElement('span');
     statusSpan.className = 'practice-block__status';
     statusSpan.textContent = 'Loading editor\u2026';
     actions.appendChild(runBtn);
+    actions.appendChild(addTestBtn);
     actions.appendChild(statusSpan);
+
+    // Custom test form (hidden by default; toggled by Add Test)
+    var customForm = document.createElement('div');
+    customForm.className = 'practice-block__custom-form';
+    customForm.style.display = 'none';
+    customForm.innerHTML =
+      '<div class="practice-custom__row">' +
+        '<label>args (JSON array): <input class="practice-custom__args" type="text" placeholder="[1, 2, 3]" spellcheck="false"></label>' +
+      '</div>' +
+      '<div class="practice-custom__row">' +
+        '<label>expected (Python repr): <input class="practice-custom__expected" type="text" placeholder="6" spellcheck="false"></label>' +
+      '</div>' +
+      '<div class="practice-custom__row">' +
+        '<button type="button" class="btn btn--sm btn--primary practice-custom__save">Save test</button> ' +
+        '<button type="button" class="btn btn--sm btn--ghost practice-custom__cancel">Cancel</button> ' +
+        '<span class="practice-custom__error"></span>' +
+      '</div>';
+
+    // Saved custom tests list (rendered above Results when present)
+    var customList = document.createElement('div');
+    customList.className = 'practice-block__custom-list';
 
     // Results panel
     var results = document.createElement('div');
@@ -147,7 +174,88 @@ var DSA = window.DSA || {};
     el.appendChild(desc);
     el.appendChild(editorWrap);
     el.appendChild(actions);
+    el.appendChild(customForm);
+    el.appendChild(customList);
     el.appendChild(results);
+
+    // --- Custom tests (saved to localStorage per problem) ---
+    var customKey = draftId ? 'dsa-custom-tests:' + draftId : '';
+    function loadCustomTests() {
+      if (!customKey) return [];
+      try { return JSON.parse(localStorage.getItem(customKey)) || []; }
+      catch (e) { return []; }
+    }
+    function saveCustomTests(arr) {
+      if (!customKey) return;
+      try { localStorage.setItem(customKey, JSON.stringify(arr)); } catch (e) {}
+    }
+    function renderCustomList() {
+      var custom = loadCustomTests();
+      customList.innerHTML = '';
+      if (custom.length === 0) return;
+      var header = document.createElement('div');
+      header.className = 'practice-block__custom-header';
+      header.textContent = 'Custom tests (' + custom.length + ')';
+      customList.appendChild(header);
+      custom.forEach(function(t, i) {
+        var row = document.createElement('div');
+        row.className = 'practice-custom-item';
+        row.innerHTML =
+          '<span class="practice-custom-item__args" title="args">' + escapeHtml(JSON.stringify(t.args)) + '</span> ' +
+          '<span class="practice-custom-item__arrow">→</span> ' +
+          '<span class="practice-custom-item__expected" title="expected">' + escapeHtml(t.expected) + '</span>';
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'practice-custom-item__del';
+        del.setAttribute('aria-label', 'Delete test');
+        del.title = 'Delete';
+        del.textContent = '×';
+        del.addEventListener('click', function() {
+          var arr = loadCustomTests();
+          arr.splice(i, 1);
+          saveCustomTests(arr);
+          renderCustomList();
+        });
+        row.appendChild(del);
+        customList.appendChild(row);
+      });
+    }
+    renderCustomList();
+
+    addTestBtn.addEventListener('click', function() {
+      customForm.style.display = customForm.style.display === 'none' ? 'block' : 'none';
+      if (customForm.style.display === 'block') {
+        customForm.querySelector('.practice-custom__args').focus();
+      }
+    });
+    customForm.querySelector('.practice-custom__cancel').addEventListener('click', function() {
+      customForm.style.display = 'none';
+      customForm.querySelector('.practice-custom__error').textContent = '';
+    });
+    customForm.querySelector('.practice-custom__save').addEventListener('click', function() {
+      var argsRaw = customForm.querySelector('.practice-custom__args').value.trim();
+      var expected = customForm.querySelector('.practice-custom__expected').value.trim();
+      var errEl = customForm.querySelector('.practice-custom__error');
+      errEl.textContent = '';
+      if (!argsRaw || !expected) {
+        errEl.textContent = 'Both fields are required.';
+        return;
+      }
+      var args;
+      try { args = JSON.parse(argsRaw); }
+      catch (e) { errEl.textContent = 'args must be valid JSON, e.g. [1, 2, 3].'; return; }
+      if (!Array.isArray(args)) {
+        errEl.textContent = 'args must be a JSON array (the values passed to your function).';
+        return;
+      }
+      var arr = loadCustomTests();
+      arr.push({ args: args, expected: expected, label: 'Custom ' + (arr.length + 1) });
+      saveCustomTests(arr);
+      customForm.querySelector('.practice-custom__args').value = '';
+      customForm.querySelector('.practice-custom__expected').value = '';
+      customForm.style.display = 'none';
+      renderCustomList();
+    });
 
     // Load CodeMirror and create editor
     var cmEditor = null;
@@ -193,34 +301,48 @@ var DSA = window.DSA || {};
     });
 
     // Run Tests button handler
+    var DEFAULT_RUN_LABEL = '▶ Run Tests';
     runBtn.addEventListener('click', function() {
       var userCode = cmEditor ? cmEditor.getValue() : starter;
-      results.style.display = 'none';
-      results.innerHTML = '';
-      statusSpan.textContent = 'Loading Pyodide\u2026';
+      // Clear any pass/fail color carried over from a previous run so the
+      // 'Running...' text is visibly NEW. Also flip the button label and
+      // show an active placeholder in the results pane.
+      statusSpan.className = 'practice-block__status practice-block__status--running';
+      statusSpan.textContent = 'Loading Pyodide…';
       runBtn.disabled = true;
+      runBtn.textContent = '⏳ Running…';
+      results.innerHTML = '<div class="practice-block__running">Running tests…</div>';
+      results.style.display = '';
+
+      // Combine built-in tests with saved custom tests
+      var allTests = tests.concat(loadCustomTests());
 
       loadPyodide(function(pyErr, py) {
         if (pyErr) {
           statusSpan.textContent = 'Pyodide failed to load';
+          statusSpan.className = 'practice-block__status practice-block__summary--fail';
           showBanner(el, 'pyodide',
             'Python runtime failed to load (about 10MB from cdn.jsdelivr.net). Check your network — corporate firewalls sometimes block this CDN. Your code is preserved; click Run again once you reconnect.');
           runBtn.disabled = false;
+          runBtn.textContent = DEFAULT_RUN_LABEL;
+          results.innerHTML = '';
+          results.style.display = 'none';
           return;
         }
-        statusSpan.textContent = 'Running\u2026';
-        runAllTests(py, userCode, fnName, tests, function(testResults) {
+        statusSpan.textContent = 'Running…';
+        runAllTests(py, userCode, fnName, allTests, function(testResults) {
           var passed = 0;
           for (var i = 0; i < testResults.length; i++) {
             if (testResults[i].pass) passed++;
           }
-          renderResults(results, testResults, passed, tests.length);
+          renderResults(results, testResults, passed, allTests.length);
           results.style.display = '';
-          var summaryClass = passed === tests.length ? 'pass' :
+          var summaryClass = passed === allTests.length ? 'pass' :
                              passed > 0 ? 'partial' : 'fail';
-          statusSpan.textContent = passed + ' / ' + tests.length + ' tests passed';
+          statusSpan.textContent = passed + ' / ' + allTests.length + ' tests passed';
           statusSpan.className = 'practice-block__status practice-block__summary--' + summaryClass;
           runBtn.disabled = false;
+          runBtn.textContent = DEFAULT_RUN_LABEL;
         });
       });
     });
@@ -248,6 +370,24 @@ var DSA = window.DSA || {};
 
   function renderResults(container, testResults, passed, total) {
     container.innerHTML = '';
+    var summaryClass = passed === total ? 'pass' : passed > 0 ? 'partial' : 'fail';
+
+    // Wrap individual results in <details> — collapsed by default if everything
+    // passes; auto-expanded when any test fails so the user immediately sees what.
+    var details = document.createElement('details');
+    details.className = 'practice-block__results-details practice-block__results-details--' + summaryClass;
+    if (summaryClass !== 'pass') details.open = true;
+
+    var summaryEl = document.createElement('summary');
+    summaryEl.className = 'practice-block__summary practice-block__summary--' + summaryClass;
+    summaryEl.innerHTML =
+      '<span class="practice-block__summary-icon">' + (summaryClass === 'pass' ? '✓' : summaryClass === 'fail' ? '✗' : '!') + '</span>' +
+      '<span class="practice-block__summary-text">' + passed + ' / ' + total + ' tests passed</span>' +
+      '<span class="practice-block__summary-hint">click to ' + (summaryClass === 'pass' ? 'expand' : 'collapse') + '</span>';
+    details.appendChild(summaryEl);
+
+    var list = document.createElement('div');
+    list.className = 'practice-block__results-list';
     for (var i = 0; i < testResults.length; i++) {
       var r = testResults[i];
       var row = document.createElement('div');
@@ -272,15 +412,10 @@ var DSA = window.DSA || {};
       row.appendChild(icon);
       row.appendChild(labelSpan);
       row.appendChild(detail);
-      container.appendChild(row);
+      list.appendChild(row);
     }
-
-    var summary = document.createElement('div');
-    summary.className = 'practice-block__summary';
-    var summaryClass = passed === total ? 'pass' : passed > 0 ? 'partial' : 'fail';
-    summary.classList.add('practice-block__summary--' + summaryClass);
-    summary.textContent = passed + ' / ' + total + ' tests passed';
-    container.appendChild(summary);
+    details.appendChild(list);
+    container.appendChild(details);
   }
 
   function escapeHtml(str) {
