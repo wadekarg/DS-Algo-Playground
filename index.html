@@ -3,27 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DS-Algo-Playground</title>
+  <title>DS-Algo Playground</title>
   <link rel="icon" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/print.css" media="print">
-  <style>
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .revealed { opacity: 1; transform: translateY(0); }
-  </style>
 </head>
 <body>
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar__header">
       <a href="index.html" class="sidebar__logo">
-        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        <svg width="28" height="28" viewBox="0 0 32 32">
+          <rect width="32" height="32" rx="6" fill="#3b82f6"/>
+          <text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text>
+        </svg>
         DS-Algo
       </a>
     </div>
-    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+
+    <!-- Tab strip -->
+    <div class="sidebar-tabs">
+      <button class="sidebar-tab sidebar-tab--active" data-sidebar-tab="roadmap">Roadmap</button>
+      <button class="sidebar-tab" data-sidebar-tab="topics">Topics</button>
+      <button class="sidebar-tab" data-sidebar-tab="tools">Tools</button>
+    </div>
+
+    <!-- Roadmap tab content -->
+    <div class="sidebar-tab-content" data-sidebar-content="roadmap">
+      <!-- populated by sidebar-tabs.js -->
+    </div>
+
+    <!-- Topics tab content -->
+    <div class="sidebar-tab-content sidebar-tab-content--hidden" data-sidebar-content="topics">
+      <!-- populated by sidebar-tabs.js -->
+    </div>
+
+    <!-- Tools tab content -->
+    <div class="sidebar-tab-content sidebar-tab-content--hidden" data-sidebar-content="tools">
+      <!-- populated by sidebar-tabs.js -->
+    </div>
+
     <div class="sidebar__footer">
-      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">
+        Press <strong>?</strong> for shortcuts
+      </span>
     </div>
   </aside>
 
@@ -33,11 +56,17 @@
   <div class="main">
     <header class="main__header">
       <button class="hamburger" aria-label="Toggle menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
       </button>
       <div class="search-container">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="search-input" placeholder="Search topics...">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" placeholder="Search topics and problems...">
         <span class="search-shortcut">/</span>
         <div class="search-results"></div>
       </div>
@@ -47,165 +76,21 @@
     </header>
 
     <div class="main__content">
-      <!-- Hero -->
-      <section class="hero reveal">
-        <h1 class="hero__title">DS-Algo Playground</h1>
-        <p class="hero__subtitle">Interactive visualizations, multi-language code examples, and quizzes to master Data Structures and Algorithms.</p>
-        <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
-          <a href="topics/arrays.html" class="btn btn--primary">Get Started</a>
-          <a href="complexity.html" class="btn btn--secondary">Cheat Sheet</a>
+      <!-- Overall progress -->
+      <div class="roadmap-header">
+        <div class="roadmap-header__stats">
+          <span class="roadmap-solved-count">0/0 solved</span>
+          <span class="roadmap-solved-pct">0%</span>
         </div>
-      </section>
+        <div class="roadmap-progress-bar">
+          <div class="roadmap-progress-bar__fill" style="width:0%"></div>
+        </div>
+      </div>
 
-      <!-- Progress Overview -->
-      <section class="reveal" style="margin:var(--space-2xl) 0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-md);">
-          <h2 style="font-size:var(--font-size-xl);font-weight:700;">Your Progress</h2>
-          <span class="progress-percent" style="font-weight:700;color:var(--accent-primary);">0%</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-bar__fill" style="width:0%"></div>
-        </div>
-      </section>
-
-      <!-- Topic Cards Grid -->
-      <section class="reveal">
-        <h2 class="section-title">Topics</h2>
-        <div class="card-grid" id="topic-grid">
-          <a href="topics/arrays.html" class="card">
-            <div class="card__icon" style="background:rgba(59,130,246,0.15);color:#3b82f6;">[]</div>
-            <h3 class="card__title">Arrays</h3>
-            <p class="card__desc">Contiguous memory, O(1) random access, dynamic resizing, and common array operations.</p>
-            <div class="card__footer"><span class="badge badge--blue">Data Structure</span></div>
-          </a>
-          <a href="topics/linked-lists.html" class="card">
-            <div class="card__icon" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">&rarr;</div>
-            <h3 class="card__title">Linked Lists</h3>
-            <p class="card__desc">Node-pointer chains, O(1) insert/delete at head, traversal, and pointer manipulation.</p>
-            <div class="card__footer"><span class="badge badge--purple">Data Structure</span></div>
-          </a>
-          <a href="topics/stack.html" class="card">
-            <div class="card__icon" style="background:rgba(6,182,212,0.15);color:#06b6d4;">&uarr;</div>
-            <h3 class="card__title">Stack</h3>
-            <p class="card__desc">LIFO data structure with O(1) push, pop, and peek operations.</p>
-            <div class="card__footer"><span class="badge badge--blue">Data Structure</span></div>
-          </a>
-          <a href="topics/queue.html" class="card">
-            <div class="card__icon" style="background:rgba(20,184,166,0.15);color:#14b8a6;">&rarr;</div>
-            <h3 class="card__title">Queue</h3>
-            <p class="card__desc">FIFO data structure with O(1) enqueue and dequeue operations.</p>
-            <div class="card__footer"><span class="badge badge--blue">Data Structure</span></div>
-          </a>
-          <a href="topics/hash-table.html" class="card">
-            <div class="card__icon" style="background:rgba(249,115,22,0.15);color:#f97316;">#</div>
-            <h3 class="card__title">Hash Table</h3>
-            <p class="card__desc">Key-value storage with O(1) average lookup using hash functions.</p>
-            <div class="card__footer"><span class="badge badge--blue">Data Structure</span></div>
-          </a>
-          <a href="topics/bst.html" class="card">
-            <div class="card__icon" style="background:rgba(236,72,153,0.15);color:#ec4899;">&#9651;</div>
-            <h3 class="card__title">Binary Search Tree</h3>
-            <p class="card__desc">Hierarchical structure enabling O(log n) search, insert, and delete.</p>
-            <div class="card__footer"><span class="badge badge--purple">Data Structure</span></div>
-          </a>
-          <a href="topics/heap.html" class="card">
-            <div class="card__icon" style="background:rgba(168,85,247,0.15);color:#a855f7;">&#9650;</div>
-            <h3 class="card__title">Heap</h3>
-            <p class="card__desc">Complete binary tree with O(log n) insert and extract-max/min.</p>
-            <div class="card__footer"><span class="badge badge--purple">Data Structure</span></div>
-          </a>
-          <a href="topics/bubble-sort.html" class="card">
-            <div class="card__icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">&UpDownArrow;</div>
-            <h3 class="card__title">Bubble Sort</h3>
-            <p class="card__desc">Simple comparison sort that repeatedly swaps adjacent elements. O(n&sup2;) average.</p>
-            <div class="card__footer"><span class="badge badge--yellow">Sorting</span></div>
-          </a>
-          <a href="topics/selection-sort.html" class="card">
-            <div class="card__icon" style="background:rgba(234,179,8,0.15);color:#eab308;">&#10004;</div>
-            <h3 class="card__title">Selection Sort</h3>
-            <p class="card__desc">Finds the minimum element and places it at the beginning. O(n&sup2;).</p>
-            <div class="card__footer"><span class="badge badge--yellow">Sorting</span></div>
-          </a>
-          <a href="topics/insertion-sort.html" class="card">
-            <div class="card__icon" style="background:rgba(217,119,6,0.15);color:#d97706;">&#8627;</div>
-            <h3 class="card__title">Insertion Sort</h3>
-            <p class="card__desc">Builds sorted array one element at a time. O(n&sup2;) average, O(n) best.</p>
-            <div class="card__footer"><span class="badge badge--yellow">Sorting</span></div>
-          </a>
-          <a href="topics/merge-sort.html" class="card">
-            <div class="card__icon" style="background:rgba(22,163,74,0.15);color:#16a34a;">&harr;</div>
-            <h3 class="card__title">Merge Sort</h3>
-            <p class="card__desc">Divide-and-conquer sort with guaranteed O(n log n). Stable.</p>
-            <div class="card__footer"><span class="badge badge--yellow">Sorting</span></div>
-          </a>
-          <a href="topics/quick-sort.html" class="card">
-            <div class="card__icon" style="background:rgba(5,150,105,0.15);color:#059669;">&#8645;</div>
-            <h3 class="card__title">Quick Sort</h3>
-            <p class="card__desc">Efficient in-place sort using pivot partitioning. O(n log n) average.</p>
-            <div class="card__footer"><span class="badge badge--yellow">Sorting</span></div>
-          </a>
-          <a href="topics/binary-search.html" class="card">
-            <div class="card__icon" style="background:rgba(34,197,94,0.15);color:#22c55e;">&#128269;</div>
-            <h3 class="card__title">Binary Search</h3>
-            <p class="card__desc">Efficient O(log n) search on sorted arrays by halving the search space.</p>
-            <div class="card__footer"><span class="badge badge--green">Searching</span></div>
-          </a>
-          <a href="topics/bfs.html" class="card">
-            <div class="card__icon" style="background:rgba(37,99,235,0.15);color:#2563eb;">&#8803;</div>
-            <h3 class="card__title">BFS</h3>
-            <p class="card__desc">Level-by-level graph traversal using a queue. Shortest unweighted paths.</p>
-            <div class="card__footer"><span class="badge badge--green">Searching</span></div>
-          </a>
-          <a href="topics/dfs.html" class="card">
-            <div class="card__icon" style="background:rgba(124,58,237,0.15);color:#7c3aed;">&#8801;</div>
-            <h3 class="card__title">DFS</h3>
-            <p class="card__desc">Explores graph branches as deep as possible using a stack or recursion.</p>
-            <div class="card__footer"><span class="badge badge--green">Searching</span></div>
-          </a>
-          <a href="topics/two-pointers.html" class="card">
-            <div class="card__icon" style="background:rgba(14,165,233,0.15);color:#0ea5e9;">&#8660;</div>
-            <h3 class="card__title">Two Pointers</h3>
-            <p class="card__desc">Scan arrays from both ends for pair-finding and partitioning problems.</p>
-            <div class="card__footer"><span class="badge badge--blue">Technique</span></div>
-          </a>
-          <a href="topics/sliding-window.html" class="card">
-            <div class="card__icon" style="background:rgba(99,102,241,0.15);color:#6366f1;">&#9633;</div>
-            <h3 class="card__title">Sliding Window</h3>
-            <p class="card__desc">Maintain a window over a contiguous subarray for range problems.</p>
-            <div class="card__footer"><span class="badge badge--blue">Technique</span></div>
-          </a>
-          <a href="topics/dynamic-programming.html" class="card">
-            <div class="card__icon" style="background:rgba(220,38,38,0.15);color:#dc2626;">&#9636;</div>
-            <h3 class="card__title">Dynamic Programming</h3>
-            <p class="card__desc">Break complex problems into overlapping subproblems with memoization.</p>
-            <div class="card__footer"><span class="badge badge--red">Technique</span></div>
-          </a>
-          <a href="topics/recursion.html" class="card">
-            <div class="card__icon" style="background:rgba(190,24,93,0.15);color:#be185d;">&#8634;</div>
-            <h3 class="card__title">Recursion</h3>
-            <p class="card__desc">Function calling itself. Visualize call stacks and memoization.</p>
-            <div class="card__footer"><span class="badge badge--red">Technique</span></div>
-          </a>
-          <a href="topics/prefix-sum.html" class="card">
-            <div class="card__icon" style="background:rgba(8,145,178,0.15);color:#0891b2;">&Sigma;</div>
-            <h3 class="card__title">Prefix Sum</h3>
-            <p class="card__desc">Precompute cumulative sums to answer range-sum queries in O(1).</p>
-            <div class="card__footer"><span class="badge badge--blue">Technique</span></div>
-          </a>
-          <a href="topics/fast-slow-pointers.html" class="card">
-            <div class="card__icon" style="background:rgba(124,58,237,0.15);color:#7c3aed;">&#8644;</div>
-            <h3 class="card__title">Fast &amp; Slow Pointers</h3>
-            <p class="card__desc">Move two pointers at different speeds. Detect cycles, find middles.</p>
-            <div class="card__footer"><span class="badge badge--blue">Technique</span></div>
-          </a>
-          <a href="topics/backtracking.html" class="card">
-            <div class="card__icon" style="background:rgba(147,51,234,0.15);color:#9333ea;">&#8629;</div>
-            <h3 class="card__title">Backtracking</h3>
-            <p class="card__desc">Build solutions recursively; undo failed choices and try the next.</p>
-            <div class="card__footer"><span class="badge badge--red">Technique</span></div>
-          </a>
-        </div>
-      </section>
+      <!-- Pattern sections — populated by roadmap.js -->
+      <div id="roadmap-sections">
+        <div class="roadmap-loading">Loading roadmap...</div>
+      </div>
     </div>
   </div>
 
@@ -219,23 +104,28 @@
       <div class="shortcuts-list">
         <span class="shortcut-key">t</span><span>Toggle theme</span>
         <span class="shortcut-key">/</span><span>Focus search</span>
-        <span class="shortcut-key">Space</span><span>Play / Pause visualization</span>
-        <span class="shortcut-key">&larr;</span><span>Step backward</span>
-        <span class="shortcut-key">&rarr;</span><span>Step forward</span>
         <span class="shortcut-key">?</span><span>Show shortcuts</span>
         <span class="shortcut-key">Esc</span><span>Close modal</span>
       </div>
     </div>
   </div>
 
-  <script src="js/theme.js"></script>
-  <script src="js/sidebar.js"></script>
   <script src="js/problem-progress.js"></script>
-  <script src="js/sidebar-nav.js"></script>
+  <script src="js/sidebar.js"></script>
   <script src="js/search.js"></script>
-  <script src="js/progress.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/keyboard.js"></script>
-  <script src="js/viz-utils.js"></script>
+  <script src="js/sidebar-tabs.js"></script>
+  <script src="js/roadmap.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (DSA.theme)    DSA.theme.init();
+      if (DSA.sidebar)  DSA.sidebar.init();
+      if (DSA.search)   DSA.search.init();
+      if (DSA.keyboard) DSA.keyboard.init();
+      if (DSA.roadmap)  DSA.roadmap.init();
+    });
+  </script>
 </body>
 </html>
