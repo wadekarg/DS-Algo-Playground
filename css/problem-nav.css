@@ -1,0 +1,97 @@
+/* ── Problem page navigation bar ──────────────────────────────── */
+.problem-nav {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-sm) var(--space-lg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.problem-nav__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.problem-nav__breadcrumb a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+.problem-nav__breadcrumb a:hover { text-decoration: underline; }
+.problem-nav__sep {
+  color: var(--text-tertiary);
+}
+.problem-nav__current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.problem-nav__strip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.problem-nav__strip {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+.problem-nav__seg {
+  height: 6px;
+  flex: 1;
+  border-radius: 3px;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  transition: opacity var(--transition-speed);
+  position: relative;
+}
+.problem-nav__seg:hover { opacity: 0.8; }
+.problem-nav__seg--solved { background: var(--accent-success); }
+.problem-nav__seg--current {
+  background: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--accent-primary);
+}
+.problem-nav__label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.problem-nav__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+.problem-nav__btn {
+  font-size: var(--font-size-sm);
+  padding: 5px 14px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background var(--transition-speed), border-color var(--transition-speed);
+  text-decoration: none;
+  display: inline-block;
+}
+.problem-nav__btn--prev {
+  background: transparent;
+  border: 1px solid var(--border-color-strong);
+  color: var(--text-secondary);
+}
+.problem-nav__btn--prev:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.problem-nav__btn--next {
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  color: white;
+}
+.problem-nav__btn--next:hover {
+  background: var(--accent-primary-hover);
+  border-color: var(--accent-primary-hover);
+}
+.problem-nav__btn--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}

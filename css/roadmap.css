@@ -1,0 +1,180 @@
+/* ── Roadmap homepage ──────────────────────────────────────────── */
+.roadmap-header {
+  padding: var(--space-lg) 0 var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-xl);
+}
+.roadmap-header__stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-sm);
+}
+.roadmap-solved-count {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.roadmap-solved-pct {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+.roadmap-progress-bar {
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.roadmap-progress-bar__fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.roadmap-loading {
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Pattern section ───────────────────────────────────────────── */
+.pattern-section {
+  margin-bottom: var(--space-xl);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+.pattern-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--border-color);
+}
+.pattern-section__header:hover {
+  background: var(--bg-tertiary);
+}
+.pattern-section__icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.pattern-section__title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+.pattern-section__count {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+.pattern-section__count--complete {
+  color: var(--accent-success);
+}
+.pattern-section__chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-tertiary);
+  transition: transform var(--transition-speed);
+  flex-shrink: 0;
+}
+.pattern-section--collapsed .pattern-section__chevron {
+  transform: rotate(-90deg);
+}
+.pattern-section__body {
+  display: block;
+}
+.pattern-section--collapsed .pattern-section__body {
+  display: none;
+}
+
+/* ── Problem row ───────────────────────────────────────────────── */
+.problem-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background var(--transition-speed);
+}
+.problem-row:last-child {
+  border-bottom: none;
+}
+.problem-row:hover {
+  background: var(--bg-secondary);
+}
+.problem-row--solved {
+  background: rgba(34, 197, 94, 0.06);
+  border-left: 3px solid var(--accent-success);
+}
+.problem-row--solved:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+[data-theme="dark"] .problem-row--solved {
+  background: rgba(74, 222, 128, 0.06);
+}
+.problem-row__check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color-strong);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.problem-row--solved .problem-row__check {
+  background: var(--accent-success);
+  border-color: var(--accent-success);
+  color: white;
+}
+.problem-row__title {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+.diff-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.diff-pill--easy {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+.diff-pill--medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+.diff-pill--hard {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+[data-theme="dark"] .diff-pill--easy  { color: #4ade80; background: rgba(74,222,128,0.15); }
+[data-theme="dark"] .diff-pill--medium { color: #fbbf24; background: rgba(251,191,36,0.15); }
+[data-theme="dark"] .diff-pill--hard  { color: #f87171; background: rgba(248,113,113,0.15); }
+
+.lc-chip {
+  font-size: 11px;
+  color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
