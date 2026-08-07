@@ -205,7 +205,7 @@
         <span class="filter-summary" id="filter-summary"></span>
       </div>
 
-      <div id="pattern-filters" style="margin-top:var(--space-sm);display:flex;gap:var(--space-xs);flex-wrap:wrap;margin-bottom:18px;">
+      <div id="pattern-filters" style="margin-top:var(--space-sm);display:flex;gap:var(--space-xs);flex-wrap:wrap;margin-bottom:var(--space-md);">
         <!-- populated by JS below -->
       </div>
 
@@ -358,6 +358,7 @@
       }).join('');
 
       document.getElementById('problems-groups').innerHTML = html;
+      if (typeof window._applyPatternFilter === 'function') window._applyPatternFilter();
     }
 
     function wireFilters() {
@@ -403,6 +404,29 @@
 
   <script>
   (function () {
+    // Shared state — readable by renderGroups() in the first script block
+    window._activePatternFilter = 'all';
+    window._activePatternIds = null; // Set or null
+
+    function applyCurrentPatternFilter() {
+      var allowedIds = window._activePatternIds;
+      // Show/hide problem rows — rows are <a class="problem-index-row">
+      // Problem ID is derived from href: "problems/some-id.html" → "some-id"
+      document.querySelectorAll('.problem-index-row').forEach(function (row) {
+        var href = row.getAttribute('href') || '';
+        var id = href.replace(/^problems\//, '').replace(/\.html$/, '');
+        var show = !allowedIds || allowedIds.has(id);
+        row.style.display = show ? '' : 'none';
+      });
+      // Show/hide group sections if all their rows are hidden
+      document.querySelectorAll('.problems-group').forEach(function (group) {
+        var rows = group.querySelectorAll('.problem-index-row');
+        var anyVisible = Array.prototype.some.call(rows, function (r) { return r.style.display !== 'none'; });
+        group.style.display = anyVisible ? '' : 'none';
+      });
+    }
+    window._applyPatternFilter = applyCurrentPatternFilter;
+
     fetch('data/patterns.json').then(function (r) { return r.json(); }).then(function (patterns) {
       var container = document.getElementById('pattern-filters');
       if (!container) return;
@@ -431,28 +455,16 @@
           b.classList.toggle('active-filter', b === btn);
         });
 
-        // Build set of problem IDs in this pattern
-        var allowedIds = null;
+        // Update shared state
+        window._activePatternFilter = filter;
         if (filter !== 'all') {
           var pat = patterns.find(function (p) { return p.id === filter; });
-          allowedIds = pat ? new Set(pat.problems) : new Set();
+          window._activePatternIds = pat ? new Set(pat.problems) : new Set();
+        } else {
+          window._activePatternIds = null;
         }
 
-        // Show/hide problem rows — rows are <a class="problem-index-row">
-        // Problem ID is derived from href: "problems/some-id.html" → "some-id"
-        document.querySelectorAll('.problem-index-row').forEach(function (row) {
-          var href = row.getAttribute('href') || '';
-          var id = href.replace(/^problems\//, '').replace(/\.html$/, '');
-          var show = !allowedIds || allowedIds.has(id);
-          row.style.display = show ? '' : 'none';
-        });
-
-        // Show/hide group sections if all their rows are hidden
-        document.querySelectorAll('.problems-group').forEach(function (group) {
-          var rows = group.querySelectorAll('.problem-index-row');
-          var anyVisible = Array.prototype.some.call(rows, function (r) { return r.style.display !== 'none'; });
-          group.style.display = anyVisible ? '' : 'none';
-        });
+        applyCurrentPatternFilter();
       });
     }).catch(function () { /* filter is non-critical, fail silently */ });
   })();
