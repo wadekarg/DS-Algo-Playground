@@ -18,6 +18,16 @@
 let _problemsCache = null;
 const PROBLEMS_CACHE_KEY = 'dsa-sidebar-problems-cache-v1';
 
+// Self-load problem-nav.js so problem pages get the nav bar without editing each HTML file.
+(function () {
+  if (document.getElementById('dsa-problem-nav-script')) return;
+  var base = window.location.pathname.indexOf('/problems/') !== -1 ? '../' : '';
+  var s = document.createElement('script');
+  s.id  = 'dsa-problem-nav-script';
+  s.src = base + 'js/problem-nav.js';
+  document.head.appendChild(s);
+})();
+
 function _readCacheSync() {
   try {
     const raw = localStorage.getItem(PROBLEMS_CACHE_KEY);
@@ -57,6 +67,8 @@ function _renderAllSections(prob, all) {
   renderPracticeEditor(prob);
   renderTestCases(prob);
   renderRelatedProblems(prob, all);
+  // Fire event so problem-nav.js can inject the nav bar
+  window.dispatchEvent(new CustomEvent('dsa:problem-rendered', { detail: { id: prob.id } }));
 }
 
 /**
