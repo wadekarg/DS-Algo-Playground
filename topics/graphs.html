@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphs - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="graphs">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumbs__sep">/</span>
+        <span>Graphs</span>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Graphs</h1>
+        <p class="topic-header__desc">Adjacency list and matrix representations. BFS and DFS traversal, cycle detection, and connectivity.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Data Structure</span>
+          <span class="badge badge--purple">BFS / DFS</span>
+          <span class="badge badge--green">O(V + E)</span>
+        </div>
+      </div>
+
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead>
+              <tr><th>Operation</th><th>Adjacency List</th><th>Adjacency Matrix</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Add vertex</td><td>O(1)</td><td>O(V²)</td></tr>
+              <tr><td>Add edge</td><td>O(1)</td><td>O(1)</td></tr>
+              <tr><td>Remove edge</td><td>O(E)</td><td>O(1)</td></tr>
+              <tr><td>BFS / DFS</td><td>O(V + E)</td><td>O(V²)</td></tr>
+              <tr><td>Space</td><td>O(V + E)</td><td>O(V²)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Visualization Placeholder -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div style="
+          border: 2px dashed var(--border-color);
+          border-radius: var(--border-radius-lg);
+          padding: var(--space-3xl) var(--space-2xl);
+          text-align: center;
+          color: var(--text-tertiary);
+          background: var(--bg-secondary);
+        ">
+          <div style="font-size: 2rem; margin-bottom: var(--space-md);">◎</div>
+          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
+          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive graph traversal visualization is in progress. In the meantime, practice with the problems below.</p>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
+          <a href="../problems/number-of-islands.html" class="problem-row">Number of Islands</a>
+          <a href="../problems/clone-graph.html" class="problem-row">Clone Graph</a>
+          <a href="../problems/course-schedule.html" class="problem-row">Course Schedule</a>
+          <a href="../problems/pacific-atlantic-water-flow.html" class="problem-row">Pacific Atlantic Water Flow</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

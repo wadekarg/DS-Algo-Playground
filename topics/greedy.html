@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greedy - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="greedy">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">Home</a>
+        <span class="breadcrumbs__sep">/</span>
+        <span>Greedy</span>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Greedy</h1>
+        <p class="topic-header__desc">Make locally optimal choices at each step. Globally optimal for specific problem structures.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Technique</span>
+          <span class="badge badge--purple">Locally Optimal</span>
+          <span class="badge badge--green">O(n)</span>
+        </div>
+      </div>
+
+      <!-- Key Facts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Facts</h2>
+        <ul style="line-height:2;color:var(--text-secondary);padding-left:var(--space-lg);">
+          <li><strong>Time:</strong> typically O(n) or O(n log n) — depends on whether sorting is needed</li>
+          <li><strong>Space:</strong> O(1) — greedy solutions rarely need auxiliary storage</li>
+          <li><strong>Greedy choice property:</strong> a locally optimal choice leads to a globally optimal solution</li>
+          <li><strong>Optimal substructure:</strong> the optimal solution to the problem contains optimal solutions to subproblems</li>
+          <li><strong>Correctness:</strong> always prove or verify — greedy does not always work</li>
+        </ul>
+      </section>
+
+      <!-- Visualization Placeholder -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div style="
+          border: 2px dashed var(--border-color);
+          border-radius: var(--border-radius-lg);
+          padding: var(--space-3xl) var(--space-2xl);
+          text-align: center;
+          color: var(--text-tertiary);
+          background: var(--bg-secondary);
+        ">
+          <div style="font-size: 2rem; margin-bottom: var(--space-md);">⚡</div>
+          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
+          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive greedy algorithm visualization is in progress. In the meantime, practice with the problems below.</p>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
+          <a href="../problems/jump-game.html" class="problem-row">Jump Game</a>
+          <a href="../problems/jump-game-ii.html" class="problem-row">Jump Game II</a>
+          <a href="../problems/gas-station.html" class="problem-row">Gas Station</a>
+          <a href="../problems/partition-labels.html" class="problem-row">Partition Labels</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

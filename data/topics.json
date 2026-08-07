@@ -221,4 +221,92 @@
     "description": "Build solutions recursively; undo failed choices and try the next.",
     "tags": ["backtracking", "recursion", "subsets", "permutations", "combinations"]
   }
+  ,
+  {
+    "id": "graphs",
+    "title": "Graphs",
+    "category": "Data Structures",
+    "url": "topics/graphs.html",
+    "icon": "◎",
+    "color": "#2563eb",
+    "description": "Adjacency list and matrix representations. BFS and DFS traversal, cycle detection, and connectivity.",
+    "tags": ["graph", "bfs", "dfs", "adjacency", "cycle", "connectivity"]
+  }
+  ,
+  {
+    "id": "tries",
+    "title": "Tries",
+    "category": "Data Structures",
+    "url": "topics/tries.html",
+    "icon": "⬡",
+    "color": "#14b8a6",
+    "description": "Prefix tree data structure enabling O(L) insert and search for strings of length L.",
+    "tags": ["trie", "prefix tree", "string", "insert", "search"]
+  }
+  ,
+  {
+    "id": "monotonic-stack",
+    "title": "Monotonic Stack",
+    "category": "Techniques",
+    "url": "topics/monotonic-stack.html",
+    "icon": "↑",
+    "color": "#06b6d4",
+    "description": "Stack maintaining monotonic order. Solves next-greater/smaller element problems in O(n).",
+    "tags": ["monotonic", "stack", "next greater", "next smaller", "histogram"]
+  }
+  ,
+  {
+    "id": "intervals",
+    "title": "Intervals",
+    "category": "Techniques",
+    "url": "topics/intervals.html",
+    "icon": "↔",
+    "color": "#0891b2",
+    "description": "Merge overlapping intervals, sweep line, and scheduling problems.",
+    "tags": ["intervals", "merge", "sweep line", "scheduling", "overlapping"]
+  }
+  ,
+  {
+    "id": "greedy",
+    "title": "Greedy",
+    "category": "Techniques",
+    "url": "topics/greedy.html",
+    "icon": "⚡",
+    "color": "#d97706",
+    "description": "Make locally optimal choices at each step. Globally optimal for specific problem structures.",
+    "tags": ["greedy", "locally optimal", "globally optimal", "jump game", "scheduling"]
+  }
+  ,
+  {
+    "id": "advanced-graphs",
+    "title": "Advanced Graphs",
+    "category": "Techniques",
+    "url": "topics/advanced-graphs.html",
+    "icon": "◉",
+    "color": "#1d4ed8",
+    "description": "Dijkstra, Bellman-Ford, Prim, Kruskal, and topological sort for weighted graphs.",
+    "tags": ["dijkstra", "bellman-ford", "prim", "kruskal", "topological sort", "mst", "shortest path"]
+  }
+  ,
+  {
+    "id": "bit-manipulation",
+    "title": "Bit Manipulation",
+    "category": "Techniques",
+    "url": "topics/bit-manipulation.html",
+    "icon": "&",
+    "color": "#059669",
+    "description": "AND, OR, XOR, shifts. Solve subset, parity, and counting problems in O(1) space.",
+    "tags": ["bit", "xor", "and", "or", "shift", "bitwise", "parity"]
+  }
+  ,
+  {
+    "id": "math-geometry",
+    "title": "Math & Geometry",
+    "category": "Techniques",
+    "url": "topics/math-geometry.html",
+    "icon": "∑",
+    "color": "#7c3aed",
+    "description": "Modular arithmetic, matrix rotation, geometry primitives.",
+    "tags": ["math", "geometry", "matrix", "rotation", "modular", "prime", "gcd"]
+  }
 ]
