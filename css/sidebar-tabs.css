@@ -53,7 +53,7 @@
 }
 .sidebar-pattern-item--active {
   background: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
+  color: var(--sidebar-active-text);
   border-left-color: var(--accent-primary);
 }
 .sidebar-pattern-item__name {

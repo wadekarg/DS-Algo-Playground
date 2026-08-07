@@ -83,6 +83,14 @@
   --viz-cell-bg: #e2e8f0;
   --viz-cell-text: #1e293b;
   --viz-arrow: #64748b;
+
+  /* Difficulty pill text colors */
+  --diff-easy-text: #16a34a;
+  --diff-medium-text: #b45309;
+  --diff-hard-text: #dc2626;
+
+  /* Sidebar active text color */
+  --sidebar-active-text: #1d4ed8;
 }
 
 /* Dark theme */
@@ -129,4 +137,12 @@
   --viz-cell-text: #f1f5f9;
   --viz-eliminated: #475569;
   --viz-arrow: #94a3b8;
+
+  /* Difficulty pill text colors (dark) */
+  --diff-easy-text: #4ade80;
+  --diff-medium-text: #fbbf24;
+  --diff-hard-text: #f87171;
+
+  /* Sidebar active text color (dark) */
+  --sidebar-active-text: #93c5fd;
 }

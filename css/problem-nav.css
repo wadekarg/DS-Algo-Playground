@@ -85,7 +85,7 @@
 .problem-nav__btn--next {
   background: var(--accent-primary);
   border: 1px solid var(--accent-primary);
-  color: white;
+  color: var(--text-inverse);
 }
 .problem-nav__btn--next:hover {
   background: var(--accent-primary-hover);

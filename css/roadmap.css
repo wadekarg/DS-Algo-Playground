@@ -138,7 +138,7 @@
 .problem-row--solved .problem-row__check {
   background: var(--accent-success);
   border-color: var(--accent-success);
-  color: white;
+  color: var(--text-inverse);
 }
 .problem-row__title {
   flex: 1;
@@ -155,19 +155,16 @@
 }
 .diff-pill--easy {
   background: rgba(34, 197, 94, 0.15);
-  color: #16a34a;
+  color: var(--diff-easy-text);
 }
 .diff-pill--medium {
   background: rgba(245, 158, 11, 0.15);
-  color: #b45309;
+  color: var(--diff-medium-text);
 }
 .diff-pill--hard {
   background: rgba(239, 68, 68, 0.15);
-  color: #dc2626;
+  color: var(--diff-hard-text);
 }
-[data-theme="dark"] .diff-pill--easy  { color: #4ade80; background: rgba(74,222,128,0.15); }
-[data-theme="dark"] .diff-pill--medium { color: #fbbf24; background: rgba(251,191,36,0.15); }
-[data-theme="dark"] .diff-pill--hard  { color: #f87171; background: rgba(248,113,113,0.15); }
 
 .lc-chip {
   font-size: 11px;
