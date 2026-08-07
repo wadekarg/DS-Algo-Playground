@@ -1,58 +1,218 @@
 [
   {
+    "id": "arrays-hashing",
+    "title": "Arrays & Hashing",
+    "icon": "[]",
+    "color": "#3b82f6",
+    "problems": [
+      "contains-duplicate", "valid-anagram", "two-sum", "group-anagrams",
+      "top-k-frequent-elements", "product-of-array-except-self",
+      "longest-consecutive-sequence", "subarray-sum-equals-k",
+      "remove-duplicates-from-sorted-array", "rotate-array", "first-missing-positive"
+    ]
+  },
+  {
     "id": "two-pointers",
     "title": "Two Pointers",
-    "topic_url": "topics/two-pointers.html",
-    "appears_in": ["arrays", "linked-lists", "binary-search"],
-    "one_liner": "When the array is sorted (or you need to find a pair), scan with two indices instead of nested loops."
+    "icon": "⇔",
+    "color": "#0ea5e9",
+    "problems": [
+      "valid-palindrome", "3sum", "container-with-most-water", "trapping-rain-water"
+    ]
   },
   {
     "id": "sliding-window",
     "title": "Sliding Window",
-    "topic_url": "topics/sliding-window.html",
-    "appears_in": ["arrays", "hash-table"],
-    "one_liner": "When the question asks about a contiguous subarray with a constraint, slide a window instead of nested loops."
+    "icon": "□",
+    "color": "#6366f1",
+    "problems": [
+      "best-time-to-buy-and-sell-stock",
+      "longest-substring-without-repeating-characters",
+      "longest-repeating-character-replacement", "permutation-in-string",
+      "minimum-window-substring", "sliding-window-maximum", "maximum-average-subarray-i"
+    ]
+  },
+  {
+    "id": "stack",
+    "title": "Stack",
+    "icon": "⬓",
+    "color": "#06b6d4",
+    "problems": [
+      "valid-parentheses", "min-stack", "evaluate-reverse-polish-notation",
+      "generate-parentheses", "daily-temperatures", "car-fleet",
+      "largest-rectangle-in-histogram"
+    ]
   },
   {
     "id": "binary-search",
     "title": "Binary Search",
-    "topic_url": "topics/binary-search.html",
-    "appears_in": ["arrays"],
-    "one_liner": "When the input is sorted (or you can binary-search on the answer), halve the search space each step."
+    "icon": "⌕",
+    "color": "#22c55e",
+    "problems": [
+      "binary-search", "search-a-2d-matrix", "koko-eating-bananas",
+      "find-minimum-in-rotated-sorted-array", "search-in-rotated-sorted-array",
+      "time-based-key-value-store", "median-of-two-sorted-arrays"
+    ]
   },
   {
-    "id": "prefix-sum",
-    "title": "Prefix Sum",
-    "topic_url": "topics/prefix-sum.html",
-    "appears_in": ["arrays"],
-    "one_liner": "When you'll query the sum of many subarrays, precompute prefix sums once and answer each query in O(1)."
+    "id": "linked-list",
+    "title": "Linked List",
+    "icon": "→",
+    "color": "#8b5cf6",
+    "problems": [
+      "reverse-linked-list", "merge-two-sorted-lists", "reorder-list",
+      "remove-nth-node-from-end-of-list", "copy-list-with-random-pointer",
+      "add-two-numbers", "lru-cache", "merge-k-sorted-lists",
+      "reverse-nodes-in-k-group"
+    ]
   },
   {
-    "id": "fast-slow-pointers",
-    "title": "Fast & Slow Pointers",
-    "topic_url": "topics/fast-slow-pointers.html",
-    "appears_in": ["linked-lists", "arrays"],
-    "one_liner": "When detecting cycles or finding the middle of a sequence, move two pointers at different speeds."
+    "id": "trees",
+    "title": "Trees",
+    "icon": "△",
+    "color": "#ec4899",
+    "problems": [
+      "invert-binary-tree", "maximum-depth-of-binary-tree", "diameter-of-binary-tree",
+      "balanced-binary-tree", "same-tree", "subtree-of-another-tree",
+      "lowest-common-ancestor-of-a-binary-search-tree",
+      "binary-tree-level-order-traversal", "binary-tree-right-side-view",
+      "count-good-nodes-in-binary-tree", "validate-binary-search-tree",
+      "kth-smallest-element-in-a-bst",
+      "construct-binary-tree-from-preorder-and-inorder-traversal",
+      "binary-tree-maximum-path-sum", "serialize-and-deserialize-binary-tree"
+    ]
+  },
+  {
+    "id": "tries",
+    "title": "Tries",
+    "icon": "⬡",
+    "color": "#14b8a6",
+    "problems": [
+      "implement-trie-prefix-tree",
+      "design-add-and-search-words-data-structure",
+      "word-search-ii"
+    ]
+  },
+  {
+    "id": "heap-priority-queue",
+    "title": "Heap / Priority Queue",
+    "icon": "▲",
+    "color": "#a855f7",
+    "problems": [
+      "kth-largest-element-in-a-stream", "last-stone-weight",
+      "k-closest-points-to-origin", "kth-largest-element-in-an-array",
+      "task-scheduler", "find-median-from-data-stream"
+    ]
   },
   {
     "id": "backtracking",
     "title": "Backtracking",
-    "topic_url": "topics/backtracking.html",
-    "appears_in": ["arrays", "recursion"],
-    "one_liner": "When you need all subsets, permutations, or combinations, build solutions recursively and undo failed choices."
+    "icon": "↶",
+    "color": "#9333ea",
+    "problems": [
+      "subsets", "combination-sum", "permutations", "word-search",
+      "palindrome-partitioning", "letter-combinations-of-a-phone-number",
+      "n-queens", "combinations"
+    ]
   },
   {
-    "id": "hash-map",
-    "title": "Hash Map",
-    "topic_url": "topics/hash-table.html",
-    "appears_in": ["arrays", "hash-table"],
-    "one_liner": "When brute force is O(n²) with a nested lookup loop, a hash map collapses it to O(n)."
+    "id": "graphs",
+    "title": "Graphs",
+    "icon": "◎",
+    "color": "#2563eb",
+    "problems": [
+      "number-of-islands", "clone-graph", "max-area-of-island",
+      "pacific-atlantic-water-flow", "surrounded-regions", "rotting-oranges",
+      "course-schedule", "course-schedule-ii", "graph-valid-tree",
+      "number-of-connected-components-in-an-undirected-graph",
+      "walls-and-gates", "word-ladder"
+    ]
   },
   {
-    "id": "kadane",
-    "title": "Kadane's Algorithm",
-    "topic_url": "topics/arrays.html#kadane",
-    "appears_in": ["arrays", "dynamic-programming"],
-    "one_liner": "For maximum subarray sum, track best-ending-here vs best-so-far in a single pass."
+    "id": "advanced-graphs",
+    "title": "Advanced Graphs",
+    "icon": "◉",
+    "color": "#1d4ed8",
+    "problems": [
+      "reconstruct-itinerary", "min-cost-to-connect-all-points",
+      "network-delay-time", "swim-in-rising-water", "redundant-connection"
+    ]
+  },
+  {
+    "id": "1d-dp",
+    "title": "1-D Dynamic Programming",
+    "icon": "◤",
+    "color": "#dc2626",
+    "problems": [
+      "climbing-stairs", "min-cost-climbing-stairs", "house-robber",
+      "house-robber-ii", "longest-increasing-subsequence",
+      "maximum-product-subarray", "word-break", "coin-change",
+      "partition-equal-subset-sum", "decode-ways",
+      "palindromic-substrings", "longest-palindromic-substring"
+    ]
+  },
+  {
+    "id": "2d-dp",
+    "title": "2-D Dynamic Programming",
+    "icon": "◼",
+    "color": "#b91c1c",
+    "problems": [
+      "unique-paths", "longest-common-subsequence",
+      "best-time-to-buy-and-sell-stock-with-cooldown", "coin-change-ii",
+      "target-sum", "interleaving-string", "longest-increasing-path-in-a-matrix",
+      "distinct-subsequences", "edit-distance", "burst-balloons",
+      "regular-expression-matching"
+    ]
+  },
+  {
+    "id": "greedy",
+    "title": "Greedy",
+    "icon": "⚡",
+    "color": "#d97706",
+    "problems": [
+      "maximum-subarray", "jump-game", "jump-game-ii", "gas-station",
+      "hand-of-straights", "merge-triplets-to-form-target-triplet",
+      "partition-labels", "valid-parenthesis-string"
+    ]
+  },
+  {
+    "id": "intervals",
+    "title": "Intervals",
+    "icon": "↔",
+    "color": "#0891b2",
+    "problems": [
+      "insert-interval", "merge-intervals", "non-overlapping-intervals",
+      "meeting-rooms", "meeting-rooms-ii", "minimum-interval-to-include-each-query"
+    ]
+  },
+  {
+    "id": "math-geometry",
+    "title": "Math & Geometry",
+    "icon": "∑",
+    "color": "#7c3aed",
+    "problems": [
+      "rotate-image", "spiral-matrix", "set-matrix-zeroes", "detect-squares",
+      "plus-one", "powx-n", "multiply-strings", "reverse-integer"
+    ]
+  },
+  {
+    "id": "bit-manipulation",
+    "title": "Bit Manipulation",
+    "icon": "&",
+    "color": "#059669",
+    "problems": [
+      "single-number", "number-of-1-bits", "counting-bits",
+      "reverse-bits", "missing-number", "sum-of-two-integers"
+    ]
+  },
+  {
+    "id": "fast-slow-pointers",
+    "title": "Fast & Slow Pointers",
+    "icon": "⇄",
+    "color": "#be185d",
+    "problems": [
+      "linked-list-cycle", "linked-list-cycle-ii", "middle-of-the-linked-list",
+      "find-the-duplicate-number", "happy-number"
+    ]
   }
 ]
