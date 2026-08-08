@@ -46,21 +46,33 @@
     <div class="main__content">
       <!-- Breadcrumbs -->
       <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
-        <a href="../index.html">Home</a>
+        <a href="../index.html">← Roadmap</a>
         <span class="breadcrumbs__sep">/</span>
-        <span>Tries</span>
+        <a href="../index.html#pattern-tries">Tries</a>
       </div>
 
       <!-- Topic Header -->
       <div class="topic-header">
         <h1 class="topic-header__title">Tries</h1>
-        <p class="topic-header__desc">Prefix tree data structure enabling O(L) insert and search for strings of length L.</p>
+        <p class="topic-header__desc">A Trie (prefix tree) is a tree where each node represents a character. Enables O(L) insert, search, and prefix queries for strings — far faster than O(L * N) with a hash set when prefix matching is needed.</p>
         <div class="topic-header__badges">
           <span class="badge badge--blue">Data Structure</span>
           <span class="badge badge--purple">Prefix Tree</span>
           <span class="badge badge--green">O(L)</span>
         </div>
       </div>
+
+      <!-- Key Concepts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Concepts</h2>
+        <ul class="topic-list">
+          <li><strong>TrieNode</strong> — Each node has a <code>children</code> dict (or array of 26) and an <code>is_end</code> flag.</li>
+          <li><strong>Insert</strong> — Walk characters, create nodes as needed, set <code>is_end</code> on the last node.</li>
+          <li><strong>Search</strong> — Walk characters; return <code>is_end</code> at the last node. Return false if any node is missing.</li>
+          <li><strong>startsWith</strong> — Same as search but don't check <code>is_end</code>.</li>
+          <li><strong>When to use</strong> — Autocomplete, spell-check, IP routing, word dictionaries, prefix queries.</li>
+        </ul>
+      </section>
 
       <!-- Complexity Table -->
       <section class="topic-section">
@@ -102,10 +114,10 @@
       <!-- Practice Problems -->
       <section class="topic-section">
         <h2 class="topic-section__title">Practice Problems</h2>
-        <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
-          <a href="../problems/implement-trie-prefix-tree.html" class="problem-row">Implement Trie (Prefix Tree)</a>
-          <a href="../problems/design-add-and-search-words-data-structure.html" class="problem-row">Design Add and Search Words Data Structure</a>
-          <a href="../problems/word-search-ii.html" class="problem-row">Word Search II</a>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/implement-trie-prefix-tree.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Implement Trie (Prefix Tree)</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/design-add-and-search-words-data-structure.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Design Add and Search Words Data Structure</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/word-search-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Word Search II</span><span class="diff-pill diff-pill--hard">Hard</span></a>
         </div>
       </section>
     </div>

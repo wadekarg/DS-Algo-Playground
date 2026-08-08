@@ -214,20 +214,25 @@ var DSA = window.DSA || {};
     var currentPage = getCurrentPage();
     var html = '';
 
-    // Overview section
-    html += '<div class="sidebar__section-title">Overview</div>';
-    html += '<a href="' + base + 'index.html" class="sidebar__link' +
+    // Roadmap link — primary entry point
+    html += '<a href="' + base + 'index.html" class="sidebar__link sidebar__link--roadmap' +
       (currentPage === 'index.html' && !currentTopicId ? ' sidebar__link--active' : '') +
-      '">Home</a>';
+      '">&#8592; Roadmap</a>';
+
+    // Overview / Tools section
+    html += '<div class="sidebar__section-title">Tools</div>';
+    html += '<a href="' + base + 'problems.html" class="sidebar__link' +
+      (currentPage === 'problems.html' ? ' sidebar__link--active' : '') +
+      '">All Problems</a>';
     html += '<a href="' + base + 'complexity.html" class="sidebar__link' +
       (currentPage === 'complexity.html' ? ' sidebar__link--active' : '') +
-      '">Complexity</a>';
+      '">Complexity Chart</a>';
     html += '<a href="' + base + 'compare.html" class="sidebar__link' +
       (currentPage === 'compare.html' ? ' sidebar__link--active' : '') +
-      '">Compare</a>';
+      '">Compare Algorithms</a>';
     html += '<a href="' + base + 'race.html" class="sidebar__link' +
       (currentPage === 'race.html' ? ' sidebar__link--active' : '') +
-      '">Race</a>';
+      '">Algorithm Race</a>';
     html += '<a href="' + base + 'about.html" class="sidebar__link' +
       (currentPage === 'about.html' ? ' sidebar__link--active' : '') +
       '">About</a>';

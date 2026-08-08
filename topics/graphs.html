@@ -46,21 +46,34 @@
     <div class="main__content">
       <!-- Breadcrumbs -->
       <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
-        <a href="../index.html">Home</a>
+        <a href="../index.html">← Roadmap</a>
         <span class="breadcrumbs__sep">/</span>
-        <span>Graphs</span>
+        <a href="../index.html#pattern-graphs">Graphs</a>
       </div>
 
       <!-- Topic Header -->
       <div class="topic-header">
         <h1 class="topic-header__title">Graphs</h1>
-        <p class="topic-header__desc">Adjacency list and matrix representations. BFS and DFS traversal, cycle detection, and connectivity.</p>
+        <p class="topic-header__desc">Graphs model pairwise relationships between objects using vertices and edges. They underpin problems in networking, routing, social connections, and dependency resolution.</p>
         <div class="topic-header__badges">
           <span class="badge badge--blue">Data Structure</span>
           <span class="badge badge--purple">BFS / DFS</span>
           <span class="badge badge--green">O(V + E)</span>
         </div>
       </div>
+
+      <!-- Key Concepts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Concepts</h2>
+        <ul class="topic-list">
+          <li><strong>Adjacency List</strong> — O(V + E) space; preferred for sparse graphs. Each node maps to a list of its neighbours.</li>
+          <li><strong>Adjacency Matrix</strong> — O(V²) space; O(1) edge lookup. Preferred when edges are dense or you need frequent edge queries.</li>
+          <li><strong>BFS</strong> — Level-by-level traversal using a queue. Use for shortest path in unweighted graphs.</li>
+          <li><strong>DFS</strong> — Depth-first using a stack (or recursion). Use for cycle detection, path existence, topological sort.</li>
+          <li><strong>Visited set</strong> — Always track visited nodes to avoid infinite loops in cyclic graphs.</li>
+          <li><strong>Union-Find</strong> — Efficient data structure for connectivity queries and cycle detection.</li>
+        </ul>
+      </section>
 
       <!-- Complexity Table -->
       <section class="topic-section">
@@ -84,28 +97,29 @@
       <!-- Visualization Placeholder -->
       <section class="topic-section">
         <h2 class="topic-section__title">Interactive Visualization</h2>
-        <div style="
-          border: 2px dashed var(--border-color);
-          border-radius: var(--border-radius-lg);
-          padding: var(--space-3xl) var(--space-2xl);
-          text-align: center;
-          color: var(--text-tertiary);
-          background: var(--bg-secondary);
-        ">
-          <div style="font-size: 2rem; margin-bottom: var(--space-md);">◎</div>
-          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
-          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive graph traversal visualization is in progress. In the meantime, practice with the problems below.</p>
+        <div style="border:2px dashed var(--border-color);border-radius:var(--border-radius-lg);padding:var(--space-3xl) var(--space-2xl);text-align:center;color:var(--text-tertiary);background:var(--bg-secondary);">
+          <div style="font-size:2rem;margin-bottom:var(--space-md);">◎</div>
+          <h3 style="margin:0 0 var(--space-sm);color:var(--text-secondary);">Visualization Coming Soon</h3>
+          <p style="margin:0;font-size:var(--font-size-sm);">Interactive BFS/DFS graph traversal visualization is in progress.</p>
         </div>
       </section>
 
       <!-- Practice Problems -->
       <section class="topic-section">
         <h2 class="topic-section__title">Practice Problems</h2>
-        <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
-          <a href="../problems/number-of-islands.html" class="problem-row">Number of Islands</a>
-          <a href="../problems/clone-graph.html" class="problem-row">Clone Graph</a>
-          <a href="../problems/course-schedule.html" class="problem-row">Course Schedule</a>
-          <a href="../problems/pacific-atlantic-water-flow.html" class="problem-row">Pacific Atlantic Water Flow</a>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/number-of-islands.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Number of Islands</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/clone-graph.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Clone Graph</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/max-area-of-island.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Max Area of Island</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/pacific-atlantic-water-flow.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Pacific Atlantic Water Flow</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/surrounded-regions.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Surrounded Regions</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/rotting-oranges.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Rotting Oranges</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/course-schedule.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Course Schedule</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/course-schedule-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Course Schedule II</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/graph-valid-tree.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Graph Valid Tree</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/number-of-connected-components-in-an-undirected-graph.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Number of Connected Components</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/walls-and-gates.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Walls and Gates</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/word-ladder.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Word Ladder</span><span class="diff-pill diff-pill--hard">Hard</span></a>
         </div>
       </section>
     </div>
