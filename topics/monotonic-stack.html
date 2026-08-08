@@ -75,6 +75,77 @@
       </section>
 
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Monotonic Stacks Work</h2>
+        <div class="topic-section__content">
+          <p>A <strong>monotonic stack</strong> is a stack that maintains a strict ordering — either all elements are increasing from bottom to top, or all are decreasing. You maintain this invariant by popping elements off the stack whenever an incoming element would violate the order.</p>
+          <p>The classic use case is the <strong>Next Greater Element</strong> problem: for each element in an array, find the first element to its right that is larger. The naive approach is O(n²). With a monotonic decreasing stack, you process each element once: push it if it's smaller than the top; if it's larger, pop elements from the stack — each popped element has its "next greater element" found. Since each element is pushed and popped at most once, the total time is O(n).</p>
+          <p>The key insight is that the stack acts as a "waiting list" of elements that have not yet found their answer. When an element is processed, it resolves the waiting elements it dominates. This pattern generalises to: next smaller element (monotonic increasing stack), previous greater element (same stack, look back instead of forward), and sliding window maximum (use a deque).</p>
+          <p>For the <strong>Largest Rectangle in Histogram</strong>, maintain a monotonic increasing stack of indices. When you find a bar shorter than the top of the stack, you've found the right boundary of the rectangle that the top bar could form. Calculate the area and pop.</p>
+          <ul>
+            <li><strong>Monotonic decreasing:</strong> pop when new element > top → finds next greater element.</li>
+            <li><strong>Monotonic increasing:</strong> pop when new element &lt; top → finds next smaller element.</li>
+            <li><strong>Store indices</strong> on the stack (not values) so you can compute widths and distances.</li>
+            <li>Append a <strong>sentinel value</strong> (e.g. 0 at the end of histogram) to flush remaining stack elements.</li>
+            <li>Time is always O(n) — each element enters and exits the stack at most once.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Daily Temperatures (next warmer day) ──────────────────────
+def daily_temperatures(temps):
+    n      = len(temps)
+    result = [0] * n
+    stack  = []          # indices, monotonic decreasing by temperature
+    for i, t in enumerate(temps):
+        while stack and temps[stack[-1]] &lt; t:
+            j = stack.pop()
+            result[j] = i - j     # days until warmer temperature
+        stack.append(i)
+    return result
+
+# ── Online Stock Span ─────────────────────────────────────────
+class StockSpanner:
+    def __init__(self):
+        self.stack = []   # (price, span) — monotonic decreasing
+    def next(self, price):
+        span = 1
+        while self.stack and self.stack[-1][0] &lt;= price:
+            span += self.stack.pop()[1]   # absorb smaller spans
+        self.stack.append((price, span))
+        return span
+
+# ── Largest Rectangle in Histogram ───────────────────────────
+def largest_rectangle(heights):
+    max_area = 0
+    stack    = []           # indices of bars (monotonic increasing height)
+    heights  = heights + [0]  # sentinel flushes remaining stack
+    for i, h in enumerate(heights):
+        start = i
+        while stack and heights[stack[-1]] &gt; h:
+            j        = stack.pop()
+            width    = i - (stack[-1] + 1 if stack else 0)
+            max_area = max(max_area, heights[j] * width)
+            start    = j
+        stack.append(start)
+    return max_area
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -142,6 +213,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

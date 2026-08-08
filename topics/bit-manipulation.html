@@ -76,6 +76,75 @@
       </section>
 
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Bit Manipulation Works</h2>
+        <div class="topic-section__content">
+          <p>Computers store all numbers as binary sequences of 0s and 1s. Bit manipulation operates directly on those bits using bitwise operators — and, or, xor, not, left shift, right shift. These operations run in O(1) time and O(1) space, making them extremely fast for the right class of problems.</p>
+          <p>The most powerful operator is <strong>XOR (^)</strong>. It returns 1 when bits differ. Key property: <code>a ^ a = 0</code> and <code>a ^ 0 = a</code>. This means XOR-ing a number with itself cancels it out — so XOR-ing an entire array finds the one element that appears an odd number of times. This trick solves "Single Number" in O(n) time and O(1) space with no hash map.</p>
+          <p><strong>AND (&)</strong> is used for masking — isolate specific bits. <code>n &amp; 1</code> checks if n is odd. <code>n &amp; (n-1)</code> clears the lowest set bit (useful for counting set bits). <strong>Left shift (&lt;&lt;)</strong> multiplies by 2: <code>1 &lt;&lt; k</code> creates a mask with only bit k set. <strong>Right shift (&gt;&gt;)</strong> divides by 2 (integer division).</p>
+          <p>Bit manipulation is useful for subset enumeration, power-of-two checks, encoding/decoding packed data, and anywhere you need O(1) space arithmetic tricks.</p>
+          <ul>
+            <li><code>n &amp; (n-1)</code> — clears lowest set bit. Iterate this to count set bits in O(popcount) time.</li>
+            <li><code>n &amp; (-n)</code> — isolates the lowest set bit (used in Fenwick Trees).</li>
+            <li><code>1 &lt;&lt; k</code> — creates bit mask for position k. Check: <code>n &amp; (1&lt;&lt;k) != 0</code>.</li>
+            <li><code>a ^ b ^ b = a</code> — XOR is its own inverse. Use to find missing or unique numbers.</li>
+            <li><strong>Subset enumeration:</strong> loop <code>mask</code> from 0 to <code>(1&lt;&lt;n)-1</code>; bit k set = element k in subset.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── XOR trick: find the one unique number ─────────────────────
+def single_number(nums):
+    result = 0
+    for n in nums:
+        result ^= n       # duplicates cancel: a^a=0
+    return result
+
+# ── Count set bits (Kernighan's method) ───────────────────────
+def count_bits(n):
+    count = 0
+    while n:
+        n &amp;= n - 1        # clear lowest set bit
+        count += 1
+    return count
+
+# ── Check power of two ────────────────────────────────────────
+def is_power_of_two(n):
+    return n &gt; 0 and (n &amp; (n - 1)) == 0
+
+# ── Reverse 32 bits ───────────────────────────────────────────
+def reverse_bits(n):
+    result = 0
+    for _ in range(32):
+        result = (result &lt;&lt; 1) | (n &amp; 1)
+        n &gt;&gt;= 1
+    return result
+
+# ── Enumerate all subsets of a list ───────────────────────────
+def all_subsets(nums):
+    n = len(nums)
+    subsets = []
+    for mask in range(1 &lt;&lt; n):
+        subset = [nums[i] for i in range(n) if mask &amp; (1 &lt;&lt; i)]
+        subsets.append(subset)
+    return subsets
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -145,6 +214,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

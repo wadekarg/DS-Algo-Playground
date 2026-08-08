@@ -75,6 +75,76 @@
       </section>
 
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Interval Problems Work</h2>
+        <div class="topic-section__content">
+          <p>An interval is a pair <code>[start, end]</code> representing a range. Interval problems typically ask you to merge overlapping ranges, find gaps, count overlapping intervals at a point, or schedule tasks without conflicts.</p>
+          <p>The foundational insight is <strong>sort by start time</strong>. Once sorted, you only need to compare each interval with the most recently processed one. Two intervals <code>[a,b]</code> and <code>[c,d]</code> overlap when <code>c &le; b</code> (the second starts before the first ends). Their merge is <code>[min(a,c), max(b,d)]</code>.</p>
+          <p>For counting simultaneous overlaps (e.g. "how many meeting rooms do we need?") use a <strong>sweep line</strong>: create events for interval starts (+1) and ends (−1), sort all events by time, and track the running count. The maximum count reached is the answer.</p>
+          <p>For the "insert interval" pattern, split the existing intervals into three groups: those fully before the new one, those that overlap (merge into one), and those fully after. Handle the overlap group in a single pass.</p>
+          <ul>
+            <li><strong>Sort by start</strong> first — almost every interval problem needs this.</li>
+            <li><strong>Overlap check:</strong> <code>a.start &le; b.end AND b.start &le; a.end</code>.</li>
+            <li><strong>Sweep line:</strong> convert intervals to events (+1 start, −1 end) to count overlaps at any point.</li>
+            <li>Watch out for <strong>inclusive vs exclusive</strong> endpoints — [1,2] and [2,3] may or may not overlap depending on the problem.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Merge Overlapping Intervals ───────────────────────────────
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    out = [intervals[0][:]]
+    for s, e in intervals[1:]:
+        if s &lt;= out[-1][1]:              # overlaps
+            out[-1][1] = max(out[-1][1], e)
+        else:
+            out.append([s, e])
+    return out
+
+# ── Insert Interval ───────────────────────────────────────────
+def insert(intervals, newInterval):
+    out = []
+    for i, (s, e) in enumerate(intervals):
+        if e &lt; newInterval[0]:           # fully before
+            out.append([s, e])
+        elif s &gt; newInterval[1]:         # fully after: flush new then rest
+            out.append(newInterval)
+            return out + intervals[i:]
+        else:                            # overlapping: merge
+            newInterval[0] = min(newInterval[0], s)
+            newInterval[1] = max(newInterval[1], e)
+    out.append(newInterval)
+    return out
+
+# ── Meeting Rooms II (min rooms needed) — sweep line ──────────
+import heapq
+def min_meeting_rooms(intervals):
+    intervals.sort(key=lambda x: x[0])
+    heap = []                            # end times of active meetings
+    for s, e in intervals:
+        if heap and heap[0] &lt;= s:
+            heapq.heapreplace(heap, e)   # reuse a freed room
+        else:
+            heapq.heappush(heap, e)      # need a new room
+    return len(heap)
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -144,6 +214,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

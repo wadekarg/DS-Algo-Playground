@@ -75,6 +75,77 @@
       </section>
 
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Advanced Graph Algorithms Work</h2>
+        <div class="topic-section__content">
+          <p><strong>Dijkstra's algorithm</strong> finds the shortest path from a single source in a weighted graph with non-negative weights. It uses a min-heap (priority queue) and greedily expands the closest unvisited node. At each step it relaxes edges — if the newly discovered path to a neighbour is shorter than the current best, it updates the cost. Time: O((V+E) log V).</p>
+          <p><strong>Bellman-Ford</strong> also finds shortest paths but handles negative edge weights. It relaxes ALL edges V−1 times. If after V−1 iterations an edge can still be relaxed, there is a negative cycle. Time: O(V·E) — slower than Dijkstra but necessary for negative weights.</p>
+          <p><strong>Prim's algorithm</strong> builds a Minimum Spanning Tree (MST) — a tree connecting all nodes with minimum total edge weight. It greedily adds the cheapest edge that extends the current tree. <strong>Kruskal's algorithm</strong> is an alternative: sort all edges by weight, then add edges one by one using Union-Find to avoid cycles.</p>
+          <p><strong>Topological Sort</strong> orders nodes in a Directed Acyclic Graph (DAG) so that every edge goes from an earlier node to a later one. It's used for dependency resolution, build systems, course scheduling. Use DFS (reverse post-order) or Kahn's algorithm (BFS with in-degree tracking).</p>
+          <ul>
+            <li><strong>Dijkstra:</strong> non-negative weights, single source. Uses a min-heap.</li>
+            <li><strong>Bellman-Ford:</strong> handles negative weights, detects negative cycles.</li>
+            <li><strong>Prim / Kruskal:</strong> both produce MSTs — Kruskal sorts edges + Union-Find, Prim grows from a node.</li>
+            <li><strong>Topo sort:</strong> only valid for DAGs. Kahn's BFS version detects cycles too.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">import heapq
+
+# ── Dijkstra (single-source shortest path, non-negative weights) ──
+def dijkstra(graph, src):
+    # graph: {node: [(cost, neighbour), ...]}
+    dist = {node: float("inf") for node in graph}
+    dist[src] = 0
+    heap = [(0, src)]          # (cost, node)
+    while heap:
+        cost, u = heapq.heappop(heap)
+        if cost &gt; dist[u]:
+            continue           # already found a shorter path
+        for w, v in graph[u]:
+            if dist[u] + w &lt; dist[v]:
+                dist[v] = dist[u] + w
+                heapq.heappush(heap, (dist[v], v))
+    return dist
+
+# ── Kahn's Topological Sort (BFS + in-degree) ──────────────────
+from collections import deque
+
+def topo_sort(n, prereqs):
+    # n nodes (0..n-1), prereqs = [[a,b], ...] means b→a
+    graph  = [[] for _ in range(n)]
+    indeg  = [0] * n
+    for a, b in prereqs:
+        graph[b].append(a)
+        indeg[a] += 1
+    q = deque(i for i in range(n) if indeg[i] == 0)
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nb in graph[node]:
+            indeg[nb] -= 1
+            if indeg[nb] == 0:
+                q.append(nb)
+    return order if len(order) == n else []  # empty = cycle detected
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -144,6 +215,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

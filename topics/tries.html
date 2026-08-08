@@ -74,6 +74,77 @@
         </ul>
       </section>
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Tries Work</h2>
+        <div class="topic-section__content">
+          <p>A <strong>Trie</strong> (pronounced "try", from re<em>trie</em>val) is a tree where each node represents a character. Words are stored by following a path from the root, one character at a time. The root is empty; each level represents one position in the string.</p>
+          <p>Every node has a dictionary of children (one per possible next character) and a boolean <code>is_end</code> flag marking that a complete word ends at this node. To <strong>insert</strong> a word, walk each character creating nodes as needed and set <code>is_end = True</code> on the last node. To <strong>search</strong>, walk the characters — if any character is missing, the word does not exist. To check a <strong>prefix</strong>, do the same walk but ignore <code>is_end</code>.</p>
+          <p>Tries shine when you need prefix matching on a large set of words — autocomplete, spell checking, IP routing. A hash set can tell you if a word exists in O(L), but it cannot tell you "does any word start with this prefix?" without scanning everything. A Trie answers prefix queries in O(L) too.</p>
+          <ul>
+            <li><strong>Space:</strong> O(N × L) total — N words of average length L. Each node can have up to 26 children for lowercase English.</li>
+            <li><strong>Use over a hash set</strong> when you need prefix queries or word-by-word character matching.</li>
+            <li><strong>Wildcards:</strong> use DFS and try all children when you hit a <code>.</code> character.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">class TrieNode:
+    def __init__(self):
+        self.children = {}   # char → TrieNode
+        self.is_end   = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -&gt; None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+    def search(self, word: str) -&gt; bool:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.is_end
+
+    def starts_with(self, prefix: str) -&gt; bool:
+        node = self.root
+        for ch in prefix:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return True  # prefix exists; don't check is_end
+
+# Usage
+trie = Trie()
+trie.insert("apple")
+trie.insert("app")
+print(trie.search("app"))        # True
+print(trie.search("appl"))       # False
+print(trie.starts_with("appl"))  # True
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -145,6 +216,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

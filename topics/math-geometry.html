@@ -75,6 +75,81 @@
       </section>
 
 
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Math & Geometry Problems Work</h2>
+        <div class="topic-section__content">
+          <p>Math and geometry problems test your ability to apply precise arithmetic reasoning to 2D structures like matrices and grids. The key is knowing which mathematical identity or formula unlocks the problem — once you see it, the code is usually straightforward.</p>
+          <p><strong>Matrix rotation (90° clockwise):</strong> transpose the matrix (swap <code>matrix[i][j]</code> with <code>matrix[j][i]</code>), then reverse each row. This achieves in-place rotation in O(n²) time, O(1) extra space. Counter-clockwise: reverse each row first, then transpose.</p>
+          <p><strong>Spiral traversal:</strong> maintain four boundaries (top, bottom, left, right) and shrink them as you peel off one layer at a time. Each full loop around the spiral peels one ring. This is O(n×m) time and O(1) space (excluding output).</p>
+          <p><strong>Fast exponentiation (Pow(x, n)):</strong> instead of multiplying x by itself n times (O(n)), use the identity: <code>x^n = (x^(n/2))^2</code> when n is even, <code>x × x^(n-1)</code> when n is odd. This gives O(log n) multiplications. Handle negative exponents with <code>1 / pow(x, -n)</code>.</p>
+          <ul>
+            <li><strong>Matrix rotate 90°:</strong> transpose then reverse rows. Three lines of code in Python.</li>
+            <li><strong>GCD:</strong> <code>gcd(a, b) = gcd(b, a % b)</code> — Euclidean algorithm, O(log min(a,b)).</li>
+            <li><strong>Spiral:</strong> shrink boundaries after each direction sweep. Check bounds before each sweep.</li>
+            <li><strong>Integer overflow:</strong> in Python, ints are arbitrary precision — no overflow. In Java/C++, cast to long.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Rotate Matrix 90° Clockwise (in-place) ────────────────────
+def rotate(matrix):
+    n = len(matrix)
+    # Step 1: transpose
+    for i in range(n):
+        for j in range(i+1, n):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    # Step 2: reverse each row
+    for row in matrix:
+        row.reverse()
+
+# ── Spiral Matrix (return elements in spiral order) ───────────
+def spiral_order(matrix):
+    res = []
+    top, bottom, left, right = 0, len(matrix)-1, 0, len(matrix[0])-1
+    while top &lt;= bottom and left &lt;= right:
+        for c in range(left, right+1):   res.append(matrix[top][c])
+        top += 1
+        for r in range(top, bottom+1):   res.append(matrix[r][right])
+        right -= 1
+        if top &lt;= bottom:
+            for c in range(right, left-1, -1): res.append(matrix[bottom][c])
+            bottom -= 1
+        if left &lt;= right:
+            for r in range(bottom, top-1, -1):  res.append(matrix[r][left])
+            left += 1
+    return res
+
+# ── Fast Exponentiation ───────────────────────────────────────
+def my_pow(x, n):
+    if n == 0: return 1
+    if n &lt; 0:  return 1 / my_pow(x, -n)
+    if n % 2 == 0:
+        half = my_pow(x, n // 2)
+        return half * half
+    return x * my_pow(x, n - 1)
+
+# ── GCD (Euclidean) ───────────────────────────────────────────
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Complexity Table -->
       <section class="topic-section">
         <h2 class="topic-section__title">Complexity</h2>
@@ -146,6 +221,7 @@
   <script src="../js/search.js"></script>
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>
