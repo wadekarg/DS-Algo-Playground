@@ -151,20 +151,50 @@ def max_non_overlapping(intervals):
           </table>
         </div>
       </section>
-      <!-- Visualization Placeholder -->
+      <!-- Interactive Visualization -->
       <section class="topic-section">
         <h2 class="topic-section__title">Interactive Visualization</h2>
-        <div style="
-          border: 2px dashed var(--border-color);
-          border-radius: var(--border-radius-lg);
-          padding: var(--space-3xl) var(--space-2xl);
-          text-align: center;
-          color: var(--text-tertiary);
-          background: var(--bg-secondary);
-        ">
-          <div style="font-size: 2rem; margin-bottom: var(--space-md);">⚡</div>
-          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
-          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive greedy algorithm visualization is in progress. In the meantime, practice with the problems below.</p>
+        <div class="topic-section__content">
+          <p>Watch the <strong>Jump Game</strong> greedy algorithm: track <code>maxReach</code> — the farthest index reachable. If we can ever advance past it, return false immediately.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="greedy-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize the Jump Game algorithm.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def can_jump(nums):
+    maxReach = 0               # line 1
+    for i, n in enumerate(nums):
+        if i > maxReach:       # line 4 — stuck
+            return False
+        maxReach = max(maxReach, i + n)  # line 5
+    return True                # line 7</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="greedy-run-btn" class="btn btn--primary btn--sm">Run Jump Game</button>
+            <button id="greedy-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
         </div>
       </section>
 
@@ -201,6 +231,9 @@ def max_non_overlapping(intervals):
     </div>
   </div>
 
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/greedy-viz.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/sidebar.js"></script>
   <script src="../js/sidebar-nav.js"></script>

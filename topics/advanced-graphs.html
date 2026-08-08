@@ -162,20 +162,54 @@ def topo_sort(n, prereqs):
           </table>
         </div>
       </section>
-      <!-- Visualization Placeholder -->
+      <!-- Interactive Visualization -->
       <section class="topic-section">
         <h2 class="topic-section__title">Interactive Visualization</h2>
-        <div style="
-          border: 2px dashed var(--border-color);
-          border-radius: var(--border-radius-lg);
-          padding: var(--space-3xl) var(--space-2xl);
-          text-align: center;
-          color: var(--text-tertiary);
-          background: var(--bg-secondary);
-        ">
-          <div style="font-size: 2rem; margin-bottom: var(--space-md);">◉</div>
-          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
-          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive Dijkstra and MST visualization is in progress. In the meantime, practice with the problems below.</p>
+        <div class="topic-section__content">
+          <p>Watch <strong>Dijkstra's algorithm</strong> find shortest paths from node 0. The distance table on the right updates as each node is visited and shorter paths are found.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="advanced-graphs-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize Dijkstra's shortest path algorithm.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def dijkstra(graph, src):    # line 1
+    dist = {n: inf for n in graph}
+    dist[src] = 0
+    heap = [(0, src)]        # (dist, node)
+    while heap:              # line 4
+        d, u = heappop(heap)
+        for v, w in graph[u]:
+            if d + w < dist[v]:  # line 6
+                dist[v] = d + w  # line 7
+                heappush(heap, (dist[v], v))
+    return dist              # line 9</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="advanced-graphs-run-btn" class="btn btn--primary btn--sm">Run Dijkstra</button>
+            <button id="advanced-graphs-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
         </div>
       </section>
 
@@ -209,6 +243,9 @@ def topo_sort(n, prereqs):
     </div>
   </div>
 
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/advanced-graphs-viz.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/sidebar.js"></script>
   <script src="../js/sidebar-nav.js"></script>

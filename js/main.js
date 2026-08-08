@@ -41,6 +41,14 @@ var DSA = window.DSA || {};
     if (DSA.complexityViz) DSA.complexityViz.init();
     if (DSA.compareViz) DSA.compareViz.init();
     if (DSA.raceViz) DSA.raceViz.init();
+    if (DSA.graphsViz) DSA.graphsViz.init();
+    if (DSA.triesViz) DSA.triesViz.init();
+    if (DSA.advancedGraphsViz) DSA.advancedGraphsViz.init();
+    if (DSA.greedyViz) DSA.greedyViz.init();
+    if (DSA.intervalsViz) DSA.intervalsViz.init();
+    if (DSA.bitManipulationViz) DSA.bitManipulationViz.init();
+    if (DSA.mathGeometryViz) DSA.mathGeometryViz.init();
+    if (DSA.monotonicStackViz) DSA.monotonicStackViz.init();
 
     // Scroll reveal animation
     initScrollReveal();

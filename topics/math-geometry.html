@@ -165,20 +165,51 @@ def gcd(a, b):
           </table>
         </div>
       </section>
-      <!-- Visualization Placeholder -->
+      <!-- Interactive Visualization -->
       <section class="topic-section">
         <h2 class="topic-section__title">Interactive Visualization</h2>
-        <div style="
-          border: 2px dashed var(--border-color);
-          border-radius: var(--border-radius-lg);
-          padding: var(--space-3xl) var(--space-2xl);
-          text-align: center;
-          color: var(--text-tertiary);
-          background: var(--bg-secondary);
-        ">
-          <div style="font-size: 2rem; margin-bottom: var(--space-md);">&#8721;</div>
-          <h3 style="margin: 0 0 var(--space-sm); color: var(--text-secondary);">Visualization Coming Soon</h3>
-          <p style="margin: 0; font-size: var(--font-size-sm);">Interactive math and geometry visualization is in progress. In the meantime, practice with the problems below.</p>
+        <div class="topic-section__content">
+          <p>Watch <strong>Rotate Image</strong> step by step: first transpose (swap [i][j] ↔ [j][i] across the diagonal), then reverse each row to achieve a 90° clockwise rotation.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="math-geometry-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize matrix rotation.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def rotate(matrix):            # line 1
+    n = len(matrix)
+    for i in range(n):         # line 3 — transpose
+        for j in range(i+1,n):
+            matrix[i][j], matrix[j][i] = \
+                matrix[j][i], matrix[i][j]  # line 4
+    for row in matrix:         # line 5 — reverse rows
+        row.reverse()          # line 6 — done</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="math-run-btn" class="btn btn--primary btn--sm">Run Rotation</button>
+            <button id="math-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
         </div>
       </section>
 
@@ -215,6 +246,9 @@ def gcd(a, b):
     </div>
   </div>
 
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/math-geometry-viz.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/sidebar.js"></script>
   <script src="../js/sidebar-nav.js"></script>
