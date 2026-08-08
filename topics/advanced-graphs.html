@@ -74,6 +74,23 @@
         </ul>
       </section>
 
+
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead><tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Dijkstra</td><td>O((V+E) log V)</td><td>O(V)</td><td>No negative weights</td></tr>
+              <tr><td>Bellman-Ford</td><td>O(V·E)</td><td>O(V)</td><td>Handles negative weights</td></tr>
+              <tr><td>Prim's MST</td><td>O((V+E) log V)</td><td>O(V)</td><td>Greedy, heap-based</td></tr>
+              <tr><td>Kruskal's MST</td><td>O(E log E)</td><td>O(V)</td><td>Sort edges + Union-Find</td></tr>
+              <tr><td>Topological Sort</td><td>O(V+E)</td><td>O(V)</td><td>DAGs only</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
       <!-- Visualization Placeholder -->
       <section class="topic-section">
         <h2 class="topic-section__title">Interactive Visualization</h2>
