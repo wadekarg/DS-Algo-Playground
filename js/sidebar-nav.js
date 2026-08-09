@@ -149,14 +149,12 @@ var DSA = window.DSA || {};
   }
 
   function defaultTab() {
-    // Respect saved preference first
+    // Topic pages always show Topics so the user sees where they are in the list.
+    // Saved preference is ignored here — it applies to index/problems pages only.
+    if (getCurrentTopicId()) return 'topics';
     var saved;
     try { saved = localStorage.getItem(TAB_KEY); } catch (e) {}
     if (saved) return saved;
-    // On topic pages default to topics tab
-    if (getCurrentTopicId()) return 'topics';
-    // On problem pages default to roadmap
-    if (isProblemsPage()) return 'roadmap';
     return 'roadmap';
   }
 
