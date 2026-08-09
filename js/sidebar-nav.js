@@ -168,6 +168,32 @@ var DSA = window.DSA || {};
     });
   }
 
+  function isAllProblemsPage() {
+    var p = window.location.pathname;
+    return p === '/problems.html' || p.slice(-13) === '/problems.html' || p.slice(-9) === 'problems.' || document.title.indexOf('Problems ·') === 0;
+  }
+
+  // On problems.html: sidebar pattern clicks filter the list rather than navigate
+  function wirePatternFilters(nav) {
+    if (!isAllProblemsPage()) return;
+    nav.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-pattern]');
+      if (!link) return;
+      e.preventDefault();
+      var patId = link.getAttribute('data-pattern');
+      // Delegate to the problems page filter (set via window._applyPatternFilter)
+      var container = document.getElementById('pattern-filters');
+      if (container) {
+        var btn = container.querySelector('[data-filter="' + patId + '"]');
+        if (btn) btn.click();
+      }
+      // Highlight active pattern in sidebar
+      nav.querySelectorAll('[data-pattern]').forEach(function (a) {
+        a.classList.toggle('sidebar-pattern-item--active', a === link);
+      });
+    });
+  }
+
   // ── count refresh (when problem status changes) ───────────────────────────
 
   function refreshCounts(patterns) {
@@ -195,6 +221,7 @@ var DSA = window.DSA || {};
     if (!nav.querySelector('.sidebar-tabs')) {
       buildScaffold(nav);
       wireTabButtons();
+      wirePatternFilters(nav);
     }
 
     var roadmapPanel = nav.querySelector('[data-sidebar-content="roadmap"]');
