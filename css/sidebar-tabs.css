@@ -72,3 +72,7 @@
 .snav-panel { padding: var(--space-sm) 0; }
 .snav-panel--hidden { display: none; }
 .sidebar__nav .sidebar-tabs { position: sticky; top: 0; background: var(--bg-sidebar); z-index: 1; }
+
+/* Remove top padding from sidebar__nav when it hosts the injected tab scaffold
+   so the tab strip sits flush against the header border, matching index.html */
+.sidebar__nav:has(.sidebar-tabs) { padding-top: 0; }
