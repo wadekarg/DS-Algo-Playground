@@ -206,10 +206,20 @@ var DSA = window.DSA || {};
     if (toolsPanel)               toolsPanel.innerHTML   = buildToolsPanel();
 
     showTab(defaultTab());
+    scrollToActive(nav);
 
     if (DSA.progress && DSA.progress.updateBadges) {
       DSA.progress.updateBadges();
     }
+  }
+
+  function scrollToActive(nav) {
+    var active = nav.querySelector('.sidebar__link--active');
+    if (!active) return;
+    // Scroll the nav so the active link sits at ~1/3 from the top
+    var navRect    = nav.getBoundingClientRect();
+    var activeRect = active.getBoundingClientRect();
+    nav.scrollTop += activeRect.top - navRect.top - nav.clientHeight / 3;
   }
 
   // ── init ──────────────────────────────────────────────────────────────────
