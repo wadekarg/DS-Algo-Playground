@@ -241,12 +241,17 @@ var DSA = window.DSA || {};
   }
 
   function scrollToActive(nav) {
-    var active = nav.querySelector('.sidebar__link--active');
-    if (!active) return;
-    // Scroll the nav so the active link sits at ~1/3 from the top
-    var navRect    = nav.getBoundingClientRect();
-    var activeRect = active.getBoundingClientRect();
-    nav.scrollTop += activeRect.top - navRect.top - nav.clientHeight / 3;
+    // The scroll container is <aside class="sidebar"> (position:fixed; overflow-y:auto),
+    // not the <nav> which has no overflow of its own.
+    var scroller = nav.parentElement;
+    requestAnimationFrame(function () {
+      var active = scroller.querySelector('.sidebar__link--active');
+      if (!active) return;
+      var scrollerRect = scroller.getBoundingClientRect();
+      var activeRect   = active.getBoundingClientRect();
+      var target = activeRect.top - scrollerRect.top + scroller.scrollTop - Math.floor(scroller.clientHeight / 3);
+      scroller.scrollTop = Math.max(0, target);
+    });
   }
 
   // ── init ──────────────────────────────────────────────────────────────────
