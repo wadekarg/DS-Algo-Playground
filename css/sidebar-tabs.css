@@ -67,3 +67,8 @@
 .sidebar-pattern-item__count--complete {
   color: var(--accent-success);
 }
+
+/* ── snav-panel: tab panels inside sidebar-nav (no own scroll) ─────── */
+.snav-panel { padding: var(--space-sm) 0; }
+.snav-panel--hidden { display: none; }
+.sidebar__nav .sidebar-tabs { position: sticky; top: 0; background: var(--bg-sidebar); z-index: 1; }
