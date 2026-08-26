@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bit Manipulation - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="bit-manipulation">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-bit-manipulation">Bit Manipulation</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Bit Manipulation</h1>
+        <p class="topic-header__desc">AND, OR, XOR, shifts. Solve subset, parity, and counting problems in O(1) space.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Technique</span>
+          <span class="badge badge--purple">XOR</span>
+          <span class="badge badge--green">O(1) space</span>
+        </div>
+      </div>
+
+      <!-- Key Facts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Facts</h2>
+        <ul style="line-height:2;color:var(--text-secondary);padding-left:var(--space-lg);">
+          <li><strong>AND (a &amp; b):</strong> 1 only when both bits are 1 — useful for masking</li>
+          <li><strong>OR (a | b):</strong> 1 when either bit is 1 — useful for setting bits</li>
+          <li><strong>XOR (a ^ b):</strong> 1 when bits differ — self-cancels duplicates</li>
+          <li><strong>Left shift (a &lt;&lt; k):</strong> multiply by 2^k</li>
+          <li><strong>Right shift (a &gt;&gt; k):</strong> integer divide by 2^k</li>
+          <li><strong>n &amp; (n-1):</strong> clears the lowest set bit — counts set bits in O(set bits)</li>
+        </ul>
+      </section>
+
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Bit Manipulation Works</h2>
+        <div class="topic-section__content">
+          <p>Computers store all numbers as binary sequences of 0s and 1s. Bit manipulation operates directly on those bits using bitwise operators — and, or, xor, not, left shift, right shift. These operations run in O(1) time and O(1) space, making them extremely fast for the right class of problems.</p>
+          <p>The most powerful operator is <strong>XOR (^)</strong>. It returns 1 when bits differ. Key property: <code>a ^ a = 0</code> and <code>a ^ 0 = a</code>. This means XOR-ing a number with itself cancels it out — so XOR-ing an entire array finds the one element that appears an odd number of times. This trick solves "Single Number" in O(n) time and O(1) space with no hash map.</p>
+          <p><strong>AND (&)</strong> is used for masking — isolate specific bits. <code>n &amp; 1</code> checks if n is odd. <code>n &amp; (n-1)</code> clears the lowest set bit (useful for counting set bits). <strong>Left shift (&lt;&lt;)</strong> multiplies by 2: <code>1 &lt;&lt; k</code> creates a mask with only bit k set. <strong>Right shift (&gt;&gt;)</strong> divides by 2 (integer division).</p>
+          <p>Bit manipulation is useful for subset enumeration, power-of-two checks, encoding/decoding packed data, and anywhere you need O(1) space arithmetic tricks.</p>
+          <ul>
+            <li><code>n &amp; (n-1)</code> — clears lowest set bit. Iterate this to count set bits in O(popcount) time.</li>
+            <li><code>n &amp; (-n)</code> — isolates the lowest set bit (used in Fenwick Trees).</li>
+            <li><code>1 &lt;&lt; k</code> — creates bit mask for position k. Check: <code>n &amp; (1&lt;&lt;k) != 0</code>.</li>
+            <li><code>a ^ b ^ b = a</code> — XOR is its own inverse. Use to find missing or unique numbers.</li>
+            <li><strong>Subset enumeration:</strong> loop <code>mask</code> from 0 to <code>(1&lt;&lt;n)-1</code>; bit k set = element k in subset.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── XOR trick: find the one unique number ─────────────────────
+def single_number(nums):
+    result = 0
+    for n in nums:
+        result ^= n       # duplicates cancel: a^a=0
+    return result
+
+# ── Count set bits (Kernighan's method) ───────────────────────
+def count_bits(n):
+    count = 0
+    while n:
+        n &amp;= n - 1        # clear lowest set bit
+        count += 1
+    return count
+
+# ── Check power of two ────────────────────────────────────────
+def is_power_of_two(n):
+    return n &gt; 0 and (n &amp; (n - 1)) == 0
+
+# ── Reverse 32 bits ───────────────────────────────────────────
+def reverse_bits(n):
+    result = 0
+    for _ in range(32):
+        result = (result &lt;&lt; 1) | (n &amp; 1)
+        n &gt;&gt;= 1
+    return result
+
+# ── Enumerate all subsets of a list ───────────────────────────
+def all_subsets(nums):
+    n = len(nums)
+    subsets = []
+    for mask in range(1 &lt;&lt; n):
+        subset = [nums[i] for i in range(n) if mask &amp; (1 &lt;&lt; i)]
+        subsets.append(subset)
+    return subsets
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead><tr><th>Operation</th><th>Time</th><th>Space</th></tr></thead>
+            <tbody>
+              <tr><td>AND / OR / XOR</td><td>O(1)</td><td>O(1)</td></tr>
+              <tr><td>Left / Right shift</td><td>O(1)</td><td>O(1)</td></tr>
+              <tr><td>Count set bits (n &amp; n-1)</td><td>O(set bits)</td><td>O(1)</td></tr>
+              <tr><td>Subset enumeration</td><td>O(2ⁿ)</td><td>O(1)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch the <strong>XOR trick</strong> solve Single Number: XOR each element bit-by-bit. Pairs cancel out (a ^ a = 0), leaving only the unique element.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="bit-manipulation-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize the XOR bit trick.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def single_number(nums):
+    result = 0           # line 1
+    for n in nums:
+        result ^= n      # line 3 — XOR each element
+    return result        # line 5</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="bit-run-btn" class="btn btn--primary btn--sm">Run XOR</button>
+            <button id="bit-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/single-number.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Single Number</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/number-of-1-bits.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Number of 1 Bits</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/counting-bits.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Counting Bits</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/reverse-bits.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Reverse Bits</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/missing-number.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Missing Number</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/sum-of-two-integers.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Sum of Two Integers</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/bit-manipulation-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphs - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="graphs">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-graphs">Graphs</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Graphs</h1>
+        <p class="topic-header__desc">Graphs model pairwise relationships between objects using vertices and edges. They underpin problems in networking, routing, social connections, and dependency resolution.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Data Structure</span>
+          <span class="badge badge--purple">BFS / DFS</span>
+          <span class="badge badge--green">O(V + E)</span>
+        </div>
+      </div>
+
+      <!-- Key Concepts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Concepts</h2>
+        <ul class="topic-list">
+          <li><strong>Adjacency List</strong> — O(V + E) space; preferred for sparse graphs. Each node maps to a list of its neighbours.</li>
+          <li><strong>Adjacency Matrix</strong> — O(V²) space; O(1) edge lookup. Preferred when edges are dense or you need frequent edge queries.</li>
+          <li><strong>BFS</strong> — Level-by-level traversal using a queue. Use for shortest path in unweighted graphs.</li>
+          <li><strong>DFS</strong> — Depth-first using a stack (or recursion). Use for cycle detection, path existence, topological sort.</li>
+          <li><strong>Visited set</strong> — Always track visited nodes to avoid infinite loops in cyclic graphs.</li>
+          <li><strong>Union-Find</strong> — Efficient data structure for connectivity queries and cycle detection.</li>
+        </ul>
+      </section>
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Graphs Work</h2>
+        <div class="topic-section__content">
+          <p>A <strong>graph</strong> is a set of <strong>nodes (vertices)</strong> connected by <strong>edges</strong>. Unlike trees, graphs can have cycles and nodes can have any number of connections. They model anything with pairwise relationships: cities and roads, people and friendships, tasks and dependencies.</p>
+          <p>The two most common representations are the <strong>adjacency list</strong> (a dict mapping each node to its neighbours — O(V+E) space, preferred for sparse graphs) and the <strong>adjacency matrix</strong> (a V×V 2D array — O(V²) space, good for dense graphs or when you need O(1) edge lookup).</p>
+          <p><strong>BFS</strong> (Breadth-First Search) explores level by level using a queue. Use it when you need the shortest path in an unweighted graph. <strong>DFS</strong> (Depth-First Search) goes as deep as possible before backtracking, using a stack (or recursion). Use it for cycle detection, connected components, and topological sort.</p>
+          <p>Always track visited nodes in a <code>set</code> — without it, cycles will cause infinite loops. For grid problems, the "graph" is implicit: each cell is a node, and its 4 neighbours (up/down/left/right) are its edges.</p>
+          <ul>
+            <li><strong>Ask:</strong> directed or undirected? weighted or unweighted? Can there be cycles?</li>
+            <li><strong>BFS = shortest path</strong> (unweighted). <strong>DFS = reachability, cycles, topo sort</strong>.</li>
+            <li><strong>Grid problems</strong> are just graphs in disguise — treat each cell as a node.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">from collections import deque
+
+# ── BFS template ──────────────────────────────────────────────
+def bfs(graph, start):
+    visited = {start}
+    queue   = deque([start])
+    while queue:
+        node = queue.popleft()
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+# ── DFS template (iterative) ──────────────────────────────────
+def dfs(graph, start):
+    visited = {start}
+    stack   = [start]
+    while stack:
+        node = stack.pop()
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                stack.append(neighbour)
+
+# ── Grid BFS (number of islands pattern) ─────────────────────
+def grid_bfs(grid, r, c, visited):
+    ROWS, COLS = len(grid), len(grid[0])
+    queue = deque([(r, c)])
+    visited.add((r, c))
+    while queue:
+        row, col = queue.popleft()
+        for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+            nr, nc = row+dr, col+dc
+            if 0 &lt;= nr &lt; ROWS and 0 &lt;= nc &lt; COLS and (nr,nc) not in visited and grid[nr][nc] == "1":
+                visited.add((nr, nc))
+                queue.append((nr, nc))
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead>
+              <tr><th>Operation</th><th>Adjacency List</th><th>Adjacency Matrix</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Add vertex</td><td>O(1)</td><td>O(V²)</td></tr>
+              <tr><td>Add edge</td><td>O(1)</td><td>O(1)</td></tr>
+              <tr><td>Remove edge</td><td>O(E)</td><td>O(1)</td></tr>
+              <tr><td>BFS / DFS</td><td>O(V + E)</td><td>O(V²)</td></tr>
+              <tr><td>Space</td><td>O(V + E)</td><td>O(V²)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch <strong>DFS</strong> traverse a 7-node graph. The DFS stack on the right shows which nodes are waiting to be explored. Red = current, yellow = in stack, green = visited.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="graphs-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Click Start to begin DFS traversal from node 0.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def dfs(graph, start):      # line 1
+    visited, stack = set(), [start]
+    while stack:             # line 3
+        node = stack.pop()   # line 5
+        if node in visited: continue
+        visited.add(node)
+        for nb in graph[node]:
+            if nb not in visited:
+                stack.append(nb) # line 8
+    return visited           # line 10</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="graphs-start-btn" class="btn btn--primary btn--sm">Start DFS</button>
+            <button id="graphs-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/number-of-islands.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Number of Islands</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/clone-graph.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Clone Graph</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/max-area-of-island.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Max Area of Island</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/pacific-atlantic-water-flow.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Pacific Atlantic Water Flow</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/surrounded-regions.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Surrounded Regions</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/rotting-oranges.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Rotting Oranges</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/course-schedule.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Course Schedule</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/course-schedule-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Course Schedule II</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/graph-valid-tree.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Graph Valid Tree</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/number-of-connected-components-in-an-undirected-graph.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Number of Connected Components</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/walls-and-gates.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Walls and Gates</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/word-ladder.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Word Ladder</span><span class="diff-pill diff-pill--hard">Hard</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/graphs-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math &amp; Geometry - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="math-geometry">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-math-geometry">Math &amp; Geometry</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Math &amp; Geometry</h1>
+        <p class="topic-header__desc">Modular arithmetic, matrix rotation, geometry primitives.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Technique</span>
+          <span class="badge badge--purple">Geometry</span>
+          <span class="badge badge--green">O(n²)</span>
+        </div>
+      </div>
+
+      <!-- Key Facts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Facts</h2>
+        <ul style="line-height:2;color:var(--text-secondary);padding-left:var(--space-lg);">
+          <li><strong>Matrix rotation (90°):</strong> transpose then reverse each row — O(n²) in place</li>
+          <li><strong>Spiral traversal:</strong> shrink boundaries layer by layer — O(n*m)</li>
+          <li><strong>Modular exponentiation (pow):</strong> O(log n) via fast power</li>
+          <li><strong>GCD:</strong> Euclidean algorithm — O(log min(a, b))</li>
+          <li><strong>Sieve of Eratosthenes:</strong> O(n log log n) for all primes up to n</li>
+        </ul>
+      </section>
+
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Math & Geometry Problems Work</h2>
+        <div class="topic-section__content">
+          <p>Math and geometry problems test your ability to apply precise arithmetic reasoning to 2D structures like matrices and grids. The key is knowing which mathematical identity or formula unlocks the problem — once you see it, the code is usually straightforward.</p>
+          <p><strong>Matrix rotation (90° clockwise):</strong> transpose the matrix (swap <code>matrix[i][j]</code> with <code>matrix[j][i]</code>), then reverse each row. This achieves in-place rotation in O(n²) time, O(1) extra space. Counter-clockwise: reverse each row first, then transpose.</p>
+          <p><strong>Spiral traversal:</strong> maintain four boundaries (top, bottom, left, right) and shrink them as you peel off one layer at a time. Each full loop around the spiral peels one ring. This is O(n×m) time and O(1) space (excluding output).</p>
+          <p><strong>Fast exponentiation (Pow(x, n)):</strong> instead of multiplying x by itself n times (O(n)), use the identity: <code>x^n = (x^(n/2))^2</code> when n is even, <code>x × x^(n-1)</code> when n is odd. This gives O(log n) multiplications. Handle negative exponents with <code>1 / pow(x, -n)</code>.</p>
+          <ul>
+            <li><strong>Matrix rotate 90°:</strong> transpose then reverse rows. Three lines of code in Python.</li>
+            <li><strong>GCD:</strong> <code>gcd(a, b) = gcd(b, a % b)</code> — Euclidean algorithm, O(log min(a,b)).</li>
+            <li><strong>Spiral:</strong> shrink boundaries after each direction sweep. Check bounds before each sweep.</li>
+            <li><strong>Integer overflow:</strong> in Python, ints are arbitrary precision — no overflow. In Java/C++, cast to long.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Rotate Matrix 90° Clockwise (in-place) ────────────────────
+def rotate(matrix):
+    n = len(matrix)
+    # Step 1: transpose
+    for i in range(n):
+        for j in range(i+1, n):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    # Step 2: reverse each row
+    for row in matrix:
+        row.reverse()
+
+# ── Spiral Matrix (return elements in spiral order) ───────────
+def spiral_order(matrix):
+    res = []
+    top, bottom, left, right = 0, len(matrix)-1, 0, len(matrix[0])-1
+    while top &lt;= bottom and left &lt;= right:
+        for c in range(left, right+1):   res.append(matrix[top][c])
+        top += 1
+        for r in range(top, bottom+1):   res.append(matrix[r][right])
+        right -= 1
+        if top &lt;= bottom:
+            for c in range(right, left-1, -1): res.append(matrix[bottom][c])
+            bottom -= 1
+        if left &lt;= right:
+            for r in range(bottom, top-1, -1):  res.append(matrix[r][left])
+            left += 1
+    return res
+
+# ── Fast Exponentiation ───────────────────────────────────────
+def my_pow(x, n):
+    if n == 0: return 1
+    if n &lt; 0:  return 1 / my_pow(x, -n)
+    if n % 2 == 0:
+        half = my_pow(x, n // 2)
+        return half * half
+    return x * my_pow(x, n - 1)
+
+# ── GCD (Euclidean) ───────────────────────────────────────────
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead><tr><th>Operation</th><th>Time</th><th>Space</th></tr></thead>
+            <tbody>
+              <tr><td>Matrix rotate 90°</td><td>O(n²)</td><td>O(1) in-place</td></tr>
+              <tr><td>Spiral traversal</td><td>O(n·m)</td><td>O(1)</td></tr>
+              <tr><td>Fast power (Pow(x,n))</td><td>O(log n)</td><td>O(log n) stack</td></tr>
+              <tr><td>GCD (Euclidean)</td><td>O(log min(a,b))</td><td>O(1)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch <strong>Rotate Image</strong> step by step: first transpose (swap [i][j] ↔ [j][i] across the diagonal), then reverse each row to achieve a 90° clockwise rotation.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="math-geometry-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize matrix rotation.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def rotate(matrix):            # line 1
+    n = len(matrix)
+    for i in range(n):         # line 3 — transpose
+        for j in range(i+1,n):
+            matrix[i][j], matrix[j][i] = \
+                matrix[j][i], matrix[i][j]  # line 4
+    for row in matrix:         # line 5 — reverse rows
+        row.reverse()          # line 6 — done</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="math-run-btn" class="btn btn--primary btn--sm">Run Rotation</button>
+            <button id="math-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/rotate-image.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Rotate Image</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/spiral-matrix.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Spiral Matrix</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/set-matrix-zeroes.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Set Matrix Zeroes</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/powx-n.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Pow(x, n)</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/detect-squares.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Detect Squares</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/plus-one.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Plus One</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/multiply-strings.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Multiply Strings</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/reverse-integer.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Reverse Integer</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/math-geometry-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

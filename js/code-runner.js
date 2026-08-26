@@ -3,10 +3,11 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // CodeMirror + Pyodide loaders live in js/cdn-loader.js (DSA.cdnLoader.*)
-  // so practice.js and code-runner.js share the same singletons.
+  // CodeMirror lives in js/cdn-loader.js (DSA.cdnLoader.*); Python now runs
+  // off-thread via DSA.cdnLoader.runPython (see js/pyodide-worker.js).
   function loadCodeMirror(cb) { DSA.cdnLoader.loadCodeMirror(cb); }
-  function loadPyodide(cb)    { DSA.cdnLoader.loadPyodide(cb); }
+
+  var RUN_TIMEOUT_MS = 6000; // stop runaway/infinite-loop code after this long
 
   // --- Get Python source from a code block ---
   function getPythonSource(block) {
@@ -75,26 +76,9 @@ var DSA = window.DSA || {};
           statusEl.textContent = 'Editor failed to load';
           return;
         }
-        cmEditor = window.CodeMirror(editorWrap, {
-          value: originalSource,
-          mode: 'python',
-          theme: 'dracula',
-          lineNumbers: true,
-          indentUnit: 4,
-          autoCloseBrackets: true,
-          lineWrapping: false,
-          viewportMargin: Infinity
-        });
+        cmEditor = DSA.cdnLoader.makeEditor(editorWrap, DSA.cdnLoader.normalizeIndent(originalSource));
         statusEl.textContent = 'Ready';
-
-        // Pre-warm Pyodide in the background
-        loadPyodide(function(pyErr) {
-          if (pyErr) {
-            statusEl.textContent = 'Pyodide failed to load';
-          } else {
-            statusEl.textContent = 'Ready';
-          }
-        });
+        DSA.cdnLoader.warmup(); // pre-load Pyodide in the worker
       });
 
       // Run button
@@ -111,70 +95,38 @@ var DSA = window.DSA || {};
     }
 
     function runCode(statusEl, outputEl) {
-      if (!window.__dsaPyodide) {
-        statusEl.textContent = 'Loading Pyodide\u2026';
-        loadPyodide(function(err, py) {
-          if (err) {
-            statusEl.textContent = 'Pyodide failed to load';
-            outputEl.textContent = String(err);
-            outputEl.classList.add('code-runner-panel__output--error');
-            return;
-          }
-          execCode(py, statusEl, outputEl);
-        });
-      } else {
-        execCode(window.__dsaPyodide, statusEl, outputEl);
-      }
-    }
-
-    function execCode(py, statusEl, outputEl) {
-      var code = cmEditor ? cmEditor.getValue() : originalSource;
+      var code = cmEditor ? DSA.cdnLoader.normalizeIndent(cmEditor.getValue()) : originalSource;
 
       statusEl.textContent = 'Running\u2026';
       outputEl.classList.remove('code-runner-panel__output--error');
       outputEl.textContent = '';
 
-      try {
-        // Redirect stdout/stderr
-        py.runPython(
-          'import sys\n' +
-          'from io import StringIO\n' +
-          'sys.stdout = StringIO()\n' +
-          'sys.stderr = StringIO()'
-        );
-
-        var hadError = false;
-        try {
-          py.runPython(code);
-        } catch (runErr) {
-          hadError = true;
-          var stderr = '';
-          try { stderr = py.runPython('sys.stderr.getvalue()'); } catch(e) {}
-          outputEl.textContent = stderr || String(runErr);
+      DSA.cdnLoader.runPython({ mode: 'free', code: code }, RUN_TIMEOUT_MS, function(data) {
+        if (data.timeout) {
+          statusEl.textContent = 'Timed out';
+          outputEl.textContent = '\u23f1 Stopped after ' + (RUN_TIMEOUT_MS / 1000) +
+            's \u2014 your code may have an infinite loop.';
           outputEl.classList.add('code-runner-panel__output--error');
+          return;
         }
-
-        if (!hadError) {
-          var stdout = '';
-          try { stdout = py.runPython('sys.stdout.getvalue()'); } catch(e) {}
-          outputEl.textContent = stdout !== '' ? stdout : '(no output)';
+        if (data.mode !== 'free') {
+          // Transport / runtime-load failure (worker crashed or CDN blocked).
+          statusEl.textContent = 'Error';
+          outputEl.textContent = 'Python runtime failed to load (about 10MB from cdn.jsdelivr.net). ' +
+            'Check your network and try again.';
+          outputEl.classList.add('code-runner-panel__output--error');
+          return;
         }
-
-        statusEl.textContent = hadError ? 'Error' : 'Done';
-      } catch (e) {
-        statusEl.textContent = 'Error';
-        outputEl.textContent = String(e);
-        outputEl.classList.add('code-runner-panel__output--error');
-      } finally {
-        // Restore sys.stdout/stderr to defaults
-        try {
-          py.runPython(
-            'import sys\n' +
-            'sys.stdout = sys.__stdout__\n' +
-            'sys.stderr = sys.__stderr__'
-          );
-        } catch(e) {}
-      }
+        if (data.error) {
+          statusEl.textContent = 'Error';
+          outputEl.textContent = DSA.cdnLoader.formatPyError(data.error);
+          outputEl.classList.add('code-runner-panel__output--error');
+          return;
+        }
+        var stdout = data.stdout || '';
+        outputEl.textContent = stdout !== '' ? stdout : '(no output)';
+        statusEl.textContent = 'Done';
+      });
     }
 
     // Open the panel immediately — no trigger button, always live

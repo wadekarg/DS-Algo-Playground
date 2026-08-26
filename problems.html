@@ -136,6 +136,8 @@
       border: 1px dashed var(--border-color);
       border-radius: 8px;
     }
+    .active-filter { background: var(--accent-primary) !important; color: white !important; border-color: var(--accent-primary) !important; }
+    .btn--sm { font-size: 12px; padding: 4px 10px; }
   </style>
 </head>
 <body data-topic="problems">
@@ -203,6 +205,10 @@
         <span class="filter-summary" id="filter-summary"></span>
       </div>
 
+      <div id="pattern-filters" style="margin-top:var(--space-sm);display:flex;gap:var(--space-xs);flex-wrap:wrap;margin-bottom:var(--space-md);">
+        <!-- populated by JS below -->
+      </div>
+
       <!-- Dynamic problem groups rendered by inline JS below -->
       <div id="problems-groups"></div>
     </div>
@@ -234,6 +240,7 @@
   <script src="js/progress.js"></script>
   <script src="js/problem-progress.js"></script>
   <script src="js/keyboard.js"></script>
+  <script src="js/main.js"></script>
 
   <script>
     // NeetCode 150 standard category ordering — fallbacks go to end alphabetically
@@ -352,6 +359,7 @@
       }).join('');
 
       document.getElementById('problems-groups').innerHTML = html;
+      if (typeof window._applyPatternFilter === 'function') window._applyPatternFilter();
     }
 
     function wireFilters() {
@@ -393,6 +401,74 @@
     }
 
     loadAndRender();
+  </script>
+
+  <script>
+  (function () {
+    // Shared state — readable by renderGroups() in the first script block
+    window._activePatternFilter = 'all';
+    window._activePatternIds = null; // Set or null
+
+    function applyCurrentPatternFilter() {
+      var allowedIds = window._activePatternIds;
+      // Show/hide problem rows — rows are <a class="problem-index-row">
+      // Problem ID is derived from href: "problems/some-id.html" → "some-id"
+      document.querySelectorAll('.problem-index-row').forEach(function (row) {
+        var href = row.getAttribute('href') || '';
+        var id = href.replace(/^problems\//, '').replace(/\.html$/, '');
+        var show = !allowedIds || allowedIds.has(id);
+        row.style.display = show ? '' : 'none';
+      });
+      // Show/hide group sections if all their rows are hidden
+      document.querySelectorAll('.problems-group').forEach(function (group) {
+        var rows = group.querySelectorAll('.problem-index-row');
+        var anyVisible = Array.prototype.some.call(rows, function (r) { return r.style.display !== 'none'; });
+        group.style.display = anyVisible ? '' : 'none';
+      });
+    }
+    window._applyPatternFilter = applyCurrentPatternFilter;
+
+    fetch('data/patterns.json').then(function (r) { return r.json(); }).then(function (patterns) {
+      var container = document.getElementById('pattern-filters');
+      if (!container) return;
+
+      // "All" button
+      var allBtn = document.createElement('button');
+      allBtn.textContent = 'All';
+      allBtn.className = 'btn btn--secondary btn--sm active-filter';
+      allBtn.dataset.filter = 'all';
+      container.appendChild(allBtn);
+
+      patterns.forEach(function (pat) {
+        var btn = document.createElement('button');
+        btn.textContent = pat.title;
+        btn.className = 'btn btn--secondary btn--sm';
+        btn.dataset.filter = pat.id;
+        container.appendChild(btn);
+      });
+
+      container.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-filter]');
+        if (!btn) return;
+        var filter = btn.dataset.filter;
+
+        container.querySelectorAll('button').forEach(function (b) {
+          b.classList.toggle('active-filter', b === btn);
+        });
+
+        // Update shared state
+        window._activePatternFilter = filter;
+        if (filter !== 'all') {
+          var pat = patterns.find(function (p) { return p.id === filter; });
+          window._activePatternIds = pat ? new Set(pat.problems) : new Set();
+        } else {
+          window._activePatternIds = null;
+        }
+
+        applyCurrentPatternFilter();
+      });
+    }).catch(function () { /* filter is non-critical, fail silently */ });
+  })();
   </script>
 </body>
 </html>

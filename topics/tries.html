@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tries - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="tries">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-tries">Tries</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Tries</h1>
+        <p class="topic-header__desc">A Trie (prefix tree) is a tree where each node represents a character. Enables O(L) insert, search, and prefix queries for strings — far faster than O(L * N) with a hash set when prefix matching is needed.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Data Structure</span>
+          <span class="badge badge--purple">Prefix Tree</span>
+          <span class="badge badge--green">O(L)</span>
+        </div>
+      </div>
+
+      <!-- Key Concepts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Concepts</h2>
+        <ul class="topic-list">
+          <li><strong>TrieNode</strong> — Each node has a <code>children</code> dict (or array of 26) and an <code>is_end</code> flag.</li>
+          <li><strong>Insert</strong> — Walk characters, create nodes as needed, set <code>is_end</code> on the last node.</li>
+          <li><strong>Search</strong> — Walk characters; return <code>is_end</code> at the last node. Return false if any node is missing.</li>
+          <li><strong>startsWith</strong> — Same as search but don't check <code>is_end</code>.</li>
+          <li><strong>When to use</strong> — Autocomplete, spell-check, IP routing, word dictionaries, prefix queries.</li>
+        </ul>
+      </section>
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Tries Work</h2>
+        <div class="topic-section__content">
+          <p>A <strong>Trie</strong> (pronounced "try", from re<em>trie</em>val) is a tree where each node represents a character. Words are stored by following a path from the root, one character at a time. The root is empty; each level represents one position in the string.</p>
+          <p>Every node has a dictionary of children (one per possible next character) and a boolean <code>is_end</code> flag marking that a complete word ends at this node. To <strong>insert</strong> a word, walk each character creating nodes as needed and set <code>is_end = True</code> on the last node. To <strong>search</strong>, walk the characters — if any character is missing, the word does not exist. To check a <strong>prefix</strong>, do the same walk but ignore <code>is_end</code>.</p>
+          <p>Tries shine when you need prefix matching on a large set of words — autocomplete, spell checking, IP routing. A hash set can tell you if a word exists in O(L), but it cannot tell you "does any word start with this prefix?" without scanning everything. A Trie answers prefix queries in O(L) too.</p>
+          <ul>
+            <li><strong>Space:</strong> O(N × L) total — N words of average length L. Each node can have up to 26 children for lowercase English.</li>
+            <li><strong>Use over a hash set</strong> when you need prefix queries or word-by-word character matching.</li>
+            <li><strong>Wildcards:</strong> use DFS and try all children when you hit a <code>.</code> character.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre">class TrieNode:
+    def __init__(self):
+        self.children = {}   # char → TrieNode
+        self.is_end   = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -&gt; None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+    def search(self, word: str) -&gt; bool:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.is_end
+
+    def starts_with(self, prefix: str) -&gt; bool:
+        node = self.root
+        for ch in prefix:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return True  # prefix exists; don't check is_end
+
+# Usage
+trie = Trie()
+trie.insert("apple")
+trie.insert("app")
+print(trie.search("app"))        # True
+print(trie.search("appl"))       # False
+print(trie.starts_with("appl"))  # True
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead>
+              <tr><th>Operation</th><th>Time</th><th>Space</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Insert</td><td>O(L)</td><td>O(L)</td></tr>
+              <tr><td>Search</td><td>O(L)</td><td>O(1)</td></tr>
+              <tr><td>Starts With</td><td>O(L)</td><td>O(1)</td></tr>
+              <tr><td>Delete</td><td>O(L)</td><td>O(1)</td></tr>
+              <tr><td>Space (total)</td><td>—</td><td>O(N * L)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:var(--space-sm);font-size:var(--font-size-sm);color:var(--text-tertiary);">L = length of the string, N = number of strings stored.</p>
+      </section>
+
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch the trie grow as words are inserted character by character. Blue = newly created node, green = end of word, grey = shared prefix node.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="tries-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to build the trie step by step.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def insert(self, word):   # line 1
+    node = self.root
+    for ch in word:        # line 3
+        if ch not in node.children:
+            node.children[ch] = TrieNode()  # line 4
+        node = node.children[ch]
+    node.is_end = True     # line 5</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="tries-run-btn" class="btn btn--primary btn--sm">Build Trie</button>
+            <button id="tries-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/implement-trie-prefix-tree.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Implement Trie (Prefix Tree)</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/design-add-and-search-words-data-structure.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Design Add and Search Words Data Structure</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/word-search-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Word Search II</span><span class="diff-pill diff-pill--hard">Hard</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/tries-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

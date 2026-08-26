@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intervals - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="intervals">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-intervals">Intervals</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Intervals</h1>
+        <p class="topic-header__desc">Merge overlapping intervals, sweep line, and scheduling problems.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Technique</span>
+          <span class="badge badge--purple">Sweep Line</span>
+          <span class="badge badge--green">O(n log n)</span>
+        </div>
+      </div>
+
+      <!-- Key Facts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Facts</h2>
+        <ul style="line-height:2;color:var(--text-secondary);padding-left:var(--space-lg);">
+          <li><strong>Sort by start:</strong> O(n log n) — sorting is almost always the first step</li>
+          <li><strong>Merge overlapping:</strong> O(n) scan after sorting</li>
+          <li><strong>Overlap condition:</strong> intervals [a,b] and [c,d] overlap when c &le; b</li>
+          <li><strong>Sweep line:</strong> process events (start/end) in sorted order</li>
+          <li><strong>Space:</strong> O(n) for output or event arrays</li>
+        </ul>
+      </section>
+
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Interval Problems Work</h2>
+        <div class="topic-section__content">
+          <p>An interval is a pair <code>[start, end]</code> representing a range. Interval problems typically ask you to merge overlapping ranges, find gaps, count overlapping intervals at a point, or schedule tasks without conflicts.</p>
+          <p>The foundational insight is <strong>sort by start time</strong>. Once sorted, you only need to compare each interval with the most recently processed one. Two intervals <code>[a,b]</code> and <code>[c,d]</code> overlap when <code>c &le; b</code> (the second starts before the first ends). Their merge is <code>[min(a,c), max(b,d)]</code>.</p>
+          <p>For counting simultaneous overlaps (e.g. "how many meeting rooms do we need?") use a <strong>sweep line</strong>: create events for interval starts (+1) and ends (−1), sort all events by time, and track the running count. The maximum count reached is the answer.</p>
+          <p>For the "insert interval" pattern, split the existing intervals into three groups: those fully before the new one, those that overlap (merge into one), and those fully after. Handle the overlap group in a single pass.</p>
+          <ul>
+            <li><strong>Sort by start</strong> first — almost every interval problem needs this.</li>
+            <li><strong>Overlap check:</strong> <code>a.start &le; b.end AND b.start &le; a.end</code>.</li>
+            <li><strong>Sweep line:</strong> convert intervals to events (+1 start, −1 end) to count overlaps at any point.</li>
+            <li>Watch out for <strong>inclusive vs exclusive</strong> endpoints — [1,2] and [2,3] may or may not overlap depending on the problem.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Merge Overlapping Intervals ───────────────────────────────
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    out = [intervals[0][:]]
+    for s, e in intervals[1:]:
+        if s &lt;= out[-1][1]:              # overlaps
+            out[-1][1] = max(out[-1][1], e)
+        else:
+            out.append([s, e])
+    return out
+
+# ── Insert Interval ───────────────────────────────────────────
+def insert(intervals, newInterval):
+    out = []
+    for i, (s, e) in enumerate(intervals):
+        if e &lt; newInterval[0]:           # fully before
+            out.append([s, e])
+        elif s &gt; newInterval[1]:         # fully after: flush new then rest
+            out.append(newInterval)
+            return out + intervals[i:]
+        else:                            # overlapping: merge
+            newInterval[0] = min(newInterval[0], s)
+            newInterval[1] = max(newInterval[1], e)
+    out.append(newInterval)
+    return out
+
+# ── Meeting Rooms II (min rooms needed) — sweep line ──────────
+import heapq
+def min_meeting_rooms(intervals):
+    intervals.sort(key=lambda x: x[0])
+    heap = []                            # end times of active meetings
+    for s, e in intervals:
+        if heap and heap[0] &lt;= s:
+            heapq.heapreplace(heap, e)   # reuse a freed room
+        else:
+            heapq.heappush(heap, e)      # need a new room
+    return len(heap)
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead><tr><th>Operation</th><th>Time</th><th>Space</th></tr></thead>
+            <tbody>
+              <tr><td>Sort by start</td><td>O(n log n)</td><td>O(1)</td></tr>
+              <tr><td>Merge overlapping</td><td>O(n)</td><td>O(n) output</td></tr>
+              <tr><td>Insert interval</td><td>O(n)</td><td>O(n) output</td></tr>
+              <tr><td>Count overlaps (sweep line)</td><td>O(n log n)</td><td>O(n)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch <strong>Merge Intervals</strong>: sorted intervals are compared pairwise on a timeline. Overlapping intervals are extended; non-overlapping ones are added as new.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="intervals-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize Merge Intervals.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def merge(intervals):
+    intervals.sort(key=lambda x: x[0])  # line 1
+    merged = [intervals[0]]              # line 3
+    for curr in intervals[1:]:
+        last = merged[-1]
+        if curr[0] <= last[1]:           # line 5 — overlap
+            last[1] = max(last[1],curr[1])  # line 6
+        else:
+            merged.append(curr)          # line 8
+    return merged                        # line 10</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="intervals-run-btn" class="btn btn--primary btn--sm">Run Merge</button>
+            <button id="intervals-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/insert-interval.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Insert Interval</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/merge-intervals.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Merge Intervals</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/non-overlapping-intervals.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Non-Overlapping Intervals</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/meeting-rooms.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Meeting Rooms</span><span class="diff-pill diff-pill--easy">Easy</span></a>
+          <a href="../problems/meeting-rooms-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Meeting Rooms II</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/minimum-interval-to-include-each-query.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Minimum Interval to Include Each Query</span><span class="diff-pill diff-pill--hard">Hard</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/intervals-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>

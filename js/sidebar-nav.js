@@ -1,321 +1,38 @@
 var DSA = window.DSA || {};
 
-(function() {
+(function () {
   'use strict';
 
-  // Category display order
-  var categoryOrder = ['Data Structures', 'Sorting', 'Searching', 'Techniques'];
+  var TAB_KEY = 'dsa-sidebar-tab-v1';
+  var TOPICS_CACHE_KEY   = 'dsa-sidebar-topics-cache-v1';
+  var PATTERNS_CACHE_KEY = 'dsa-sidebar-patterns-cache-v1';
 
-  // Category icons for sidebar section titles
-  var categoryIcons = {
-    'Data Structures': '',
-    'Sorting': '',
-    'Searching': '',
-    'Techniques': ''
-  };
+  // ── helpers ──────────────────────────────────────────────────────────────
 
-  function getBasePath() {
-    // Determine if we are inside topics/ or problems/ (any one-deep subdir), else root.
-    var path = window.location.pathname;
-    if (path.indexOf('/topics/') !== -1 || path.indexOf('/problems/') !== -1) {
-      return '../';
-    }
-    return '';
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
-  function getTopicPath(url) {
-    var base = getBasePath();
-    return base + url;
+  function getBasePath() {
+    var p = window.location.pathname;
+    return (p.indexOf('/topics/') !== -1 || p.indexOf('/problems/') !== -1) ? '../' : '';
   }
 
   function getCurrentTopicId() {
     return document.body.getAttribute('data-topic') || '';
   }
 
-  function getCurrentPage() {
-    var path = window.location.pathname;
-    var filename = path.split('/').pop();
-    return filename || 'index.html';
-  }
-
-  function getCurrentProblemId() {
-    var path = window.location.pathname;
-    var m = path.match(/\/problems\/([^/]+)\.html$/);
-    return m ? m[1] : '';
-  }
-
-  // NeetCode 150 standard category ordering — matches problems.html
-  var PROBLEM_CATEGORY_ORDER = [
-    'Arrays & Hashing',
-    'Two Pointers',
-    'Sliding Window',
-    'Stack',
-    'Binary Search',
-    'Linked List',
-    'Trees',
-    'Tries',
-    'Heap / Priority Queue',
-    'Backtracking',
-    'Graphs',
-    'Advanced Graphs',
-    '1D DP',
-    '2D DP',
-    'Dynamic Programming',
-    'Greedy',
-    'Intervals',
-    'Math & Geometry',
-    'Bit Manipulation'
-  ];
-
-  var DIFF_ORDER = { easy: 0, medium: 1, hard: 2 };
-
-  // Persisted collapse state
-  var STATE_KEY = 'dsa-sidebar-collapse-v2';
-  function loadCollapseState() {
-    try {
-      return JSON.parse(localStorage.getItem(STATE_KEY)) || {};
-    } catch (e) {
-      return {};
-    }
-  }
-  function saveCollapseState(state) {
-    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) {}
-  }
-
-  function chevron() {
-    return '<svg class="sidebar__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-  }
-
-  function esc(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function buildProblemsSection(problems, base, currentProblemId) {
-    if (!problems || !problems.length) return '';
-
-    // Group by neetcode_category
-    var groups = {};
-    for (var i = 0; i < problems.length; i++) {
-      var p = problems[i];
-      var cat = p.neetcode_category || (p.topics && p.topics[0]) || 'Other';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(p);
-    }
-    for (var c in groups) {
-      groups[c].sort(function(a, b) {
-        return (DIFF_ORDER[a.difficulty] || 9) - (DIFF_ORDER[b.difficulty] || 9);
-      });
-    }
-    var knownCats = PROBLEM_CATEGORY_ORDER.filter(function(c) { return groups[c]; });
-    var unknownCats = Object.keys(groups).filter(function(c) {
-      return PROBLEM_CATEGORY_ORDER.indexOf(c) === -1;
-    }).sort();
-    var orderedCats = knownCats.concat(unknownCats);
-
-    var state = loadCollapseState();
-    var onProblemsIndex = getCurrentPage() === 'problems.html';
-    // Default: top-level expanded if we're on a problems-related page; else collapsed
-    var onProblemsPage = !!currentProblemId || onProblemsIndex;
-    var problemsOpen = state.problems !== undefined ? state.problems : onProblemsPage;
-
-    // If the current page is a per-problem page, force-expand its category
-    var currentCategory = null;
-    if (currentProblemId) {
-      for (var i2 = 0; i2 < problems.length; i2++) {
-        if (problems[i2].id === currentProblemId) {
-          currentCategory = problems[i2].neetcode_category || (problems[i2].topics && problems[i2].topics[0]) || 'Other';
-          break;
-        }
-      }
-    }
-
-    var html = '<button type="button" class="sidebar__section-toggle' +
-      (problemsOpen ? ' sidebar__section-toggle--open' : '') +
-      '" data-collapse-key="problems">' +
-      '<span>Problems</span>' + chevron() +
-      '</button>';
-
-    html += '<div class="sidebar__collapse-body' + (problemsOpen ? '' : ' sidebar__collapse-body--hidden') + '" data-collapse-body="problems">';
-
-    html += '<a href="' + base + 'problems.html" class="sidebar__link sidebar__link--problems-index' +
-      (getCurrentPage() === 'problems.html' ? ' sidebar__link--active' : '') +
-      '">All Problems</a>';
-
-    for (var k = 0; k < orderedCats.length; k++) {
-      var cat = orderedCats[k];
-      var catKey = 'cat:' + cat;
-      // Default open: all categories on problems.html (to mirror the main grid);
-      // only the current category on a per-problem page; nothing elsewhere.
-      // The user's explicit collapse choice always wins via localStorage.
-      var catOpen = state[catKey] !== undefined
-        ? state[catKey]
-        : (onProblemsIndex || cat === currentCategory);
-
-      html += '<button type="button" class="sidebar__subcat-toggle' +
-        (catOpen ? ' sidebar__subcat-toggle--open' : '') +
-        '" data-collapse-key="' + esc(catKey) + '">' +
-        '<span>' + esc(cat) + '</span>' +
-        '<span class="sidebar__subcat-count">' + groups[cat].length + '</span>' +
-        chevron() +
-        '</button>';
-      html += '<div class="sidebar__collapse-body sidebar__collapse-body--nested' +
-        (catOpen ? '' : ' sidebar__collapse-body--hidden') +
-        '" data-collapse-body="' + esc(catKey) + '">';
-      for (var j = 0; j < groups[cat].length; j++) {
-        var prob = groups[cat][j];
-        var status = (DSA.problemProgress && DSA.problemProgress.getStatus(prob.id)) || 'unattempted';
-        var isActive = prob.id === currentProblemId;
-        html += '<a href="' + base + 'problems/' + esc(prob.id) + '.html"' +
-          ' class="sidebar__link sidebar__link--problem' +
-          (isActive ? ' sidebar__link--active' : '') +
-          '" title="' + esc(prob.title) + '">' +
-          '<span class="problem-status-dot ' + status + '"></span>' +
-          '<span class="sidebar__link__title">' + esc(prob.title) + '</span>' +
-          '</a>';
-      }
-      html += '</div>';
-    }
-    html += '</div>';
-    return html;
-  }
-
-  function wireCollapse() {
-    var nav = document.getElementById('sidebar-nav');
-    if (!nav || nav.dataset.collapseWired === '1') return;
-    nav.dataset.collapseWired = '1';
-    nav.addEventListener('click', function(e) {
-      var toggle = e.target.closest('.sidebar__section-toggle, .sidebar__subcat-toggle');
-      if (!toggle) return;
-      var key = toggle.dataset.collapseKey;
-      var body = nav.querySelector('[data-collapse-body="' + key.replace(/"/g, '\\"') + '"]');
-      if (!body) return;
-      var openClass = toggle.classList.contains('sidebar__section-toggle')
-        ? 'sidebar__section-toggle--open'
-        : 'sidebar__subcat-toggle--open';
-      var isOpen = toggle.classList.toggle(openClass);
-      body.classList.toggle('sidebar__collapse-body--hidden', !isOpen);
-      var state = loadCollapseState();
-      state[key] = isOpen;
-      saveCollapseState(state);
-    });
-  }
-
-  function buildSidebar(topics, problems) {
-    var nav = document.getElementById('sidebar-nav');
-    if (!nav) return;
-
-    var base = getBasePath();
-    var currentTopicId = getCurrentTopicId();
-    var currentPage = getCurrentPage();
-    var html = '';
-
-    // Overview section
-    html += '<div class="sidebar__section-title">Overview</div>';
-    html += '<a href="' + base + 'index.html" class="sidebar__link' +
-      (currentPage === 'index.html' && !currentTopicId ? ' sidebar__link--active' : '') +
-      '">Home</a>';
-    html += '<a href="' + base + 'complexity.html" class="sidebar__link' +
-      (currentPage === 'complexity.html' ? ' sidebar__link--active' : '') +
-      '">Complexity</a>';
-    html += '<a href="' + base + 'compare.html" class="sidebar__link' +
-      (currentPage === 'compare.html' ? ' sidebar__link--active' : '') +
-      '">Compare</a>';
-    html += '<a href="' + base + 'race.html" class="sidebar__link' +
-      (currentPage === 'race.html' ? ' sidebar__link--active' : '') +
-      '">Race</a>';
-    html += '<a href="' + base + 'about.html" class="sidebar__link' +
-      (currentPage === 'about.html' ? ' sidebar__link--active' : '') +
-      '">About</a>';
-
-    // Group topics by category
-    var groups = {};
-    for (var i = 0; i < topics.length; i++) {
-      var t = topics[i];
-      if (!groups[t.category]) groups[t.category] = [];
-      groups[t.category].push(t);
-    }
-
-    // Render by category order
-    for (var c = 0; c < categoryOrder.length; c++) {
-      var cat = categoryOrder[c];
-      var items = groups[cat];
-      if (!items || items.length === 0) continue;
-
-      html += '<div class="sidebar__section-title">' + esc(cat) + '</div>';
-      for (var j = 0; j < items.length; j++) {
-        var topic = items[j];
-        var isActive = topic.id === currentTopicId;
-        html += '<a href="' + esc(getTopicPath(topic.url)) + '" class="sidebar__link' +
-          (isActive ? ' sidebar__link--active' : '') +
-          '" data-topic="' + esc(topic.id) + '">' + esc(topic.title) + '</a>';
-      }
-    }
-
-    // Problems section (loaded async, may be empty if problems.json hasn't arrived yet)
-    html += buildProblemsSection(problems, base, getCurrentProblemId());
-
-    nav.innerHTML = html;
-    wireCollapse();
-    wireScrollPersistence();
-    restoreScroll();
-  }
-
-  // Persist sidebar scroll across page navigations so the user doesn't lose
-  // their place after clicking a problem link.
-  var SCROLL_KEY = 'dsa-sidebar-scroll';
-
-  function findScrollElement() {
-    // The scrollable element may be the <nav>, the <aside class="sidebar">, or
-    // some ancestor. Pick whichever actually overflows.
-    var nav = document.getElementById('sidebar-nav');
-    if (!nav) return null;
-    var el = nav;
-    while (el) {
-      if (el.scrollHeight > el.clientHeight + 1) {
-        return el;
-      }
-      if (el.tagName && el.tagName.toLowerCase() === 'aside') break;
-      el = el.parentElement;
-    }
-    return nav;  // fallback even if not currently scrollable
-  }
-
-  function wireScrollPersistence() {
-    var nav = document.getElementById('sidebar-nav');
-    if (!nav || nav.dataset.scrollWired === '1') return;
-    nav.dataset.scrollWired = '1';
-    nav.addEventListener('click', function(e) {
-      var link = e.target.closest('a');
-      if (!link) return;
-      var scrollEl = findScrollElement();
-      if (scrollEl) {
-        try { sessionStorage.setItem(SCROLL_KEY, String(scrollEl.scrollTop)); } catch (err) {}
-      }
-    });
-  }
-
-  function restoreScroll() {
-    var raw;
-    try { raw = sessionStorage.getItem(SCROLL_KEY); } catch (err) { return; }
-    if (raw === null) return;
-    var target = parseInt(raw, 10);
-    if (isNaN(target) || target <= 0) return;
-    // Defer to next frame so layout has settled.
-    requestAnimationFrame(function() {
-      var scrollEl = findScrollElement();
-      if (scrollEl) scrollEl.scrollTop = target;
-    });
+  function isProblemsPage() {
+    return window.location.pathname.indexOf('/problems/') !== -1;
   }
 
   function fetchJson(url, cb) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
       if (xhr.status === 200) {
         try { cb(null, JSON.parse(xhr.responseText)); }
@@ -327,85 +44,262 @@ var DSA = window.DSA || {};
     xhr.send();
   }
 
-  // localStorage cache so the sidebar renders synchronously on every page
-  // after the first. We still fetch fresh JSON in the background and update
-  // if it changed.
-  var TOPICS_CACHE_KEY = 'dsa-sidebar-topics-cache-v1';
-  var PROBLEMS_CACHE_KEY = 'dsa-sidebar-problems-cache-v1';
-
   function readCache(key) {
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+    try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : null; }
+    catch (e) { return null; }
   }
+
   function writeCache(key, data) {
     try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
   }
+
+  // ── tab content builders ──────────────────────────────────────────────────
+
+  function getSolvedCount(patternProblems) {
+    if (!DSA.problemProgress) return 0;
+    var count = 0;
+    patternProblems.forEach(function (id) {
+      if (DSA.problemProgress.getStatus(id) === 'solved') count++;
+    });
+    return count;
+  }
+
+  function buildRoadmapPanel(patterns) {
+    var base = getBasePath();
+    var html = '';
+    patterns.forEach(function (pat) {
+      var total = pat.problems.length;
+      var solved = getSolvedCount(pat.problems);
+      var complete = solved === total;
+      html += '<a href="' + base + 'index.html#pattern-' + esc(pat.id) + '"' +
+        ' class="sidebar-pattern-item" data-pattern="' + esc(pat.id) + '">' +
+        '<span class="sidebar-pattern-item__name">' + esc(pat.title) + '</span>' +
+        '<span class="sidebar-pattern-item__count' +
+        (complete ? ' sidebar-pattern-item__count--complete' : '') + '">' +
+        solved + '/' + total + (complete ? ' ✓' : '') +
+        '</span></a>';
+    });
+    return html;
+  }
+
+  function buildTopicsPanel(topics) {
+    var base = getBasePath();
+    var catOrder = ['Data Structures', 'Sorting', 'Searching', 'Techniques'];
+    var currentTopicId = getCurrentTopicId();
+    var groups = {};
+    topics.forEach(function (t) {
+      if (!groups[t.category]) groups[t.category] = [];
+      groups[t.category].push(t);
+    });
+    var html = '';
+    catOrder.forEach(function (cat) {
+      if (!groups[cat]) return;
+      html += '<div class="sidebar__section-title">' + esc(cat) + '</div>';
+      groups[cat].forEach(function (t) {
+        var isActive = t.id === currentTopicId;
+        html += '<a href="' + base + esc(t.url) + '"' +
+          ' class="sidebar__link' + (isActive ? ' sidebar__link--active' : '') + '"' +
+          ' data-topic="' + esc(t.id) + '">' +
+          esc(t.title) + '</a>';
+      });
+    });
+    return html;
+  }
+
+  function buildToolsPanel() {
+    var base = getBasePath();
+    var items = [
+      { href: 'problems.html',   label: 'All Problems' },
+      { href: 'complexity.html', label: 'Complexity Chart' },
+      { href: 'compare.html',    label: 'Compare Algorithms' },
+      { href: 'race.html',       label: 'Algorithm Race' },
+      { href: 'about.html',      label: 'About' }
+    ];
+    var html = '';
+    items.forEach(function (item) {
+      html += '<a href="' + base + item.href + '" class="sidebar__link">' + esc(item.label) + '</a>';
+    });
+    return html;
+  }
+
+  // ── scaffold: inject tabs strip + panels into <nav id="sidebar-nav"> ──────
+
+  function buildScaffold(nav) {
+    nav.innerHTML =
+      '<div class="sidebar-tabs">' +
+        '<button class="sidebar-tab" data-sidebar-tab="roadmap">Roadmap</button>' +
+        '<button class="sidebar-tab" data-sidebar-tab="topics">Topics</button>' +
+        '<button class="sidebar-tab" data-sidebar-tab="tools">Tools</button>' +
+      '</div>' +
+      '<div class="snav-panel" data-sidebar-content="roadmap"></div>' +
+      '<div class="snav-panel snav-panel--hidden" data-sidebar-content="topics"></div>' +
+      '<div class="snav-panel snav-panel--hidden" data-sidebar-content="tools"></div>';
+  }
+
+  // ── tab switching ─────────────────────────────────────────────────────────
+
+  function showTab(tabId) {
+    ['roadmap', 'topics', 'tools'].forEach(function (t) {
+      var btn   = document.querySelector('[data-sidebar-tab="' + t + '"]');
+      var panel = document.querySelector('[data-sidebar-content="' + t + '"]');
+      if (btn)   btn.classList.toggle('sidebar-tab--active', t === tabId);
+      if (panel) panel.classList.toggle('snav-panel--hidden', t !== tabId);
+    });
+    try { localStorage.setItem(TAB_KEY, tabId); } catch (e) {}
+  }
+
+  function defaultTab() {
+    // Topic pages always show Topics so the user sees where they are in the list.
+    // Saved preference is ignored here — it applies to index/problems pages only.
+    if (getCurrentTopicId()) return 'topics';
+    var saved;
+    try { saved = localStorage.getItem(TAB_KEY); } catch (e) {}
+    if (saved) return saved;
+    return 'roadmap';
+  }
+
+  function wireTabButtons() {
+    document.querySelectorAll('[data-sidebar-tab]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showTab(btn.dataset.sidebarTab);
+      });
+    });
+  }
+
+  function isAllProblemsPage() {
+    var p = window.location.pathname;
+    return p === '/problems.html' || p.slice(-13) === '/problems.html' || p.slice(-9) === 'problems.' || document.title.indexOf('Problems ·') === 0;
+  }
+
+  // On problems.html: sidebar pattern clicks filter the list rather than navigate
+  function wirePatternFilters(nav) {
+    if (!isAllProblemsPage()) return;
+    nav.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-pattern]');
+      if (!link) return;
+      e.preventDefault();
+      var patId = link.getAttribute('data-pattern');
+      // Delegate to the problems page filter (set via window._applyPatternFilter)
+      var container = document.getElementById('pattern-filters');
+      if (container) {
+        var btn = container.querySelector('[data-filter="' + patId + '"]');
+        if (btn) btn.click();
+      }
+      // Highlight active pattern in sidebar
+      nav.querySelectorAll('[data-pattern]').forEach(function (a) {
+        a.classList.toggle('sidebar-pattern-item--active', a === link);
+      });
+    });
+  }
+
+  // ── count refresh (when problem status changes) ───────────────────────────
+
+  function refreshCounts(patterns) {
+    if (!patterns) return;
+    patterns.forEach(function (pat) {
+      var item = document.querySelector('[data-pattern="' + pat.id + '"]');
+      if (!item) return;
+      var countEl = item.querySelector('.sidebar-pattern-item__count');
+      if (!countEl) return;
+      var total  = pat.problems.length;
+      var solved = getSolvedCount(pat.problems);
+      var complete = solved === total;
+      countEl.textContent = solved + '/' + total + (complete ? ' ✓' : '');
+      countEl.classList.toggle('sidebar-pattern-item__count--complete', complete);
+    });
+  }
+
+  // ── main render ───────────────────────────────────────────────────────────
+
+  function render(patterns, topics) {
+    var nav = document.getElementById('sidebar-nav');
+    if (!nav) return;
+
+    // Ensure scaffold exists (idempotent: only build once)
+    if (!nav.querySelector('.sidebar-tabs')) {
+      buildScaffold(nav);
+      wireTabButtons();
+      wirePatternFilters(nav);
+    }
+
+    var roadmapPanel = nav.querySelector('[data-sidebar-content="roadmap"]');
+    var topicsPanel  = nav.querySelector('[data-sidebar-content="topics"]');
+    var toolsPanel   = nav.querySelector('[data-sidebar-content="tools"]');
+
+    if (roadmapPanel && patterns) roadmapPanel.innerHTML = buildRoadmapPanel(patterns);
+    if (topicsPanel  && topics)   topicsPanel.innerHTML  = buildTopicsPanel(topics);
+    if (toolsPanel)               toolsPanel.innerHTML   = buildToolsPanel();
+
+    showTab(defaultTab());
+    scrollToActive(nav);
+
+    if (DSA.progress && DSA.progress.updateBadges) {
+      DSA.progress.updateBadges();
+    }
+  }
+
+  function scrollToActive(nav) {
+    // The scroll container is <aside class="sidebar"> (position:fixed; overflow-y:auto),
+    // not the <nav> which has no overflow of its own.
+    var scroller = nav.parentElement;
+    requestAnimationFrame(function () {
+      var active = scroller.querySelector('.sidebar__link--active');
+      if (!active) return;
+      var scrollerRect = scroller.getBoundingClientRect();
+      var activeRect   = active.getBoundingClientRect();
+      var target = activeRect.top - scrollerRect.top + scroller.scrollTop - Math.floor(scroller.clientHeight / 3);
+      scroller.scrollTop = Math.max(0, target);
+    });
+  }
+
+  // ── init ──────────────────────────────────────────────────────────────────
 
   function init() {
     var nav = document.getElementById('sidebar-nav');
     if (!nav) return;
 
     var base = getBasePath();
-    var topicsLoaded = readCache(TOPICS_CACHE_KEY);
-    var problemsLoaded = readCache(PROBLEMS_CACHE_KEY);
+    var patternsLoaded = readCache(PATTERNS_CACHE_KEY);
+    var topicsLoaded   = readCache(TOPICS_CACHE_KEY);
 
-    function renderIfReady() {
-      // Render as soon as topics is available (from cache or fetch).
-      if (topicsLoaded === null) return;
-      buildSidebar(topicsLoaded || [], problemsLoaded || []);
-      if (DSA.progress && DSA.progress.updateBadges) {
-        DSA.progress.updateBadges();
-      }
+    // Render immediately from cache if available (no flash of empty sidebar)
+    if (patternsLoaded !== null || topicsLoaded !== null) {
+      render(patternsLoaded || [], topicsLoaded || []);
     }
 
-    // Render immediately from cache if we have anything (no flash of empty sidebar).
-    if (topicsLoaded !== null) {
-      renderIfReady();
-    }
-
-    // Background refresh — only re-render if data actually changed.
-    fetchJson(base + 'data/topics.json', function(err, data) {
+    // Background fetch — only re-render when data actually changed
+    fetchJson(base + 'data/patterns.json', function (err, data) {
       if (err) {
-        if (topicsLoaded === null) { topicsLoaded = []; renderIfReady(); }
+        if (patternsLoaded === null) { patternsLoaded = []; render(patternsLoaded, topicsLoaded || []); }
         return;
       }
-      var prev = JSON.stringify(topicsLoaded);
-      var next = JSON.stringify(data);
-      if (prev !== next) {
+      var changed = JSON.stringify(patternsLoaded) !== JSON.stringify(data);
+      if (changed) {
+        patternsLoaded = data;
+        writeCache(PATTERNS_CACHE_KEY, data);
+        render(patternsLoaded, topicsLoaded || []);
+      }
+    });
+
+    fetchJson(base + 'data/topics.json', function (err, data) {
+      if (err) {
+        if (topicsLoaded === null) { topicsLoaded = []; render(patternsLoaded || [], topicsLoaded); }
+        return;
+      }
+      var changed = JSON.stringify(topicsLoaded) !== JSON.stringify(data);
+      if (changed) {
         topicsLoaded = data;
         writeCache(TOPICS_CACHE_KEY, data);
-        renderIfReady();
+        render(patternsLoaded || [], topicsLoaded);
       }
     });
 
-    fetchJson(base + 'data/problems.json', function(err, data) {
-      if (err) {
-        if (problemsLoaded === null) { problemsLoaded = []; renderIfReady(); }
-        return;
-      }
-      var prev = JSON.stringify(problemsLoaded);
-      var next = JSON.stringify(data);
-      if (prev !== next) {
-        problemsLoaded = data;
-        writeCache(PROBLEMS_CACHE_KEY, data);
-        renderIfReady();
-      }
+    // Refresh solved counts when problem status changes (same tab or cross-tab)
+    window.addEventListener('dsa:problem-progress-changed', function () {
+      refreshCounts(patternsLoaded || []);
     });
-
-    // Refresh sidebar problem dots when status changes (same tab) or across tabs.
-    window.addEventListener('dsa:problem-progress-changed', renderIfReady);
-    window.addEventListener('storage', renderIfReady);
-
-    // problem-renderer.js refreshes problems.json in the background; pick up
-    // the new data so this tab's sidebar doesn't stay stale until reload.
-    window.addEventListener('dsa:problems-cache-updated', function() {
-      var fresh = readCache(PROBLEMS_CACHE_KEY);
-      if (fresh) {
-        problemsLoaded = fresh;
-        renderIfReady();
-      }
+    window.addEventListener('storage', function () {
+      refreshCounts(patternsLoaded || []);
     });
   }
 

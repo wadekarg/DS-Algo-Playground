@@ -78,6 +78,18 @@ body {
   border-left-color: var(--accent-primary);
 }
 
+.sidebar__link--roadmap {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  color: var(--accent-primary);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.sidebar__link--roadmap:hover {
+  color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.08);
+}
+
 .sidebar__progress {
   display: inline-flex;
   align-items: center;

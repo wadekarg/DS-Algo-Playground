@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greedy - DS-Algo Playground</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+  <link rel="stylesheet" href="../css/topic-template.css">
+</head>
+<body data-topic="greedy">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <a href="../index.html" class="sidebar__logo">
+        <svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#3b82f6"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="white">&lt;/&gt;</text></svg>
+        DS-Algo
+      </a>
+    </div>
+    <nav id="sidebar-nav" class="sidebar__nav"></nav>
+    <div class="sidebar__footer">
+      <span style="font-size:var(--font-size-sm);color:var(--text-tertiary);">Press <strong>?</strong> for shortcuts</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay"></div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <header class="main__header">
+      <button class="hamburger" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" placeholder="Search topics...">
+        <span class="search-shortcut">/</span>
+        <div class="search-results"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <div class="main__content">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs" style="margin-bottom:var(--space-lg);">
+        <a href="../index.html">← Roadmap</a>
+        <span class="breadcrumbs__sep">/</span>
+        <a href="../index.html#pattern-greedy">Greedy</a>
+      </div>
+
+      <!-- Topic Header -->
+      <div class="topic-header">
+        <h1 class="topic-header__title">Greedy</h1>
+        <p class="topic-header__desc">Make locally optimal choices at each step. Globally optimal for specific problem structures.</p>
+        <div class="topic-header__badges">
+          <span class="badge badge--blue">Technique</span>
+          <span class="badge badge--purple">Locally Optimal</span>
+          <span class="badge badge--green">O(n)</span>
+        </div>
+      </div>
+
+      <!-- Key Facts -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Key Facts</h2>
+        <ul style="line-height:2;color:var(--text-secondary);padding-left:var(--space-lg);">
+          <li><strong>Time:</strong> typically O(n) or O(n log n) — depends on whether sorting is needed</li>
+          <li><strong>Space:</strong> O(1) — greedy solutions rarely need auxiliary storage</li>
+          <li><strong>Greedy choice property:</strong> a locally optimal choice leads to a globally optimal solution</li>
+          <li><strong>Optimal substructure:</strong> the optimal solution to the problem contains optimal solutions to subproblems</li>
+          <li><strong>Correctness:</strong> always prove or verify — greedy does not always work</li>
+        </ul>
+      </section>
+
+
+
+      <!-- How It Works -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">How Greedy Algorithms Work</h2>
+        <div class="topic-section__content">
+          <p>A <strong>greedy algorithm</strong> makes the locally optimal choice at each step with the hope that this leads to a globally optimal solution. Unlike dynamic programming (which considers all possibilities), greedy commits to one choice and never looks back.</p>
+          <p>Greedy works when the problem has two properties: the <strong>greedy choice property</strong> (a local optimum can be chosen without reconsidering past choices) and <strong>optimal substructure</strong> (an optimal solution contains optimal solutions to its subproblems). The classic example is interval scheduling: always pick the interval that ends earliest, freeing up the most room for future intervals.</p>
+          <p>Greedy does <em>not</em> always work — 0/1 Knapsack looks greedy but requires DP because fractional choices are not allowed. Before applying greedy, either prove it works (exchange argument: show any solution that doesn't follow the greedy choice can be transformed into one that does, without getting worse) or test with counterexamples.</p>
+          <p>Many problems combine greedy with sorting: sort the input to create a natural order of decisions, then scan linearly making the greedy choice. This gives O(n log n) overall.</p>
+          <ul>
+            <li><strong>Sort first</strong> — most greedy problems require sorting to define the order of decisions.</li>
+            <li><strong>Exchange argument</strong> — to prove greedy works, show swapping any non-greedy choice with the greedy one never makes things worse.</li>
+            <li><strong>Greedy ≠ DP</strong> — if order of choices affects future possibilities, you likely need DP.</li>
+            <li>If you're unsure, try a small counterexample first. Greedy fails fast on counterexamples.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Code Templates -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Code Templates</h2>
+        <div class="code-block">
+          <div class="code-block__header">
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-tertiary);">Python</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__body">
+            <div class="code-block__panel code-block__panel--active" data-lang="python">
+              <pre class="code-block__pre"># ── Jump Game (greedy: track max reachable index) ─────────────
+def can_jump(nums):
+    max_reach = 0
+    for i, jump in enumerate(nums):
+        if i &gt; max_reach:
+            return False          # can't reach index i
+        max_reach = max(max_reach, i + jump)
+    return True
+
+# ── Merge Intervals (sort + greedy merge) ─────────────────────
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start &lt;= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)  # overlap → extend
+        else:
+            merged.append([start, end])              # no overlap → new
+    return merged
+
+# ── Interval Scheduling (greedy: pick earliest end time) ──────
+def max_non_overlapping(intervals):
+    intervals.sort(key=lambda x: x[1])   # sort by END time
+    count, last_end = 0, float("-inf")
+    for start, end in intervals:
+        if start &gt;= last_end:
+            count    += 1
+            last_end  = end
+    return count
+</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Complexity Table -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Complexity</h2>
+        <div class="table-container complexity-table">
+          <table>
+            <thead><tr><th>Phase</th><th>Time</th><th>Space</th></tr></thead>
+            <tbody>
+              <tr><td>Sort (if needed)</td><td>O(n log n)</td><td>O(1)</td></tr>
+              <tr><td>Greedy scan</td><td>O(n)</td><td>O(1)</td></tr>
+              <tr><td>Total (typical)</td><td>O(n log n)</td><td>O(1)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- Interactive Visualization -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Interactive Visualization</h2>
+        <div class="topic-section__content">
+          <p>Watch the <strong>Jump Game</strong> greedy algorithm: track <code>maxReach</code> — the farthest index reachable. If we can ever advance past it, return false immediately.</p>
+        </div>
+        <div class="viz-container">
+          <div class="viz-canvas-wrap">
+            <canvas id="greedy-canvas"></canvas>
+          </div>
+          <div class="viz-explanation">Press Run to visualize the Jump Game algorithm.</div>
+          <div class="code-trace" style="margin-top:var(--space-md);">
+            <pre class="code-trace__code">def can_jump(nums):
+    maxReach = 0               # line 1
+    for i, n in enumerate(nums):
+        if i > maxReach:       # line 4 — stuck
+            return False
+        maxReach = max(maxReach, i + n)  # line 5
+    return True                # line 7</pre>
+          </div>
+          <div class="viz-controls">
+            <div class="viz-controls__group">
+              <button class="viz-controls__btn" data-viz-action="play" aria-label="Play/Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="prev" aria-label="Previous step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,3 5,12 19,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="next" aria-label="Next step">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <button class="viz-controls__btn" data-viz-action="reset" aria-label="Reset">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+            </div>
+            <div class="viz-controls__sep"></div>
+            <span class="viz-controls__label">Speed</span>
+            <input type="range" class="viz-controls__speed" min="100" max="1000" value="500">
+            <span class="viz-step-info">No steps</span>
+          </div>
+          <div class="viz-ops">
+            <button id="greedy-run-btn" class="btn btn--primary btn--sm">Run Jump Game</button>
+            <button id="greedy-reset-btn" class="btn btn--secondary btn--sm">Reset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Practice Problems -->
+      <section class="topic-section">
+        <h2 class="topic-section__title">Practice Problems</h2>
+        <div style="display:flex;flex-direction:column;">
+          <a href="../problems/maximum-subarray.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Maximum Subarray</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/jump-game.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Jump Game</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/jump-game-ii.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Jump Game II</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/gas-station.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Gas Station</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/hand-of-straights.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Hand of Straights</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/merge-triplets-to-form-target-triplet.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Merge Triplets to Form Target Triplet</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/partition-labels.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Partition Labels</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+          <a href="../problems/valid-parenthesis-string.html" class="problem-row"><span class="problem-row__check"></span><span class="problem-row__title">Valid Parenthesis String</span><span class="diff-pill diff-pill--medium">Medium</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Shortcuts Modal -->
+  <div class="modal-overlay shortcuts-modal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">Keyboard Shortcuts</h3>
+        <button class="modal__close" onclick="this.closest('.modal-overlay').classList.remove('active')">&times;</button>
+      </div>
+      <div class="shortcuts-list">
+        <span class="shortcut-key">t</span><span>Toggle theme</span>
+        <span class="shortcut-key">/</span><span>Focus search</span>
+        <span class="shortcut-key">?</span><span>Show shortcuts</span>
+        <span class="shortcut-key">Esc</span><span>Close modal</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/viz-utils.js"></script>
+  <script src="../js/visualization-core.js"></script>
+  <script src="../js/topics/greedy-viz.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/sidebar-nav.js"></script>
+  <script src="../js/search.js"></script>
+  <script src="../js/progress.js"></script>
+  <script src="../js/keyboard.js"></script>
+  <script src="../js/code-block.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/problem-progress.js"></script>
+</body>
+</html>
