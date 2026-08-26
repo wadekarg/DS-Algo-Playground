@@ -3,10 +3,11 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // CodeMirror + Pyodide loaders live in js/cdn-loader.js (DSA.cdnLoader.*)
-  // so practice.js and code-runner.js share the same singletons.
+  // CodeMirror lives in js/cdn-loader.js (DSA.cdnLoader.*); Python now runs
+  // off-thread via DSA.cdnLoader.runPython (see js/pyodide-worker.js).
   function loadCodeMirror(cb) { DSA.cdnLoader.loadCodeMirror(cb); }
-  function loadPyodide(cb)    { DSA.cdnLoader.loadPyodide(cb); }
+
+  var RUN_TIMEOUT_MS = 6000; // kill runaway/infinite-loop solutions after this long
 
   // --- Failure banner: prepend a dismissible warning above the practice block
   //     so users on locked-down networks see an actionable hint. ---
@@ -27,56 +28,6 @@ var DSA = window.DSA || {};
     banner.appendChild(msg);
     banner.appendChild(close);
     block.insertBefore(banner, block.firstChild);
-  }
-
-  // --- Python repr helper for JS values ---
-  function pyRepr(val) {
-    if (val === null || val === undefined) return 'None';
-    if (typeof val === 'boolean') return val ? 'True' : 'False';
-    if (typeof val === 'number') return String(val);
-    if (typeof val === 'string') return JSON.stringify(val);
-    if (Array.isArray(val)) {
-      return '[' + val.map(pyRepr).join(', ') + ']';
-    }
-    if (typeof val === 'object') {
-      var pairs = [];
-      for (var k in val) {
-        if (Object.prototype.hasOwnProperty.call(val, k)) {
-          pairs.push(pyRepr(k) + ': ' + pyRepr(val[k]));
-        }
-      }
-      return '{' + pairs.join(', ') + '}';
-    }
-    return JSON.stringify(val);
-  }
-
-  // --- Run one test case against Pyodide ---
-  function runTest(py, userCode, fnName, args, callback) {
-    var argsRepr = args.map(pyRepr).join(', ');
-    var testCode =
-      'import sys\n' +
-      'from io import StringIO\n' +
-      '_out = StringIO()\n' +
-      'sys.stdout = _out\n' +
-      'sys.stderr = _out\n' +
-      userCode + '\n' +
-      'print(repr(' + fnName + '(' + argsRepr + ')))\n' +
-      'sys.stdout = sys.__stdout__\n' +
-      'sys.stderr = sys.__stderr__\n';
-
-    var output = '';
-    var error = null;
-    try {
-      py.runPython(testCode);
-      try {
-        output = py.runPython('_out.getvalue()');
-      } catch(e) {}
-    } catch(e) {
-      error = String(e);
-      try { py.runPython('sys.stdout = sys.__stdout__\nsys.stderr = sys.__stderr__'); } catch(ignored) {}
-    }
-
-    callback(error, output ? output.trim() : '');
   }
 
   // --- Build the practice panel DOM and wire it up ---
@@ -301,17 +252,12 @@ var DSA = window.DSA || {};
           if (saved !== null) initialCode = saved;
         } catch (e) {}
       }
-      cmEditor = window.CodeMirror(editorWrap, {
-        value: initialCode,
-        mode: 'python',
-        theme: 'dracula',
-        lineNumbers: true,
-        indentUnit: 4,
-        autoCloseBrackets: true,
-        lineWrapping: false,
-        viewportMargin: Infinity
-      });
+      // Recover any tab-indented drafts so Python doesn't choke on mixed
+      // tabs/spaces; the editor itself now inserts spaces on Tab.
+      initialCode = DSA.cdnLoader.normalizeIndent(initialCode);
+      cmEditor = DSA.cdnLoader.makeEditor(editorWrap, initialCode);
       statusSpan.textContent = 'Ready';
+      DSA.cdnLoader.warmup(); // pre-load Pyodide in the worker
 
       // Debounced autosave on edit.
       if (draftKey) {
@@ -328,12 +274,12 @@ var DSA = window.DSA || {};
     // Run Tests button handler
     var DEFAULT_RUN_LABEL = '▶ Run Tests';
     runBtn.addEventListener('click', function() {
-      var userCode = cmEditor ? cmEditor.getValue() : starter;
+      var userCode = cmEditor ? DSA.cdnLoader.normalizeIndent(cmEditor.getValue()) : starter;
       // Clear any pass/fail color carried over from a previous run so the
       // 'Running...' text is visibly NEW. Also flip the button label and
       // show an active placeholder in the results pane.
       statusSpan.className = 'practice-block__status practice-block__status--running';
-      statusSpan.textContent = 'Loading Pyodide…';
+      statusSpan.textContent = 'Running…';
       runBtn.disabled = true;
       runBtn.textContent = '⏳ Running…';
       results.innerHTML = '<div class="practice-block__running">Running tests…</div>';
@@ -349,59 +295,93 @@ var DSA = window.DSA || {};
         var delay = Math.max(0, 400 - elapsed);
         setTimeout(callback, delay);
       }
+      function resetBtn() {
+        runBtn.disabled = false;
+        runBtn.textContent = DEFAULT_RUN_LABEL;
+      }
+      function fail(msg) {
+        statusSpan.textContent = msg;
+        statusSpan.className = 'practice-block__status practice-block__summary--fail';
+      }
 
-      loadPyodide(function(pyErr, py) {
-        if (pyErr) {
-          statusSpan.textContent = 'Pyodide failed to load';
-          statusSpan.className = 'practice-block__status practice-block__summary--fail';
-          showBanner(el, 'pyodide',
-            'Python runtime failed to load (about 10MB from cdn.jsdelivr.net). Check your network — corporate firewalls sometimes block this CDN. Your code is preserved; click Run again once you reconnect.');
-          runBtn.disabled = false;
-          runBtn.textContent = DEFAULT_RUN_LABEL;
-          results.innerHTML = '';
-          results.style.display = 'none';
-          return;
-        }
-        statusSpan.textContent = 'Running…';
-        runAllTests(py, userCode, fnName, allTests, function(testResults) {
+      DSA.cdnLoader.runPython(
+        { mode: 'tests', code: userCode, fnName: fnName, tests: allTests },
+        RUN_TIMEOUT_MS,
+        function(data) {
           finish(function() {
-            var passed = 0;
-            for (var i = 0; i < testResults.length; i++) {
-              if (testResults[i].pass) passed++;
+            resetBtn();
+
+            if (data.timeout) {
+              fail('Timed out');
+              results.innerHTML = '<div class="practice-block__timeout">⏱ Stopped after ' +
+                (RUN_TIMEOUT_MS / 1000) + 's — your code may have an infinite loop. ' +
+                'Check for a loop or recursion that never ends.</div>';
+              results.style.display = '';
+              return;
             }
-            renderResults(results, testResults, passed, allTests.length, allTests);
+            if (data.error) {
+              fail('Runtime unavailable');
+              showBanner(el, 'pyodide',
+                'Python runtime failed to load (about 10MB from cdn.jsdelivr.net). Check your network — corporate firewalls sometimes block this CDN. Your code is preserved; click Run again once you reconnect.');
+              results.innerHTML = '';
+              results.style.display = 'none';
+              return;
+            }
+
+            var payload = data.payload || {};
+            if (payload.codeError) {
+              fail('Error');
+              renderCodeError(results, DSA.cdnLoader.formatPyError(payload.codeError));
+              return;
+            }
+
+            var raw = payload.results || [];
+            var testResults = [];
+            var passed = 0;
+            for (var i = 0; i < allTests.length; i++) {
+              var t = allTests[i];
+              var r = raw[i] || {};
+              var pass = !!r.ok && r.result === t.expected;
+              if (pass) passed++;
+              testResults.push({
+                pass: pass,
+                label: t.label || ('Test ' + (i + 1)),
+                args: t.args,
+                expected: t.expected,
+                actual: r.ok ? r.result : ('ERROR: ' + DSA.cdnLoader.formatPyError(r.error))
+              });
+            }
+            renderResults(results, testResults, passed, allTests.length);
             results.style.display = '';
             var summaryClass = passed === allTests.length ? 'pass' :
                                passed > 0 ? 'partial' : 'fail';
             statusSpan.textContent = passed + ' / ' + allTests.length + ' tests passed';
             statusSpan.className = 'practice-block__status practice-block__summary--' + summaryClass;
-            runBtn.disabled = false;
-            runBtn.textContent = DEFAULT_RUN_LABEL;
           });
-        });
-      });
+        }
+      );
     });
   }
 
-  function runAllTests(py, userCode, fnName, tests, done) {
-    var results = [];
-    var idx = 0;
-    function next() {
-      if (idx >= tests.length) { done(results); return; }
-      var t = tests[idx++];
-      runTest(py, userCode, fnName, t.args, function(err, output) {
-        var pass = !err && output === t.expected;
-        results.push({
-          pass: pass,
-          label: t.label || ('Test ' + idx),
-          args: t.args,
-          expected: t.expected,
-          actual: err ? ('ERROR: ' + err) : output
-        });
-        next();
-      });
-    }
-    next();
+  // Render a whole-program error (syntax error, or code that fails to define
+  // the expected function) as a single clean block instead of per-test rows.
+  function renderCodeError(container, msg) {
+    container.innerHTML = '';
+    var box = document.createElement('div');
+    box.className = 'practice-block__results-details practice-block__results-details--fail';
+    box.open = true;
+    var summary = document.createElement('div');
+    summary.className = 'practice-block__summary practice-block__summary--fail';
+    summary.innerHTML =
+      '<span class="practice-block__summary-icon">✗</span>' +
+      '<span class="practice-block__summary-text">Your code has an error</span>';
+    var pre = document.createElement('pre');
+    pre.className = 'practice-block__code-error';
+    pre.textContent = msg;
+    box.appendChild(summary);
+    box.appendChild(pre);
+    container.appendChild(box);
+    container.style.display = '';
   }
 
   function renderResults(container, testResults, passed, total) {
