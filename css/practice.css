@@ -456,3 +456,28 @@
 }
 .practice-got--ok { color: #166534; }
 .practice-got--bad { color: #991b1b; }
+
+/* --- Timed-out run (possible infinite loop, killed in the worker) --- */
+.practice-block__timeout {
+  padding: 12px 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  color: #9a3412;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* --- Whole-program error (syntax error / missing function) --- */
+.practice-block__code-error {
+  margin: 0;
+  padding: 12px 14px;
+  background: #fef2f2;
+  border-top: 1px solid #fecaca;
+  color: #991b1b;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
