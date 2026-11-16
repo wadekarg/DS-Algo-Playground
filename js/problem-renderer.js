@@ -504,7 +504,9 @@ function renderApproaches(prob) {
           <span class="approach-O-space ${spaceClass}">Space: ${_esc(a.space)}</span>
         </summary>
         <div class="approach-body">
-          <pre>${escapeCode(a.code)}</pre>
+          ${a.code_c ? '<div class="approach-lang-row"></div>' : ''}
+          <pre data-lang="python">${escapeCode(a.code)}</pre>
+          ${a.code_c ? `<pre data-lang="c" hidden>${escapeCode(a.code_c)}</pre>` : ''}
           <p class="approach-why">${_esc(a.explanation)}</p>
         </div>
       </details>
@@ -525,6 +527,35 @@ function renderApproaches(prob) {
   // Syntax-highlight the freshly rendered code blocks using CodeMirror's
   // runMode (reuses the editor library we already load — no extra deps).
   _colorizeApproachCode(slot);
+  _wireApproachLang(slot);
+}
+
+/** Python / C switch on each approach that has a C version. All switches
+ *  follow the site-wide language choice (DSA.cdnLoader.lang). */
+function _wireApproachLang(root) {
+  if (!window.DSA || !DSA.cdnLoader || !DSA.cdnLoader.lang) return;
+  const L = DSA.cdnLoader.lang;
+  const rows = root.querySelectorAll('.approach-lang-row');
+  if (!rows.length) return;
+  const switches = [];
+  rows.forEach(row => {
+    const sw = L.makeSwitch(['python', 'c'], L.get(), l => L.set(l));
+    row.appendChild(sw);
+    switches.push(sw);
+  });
+  const show = l => {
+    root.querySelectorAll('.approach-body').forEach(body => {
+      const pres = body.querySelectorAll('pre[data-lang]');
+      if (pres.length < 2) return;
+      pres.forEach(p => { p.hidden = p.dataset.lang !== l; });
+    });
+    switches.forEach(sw => sw.setActive(l));
+  };
+  show(L.get());
+  if (!root.dataset.langWired) {
+    root.dataset.langWired = '1';
+    L.onChange(l => show(l));
+  }
 }
 
 /** Tokenize <pre> blocks inside the approaches section with CodeMirror's
@@ -541,7 +572,7 @@ function _colorizeApproachCode(root) {
       const code = pre.textContent;
       pre.textContent = '';
       pre.classList.add('cm-s-dracula');
-      CodeMirror.runMode(code, 'python', pre);
+      CodeMirror.runMode(code, pre.dataset.lang === 'c' ? 'text/x-csrc' : 'python', pre);
       pre.dataset.colorized = '1';
     });
   });
@@ -578,6 +609,11 @@ function renderPracticeEditor(prob) {
     .replace(/'/g, '&#39;')
     .replace(/\n/g, '&#10;');
 
+  // C version: the harness spec + starter, JSON in a single-quoted attribute.
+  const cAttr = prob.c
+    ? ` data-c='${JSON.stringify(prob.c).replace(/&/g, '&amp;').replace(/'/g, '&#39;')}'`
+    : '';
+
   // No need to re-render title/summary inside the editor — they already appear
   // in the topbar and problem-statement card on the left. data-problem-id
   // lets practice.js key the draft-autosave entry by problem.
@@ -586,9 +622,9 @@ function renderPracticeEditor(prob) {
       data-title="${_esc(prob.title)}"
       data-difficulty="${_esc(prob.difficulty)}"
       data-fn="${_esc(prob.function_name)}"
-      data-problem-id="${_esc(prob.id)}"
+      data-problem-id="${_esc(prob.id)}"${prob.normalize ? ` data-normalize="${_esc(prob.normalize)}"` : ''}
       data-starter='${starterEscaped}'
-      data-tests='${testsJson}'>
+      data-tests='${testsJson}'${cAttr}>
     </div>
   `;
 

@@ -143,6 +143,77 @@ def largest_rectangle(heights):
     return max_area
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+// ── Daily Temperatures (next warmer day) ──────────────────────
+void daily_temperatures(int temps[], int n, int result[]) {
+    int* stack = malloc(n * sizeof(int));   // indices, decreasing by temperature
+    int top = 0;
+    for (int i = 0; i &lt; n; i++) {
+        result[i] = 0;
+        while (top &gt; 0 &amp;&amp; temps[stack[top - 1]] &lt; temps[i]) {
+            int j = stack[--top];
+            result[j] = i - j;              // days until warmer temperature
+        }
+        stack[top++] = i;
+    }
+    free(stack);
+}
+
+// ── Online Stock Span ─────────────────────────────────────────
+typedef struct {
+    int price[64], span[64];   // monotonic decreasing by price
+    int top;
+} StockSpanner;
+
+int next_span(StockSpanner* s, int price) {
+    int span = 1;
+    while (s-&gt;top &gt; 0 &amp;&amp; s-&gt;price[s-&gt;top - 1] &lt;= price)
+        span += s-&gt;span[--s-&gt;top];          // absorb smaller spans
+    s-&gt;price[s-&gt;top] = price;
+    s-&gt;span[s-&gt;top++] = span;
+    return span;
+}
+
+// ── Largest Rectangle in Histogram ───────────────────────────
+int largest_rectangle(int heights[], int n) {
+    int* stack = malloc((n + 1) * sizeof(int));  // indices, increasing height
+    int top = 0, max_area = 0;
+    for (int i = 0; i &lt;= n; i++) {
+        int h = i == n ? 0 : heights[i];         // sentinel flushes the stack
+        while (top &gt; 0 &amp;&amp; heights[stack[top - 1]] &gt; h) {
+            int j = stack[--top];
+            int width = top == 0 ? i : i - stack[top - 1] - 1;
+            if (heights[j] * width &gt; max_area) max_area = heights[j] * width;
+        }
+        stack[top++] = i;
+    }
+    free(stack);
+    return max_area;
+}
+
+int main(void) {
+    int temps[] = {73, 74, 75, 71, 69, 72, 76, 73}, res[8];
+    daily_temperatures(temps, 8, res);
+    printf("daily temperatures:");
+    for (int i = 0; i &lt; 8; i++) printf(" %d", res[i]);
+    printf("\n");
+
+    StockSpanner s = { .top = 0 };
+    int prices[] = {100, 80, 60, 70, 60, 75, 85};
+    printf("stock spans:");
+    for (int i = 0; i &lt; 7; i++) printf(" %d", next_span(&amp;s, prices[i]));
+    printf("\n");
+
+    int h[] = {2, 1, 5, 6, 2, 3};
+    printf("largest rectangle: %d\n", largest_rectangle(h, 6));
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -172,14 +243,26 @@ def largest_rectangle(heights):
           </div>
           <div class="viz-explanation">Press Run to visualize the Next Greater Element algorithm.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def next_greater(arr):
-    n, stack, nge = len(arr), [], [-1]*n
-    for i in range(n):          # line 3
-        while stack and arr[stack[-1]] < arr[i]:
-            j = stack.pop()     # line 5
-            nge[j] = arr[i]     # line 6
-        stack.append(i)         # line 8
-    return nge                  # line 10</pre>
+            <pre class="code-trace__code" data-lang="python">def next_greater(arr):
+    n, stack, nge = len(arr), [], [-1] * len(arr)
+    for i in range(n):
+        while stack and arr[stack[-1]] &lt; arr[i]:
+            j = stack.pop()
+            nge[j] = arr[i]
+        stack.append(i)
+    return nge</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2-3,3:4,4:5,5:6,6:7,7:9,8:11" hidden>void next_greater(int arr[], int n, int nge[]) {
+    int* stack = malloc(n * sizeof(int)); int top = 0;
+    for (int i = 0; i &lt; n; i++) nge[i] = -1;
+    for (int i = 0; i &lt; n; i++) {
+        while (top &gt; 0 &amp;&amp; arr[stack[top - 1]] &lt; arr[i]) {
+            int j = stack[--top];
+            nge[j] = arr[i];
+        }
+        stack[top++] = i;
+    }
+    free(stack);
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -238,6 +321,7 @@ def largest_rectangle(heights):
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/monotonic-stack-viz.js"></script>
@@ -248,6 +332,8 @@ def largest_rectangle(heights):
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

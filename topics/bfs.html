@@ -91,7 +91,7 @@
 
           <div class="viz-explanation">Click Start to begin BFS traversal from node 0.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def bfs(graph, start):
+            <pre class="code-trace__code" data-lang="python">def bfs(graph, start):
     visited = set()
     queue = deque([start])
     visited.add(start)
@@ -101,6 +101,24 @@
             if neighbor not in visited:
                 visited.add(neighbor)
                 queue.append(neighbor)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3-5,4:6,5:7,6:8,7:9-10,8:11,9:12,10:13" hidden>void bfs(int** graph, int* deg, int n, int start) {
+    bool* visited = calloc(n, sizeof(bool));
+    int* queue = malloc(n * sizeof(int));
+    int head = 0, tail = 0;
+    queue[tail++] = start;
+    visited[start] = true;
+    while (head &lt; tail) {
+        int node = queue[head++];
+        for (int i = 0; i &lt; deg[node]; i++) {
+            int neighbor = graph[node][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                queue[tail++] = neighbor;
+            }
+        }
+    }
+    free(visited); free(queue);
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -179,6 +197,59 @@ graph = {
 }
 print(bfs(graph, 0))  # Output: [0, 1, 2, 3, 4, 5, 6]</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define MAX_NODES 16
+
+/* Perform BFS from start node. Writes visit order into order[], returns its length. */
+int bfs(int graph[][MAX_NODES], int deg[], int n, int start, int order[]) {
+    bool visited[MAX_NODES] = {false};
+    int queue[MAX_NODES];
+    int head = 0, tail = 0, count = 0;
+
+    queue[tail++] = start;
+    visited[start] = true;
+
+    while (head &lt; tail) {
+        int node = queue[head++];          // Dequeue from front
+        order[count++] = node;
+
+        for (int i = 0; i &lt; deg[node]; i++) {
+            int neighbor = graph[node][i];
+            if (!visited[neighbor]) {
+                visited[neighbor] = true;
+                queue[tail++] = neighbor;  // Enqueue at back
+            }
+        }
+    }
+    return count;
+}
+
+int main(void) {
+    // Example usage: adjacency list
+    int graph[][MAX_NODES] = {
+        {1, 2},      // 0
+        {0, 3, 4},   // 1
+        {0, 5, 6},   // 2
+        {1},         // 3
+        {1},         // 4
+        {2},         // 5
+        {2}          // 6
+    };
+    int deg[] = {2, 3, 3, 1, 1, 1, 1};
+    int order[MAX_NODES];
+    int count = bfs(graph, deg, 7, 0, order);
+
+    printf("[");
+    for (int i = 0; i &lt; count; i++) printf(i ? ", %d" : "%d", order[i]);
+    printf("]\n");  // Output: [0, 1, 2, 3, 4, 5, 6]
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -264,7 +335,8 @@ print(bfs(graph, 0))  # Output: [0, 1, 2, 3, 4, 5, 6]</pre>
             data-difficulty="easy"
             data-fn="level_order"
             data-starter='def level_order(adj, start, n):\n    """Return BFS traversal order as a list, visiting nodes in order."""\n    pass'
-            data-tests='[{"args": [{0:[1,2],1:[3],2:[3],3:[]}, 0, 4], "expected": "[0, 1, 2, 3]", "label": "BFS from 0 in graph → [0,1,2,3]"}]'>
+            data-tests='[{"args": [[[1,2],[3],[3],[]], 0, 4], "expected": "[0, 1, 2, 3]", "label": "BFS from 0 in graph → [0,1,2,3]"}]'
+            data-c='{"fn": "level_order", "params": [{"name": "adj", "type": "int[][]"}, {"name": "start", "type": "int"}, {"name": "n", "type": "int"}], "ret": "int[]", "starter": "/* Return the BFS traversal order from start (malloc&#39;d; set *returnSize).\n * adj[u] lists u&#39;s neighbors; adjColSize[u] is how many there are. */\nint* level_order(int** adj, int adjSize, int* adjColSize, int start, int n, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Given an adjacency dict, a start node, and number of nodes <code>n</code>, return the BFS traversal order as a list.</div>
           </div>
           <!-- Problem 2 -->
@@ -273,7 +345,8 @@ print(bfs(graph, 0))  # Output: [0, 1, 2, 3, 4, 5, 6]</pre>
             data-difficulty="medium"
             data-fn="shortest_path"
             data-starter='def shortest_path(adj, start, end):\n    """Return BFS shortest path length from start to end, or -1 if unreachable."""\n    pass'
-            data-tests='[{"args": [{0:[1,2],1:[3],2:[3],3:[]}, 0, 3], "expected": "2", "label": "shortest path 0→3 is 2"}, {"args": [{0:[1],1:[],2:[3],3:[]}, 0, 3], "expected": "-1", "label": "0→3 unreachable → -1"}]'>
+            data-tests='[{"args": [[[1,2],[3],[3],[]], 0, 3], "expected": "2", "label": "shortest path 0→3 is 2"}, {"args": [[[1],[],[3],[]], 0, 3], "expected": "-1", "label": "0→3 unreachable → -1"}]'
+            data-c='{"fn": "shortest_path", "params": [{"name": "adj", "type": "int[][]"}, {"name": "start", "type": "int"}, {"name": "end", "type": "int"}], "ret": "int", "starter": "/* Return the BFS shortest path length (edges) from start to end, or -1. */\nint shortest_path(int** adj, int adjSize, int* adjColSize, int start, int end) {\n    // Your code here\n    return -1;\n}\n"}'>
             <div class="practice-problem">Using BFS, find the shortest path length between <code>start</code> and <code>end</code> nodes in an unweighted graph. Return <code>-1</code> if unreachable.</div>
           </div>
         </div>
@@ -477,6 +550,7 @@ print(bfs(graph, 0))  # Output: [0, 1, 2, 3, 4, 5, 6]</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/bfs-viz.js"></script>

@@ -392,7 +392,7 @@ var DSA = window.DSA || {};
       };
     }
 
-    steps.push(snapshot(-1, 'DFS starts at node ' + startNode + '. All nodes are unvisited. The stack is empty.', 2, { node: startNode }));
+    steps.push(snapshot(-1, 'DFS starts at node ' + startNode + '. All nodes are unvisited. The stack is empty.', 1, { node: startNode }));
 
     stack.push(startNode);
     nodeStates[startNode] = 'stacked';
@@ -402,13 +402,13 @@ var DSA = window.DSA || {};
       var current = stack.pop();
 
       if (nodeStates[current] === 'visited') {
-        steps.push(snapshot(current, 'Pop node ' + current + ' from the stack, but it is already visited. Skip it. Stack: [' + stack.slice().reverse().join(', ') + '].', 3, { node: current }));
+        steps.push(snapshot(current, 'Pop node ' + current + ' from the stack, but it is already visited. Skip it. Stack: [' + stack.slice().reverse().join(', ') + '].', 6, { node: current }));
         continue;
       }
 
       nodeStates[current] = 'visited';
       visited[current] = true;
-      steps.push(snapshot(current, 'Pop node ' + current + ' from the stack. Visit it (mark as visited). Stack: [' + stack.slice().reverse().join(', ') + '].', 4, { node: current }));
+      steps.push(snapshot(current, 'Pop node ' + current + ' from the stack. Visit it (mark as visited). Stack: [' + stack.slice().reverse().join(', ') + '].', 7, { node: current }));
 
       var neighbors = adj[current] || [];
       var toPush = [];
@@ -424,11 +424,11 @@ var DSA = window.DSA || {};
       }
 
       if (toPush.length > 0) {
-        steps.push(snapshot(current, 'Push unvisited neighbors of node ' + current + ': [' + toPush.join(', ') + '] onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].', 6, { node: current }));
+        steps.push(snapshot(current, 'Push unvisited neighbors of node ' + current + ': [' + toPush.join(', ') + '] onto the stack. Stack (top first): [' + stack.slice().reverse().join(', ') + '].', 10, { node: current }));
       }
     }
 
-    steps.push(snapshot(-1, 'DFS complete! All reachable nodes have been visited. The stack is empty.', 7, {}));
+    steps.push(snapshot(-1, 'DFS complete! All reachable nodes have been visited. The stack is empty.', 4, {}));
 
     return steps;
   }

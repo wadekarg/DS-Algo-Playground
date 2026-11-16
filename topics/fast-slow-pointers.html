@@ -117,6 +117,36 @@
             return True
     return False</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+struct ListNode {
+    int val;
+    struct ListNode* next;
+};
+
+bool has_cycle(struct ListNode* head) {
+    struct ListNode *slow = head, *fast = head;
+    while (fast &amp;&amp; fast-&gt;next) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+        if (slow == fast) return true;
+    }
+    return false;
+}
+
+int main(void) {
+    // 3 -&gt; 2 -&gt; 0 -&gt; -4, then -4 points back to 2
+    struct ListNode d = {-4, NULL}, c = {0, &amp;d}, b = {2, &amp;c}, a = {3, &amp;b};
+    printf("without cycle: %s\n", has_cycle(&amp;a) ? "true" : "false");
+    d.next = &amp;b;
+    printf("with cycle:    %s\n", has_cycle(&amp;a) ? "true" : "false");
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -211,6 +241,8 @@
   <script src="../js/code-block.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
   <script src="../js/topic-renderer.js"></script>

@@ -93,7 +93,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
-      codeLine: 2,
+      codeLine: 1,
       variables: { val: val },
       description: 'Insert ' + val + ': starting at the root.'
     });
@@ -107,7 +107,7 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: path.slice(),
         found: null,
-        codeLine: val < node.val ? 4 : 6,
+        codeLine: val < node.val ? 3 : 5,
         variables: { val: val, node: node.val },
         description: 'Compare ' + val + ' with node ' + node.val + '. ' +
           (val < node.val ? val + ' < ' + node.val + ', go left.' : val + ' > ' + node.val + ', go right.')
@@ -128,7 +128,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [val],
       found: val,
-      codeLine: 3,
+      codeLine: 2,
       variables: { val: val },
       description: 'Inserted ' + val + ' as a ' + (node && val < node.val ? 'left' : 'right') + ' child of ' + (node ? node.val : 'root') + '.'
     });
@@ -163,7 +163,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
-      codeLine: 11,
+      codeLine: 8,
       variables: { val: val },
       description: 'Search for ' + val + ': starting at the root.'
     });
@@ -179,7 +179,7 @@ var DSA = window.DSA || {};
           tree: cloneTree(root),
           highlighted: path.slice(),
           found: val,
-          codeLine: 11,
+          codeLine: 10,
           variables: { val: val, node: node.val },
           description: 'Found ' + val + '! Node matches the search value.'
         });
@@ -187,7 +187,7 @@ var DSA = window.DSA || {};
           tree: cloneTree(root),
           highlighted: [],
           found: val,
-          codeLine: 11,
+          codeLine: 10,
           variables: { val: val },
           description: 'Search complete. Value ' + val + ' exists in the BST.'
         });
@@ -198,7 +198,7 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: path.slice(),
         found: null,
-        codeLine: val < node.val ? 13 : 14,
+        codeLine: val < node.val ? 12 : 13,
         variables: { val: val, node: node.val },
         description: 'Compare ' + val + ' with node ' + node.val + '. ' +
           (val < node.val ? val + ' < ' + node.val + ', go left.' : val + ' > ' + node.val + ', go right.')
@@ -215,7 +215,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: path.slice(),
       found: null,
-      codeLine: 11,
+      codeLine: 10,
       variables: { val: val },
       description: 'Reached a null child. Value ' + val + ' is not in the BST.'
     });
@@ -242,7 +242,7 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: [],
         found: null,
-        description: 'Value ' + val + ' does not exist in the tree. Nothing to delete.'
+        codeLine: 14, description: 'Value ' + val + ' does not exist in the tree. Nothing to delete.'
       });
       return steps;
     }
@@ -251,7 +251,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
-      description: 'Delete ' + val + ': searching for the node.'
+      codeLine: 14, description: 'Delete ' + val + ': searching for the node.'
     });
 
     var node = root;
@@ -276,7 +276,7 @@ var DSA = window.DSA || {};
           tree: cloneTree(root),
           highlighted: path.slice(),
           found: val,
-          description: 'Found node ' + val + '. ' + caseDesc
+          codeLine: 19, description: 'Found node ' + val + '. ' + caseDesc
         });
         break;
       }
@@ -285,7 +285,7 @@ var DSA = window.DSA || {};
         tree: cloneTree(root),
         highlighted: path.slice(),
         found: null,
-        description: 'Compare ' + val + ' with node ' + node.val + '. ' +
+        codeLine: val < node.val ? 15 : 17, description: 'Compare ' + val + ' with node ' + node.val + '. ' +
           (val < node.val ? val + ' < ' + node.val + ', go left.' : val + ' > ' + node.val + ', go right.')
       });
 
@@ -302,7 +302,7 @@ var DSA = window.DSA || {};
       tree: cloneTree(root),
       highlighted: [],
       found: null,
-      description: 'Delete complete. Node ' + val + ' has been removed from the BST.'
+      codeLine: 26, description: 'Delete complete. Node ' + val + ' has been removed from the BST.'
     });
 
     return steps;
@@ -317,21 +317,21 @@ var DSA = window.DSA || {};
       return steps;
     }
 
-    steps.push({ tree: cloneTree(root), highlighted: [], found: null, description: 'Inorder traversal: visit Left subtree, then Node, then Right subtree.' });
+    steps.push({ tree: cloneTree(root), highlighted: [], found: null, codeLine: 27, description: 'Inorder traversal: visit Left subtree, then Node, then Right subtree.' });
 
     var visited = [];
 
     function inorder(node) {
       if (!node) return;
-      steps.push({ tree: cloneTree(root), highlighted: visited.concat([node.val]), found: null, description: 'Visiting node ' + node.val + '. First, go to its left subtree.' });
+      steps.push({ tree: cloneTree(root), highlighted: visited.concat([node.val]), found: null, codeLine: 29, description: 'Visiting node ' + node.val + '. First, go to its left subtree.' });
       inorder(node.left);
       visited.push(node.val);
-      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, description: 'Process node ' + node.val + '. Inorder so far: [' + visited.join(', ') + ']. Now go to its right subtree.' });
+      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, codeLine: 30, description: 'Process node ' + node.val + '. Inorder so far: [' + visited.join(', ') + ']. Now go to its right subtree.' });
       inorder(node.right);
     }
 
     inorder(root);
-    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Inorder traversal complete: [' + visited.join(', ') + '].' });
+    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, codeLine: 27, description: 'Inorder traversal complete: [' + visited.join(', ') + '].' });
     return steps;
   }
 
@@ -344,23 +344,23 @@ var DSA = window.DSA || {};
       return steps;
     }
 
-    steps.push({ tree: cloneTree(root), highlighted: [], found: null, description: 'Preorder traversal: visit Node first, then Left subtree, then Right subtree.' });
+    steps.push({ tree: cloneTree(root), highlighted: [], found: null, codeLine: 32, description: 'Preorder traversal: visit Node first, then Left subtree, then Right subtree.' });
 
     var visited = [];
 
     function preorder(node) {
       if (!node) return;
       visited.push(node.val);
-      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, description: 'Process node ' + node.val + '. Preorder so far: [' + visited.join(', ') + ']. Now go to its left subtree.' });
+      steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: node.val, codeLine: 34, description: 'Process node ' + node.val + '. Preorder so far: [' + visited.join(', ') + ']. Now go to its left subtree.' });
       preorder(node.left);
       if (node.right) {
-        steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Left subtree of ' + node.val + ' done. Now go to its right subtree.' });
+        steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, codeLine: 36, description: 'Left subtree of ' + node.val + ' done. Now go to its right subtree.' });
       }
       preorder(node.right);
     }
 
     preorder(root);
-    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, description: 'Preorder traversal complete: [' + visited.join(', ') + '].' });
+    steps.push({ tree: cloneTree(root), highlighted: visited.slice(), found: null, codeLine: 32, description: 'Preorder traversal complete: [' + visited.join(', ') + '].' });
     return steps;
   }
 

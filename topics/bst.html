@@ -97,11 +97,11 @@
 
           <div class="viz-explanation">Binary Search Tree with values [50, 30, 70, 20, 40, 60, 80]. Use the buttons below to perform operations.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def insert(node, val):
+            <pre class="code-trace__code" data-lang="python">def insert(node, val):
     if not node: return Node(val)
     if val &lt; node.val:
         node.left = insert(node.left, val)
-    elif val > node.val:
+    elif val &gt; node.val:
         node.right = insert(node.right, val)
     return node
 def search(node, val):
@@ -109,7 +109,74 @@ def search(node, val):
         return node
     if val &lt; node.val:
         return search(node.left, val)
-    return search(node.right, val)</pre>
+    return search(node.right, val)
+def delete(node, val):
+    if val &lt; node.val:
+        node.left = delete(node.left, val)
+    elif val &gt; node.val:
+        node.right = delete(node.right, val)
+    else:
+        if not node.left: return node.right
+        if not node.right: return node.left
+        succ = node.right            # inorder successor
+        while succ.left: succ = succ.left
+        node.val = succ.val
+        node.right = delete(node.right, succ.val)
+    return node
+def inorder(node):
+    if node:
+        inorder(node.left)
+        visit(node.val)
+        inorder(node.right)
+def preorder(node):
+    if node:
+        visit(node.val)
+        preorder(node.left)
+        preorder(node.right)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:9,9:10,10:11,11:12,12:13,13:14,14:16,15:17,16:18,17:19,18:20,19:21,20:22,21:23,22:24,23:25,24:26,25:27,26:29,27:31,28:32,29:33,30:34,31:35,32:38,33:39,34:40,35:41,36:42" hidden>Node* insert(Node* node, int val) {
+    if (!node) return new_node(val);
+    if (val &lt; node-&gt;val)
+        node-&gt;left = insert(node-&gt;left, val);
+    else if (val &gt; node-&gt;val)
+        node-&gt;right = insert(node-&gt;right, val);
+    return node;
+}
+Node* search(Node* node, int val) {
+    if (node == NULL || node-&gt;val == val)
+        return node;
+    if (val &lt; node-&gt;val)
+        return search(node-&gt;left, val);
+    return search(node-&gt;right, val);
+}
+Node* delete(Node* node, int val) {
+    if (val &lt; node-&gt;val)
+        node-&gt;left = delete(node-&gt;left, val);
+    else if (val &gt; node-&gt;val)
+        node-&gt;right = delete(node-&gt;right, val);
+    else {
+        if (!node-&gt;left) return node-&gt;right;
+        if (!node-&gt;right) return node-&gt;left;
+        Node* succ = node-&gt;right;        // inorder successor
+        while (succ-&gt;left) succ = succ-&gt;left;
+        node-&gt;val = succ-&gt;val;
+        node-&gt;right = delete(node-&gt;right, succ-&gt;val);
+    }
+    return node;
+}
+void inorder(Node* node) {
+    if (node) {
+        inorder(node-&gt;left);
+        visit(node-&gt;val);
+        inorder(node-&gt;right);
+    }
+}
+void preorder(Node* node) {
+    if (node) {
+        visit(node-&gt;val);
+        preorder(node-&gt;left);
+        preorder(node-&gt;right);
+    }
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -149,7 +216,7 @@ def search(node, val):
       <section class="topic-section">
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="topic-section__content">
-          <p>Below are BST insert and search implementations in three languages. The recursive approach mirrors the tree's own structure and is the most natural way to express BST operations.</p>
+          <p>Below are BST insert and search implementations in Python and C. The recursive approach mirrors the tree's own structure and is the most natural way to express BST operations.</p>
         </div>
 
         <div class="code-block">
@@ -203,6 +270,68 @@ print(inorder(root))         # [20, 30, 40, 50, 60, 70, 80]
 print(search(root, 40))      # &lt;BSTNode object&gt;
 print(search(root, 99))      # None</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct BSTNode {
+    int val;
+    struct BSTNode* left;
+    struct BSTNode* right;
+} BSTNode;
+
+BSTNode* new_node(int val) {
+    BSTNode* node = malloc(sizeof(BSTNode));
+    node-&gt;val = val;
+    node-&gt;left = node-&gt;right = NULL;
+    return node;
+}
+
+/* Insert a value into the BST and return the root. */
+BSTNode* insert(BSTNode* root, int val) {
+    if (root == NULL) return new_node(val);
+    if (val &lt; root-&gt;val)
+        root-&gt;left = insert(root-&gt;left, val);
+    else if (val &gt; root-&gt;val)
+        root-&gt;right = insert(root-&gt;right, val);
+    return root;
+}
+
+/* Return the node containing val, or NULL if not found. */
+BSTNode* search(BSTNode* root, int val) {
+    if (root == NULL || root-&gt;val == val) return root;
+    if (val &lt; root-&gt;val) return search(root-&gt;left, val);
+    return search(root-&gt;right, val);
+}
+
+/* Print values in sorted (inorder) order. */
+void inorder(BSTNode* root, int* first) {
+    if (root == NULL) return;
+    inorder(root-&gt;left, first);
+    printf(*first ? "%d" : ", %d", root-&gt;val);
+    *first = 0;
+    inorder(root-&gt;right, first);
+}
+
+int main(void) {
+    // Example usage
+    BSTNode* root = NULL;
+    int values[] = {50, 30, 70, 20, 40, 60, 80};
+    for (int i = 0; i &lt; 7; i++) root = insert(root, values[i]);
+
+    int first = 1;
+    printf("[");
+    inorder(root, &amp;first);
+    printf("]\n");                                  // [20, 30, 40, 50, 60, 70, 80]
+
+    BSTNode* hit = search(root, 40);
+    printf("found node with val %d\n", hit-&gt;val);   // found node with val 40
+    printf("%s\n", search(root, 99) ? "found" : "NULL");   // NULL
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -302,7 +431,8 @@ print(search(root, 99))      # None</pre>
             data-difficulty="easy"
             data-fn="is_bst_valid"
             data-starter='def is_bst_valid(arr):\n    """Return True if arr is strictly increasing (valid BST inorder)."""\n    pass'
-            data-tests='[{"args": [[1,3,5,7]], "expected": "True", "label": "[1,3,5,7] strictly increasing → True"}, {"args": [[5,3,7]], "expected": "False", "label": "[5,3,7] not increasing → False"}]'>
+            data-tests='[{"args": [[1,3,5,7]], "expected": "True", "label": "[1,3,5,7] strictly increasing → True"}, {"args": [[5,3,7]], "expected": "False", "label": "[5,3,7] not increasing → False"}]'
+            data-c='{"fn": "is_bst_valid", "params": [{"name": "arr", "type": "int[]"}], "ret": "bool", "starter": "/* Return true if arr is strictly increasing (a valid BST inorder sequence). */\nbool is_bst_valid(int* arr, int arrSize) {\n    // Your code here\n    return false;\n}\n"}'>
             <div class="practice-problem">Given an inorder traversal of a BST as a list, verify it is strictly increasing (which validates the BST property).</div>
           </div>
           <!-- Problem 2 -->
@@ -311,7 +441,8 @@ print(search(root, 99))      # None</pre>
             data-difficulty="medium"
             data-fn="kth_smallest"
             data-starter='def kth_smallest(arr, k):\n    """Return the kth smallest element (1-indexed) from sorted inorder list."""\n    pass'
-            data-tests='[{"args": [[1,2,3,4,5], 3], "expected": "3", "label": "[1,2,3,4,5] k=3 → 3"}, {"args": [[5,10,15], 1], "expected": "5", "label": "[5,10,15] k=1 → 5"}]'>
+            data-tests='[{"args": [[1,2,3,4,5], 3], "expected": "3", "label": "[1,2,3,4,5] k=3 → 3"}, {"args": [[5,10,15], 1], "expected": "5", "label": "[5,10,15] k=1 → 5"}]'
+            data-c='{"fn": "kth_smallest", "params": [{"name": "arr", "type": "int[]"}, {"name": "k", "type": "int"}], "ret": "int", "starter": "/* Return the kth smallest element (1-indexed) from a sorted inorder list. */\nint kth_smallest(int* arr, int arrSize, int k) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Given a sorted inorder traversal list and an integer <code>k</code>, return the kth smallest element (1-indexed).</div>
           </div>
         </div>
@@ -511,6 +642,7 @@ print(search(root, 99))      # None</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/bst-viz.js"></script>

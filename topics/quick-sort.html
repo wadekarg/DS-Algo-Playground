@@ -89,15 +89,33 @@
           </div>
           <div class="viz-explanation">Press Play or Step to start the visualization.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def quick_sort(arr):
-    if len(arr) &lt;= 1:
-        return arr
-    pivot = arr[len(arr) // 2]
-    return (
-        quick_sort([x for x in arr if x &lt; pivot]) +
-        [x for x in arr if x == pivot] +
-        quick_sort([x for x in arr if x > pivot])
-    )</pre>
+            <pre class="code-trace__code" data-lang="python">def quick_sort(arr, low, high):
+    if low &gt;= high:
+        return
+    pivot = arr[high]
+    i = low
+    for j in range(low, high):
+        if arr[j] &lt;= pivot:
+            arr[i], arr[j] = arr[j], arr[i]
+            i += 1
+    arr[i], arr[high] = arr[high], arr[i]
+    quick_sort(arr, low, i - 1)
+    quick_sort(arr, i + 1, high)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:12,11:13,12:14" hidden>void quick_sort(int arr[], int low, int high) {
+    if (low &gt;= high)
+        return;
+    int pivot = arr[high];
+    int i = low;
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt;= pivot) {
+            int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+            i++;
+        }
+    }
+    int t = arr[i]; arr[i] = arr[high]; arr[high] = t;
+    quick_sort(arr, low, i - 1);
+    quick_sort(arr, i + 1, high);
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -176,6 +194,55 @@ numbers = [64, 34, 25, 12, 22, 11, 90, 45]
 print("Unsorted:", numbers)
 print("Sorted:  ", quick_sort(numbers))</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+
+void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }
+
+/* Lomuto partition: pivot is the last element. */
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low;  // partition boundary
+
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt;= pivot) {
+            swap(&amp;arr[i], &amp;arr[j]);
+            i++;
+        }
+    }
+
+    // Place pivot in its correct position
+    swap(&amp;arr[i], &amp;arr[high]);
+    return i;
+}
+
+/* In-place quick sort using Lomuto partition scheme. */
+void quick_sort(int arr[], int low, int high) {
+    if (low &lt; high) {
+        int pivot_index = partition(arr, low, high);
+        quick_sort(arr, low, pivot_index - 1);
+        quick_sort(arr, pivot_index + 1, high);
+    }
+}
+
+void print_array(const char* label, int arr[], int n) {
+    printf("%s [", label);
+    for (int i = 0; i &lt; n; i++) printf(i ? ", %d" : "%d", arr[i]);
+    printf("]\n");
+}
+
+int main(void) {
+    // Example usage
+    int numbers[] = {64, 34, 25, 12, 22, 11, 90, 45};
+    int n = sizeof(numbers) / sizeof(numbers[0]);
+    print_array("Unsorted:", numbers, n);
+    quick_sort(numbers, 0, n - 1);
+    print_array("Sorted:  ", numbers, n);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -273,7 +340,8 @@ print("Sorted:  ", quick_sort(numbers))</pre>
             data-difficulty="easy"
             data-fn="kth_element"
             data-starter='def kth_element(arr, k):\n    """Return the kth smallest element (1-indexed)."""\n    pass'
-            data-tests='[{"args": [[3,2,1,5,6,4], 2], "expected": "2", "label": "[3,2,1,5,6,4] k=2 → 2"}, {"args": [[7,10,4,3,20,15], 3], "expected": "7", "label": "[7,10,4,3,20,15] k=3 → 7"}]'>
+            data-tests='[{"args": [[3,2,1,5,6,4], 2], "expected": "2", "label": "[3,2,1,5,6,4] k=2 → 2"}, {"args": [[7,10,4,3,20,15], 3], "expected": "7", "label": "[7,10,4,3,20,15] k=3 → 7"}]'
+            data-c='{"fn": "kth_element", "params": [{"name": "arr", "type": "int[]"}, {"name": "k", "type": "int"}], "ret": "int", "starter": "/* Return the kth smallest element (1-indexed).\n * Hint: quickselect - partition, then recurse into one side only. */\nint kth_element(int* arr, int arrSize, int k) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Return the kth smallest element in the array (1-indexed, so k=1 returns the minimum).</div>
           </div>
           <!-- Problem 2 -->
@@ -282,7 +350,8 @@ print("Sorted:  ", quick_sort(numbers))</pre>
             data-difficulty="medium"
             data-fn="dutch_flag"
             data-starter='def dutch_flag(arr):\n    """Sort array of 0s, 1s, and 2s. Return sorted list."""\n    pass'
-            data-tests='[{"args": [[2,0,2,1,1,0]], "expected": "[0, 0, 1, 1, 2, 2]", "label": "[2,0,2,1,1,0] → [0,0,1,1,2,2]"}]'>
+            data-tests='[{"args": [[2,0,2,1,1,0]], "expected": "[0, 0, 1, 1, 2, 2]", "label": "[2,0,2,1,1,0] → [0,0,1,1,2,2]"}]'
+            data-c='{"fn": "dutch_flag", "params": [{"name": "arr", "type": "int[]"}], "ret": "int[]", "starter": "/* Sort an array of 0s, 1s, and 2s in one pass.\n * Return the sorted array (you may sort arr in place and return it). */\nint* dutch_flag(int* arr, int arrSize, int* returnSize) {\n    // Your code here\n    *returnSize = arrSize;\n    return arr;\n}\n"}'>
             <div class="practice-problem">Given an array containing only 0s, 1s, and 2s, sort it in-place (or return sorted) without using built-in sort.</div>
           </div>
         </div>
@@ -480,6 +549,7 @@ print("Sorted:  ", quick_sort(numbers))</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/quick-sort-viz.js"></script>

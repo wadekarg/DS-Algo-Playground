@@ -95,7 +95,7 @@
           <!-- Explanation -->
           <div class="viz-explanation">Choose an operation and click a button to begin.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">arr = [10, 20, 30, 40, 50]
+            <pre class="code-trace__code" data-lang="python">arr = [10, 20, 30, 40, 50]
 # Access: O(1)
 print(arr[2])
 # Insert at index i
@@ -107,6 +107,20 @@ for x in arr:
     if x == target:
         return True
 return False</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5-6,6:7,7:8-9,8:10,9:11,10:12,11:13,12:14" hidden>int arr[8] = {10, 20, 30, 40, 50}; int n = 5;
+// Access: O(1)
+printf("%d\n", arr[2]);
+// Insert at index i (shift right)
+for (int k = n; k &gt; i; k--) arr[k] = arr[k - 1];
+arr[i] = val; n++;
+// Delete at index i (shift left)
+for (int k = i; k &lt; n - 1; k++) arr[k] = arr[k + 1];
+n--;
+// Search (linear)
+for (int k = 0; k &lt; n; k++)
+    if (arr[k] == target)
+        return true;
+return false;</pre><!-- c-trace:end -->
           </div>
 
           <!-- Playback controls -->
@@ -195,6 +209,66 @@ def linear_search(array, target):
 idx = linear_search(arr, 19)
 print("Search for 19: found at index", idx)</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">// --- Array Operations in C ---
+#include &lt;stdio.h&gt;
+
+#define CAPACITY 16
+
+void print_array(const char* label, int arr[], int n) {
+    printf("%s [", label);
+    for (int i = 0; i &lt; n; i++) printf(i ? ", %d" : "%d", arr[i]);
+    printf("]\n");
+}
+
+// Insert at a specific index - O(n)
+// Shift elements right to open a gap, then write the value.
+int insert_at(int arr[], int n, int index, int value) {
+    if (n &gt;= CAPACITY || index &lt; 0 || index &gt; n) return n;  // no room / bad index
+    for (int i = n; i &gt; index; i--) arr[i] = arr[i - 1];
+    arr[index] = value;
+    return n + 1;  // new length
+}
+
+// Delete at a specific index - O(n)
+// Shift elements left over the removed slot.
+int delete_at(int arr[], int n, int index) {
+    if (index &lt; 0 || index &gt;= n) return n;
+    for (int i = index; i &lt; n - 1; i++) arr[i] = arr[i + 1];
+    return n - 1;
+}
+
+// Linear search - O(n)
+// Return the index of target, or -1 if not found.
+int linear_search(int arr[], int n, int target) {
+    for (int i = 0; i &lt; n; i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+int main(void) {
+    // Create an array (fixed capacity, track the length ourselves)
+    int arr[CAPACITY] = {5, 12, 8, 3, 19, 7};
+    int n = 6;
+    print_array("Original:", arr, n);
+
+    // Access by index - O(1)
+    printf("Element at index 2: %d\n", arr[2]);  // 8
+
+    n = insert_at(arr, n, 2, 99);
+    print_array("After insert 99 at index 2:", arr, n);
+
+    n = delete_at(arr, n, 2);
+    print_array("After delete at index 2:", arr, n);
+
+    int idx = linear_search(arr, n, 19);
+    printf("Search for 19: found at index %d\n", idx);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -308,7 +382,8 @@ print("Search for 19: found at index", idx)</pre>
             data-difficulty="easy"
             data-fn="find_max"
             data-starter='def find_max(arr):\n    """Return the maximum value in arr."""\n    pass'
-            data-tests='[{"args": [[3,1,4,1,5,9]], "expected": "9", "label": "finds max in [3,1,4,1,5,9]"}, {"args": [[-5,-1,-3]], "expected": "-1", "label": "finds max in [-5,-1,-3]"}, {"args": [[7]], "expected": "7", "label": "single element [7]"}]'>
+            data-tests='[{"args": [[3,1,4,1,5,9]], "expected": "9", "label": "finds max in [3,1,4,1,5,9]"}, {"args": [[-5,-1,-3]], "expected": "-1", "label": "finds max in [-5,-1,-3]"}, {"args": [[7]], "expected": "7", "label": "single element [7]"}]'
+            data-c='{"fn": "find_max", "params": [{"name": "arr", "type": "int[]"}], "ret": "int", "starter": "/* Return the maximum value in arr. */\nint find_max(int* arr, int arrSize) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Given an array of integers, return the maximum value.</div>
           </div>
           <!-- Problem 2 -->
@@ -317,7 +392,8 @@ print("Search for 19: found at index", idx)</pre>
             data-difficulty="medium"
             data-fn="rotate_right"
             data-starter='def rotate_right(arr, k):\n    """Rotate arr right by k positions and return result."""\n    pass'
-            data-tests='[{"args": [[1,2,3,4,5], 2], "expected": "[4, 5, 1, 2, 3]", "label": "[1,2,3,4,5] rotated right by 2"}, {"args": [[1,2,3], 4], "expected": "[3, 1, 2]", "label": "[1,2,3] rotated right by 4"}]'>
+            data-tests='[{"args": [[1,2,3,4,5], 2], "expected": "[4, 5, 1, 2, 3]", "label": "[1,2,3,4,5] rotated right by 2"}, {"args": [[1,2,3], 4], "expected": "[3, 1, 2]", "label": "[1,2,3] rotated right by 4"}]'
+            data-c='{"fn": "rotate_right", "params": [{"name": "arr", "type": "int[]"}, {"name": "k", "type": "int"}], "ret": "int[]", "starter": "/* Rotate arr right by k positions and return the result.\n * Return a malloc&#39;d array and set *returnSize to its length. */\nint* rotate_right(int* arr, int arrSize, int k, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Rotate an array right by <code>k</code> positions. If <code>k</code> is larger than the array length, wrap around.</div>
           </div>
         </div>
@@ -428,6 +504,7 @@ print("Search for 19: found at index", idx)</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/arrays-viz.js"></script>

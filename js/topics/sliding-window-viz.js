@@ -43,7 +43,7 @@ var DSA = window.DSA || {};
       maxStart: -1,
       maxEnd: -1,
       phase: 'init',
-      codeLine: 2,
+      codeLine: 1,
       variables: { k: k },
       description: 'Find the maximum sum subarray of size k = ' + k + ' in an array of ' + arr.length + ' elements.'
     });
@@ -100,7 +100,7 @@ var DSA = window.DSA || {};
         maxStart: maxStart,
         maxEnd: maxEnd,
         phase: 'sliding',
-        codeLine: 4,
+        codeLine: 5,
         variables: { i: j, window_sum: windowSum, max_sum: maxSum },
         description: desc
       });
@@ -116,7 +116,7 @@ var DSA = window.DSA || {};
       maxStart: maxStart,
       maxEnd: maxEnd,
       phase: 'done',
-      codeLine: 5,
+      codeLine: 7,
       variables: { max_sum: maxSum },
       description: 'Done! Maximum sum subarray of size ' + k + ' is [' + maxStart + '..' + maxEnd + '] with sum = ' + maxSum + '.'
     });

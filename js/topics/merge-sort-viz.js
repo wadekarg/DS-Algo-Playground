@@ -33,7 +33,7 @@ var DSA = window.DSA || {};
       ranges: [{ left: 0, right: n - 1, color: 'default' }],
       comparing: null,
       merged: [],
-      codeLine: 2,
+      codeLine: 1,
       variables: { n: n },
       description: 'Initial array: [' + a.join(', ') + ']. Merge sort will recursively divide the array in half, then merge sorted halves back together.'
     });
@@ -123,7 +123,7 @@ var DSA = window.DSA || {};
         ],
         comparing: [leftIdx, rightIdx],
         merged: mergedSoFar.slice(),
-        codeLine: 10,
+        codeLine: 12,
         variables: { i: i, j: j },
         description: 'Comparing ' + leftArr[i] + ' (left, index ' + leftIdx + ') with ' + rightArr[j] + ' (right, index ' + rightIdx + ').'
       });
@@ -139,7 +139,7 @@ var DSA = window.DSA || {};
           ],
           comparing: null,
           merged: mergedSoFar.slice(),
-          codeLine: 11,
+          codeLine: 13,
           variables: { i: i, j: j },
           description: 'Picked ' + leftArr[i] + ' from left subarray. Placed at index ' + k + '.'
         });
@@ -155,7 +155,7 @@ var DSA = window.DSA || {};
           ],
           comparing: null,
           merged: mergedSoFar.slice(),
-          codeLine: 13,
+          codeLine: 15,
           variables: { i: i, j: j },
           description: 'Picked ' + rightArr[j] + ' from right subarray. Placed at index ' + k + '.'
         });
@@ -175,7 +175,7 @@ var DSA = window.DSA || {};
         ],
         comparing: null,
         merged: mergedSoFar.slice(),
-        codeLine: 14,
+        codeLine: 16,
         variables: { i: i, j: j },
         description: 'Copying remaining element ' + leftArr[i] + ' from left subarray to index ' + k + '.'
       });
@@ -194,7 +194,7 @@ var DSA = window.DSA || {};
         ],
         comparing: null,
         merged: mergedSoFar.slice(),
-        codeLine: 14,
+        codeLine: 17,
         variables: { i: i, j: j },
         description: 'Copying remaining element ' + rightArr[j] + ' from right subarray to index ' + k + '.'
       });
@@ -214,7 +214,7 @@ var DSA = window.DSA || {};
       ],
       comparing: null,
       merged: mergedRange,
-      codeLine: 7,
+      codeLine: 18,
       variables: { left: left, right: right },
       description: 'Merge complete for [' + left + '..' + right + ']: [' + a.slice(left, right + 1).join(', ') + '] is now sorted.'
     });

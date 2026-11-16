@@ -142,6 +142,67 @@ def all_subsets(nums):
     return subsets
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+// ── XOR trick: find the one unique number ─────────────────────
+int single_number(int nums[], int n) {
+    int result = 0;
+    for (int i = 0; i &lt; n; i++)
+        result ^= nums[i];   // duplicates cancel: a^a=0
+    return result;
+}
+
+// ── Count set bits (Kernighan's method) ───────────────────────
+int count_bits(uint32_t n) {
+    int count = 0;
+    while (n) {
+        n &amp;= n - 1;          // clear lowest set bit
+        count++;
+    }
+    return count;
+}
+
+// ── Check power of two ────────────────────────────────────────
+bool is_power_of_two(int n) {
+    return n &gt; 0 &amp;&amp; (n &amp; (n - 1)) == 0;
+}
+
+// ── Reverse 32 bits ───────────────────────────────────────────
+uint32_t reverse_bits(uint32_t n) {
+    uint32_t result = 0;
+    for (int i = 0; i &lt; 32; i++) {
+        result = (result &lt;&lt; 1) | (n &amp; 1);
+        n &gt;&gt;= 1;
+    }
+    return result;
+}
+
+// ── Enumerate all subsets of an array ─────────────────────────
+void all_subsets(int nums[], int n) {
+    for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++) {
+        printf("{");
+        for (int i = 0, first = 1; i &lt; n; i++)
+            if (mask &amp; (1 &lt;&lt; i)) { printf(first ? "%d" : ", %d", nums[i]); first = 0; }
+        printf("}%s", mask + 1 &lt; (1 &lt;&lt; n) ? " " : "\n");
+    }
+}
+
+int main(void) {
+    int nums[] = {4, 1, 2, 1, 2};
+    printf("single_number: %d\n", single_number(nums, 5));
+    printf("count_bits(11): %d\n", count_bits(11));
+    printf("is_power_of_two(16): %s\n", is_power_of_two(16) ? "true" : "false");
+    printf("reverse_bits(43261596): %u\n", reverse_bits(43261596u));
+    int small[] = {1, 2, 3};
+    all_subsets(small, 3);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -172,11 +233,17 @@ def all_subsets(nums):
           </div>
           <div class="viz-explanation">Press Run to visualize the XOR bit trick.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def single_number(nums):
-    result = 0           # line 1
+            <pre class="code-trace__code" data-lang="python">def single_number(nums):
+    result = 0
     for n in nums:
-        result ^= n      # line 3 — XOR each element
-    return result        # line 5</pre>
+        result ^= n          # XOR each element
+    return result</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5" hidden>int single_number(int nums[], int n) {
+    int result = 0;
+    for (int i = 0; i &lt; n; i++)
+        result ^= nums[i];   // XOR each element
+    return result;
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -236,6 +303,7 @@ def all_subsets(nums):
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/bit-manipulation-viz.js"></script>
@@ -246,6 +314,8 @@ def all_subsets(nums):
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

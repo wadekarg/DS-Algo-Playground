@@ -104,13 +104,13 @@ var DSA = window.DSA || {};
         }
         node = node.children[c];
         pathIds.push(node.id);
-        snap(pathIds.slice(), '', (isNew ? 'New node "' + c + '" created' : 'Node "' + c + '" already exists') + ' for word "' + word + '" at index ' + ci + '.', 3);
+        snap(pathIds.slice(), '', (isNew ? 'New node "' + c + '" created' : 'Node "' + c + '" already exists') + ' for word "' + word + '" at index ' + ci + '.', isNew ? 5 : 6);
       }
       node.isEnd = true;
-      snap(pathIds, word, 'Word "' + word + '" fully inserted. Mark last node as end of word.', 4);
+      snap(pathIds, word, 'Word "' + word + '" fully inserted. Mark last node as end of word.', 7);
     }
 
-    snap([], '', 'All words inserted! The trie supports O(k) search and prefix lookups where k = word length.', 5);
+    snap([], '', 'All words inserted! The trie supports O(k) search and prefix lookups where k = word length.', 7);
     return steps;
   }
 

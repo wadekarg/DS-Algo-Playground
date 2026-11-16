@@ -16,7 +16,7 @@ var DSA = window.DSA || {};
 
   function getBasePath() {
     var path = window.location.pathname;
-    if (path.indexOf('/topics/') !== -1) return '../';
+    if (path.indexOf('/topics/') !== -1 || path.indexOf('/problems/') !== -1) return '../';
     return '';
   }
 

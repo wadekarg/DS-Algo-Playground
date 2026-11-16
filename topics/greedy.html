@@ -134,6 +134,78 @@ def max_non_overlapping(intervals):
     return count
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;limits.h&gt;
+
+// ── Jump Game (greedy: track max reachable index) ─────────────
+bool can_jump(int nums[], int n) {
+    int max_reach = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (i &gt; max_reach) return false;      // can't reach index i
+        if (i + nums[i] &gt; max_reach) max_reach = i + nums[i];
+    }
+    return true;
+}
+
+typedef struct { int start, end; } Interval;
+
+static int by_start(const void* a, const void* b) {
+    return ((const Interval*)a)-&gt;start - ((const Interval*)b)-&gt;start;
+}
+static int by_end(const void* a, const void* b) {
+    return ((const Interval*)a)-&gt;end - ((const Interval*)b)-&gt;end;
+}
+
+// ── Merge Intervals (sort + greedy merge) ─────────────────────
+// Merges in place; returns the new count.
+int merge(Interval iv[], int n) {
+    if (n == 0) return 0;
+    qsort(iv, n, sizeof(Interval), by_start);
+    int m = 0;
+    for (int i = 1; i &lt; n; i++) {
+        if (iv[i].start &lt;= iv[m].end) {
+            if (iv[i].end &gt; iv[m].end) iv[m].end = iv[i].end;  // overlap -&gt; extend
+        } else {
+            iv[++m] = iv[i];                                   // no overlap -&gt; new
+        }
+    }
+    return m + 1;
+}
+
+// ── Interval Scheduling (greedy: pick earliest end time) ──────
+int max_non_overlapping(Interval iv[], int n) {
+    qsort(iv, n, sizeof(Interval), by_end);   // sort by END time
+    int count = 0, last_end = INT_MIN;
+    for (int i = 0; i &lt; n; i++) {
+        if (iv[i].start &gt;= last_end) {
+            count++;
+            last_end = iv[i].end;
+        }
+    }
+    return count;
+}
+
+int main(void) {
+    int a[] = {2, 3, 1, 1, 4}, b[] = {3, 2, 1, 0, 4};
+    printf("can_jump [2,3,1,1,4]: %s\n", can_jump(a, 5) ? "true" : "false");
+    printf("can_jump [3,2,1,0,4]: %s\n", can_jump(b, 5) ? "true" : "false");
+
+    Interval iv[] = {{1, 3}, {8, 10}, {2, 6}, {15, 18}};
+    int m = merge(iv, 4);
+    printf("merged:");
+    for (int i = 0; i &lt; m; i++) printf(" [%d,%d]", iv[i].start, iv[i].end);
+    printf("\n");
+
+    Interval jobs[] = {{1, 2}, {2, 3}, {3, 4}, {1, 3}};
+    printf("max non-overlapping: %d\n", max_non_overlapping(jobs, 4));
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -163,13 +235,22 @@ def max_non_overlapping(intervals):
           </div>
           <div class="viz-explanation">Press Run to visualize the Jump Game algorithm.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def can_jump(nums):
-    maxReach = 0               # line 1
+            <pre class="code-trace__code" data-lang="python">def can_jump(nums):
+    max_reach = 0
     for i, n in enumerate(nums):
-        if i > maxReach:       # line 4 — stuck
+        if i &gt; max_reach:      # stuck
             return False
-        maxReach = max(maxReach, i + n)  # line 5
-    return True                # line 7</pre>
+        max_reach = max(max_reach, i + n)
+    return True</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:8" hidden>bool can_jump(int nums[], int n) {
+    int max_reach = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (i &gt; max_reach)     // stuck
+            return false;
+        if (i + nums[i] &gt; max_reach) max_reach = i + nums[i];
+    }
+    return true;
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -231,6 +312,7 @@ def max_non_overlapping(intervals):
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/greedy-viz.js"></script>
@@ -241,6 +323,8 @@ def max_non_overlapping(intervals):
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

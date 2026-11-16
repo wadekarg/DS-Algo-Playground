@@ -384,7 +384,7 @@ var DSA = window.DSA || {};
           cells: snapshot.slice(),
           highlights: hs,
           pointer: i,
-          codeLine: 10,
+          codeLine: 11,
           variables: { i: i, target: value },
           label: 'Found ' + value + ' at index ' + i + '!'
         });
@@ -395,7 +395,7 @@ var DSA = window.DSA || {};
         cells: snapshot.slice(),
         highlights: hs,
         pointer: i,
-        codeLine: 9,
+        codeLine: 10,
         variables: { i: i, target: value },
         label: 'Check index ' + i + ': value is ' + snapshot[i] + ' (not ' + value + ')'
       });
@@ -409,7 +409,7 @@ var DSA = window.DSA || {};
       steps.push({
         cells: snapshot.slice(),
         highlights: hAll,
-        codeLine: 11,
+        codeLine: 12,
         variables: { target: value },
         label: 'Value ' + value + ' not found in the array'
       });

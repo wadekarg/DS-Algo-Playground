@@ -143,6 +143,110 @@ def topo_sort(n, prereqs):
     return order if len(order) == n else []  # empty = cycle detected
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;limits.h&gt;
+
+// ── Dijkstra (single-source shortest path, non-negative weights) ──
+// Graph as an edge list per node: adj[u][i] = {neighbour, cost}.
+typedef struct { int v, w; } Edge;
+typedef struct { int cost, node; } Item;   // heap entry
+
+static void heap_push(Item* h, int* n, Item x) {
+    int i = (*n)++;
+    h[i] = x;
+    while (i &gt; 0 &amp;&amp; h[(i - 1) / 2].cost &gt; h[i].cost) {
+        Item t = h[i]; h[i] = h[(i - 1) / 2]; h[(i - 1) / 2] = t;
+        i = (i - 1) / 2;
+    }
+}
+
+static Item heap_pop(Item* h, int* n) {
+    Item top = h[0];
+    h[0] = h[--(*n)];
+    for (int i = 0;;) {
+        int s = i, l = 2 * i + 1, r = l + 1;
+        if (l &lt; *n &amp;&amp; h[l].cost &lt; h[s].cost) s = l;
+        if (r &lt; *n &amp;&amp; h[r].cost &lt; h[s].cost) s = r;
+        if (s == i) break;
+        Item t = h[i]; h[i] = h[s]; h[s] = t;
+        i = s;
+    }
+    return top;
+}
+
+void dijkstra(Edge** adj, int* deg, int n, int src, int dist[]) {
+    int edges = 0;
+    for (int u = 0; u &lt; n; u++) edges += deg[u];
+    Item* heap = malloc((edges + 1) * sizeof(Item));
+    int size = 0;
+    for (int i = 0; i &lt; n; i++) dist[i] = INT_MAX;
+    dist[src] = 0;
+    heap_push(heap, &amp;size, (Item){0, src});
+    while (size &gt; 0) {
+        Item it = heap_pop(heap, &amp;size);
+        int u = it.node;
+        if (it.cost &gt; dist[u]) continue;   // already found a shorter path
+        for (int i = 0; i &lt; deg[u]; i++) {
+            int v = adj[u][i].v, w = adj[u][i].w;
+            if (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                heap_push(heap, &amp;size, (Item){dist[v], v});
+            }
+        }
+    }
+    free(heap);
+}
+
+// ── Kahn's Topological Sort (BFS + in-degree) ──────────────────
+// prereqs[i] = {a, b} means b -&gt; a. Returns the order length (&lt; n = cycle).
+int topo_sort(int n, int prereqs[][2], int m, int order[]) {
+    int* indeg = calloc(n, sizeof(int));
+    int* cnt = calloc(n, sizeof(int));
+    for (int i = 0; i &lt; m; i++) { indeg[prereqs[i][0]]++; cnt[prereqs[i][1]]++; }
+    int** graph = malloc(n * sizeof(int*));
+    for (int u = 0; u &lt; n; u++) { graph[u] = malloc((cnt[u] + 1) * sizeof(int)); cnt[u] = 0; }
+    for (int i = 0; i &lt; m; i++) {
+        int a = prereqs[i][0], b = prereqs[i][1];
+        graph[b][cnt[b]++] = a;
+    }
+    int head = 0, tail = 0;                 // order[] doubles as the queue
+    for (int i = 0; i &lt; n; i++) if (indeg[i] == 0) order[tail++] = i;
+    while (head &lt; tail) {
+        int node = order[head++];
+        for (int i = 0; i &lt; cnt[node]; i++) {
+            int nb = graph[node][i];
+            if (--indeg[nb] == 0) order[tail++] = nb;
+        }
+    }
+    for (int u = 0; u &lt; n; u++) free(graph[u]);
+    free(graph); free(indeg); free(cnt);
+    return tail;  // tail &lt; n means a cycle was detected
+}
+
+int main(void) {
+    // 0 -&gt; 1 (4), 0 -&gt; 2 (1), 2 -&gt; 1 (2), 1 -&gt; 3 (1)
+    Edge e0[] = {{1, 4}, {2, 1}}, e1[] = {{3, 1}}, e2[] = {{1, 2}};
+    Edge* adj[] = {e0, e1, e2, NULL};
+    int deg[] = {2, 1, 1, 0};
+    int dist[4];
+    dijkstra(adj, deg, 4, 0, dist);
+    printf("Dijkstra from 0:");
+    for (int i = 0; i &lt; 4; i++) printf(" %d", dist[i]);
+    printf("\n");
+
+    int prereqs[][2] = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+    int order[4];
+    int len = topo_sort(4, prereqs, 4, order);
+    printf("Topological order:");
+    for (int i = 0; i &lt; len; i++) printf(" %d", order[i]);
+    printf("\n");
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -174,17 +278,32 @@ def topo_sort(n, prereqs):
           </div>
           <div class="viz-explanation">Press Run to visualize Dijkstra's shortest path algorithm.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def dijkstra(graph, src):    # line 1
+            <pre class="code-trace__code" data-lang="python">def dijkstra(graph, src):
     dist = {n: inf for n in graph}
     dist[src] = 0
-    heap = [(0, src)]        # (dist, node)
-    while heap:              # line 4
+    heap = [(0, src)]          # (dist, node)
+    while heap:
         d, u = heappop(heap)
         for v, w in graph[u]:
-            if d + w < dist[v]:  # line 6
-                dist[v] = d + w  # line 7
+            if d + w &lt; dist[v]:
+                dist[v] = d + w
                 heappush(heap, (dist[v], v))
-    return dist              # line 9</pre>
+    return dist</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7-8,8:9,9:10,10:11,11:15" hidden>void dijkstra(Edge** graph, int* deg, int n, int src, int* dist, Item* heap) {
+    for (int i = 0; i &lt; n; i++) dist[i] = INT_MAX;
+    dist[src] = 0; int size = 0;
+    heappush(heap, &amp;size, (Item){0, src});  // (dist, node)
+    while (size &gt; 0) {
+        Item top = heappop(heap, &amp;size); int d = top.d, u = top.u;
+        for (int i = 0; i &lt; deg[u]; i++) {
+            int v = graph[u][i].v, w = graph[u][i].w;
+            if (d + w &lt; dist[v]) {
+                dist[v] = d + w;
+                heappush(heap, &amp;size, (Item){dist[v], v});
+            }
+        }
+    }
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -243,6 +362,7 @@ def topo_sort(n, prereqs):
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/advanced-graphs-viz.js"></script>
@@ -253,6 +373,8 @@ def topo_sort(n, prereqs):
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

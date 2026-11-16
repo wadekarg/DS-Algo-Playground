@@ -60,7 +60,7 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: sortedSoFar.slice(),
         insertAt: null,
-        codeLine: 2,
+        codeLine: 3,
         variables: { i: i, key: keyValue },
         description: 'Pass ' + i + ': Extract key = ' + keyValue + ' from index ' + i + '. We will find the correct position in the sorted portion [0..' + (i - 1) + '] to insert it.'
       });
@@ -77,7 +77,7 @@ var DSA = window.DSA || {};
           shifting: j,
           sorted: sortedSoFar.slice(),
           insertAt: null,
-          codeLine: 5,
+          codeLine: 6,
           variables: { i: i, j: j, key: keyValue },
           description: 'Shift ' + a[j] + ' (index ' + j + ') one position right to index ' + (j + 1) + '. It is greater than key ' + keyValue + '.'
         });
@@ -93,7 +93,7 @@ var DSA = window.DSA || {};
           shifting: null,
           sorted: sortedSoFar.slice(),
           insertAt: i,
-          codeLine: 4,
+          codeLine: 5,
           variables: { i: i, j: j, key: keyValue },
           description: 'No shift needed. Key ' + keyValue + ' is already greater than or equal to element at index ' + (i - 1) + '. It stays at index ' + i + '.'
         });
@@ -114,7 +114,7 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: newSorted.slice(),
         insertAt: insertPos,
-        codeLine: 6,
+        codeLine: 8,
         variables: { i: i, j: insertPos, key: keyValue },
         description: 'Insert key ' + keyValue + ' at index ' + insertPos + '. Sorted portion is now [' + a.slice(0, i + 1).join(', ') + '].'
       });
@@ -126,7 +126,7 @@ var DSA = window.DSA || {};
         shifting: null,
         sorted: newSorted.slice(),
         insertAt: null,
-        codeLine: 7,
+        codeLine: 2,
         variables: { i: i },
         description: 'Pass ' + i + ' complete. Elements at indices [0..' + i + '] are sorted: [' + a.slice(0, i + 1).join(', ') + '].'
       });
@@ -143,7 +143,7 @@ var DSA = window.DSA || {};
       shifting: null,
       sorted: allSorted,
       insertAt: null,
-      codeLine: 7,
+      codeLine: 9,
       variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
     });

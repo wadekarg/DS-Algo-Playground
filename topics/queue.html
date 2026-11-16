@@ -107,12 +107,21 @@
           </div>
           <div class="viz-explanation">Queue: [15, 42, 8, 23, 7]. Use the operation buttons below.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">from collections import deque
+            <pre class="code-trace__code" data-lang="python">from collections import deque
 queue = deque()
 # Enqueue
 queue.append(val)
 # Dequeue
-val = queue.popleft()</pre>
+val = queue.popleft()
+# Peek
+val = queue[0]</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:1,3:2,4:3,5:4,6:5,7:6,8:7" hidden>int queue[100]; int front = 0, rear = 0;
+// Enqueue
+queue[rear++] = val;
+// Dequeue
+val = queue[front++];
+// Peek
+val = queue[front];</pre><!-- c-trace:end -->
           </div>
 
           <!-- Playback controls -->
@@ -154,7 +163,7 @@ val = queue.popleft()</pre>
           Code Implementation
         </h2>
         <div class="topic-section__content">
-          <p>Below is a complete queue implementation with enqueue, dequeue, peek, and isEmpty operations in three languages.</p>
+          <p>Below is a complete queue implementation with enqueue, dequeue, peek, and isEmpty operations in Python and C.</p>
         </div>
 
         <div class="code-block">
@@ -220,6 +229,91 @@ print(q)            # Queue([8, 23, 7])
 print(q.is_empty()) # False
 print(q.size())     # 3</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Circular-buffer queue: front and rear wrap around the array,
+   so enqueue and dequeue are both O(1). */
+typedef struct {
+    int* data;
+    int front;     // index of the front element
+    int count;     // number of elements
+    int capacity;
+} Queue;
+
+/* Initialize an empty queue. */
+void queue_init(Queue* q, int capacity) {
+    q-&gt;data = malloc(capacity * sizeof(int));
+    q-&gt;front = 0;
+    q-&gt;count = 0;
+    q-&gt;capacity = capacity;
+}
+
+/* Check whether the queue is empty. O(1) */
+bool is_empty(const Queue* q) { return q-&gt;count == 0; }
+
+/* Add an element to the rear of the queue. O(1) */
+void enqueue(Queue* q, int value) {
+    if (q-&gt;count == q-&gt;capacity) {
+        fprintf(stderr, "Queue is full\n");
+        exit(1);
+    }
+    int rear = (q-&gt;front + q-&gt;count) % q-&gt;capacity;
+    q-&gt;data[rear] = value;
+    q-&gt;count++;
+}
+
+/* Remove and return the front element. O(1) */
+int dequeue(Queue* q) {
+    if (is_empty(q)) {
+        fprintf(stderr, "Dequeue from an empty queue\n");
+        exit(1);
+    }
+    int value = q-&gt;data[q-&gt;front];
+    q-&gt;front = (q-&gt;front + 1) % q-&gt;capacity;
+    q-&gt;count--;
+    return value;
+}
+
+/* Return the front element without removing it. O(1) */
+int peek(const Queue* q) {
+    if (is_empty(q)) {
+        fprintf(stderr, "Peek from an empty queue\n");
+        exit(1);
+    }
+    return q-&gt;data[q-&gt;front];
+}
+
+/* Print the queue (front on the left). */
+void print_queue(const Queue* q) {
+    printf("Queue([");
+    for (int i = 0; i &lt; q-&gt;count; i++)
+        printf(i ? ", %d" : "%d", q-&gt;data[(q-&gt;front + i) % q-&gt;capacity]);
+    printf("])\n");
+}
+
+int main(void) {
+    // Example usage
+    Queue q;
+    queue_init(&amp;q, 8);
+    int values[] = {15, 42, 8, 23, 7};
+    for (int i = 0; i &lt; 5; i++) enqueue(&amp;q, values[i]);
+
+    print_queue(&amp;q);                                   // Queue([15, 42, 8, 23, 7])
+    printf("%d\n", peek(&amp;q));                          // 15
+    printf("%d\n", dequeue(&amp;q));                       // 15
+    printf("%d\n", dequeue(&amp;q));                       // 42
+    print_queue(&amp;q);                                   // Queue([8, 23, 7])
+    printf("%s\n", is_empty(&amp;q) ? "true" : "false");   // false
+    printf("%d\n", q.count);                           // 3
+    free(q.data);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -325,7 +419,8 @@ print(q.size())     # 3</pre>
             data-difficulty="easy"
             data-fn="first_unique"
             data-starter='def first_unique(s):\n    """Return the first non-repeating character, or \"\" if none."""\n    pass'
-            data-tests='[{"args": ["leetcode"], "expected": "'\''l'\''", "label": "\"leetcode\" → \"l\""}, {"args": ["aabb"], "expected": "'\'''\''", "label": "\"aabb\" → \"\""}, {"args": ["loveleetcode"], "expected": "'\''v'\''", "label": "\"loveleetcode\" → \"v\""}]'>
+            data-tests='[{"args": ["leetcode"], "expected": "&#39;l&#39;", "label": "\"leetcode\" → \"l\""}, {"args": ["aabb"], "expected": "&#39;&#39;", "label": "\"aabb\" → \"\""}, {"args": ["loveleetcode"], "expected": "&#39;v&#39;", "label": "\"loveleetcode\" → \"v\""}]'
+            data-c='{"fn": "first_unique", "params": [{"name": "s", "type": "string"}], "ret": "string", "starter": "/* Return the first non-repeating character as a string, or \"\" if none.\n * Return a malloc&#39;d (or string-literal) char*. */\nchar* first_unique(char* s) {\n    // Your code here\n    return \"\";\n}\n"}'>
             <div class="practice-problem">Given a string, return the first non-repeating character. If every character repeats, return an empty string <code>""</code>.</div>
           </div>
           <!-- Problem 2 -->
@@ -334,7 +429,8 @@ print(q.size())     # 3</pre>
             data-difficulty="medium"
             data-fn="sliding_max"
             data-starter='def sliding_max(arr, k):\n    """Return list of maximums for each window of size k."""\n    pass'
-            data-tests='[{"args": [[1,3,-1,-3,5,3,6,7], 3], "expected": "[3, 3, 5, 5, 6, 7]", "label": "[1,3,-1,-3,5,3,6,7] k=3 → [3,3,5,5,6,7]"}]'>
+            data-tests='[{"args": [[1,3,-1,-3,5,3,6,7], 3], "expected": "[3, 3, 5, 5, 6, 7]", "label": "[1,3,-1,-3,5,3,6,7] k=3 → [3,3,5,5,6,7]"}]'
+            data-c='{"fn": "sliding_max", "params": [{"name": "arr", "type": "int[]"}, {"name": "k", "type": "int"}], "ret": "int[]", "starter": "/* Return the maximum of each window of size k (malloc&#39;d; set *returnSize).\n * Hint: keep a deque of indices whose values are decreasing. */\nint* sliding_max(int* arr, int arrSize, int k, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Given an array and window size <code>k</code>, return a list containing the maximum value of each sliding window of size <code>k</code>.</div>
           </div>
         </div>
@@ -539,6 +635,7 @@ print(q.size())     # 3</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/queue-viz.js"></script>

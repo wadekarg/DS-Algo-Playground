@@ -47,7 +47,7 @@ var DSA = window.DSA || {};
           found: 1,
           foundPair: [left, right],
           eliminated: eliminated.slice(),
-          codeLine: 5,
+          codeLine: 6,
           variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' equals target ' + target + '. Pair found!'
         });
@@ -61,7 +61,7 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
-          codeLine: 7,
+          codeLine: 8,
           variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' < ' + target + '. Sum too small, move left pointer right.'
         });
@@ -74,7 +74,7 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
-          codeLine: 7,
+          codeLine: 4,
           variables: { left: left, right: right },
           description: 'Left pointer moved to index ' + left + ' (value ' + arr[left] + '). Now checking arr[' + left + '] + arr[' + right + '].'
         });
@@ -87,7 +87,7 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
-          codeLine: 9,
+          codeLine: 10,
           variables: { left: left, right: right, s: sum },
           description: 'arr[' + left + '] + arr[' + right + '] = ' + arr[left] + ' + ' + arr[right] + ' = ' + sum + ' > ' + target + '. Sum too large, move right pointer left.'
         });
@@ -100,7 +100,7 @@ var DSA = window.DSA || {};
           found: 0,
           foundPair: null,
           eliminated: eliminated.slice(),
-          codeLine: 9,
+          codeLine: 4,
           variables: { left: left, right: right },
           description: 'Right pointer moved to index ' + right + ' (value ' + arr[right] + '). Now checking arr[' + left + '] + arr[' + right + '].'
         });
@@ -115,7 +115,7 @@ var DSA = window.DSA || {};
       found: -1,
       foundPair: null,
       eliminated: eliminated.slice(),
-      codeLine: 10,
+      codeLine: 11,
       variables: { left: left, right: right },
       description: 'Pointers have crossed (left >= right). No pair sums to ' + target + '.'
     });

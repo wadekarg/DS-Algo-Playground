@@ -28,7 +28,7 @@ var DSA = window.DSA || {};
       result: 0,
       element: null,
       phase: 'init',
-      codeLine: 1,
+      codeLine: 2,
       description: 'Single Number: XOR all elements. Duplicates cancel (a ^ a = 0), unique element remains. Starting with result = 0.'
     });
 
@@ -42,7 +42,7 @@ var DSA = window.DSA || {};
         newResult: result,
         phase: 'xor',
         index: i,
-        codeLine: 3,
+        codeLine: 4,
         description: 'XOR result (' + before + ') ^ nums[' + i + '] (' + nums[i] + ') = ' + result + '. Binary: ' + before.toString(2).padStart(8, '0') + ' ^ ' + nums[i].toString(2).padStart(8, '0') + ' = ' + result.toString(2).padStart(8, '0') + '.'
       });
 
@@ -51,7 +51,7 @@ var DSA = window.DSA || {};
         element: null,
         phase: 'update',
         index: i,
-        codeLine: 3,
+        codeLine: 4,
         description: 'result is now ' + result + ' (binary: ' + result.toString(2).padStart(8, '0') + ').' + (i < nums.length - 1 ? ' Processing next element...' : ' All elements processed!')
       });
     }

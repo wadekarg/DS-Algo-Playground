@@ -71,7 +71,7 @@ var DSA = window.DSA || {};
         currentMin: i,
         sorted: sorted.slice(),
         swapping: null,
-        codeLine: 3,
+        codeLine: 4,
         variables: { i: i, min_idx: i },
         description: 'Pass ' + (i + 1) + ': Looking for the minimum in the unsorted portion (index ' + i + ' to ' + (n - 1) + '). Starting with ' + a[i] + ' (index ' + i + ') as the assumed minimum.'
       });
@@ -85,7 +85,7 @@ var DSA = window.DSA || {};
           currentMin: minIdx,
           sorted: sorted.slice(),
           swapping: null,
-          codeLine: 5,
+          codeLine: 6,
           variables: { i: i, j: j, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Comparing current minimum ' + a[minIdx] + ' (index ' + minIdx + ') with ' + a[j] + ' (index ' + j + ').'
         });
@@ -101,7 +101,7 @@ var DSA = window.DSA || {};
             currentMin: minIdx,
             sorted: sorted.slice(),
             swapping: null,
-            codeLine: 6,
+            codeLine: 7,
             variables: { i: i, j: j, min_idx: minIdx },
             description: 'Pass ' + (i + 1) + ': Found new minimum! ' + a[minIdx] + ' (index ' + minIdx + ') is smaller than ' + a[oldMinIdx] + ' (index ' + oldMinIdx + '). Updating minimum.'
           });
@@ -115,7 +115,7 @@ var DSA = window.DSA || {};
         currentMin: minIdx,
         sorted: sorted.slice(),
         swapping: null,
-        codeLine: 7,
+        codeLine: 8,
         variables: { i: i, min_idx: minIdx },
         description: 'Pass ' + (i + 1) + ': Minimum of unsorted portion is ' + a[minIdx] + ' (index ' + minIdx + ').' + (minIdx !== i ? ' It needs to be swapped with ' + a[i] + ' (index ' + i + ').' : ' It is already in position ' + i + '. No swap needed.')
       });
@@ -129,7 +129,7 @@ var DSA = window.DSA || {};
           currentMin: null,
           sorted: sorted.slice(),
           swapping: [i, minIdx],
-          codeLine: 7,
+          codeLine: 8,
           variables: { i: i, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Swapping ' + a[i] + ' (index ' + i + ') with ' + a[minIdx] + ' (index ' + minIdx + ').'
         });
@@ -146,7 +146,7 @@ var DSA = window.DSA || {};
           currentMin: null,
           sorted: sorted.slice(),
           swapping: [i, minIdx],
-          codeLine: 7,
+          codeLine: 8,
           variables: { i: i, min_idx: minIdx },
           description: 'Pass ' + (i + 1) + ': Swapped! Array is now [' + a.join(', ') + '].'
         });
@@ -162,7 +162,7 @@ var DSA = window.DSA || {};
         currentMin: null,
         sorted: sorted.slice(),
         swapping: null,
-        codeLine: 8,
+        codeLine: 3,
         variables: { i: i },
         description: 'Pass ' + (i + 1) + ' complete. Element ' + a[i] + ' is now in its sorted position (index ' + i + ').'
       });
@@ -176,7 +176,7 @@ var DSA = window.DSA || {};
       currentMin: null,
       sorted: sorted.slice(),
       swapping: null,
-      codeLine: 8,
+      codeLine: 9,
       variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + ']. Selection sort made ' + (n - 1) + ' passes through the array.'
     });

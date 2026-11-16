@@ -356,17 +356,17 @@ var DSA = window.DSA || {};
       };
     }
 
-    steps.push(snapshot(-1, 'BFS starts at node ' + startNode + '. All nodes are unvisited. The queue is empty.', 4, { start: startNode }));
+    steps.push(snapshot(-1, 'BFS starts at node ' + startNode + '. All nodes are unvisited. The queue is empty.', 1, { start: startNode }));
 
     queue.push(startNode);
     nodeStates[startNode] = 'queued';
     visited[startNode] = true;
-    steps.push(snapshot(startNode, 'Enqueue node ' + startNode + ' (the starting node). Mark it as discovered. Queue: [' + queue.join(', ') + '].', 5, { node: startNode }));
+    steps.push(snapshot(startNode, 'Enqueue node ' + startNode + ' (the starting node). Mark it as discovered. Queue: [' + queue.join(', ') + '].', 4, { node: startNode }));
 
     while (queue.length > 0) {
       var current = queue.shift();
       nodeStates[current] = 'visited';
-      steps.push(snapshot(current, 'Dequeue node ' + current + ' from the front of the queue. Process it (mark as visited). Queue: [' + queue.join(', ') + '].', 7, { node: current }));
+      steps.push(snapshot(current, 'Dequeue node ' + current + ' from the front of the queue. Process it (mark as visited). Queue: [' + queue.join(', ') + '].', 6, { node: current }));
 
       var neighbors = adj[current] || [];
       for (var j = 0; j < neighbors.length; j++) {
@@ -380,7 +380,7 @@ var DSA = window.DSA || {};
       }
     }
 
-    steps.push(snapshot(-1, 'BFS complete! All reachable nodes have been visited. The queue is empty.', 6, {}));
+    steps.push(snapshot(-1, 'BFS complete! All reachable nodes have been visited. The queue is empty.', 5, {}));
 
     return steps;
   }

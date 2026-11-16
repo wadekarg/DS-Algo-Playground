@@ -47,7 +47,7 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: mid,
-          codeLine: 4,
+          codeLine: 6,
           variables: { low: low, mid: mid, high: high },
           description: 'arr[' + mid + '] = ' + arr[mid] + ' equals target ' + target + '. Element found at index ' + mid + '!'
         });
@@ -61,7 +61,7 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
-          codeLine: 6,
+          codeLine: 8,
           variables: { low: low, mid: mid, high: high },
           description: 'Compare arr[' + mid + '] = ' + arr[mid] + ' with target ' + target + '. Since ' + arr[mid] + ' < ' + target + ', eliminate the left half (indices ' + low + ' to ' + mid + ').'
         });
@@ -78,7 +78,7 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
-          codeLine: 8,
+          codeLine: 10,
           variables: { low: low, mid: mid, high: high },
           description: 'Compare arr[' + mid + '] = ' + arr[mid] + ' with target ' + target + '. Since ' + arr[mid] + ' > ' + target + ', eliminate the right half (indices ' + mid + ' to ' + high + ').'
         });
@@ -98,7 +98,7 @@ var DSA = window.DSA || {};
           high: high,
           eliminated: eliminated.slice(),
           found: -1,
-          codeLine: 3,
+          codeLine: 4,
           variables: { low: low, mid: newMid, high: high },
           description: 'Narrow search space: low = ' + low + ', high = ' + high + ', mid = ' + newMid + '. Remaining elements: ' + (high - low + 1) + '.'
         });
@@ -113,7 +113,7 @@ var DSA = window.DSA || {};
       high: high,
       eliminated: eliminated.slice(),
       found: -1,
-      codeLine: 9,
+      codeLine: 11,
       variables: { low: low, high: high },
       description: 'low (' + low + ') > high (' + high + '). Target ' + target + ' is not in the array.'
     });

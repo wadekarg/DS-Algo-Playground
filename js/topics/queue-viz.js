@@ -212,7 +212,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
-      codeLine: 7,
+      codeLine: 4,
       variables: { val: value },
       description: 'Current queue: [' + snapshot.join(', ') + ']. We will enqueue ' + value + ' at the rear.'
     });
@@ -226,7 +226,7 @@ var DSA = window.DSA || {};
         frontIndex: 0,
         rearIndex: len - 1,
         highlights: h2,
-        codeLine: 8,
+        codeLine: 4,
         variables: { val: value },
         description: 'Current rear is at index ' + (len - 1) + ' (value: ' + snapshot[len - 1] + ').'
       });
@@ -242,7 +242,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: newArr.length - 1,
       highlights: h3,
-      codeLine: 8,
+      codeLine: 4,
       variables: { val: value, size: newArr.length },
       description: 'Value ' + value + ' added at index ' + (newArr.length - 1) + '. Rear pointer moves to the new element.'
     });
@@ -253,7 +253,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: newArr.length - 1,
       highlights: {},
-      codeLine: 8,
+      codeLine: 4,
       variables: { size: newArr.length },
       description: 'Enqueue complete. Queue now has ' + newArr.length + ' elements: [' + newArr.join(', ') + '].'
     });
@@ -285,7 +285,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
-      codeLine: 11,
+      codeLine: 6,
       variables: { front: removedValue },
       description: 'Current queue: [' + snapshot.join(', ') + ']. We will dequeue from the front.'
     });
@@ -298,7 +298,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: h2,
-      codeLine: 11,
+      codeLine: 6,
       variables: { front: removedValue },
       description: 'Front element is ' + removedValue + ' at index 0. This will be removed.'
     });
@@ -311,7 +311,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: h3,
-      codeLine: 11,
+      codeLine: 6,
       variables: { front: removedValue },
       description: 'Removing ' + removedValue + ' from the front of the queue.'
     });
@@ -372,7 +372,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
-      description: 'Current queue: [' + snapshot.join(', ') + ']. We will peek at the front element.'
+      codeLine: 8, description: 'Current queue: [' + snapshot.join(', ') + ']. We will peek at the front element.'
     });
 
     // Step 2: Highlight front element
@@ -383,7 +383,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: h2,
-      description: 'Peek: the front element is ' + snapshot[0] + ' (index 0). The queue is not modified.'
+      codeLine: 8, description: 'Peek: the front element is ' + snapshot[0] + ' (index 0). The queue is not modified.'
     });
 
     // Step 3: Clean state
@@ -392,7 +392,7 @@ var DSA = window.DSA || {};
       frontIndex: 0,
       rearIndex: len - 1,
       highlights: {},
-      description: 'Peek complete. Front value is ' + snapshot[0] + '. Queue unchanged (' + len + ' elements).'
+      codeLine: 8, description: 'Peek complete. Front value is ' + snapshot[0] + '. Queue unchanged (' + len + ' elements).'
     });
 
     return { steps: steps, result: snapshot };

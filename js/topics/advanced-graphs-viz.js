@@ -58,7 +58,7 @@ var DSA = window.DSA || {};
       });
     }
 
-    snap(-1, -1, null, 'Dijkstra\'s algorithm: find shortest path from node 0 to all other nodes. All distances start at ∞ except dist[0] = 0.', 1);
+    snap(-1, -1, null, 'Dijkstra\'s algorithm: find shortest path from node 0 to all other nodes. All distances start at ∞ except dist[0] = 0.', 3);
 
     for (var iter = 0; iter < NUM_NODES; iter++) {
       // Pick unvisited node with minimum distance
@@ -71,7 +71,7 @@ var DSA = window.DSA || {};
       if (u === -1) break;
 
       visited[u] = true;
-      snap(u, -1, null, 'Visit node ' + u + ' (dist = ' + dist[u] + '). It has the smallest unvisited distance. Mark it visited.', 4);
+      snap(u, -1, null, 'Visit node ' + u + ' (dist = ' + dist[u] + '). It has the smallest unvisited distance. Mark it visited.', 6);
 
       var neighbors = adj(u);
       for (var j = 0; j < neighbors.length; j++) {
@@ -79,19 +79,19 @@ var DSA = window.DSA || {};
         var w = neighbors[j].w;
         if (!visited[v]) {
           var newDist = dist[u] + w;
-          snap(u, -1, { from: u, to: v }, 'Check edge ' + u + '→' + v + ' (weight ' + w + '). dist[' + u + '] + ' + w + ' = ' + newDist + ' vs current dist[' + v + '] = ' + (dist[v] === INF ? '∞' : dist[v]) + '.', 6);
+          snap(u, -1, { from: u, to: v }, 'Check edge ' + u + '→' + v + ' (weight ' + w + '). dist[' + u + '] + ' + w + ' = ' + newDist + ' vs current dist[' + v + '] = ' + (dist[v] === INF ? '∞' : dist[v]) + '.', 8);
           if (newDist < dist[v]) {
             var old = dist[v];
             dist[v] = newDist;
-            snap(u, v, { from: u, to: v }, 'Update dist[' + v + '] from ' + (old === INF ? '∞' : old) + ' to ' + newDist + ' (shorter path found via node ' + u + ').', 7);
+            snap(u, v, { from: u, to: v }, 'Update dist[' + v + '] from ' + (old === INF ? '∞' : old) + ' to ' + newDist + ' (shorter path found via node ' + u + ').', 9);
           } else {
-            snap(u, -1, null, 'No update for node ' + v + ': current dist (' + dist[v] + ') ≤ new path (' + newDist + ').', 7);
+            snap(u, -1, null, 'No update for node ' + v + ': current dist (' + dist[v] + ') ≤ new path (' + newDist + ').', 8);
           }
         }
       }
     }
 
-    snap(-1, -1, null, 'Done! Shortest distances from node 0: [' + dist.map(function(d) { return d === INF ? '∞' : d; }).join(', ') + '].', 9);
+    snap(-1, -1, null, 'Done! Shortest distances from node 0: [' + dist.map(function(d) { return d === INF ? '∞' : d; }).join(', ') + '].', 11);
     return steps;
   }
 

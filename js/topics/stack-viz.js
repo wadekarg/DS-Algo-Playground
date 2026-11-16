@@ -53,7 +53,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      codeLine: 5,
+      codeLine: 3,
       variables: { val: value },
       description: 'Current stack' + (s.length > 0 ? ': [' + s.join(', ') + ']. Top is ' + s[s.length - 1] + '.' : ' is empty.') + ' We will push ' + value + ' onto the stack.'
     });
@@ -66,7 +66,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
-      codeLine: 6,
+      codeLine: 3,
       variables: { val: value, size: s.length },
       description: 'Pushing ' + value + ' onto the top of the stack.'
     });
@@ -78,7 +78,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl3,
-      codeLine: 6,
+      codeLine: 3,
       variables: { val: value, size: s.length },
       description: 'Push complete! ' + value + ' is now the top element. Stack size: ' + s.length + '.'
     });
@@ -88,7 +88,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      codeLine: 6,
+      codeLine: 3,
       variables: { size: s.length },
       description: 'Stack is now [' + s.join(', ') + ']. Top element: ' + s[s.length - 1] + '.'
     });
@@ -121,7 +121,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      codeLine: 9,
+      codeLine: 5,
       variables: { top: poppedValue },
       description: 'Current stack: [' + s.join(', ') + ']. We will pop the top element (' + poppedValue + ').'
     });
@@ -133,7 +133,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
-      codeLine: 10,
+      codeLine: 5,
       variables: { top: poppedValue },
       description: 'Removing top element: ' + poppedValue + '.'
     });
@@ -145,7 +145,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl3,
-      codeLine: 10,
+      codeLine: 5,
       variables: { top: poppedValue },
       description: 'Popping ' + poppedValue + ' from the stack...'
     });
@@ -206,7 +206,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      codeLine: 13,
+      codeLine: 7,
       variables: { top: topValue },
       description: 'Current stack: [' + s.join(', ') + ']. We will peek at the top element.'
     });
@@ -218,7 +218,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: hl2,
-      codeLine: 14,
+      codeLine: 7,
       variables: { top: topValue },
       description: 'Peek: The top element is ' + topValue + '. Peek does not modify the stack.'
     });
@@ -228,7 +228,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      codeLine: 14,
+      codeLine: 7,
       variables: { top: topValue },
       description: 'Peek complete. Stack remains [' + s.join(', ') + '] with ' + s.length + ' elements.'
     });
@@ -246,7 +246,7 @@ var DSA = window.DSA || {};
       cells: s.slice(),
       topIndex: s.length - 1,
       highlights: {},
-      description: 'Checking if the stack is empty...'
+      codeLine: 9, description: 'Checking if the stack is empty...'
     });
 
     if (empty) {
@@ -254,7 +254,7 @@ var DSA = window.DSA || {};
         cells: [],
         topIndex: -1,
         highlights: {},
-        description: 'isEmpty() returns true. The stack has no elements.'
+        codeLine: 9, description: 'isEmpty() returns true. The stack has no elements.'
       });
     } else {
       // Highlight all elements briefly
@@ -266,7 +266,7 @@ var DSA = window.DSA || {};
         cells: s.slice(),
         topIndex: s.length - 1,
         highlights: hl,
-        description: 'isEmpty() returns false. The stack has ' + s.length + ' element' + (s.length > 1 ? 's' : '') + '.'
+        codeLine: 9, description: 'isEmpty() returns false. The stack has ' + s.length + ' element' + (s.length > 1 ? 's' : '') + '.'
       });
     }
 

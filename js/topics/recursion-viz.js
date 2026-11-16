@@ -99,7 +99,7 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
-        codeLine: node.isLeaf ? 2 : 3,
+        codeLine: node.isLeaf ? 2 : 4,
         variables: { n: node.n },
         description: 'Call fib(' + node.n + ')' + (node.isLeaf ? '. Base case: return ' + node.value + '.' : '. Need fib(' + (node.n - 1) + ') and fib(' + (node.n - 2) + ').')
       });
@@ -111,7 +111,7 @@ var DSA = window.DSA || {};
           nodes: nodes,
           states: copyStates(nodeStates),
           currentNode: nodeIdx,
-          codeLine: 2,
+          codeLine: 3,
           variables: { n: node.n, result: node.value },
           description: 'fib(' + node.n + ') = ' + node.value + ' (base case). Return ' + node.value + '.'
         });
@@ -148,7 +148,7 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
-        codeLine: 3,
+        codeLine: 4,
         variables: { n: node.n, result: node.value },
         description: 'fib(' + node.n + ') = fib(' + (node.n - 1) + ') + fib(' + (node.n - 2) + ') = ' + nodes.filter(function(nd) { return nd.x === node.left.x && nd.y === node.left.y; })[0].value + ' + ' + nodes.filter(function(nd) { return nd.x === node.right.x && nd.y === node.right.y; })[0].value + ' = ' + node.value + '.'
       });
@@ -158,7 +158,7 @@ var DSA = window.DSA || {};
         nodes: nodes,
         states: copyStates(nodeStates),
         currentNode: nodeIdx,
-        codeLine: 3,
+        codeLine: 4,
         variables: { n: node.n, result: node.value },
         description: 'fib(' + node.n + ') = ' + node.value + ' computed and returned.'
       });
@@ -171,7 +171,7 @@ var DSA = window.DSA || {};
       nodes: nodes,
       states: copyStates(nodeStates),
       currentNode: -1,
-      codeLine: 3,
+      codeLine: 4,
       variables: { n: n, result: nodes[0].value },
       description: 'Done! fib(' + n + ') = ' + nodes[0].value + '. Total recursive calls: ' + nodes.length + '. Notice the repeated subproblems -- this is why DP is more efficient.'
     });

@@ -142,6 +142,65 @@ print(trie.search("appl"))       # False
 print(trie.starts_with("appl"))  # True
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define ALPHABET 26   // lowercase 'a'..'z'
+
+typedef struct TrieNode {
+    struct TrieNode* children[ALPHABET];  // children[c - 'a'] -&gt; TrieNode
+    bool is_end;
+} TrieNode;
+
+TrieNode* new_node(void) {
+    return calloc(1, sizeof(TrieNode));   // all children NULL, is_end false
+}
+
+void insert(TrieNode* root, const char* word) {
+    TrieNode* node = root;
+    for (const char* p = word; *p; p++) {
+        int c = *p - 'a';
+        if (!node-&gt;children[c])
+            node-&gt;children[c] = new_node();
+        node = node-&gt;children[c];
+    }
+    node-&gt;is_end = true;
+}
+
+/* Walk the trie along s; NULL if the path breaks. */
+TrieNode* walk(TrieNode* root, const char* s) {
+    TrieNode* node = root;
+    for (const char* p = s; *p; p++) {
+        node = node-&gt;children[*p - 'a'];
+        if (!node) return NULL;
+    }
+    return node;
+}
+
+bool search(TrieNode* root, const char* word) {
+    TrieNode* node = walk(root, word);
+    return node != NULL &amp;&amp; node-&gt;is_end;
+}
+
+bool starts_with(TrieNode* root, const char* prefix) {
+    return walk(root, prefix) != NULL;  // prefix exists; don't check is_end
+}
+
+int main(void) {
+    // Usage
+    TrieNode* trie = new_node();
+    insert(trie, "apple");
+    insert(trie, "app");
+    printf("%s\n", search(trie, "app") ? "true" : "false");         // true
+    printf("%s\n", search(trie, "appl") ? "true" : "false");        // false
+    printf("%s\n", starts_with(trie, "appl") ? "true" : "false");   // true
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -177,13 +236,22 @@ print(trie.starts_with("appl"))  # True
           </div>
           <div class="viz-explanation">Press Run to build the trie step by step.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def insert(self, word):   # line 1
+            <pre class="code-trace__code" data-lang="python">def insert(self, word):
     node = self.root
-    for ch in word:        # line 3
+    for ch in word:
         if ch not in node.children:
-            node.children[ch] = TrieNode()  # line 4
+            node.children[ch] = TrieNode()
         node = node.children[ch]
-    node.is_end = True     # line 5</pre>
+    node.is_end = True</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:8" hidden>void insert(TrieNode* root, const char* word) {
+    TrieNode* node = root;
+    for (const char* p = word; *p; p++) {
+        if (!node-&gt;children[*p - 'a'])
+            node-&gt;children[*p - 'a'] = new_node();
+        node = node-&gt;children[*p - 'a'];
+    }
+    node-&gt;is_end = true;
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -240,6 +308,7 @@ print(trie.starts_with("appl"))  # True
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/tries-viz.js"></script>
@@ -250,6 +319,8 @@ print(trie.starts_with("appl"))  # True
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

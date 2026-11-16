@@ -147,6 +147,86 @@ def gcd(a, b):
     return a
 </pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+
+#define N 3
+
+// ── Rotate Matrix 90° Clockwise (in-place) ────────────────────
+void rotate(int m[N][N]) {
+    // Step 1: transpose
+    for (int i = 0; i &lt; N; i++)
+        for (int j = i + 1; j &lt; N; j++) {
+            int t = m[i][j]; m[i][j] = m[j][i]; m[j][i] = t;
+        }
+    // Step 2: reverse each row
+    for (int i = 0; i &lt; N; i++)
+        for (int l = 0, r = N - 1; l &lt; r; l++, r--) {
+            int t = m[i][l]; m[i][l] = m[i][r]; m[i][r] = t;
+        }
+}
+
+// ── Spiral Matrix (elements in spiral order) ──────────────────
+int spiral_order(int rows, int cols, int m[rows][cols], int res[]) {
+    int n = 0, top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+    while (top &lt;= bottom &amp;&amp; left &lt;= right) {
+        for (int c = left; c &lt;= right; c++) res[n++] = m[top][c];
+        top++;
+        for (int r = top; r &lt;= bottom; r++) res[n++] = m[r][right];
+        right--;
+        if (top &lt;= bottom) {
+            for (int c = right; c &gt;= left; c--) res[n++] = m[bottom][c];
+            bottom--;
+        }
+        if (left &lt;= right) {
+            for (int r = bottom; r &gt;= top; r--) res[n++] = m[r][left];
+            left++;
+        }
+    }
+    return n;
+}
+
+// ── Fast Exponentiation ───────────────────────────────────────
+double my_pow(double x, long long n) {
+    if (n == 0) return 1;
+    if (n &lt; 0) return 1 / my_pow(x, -n);
+    if (n % 2 == 0) {
+        double half = my_pow(x, n / 2);
+        return half * half;
+    }
+    return x * my_pow(x, n - 1);
+}
+
+// ── GCD (Euclidean) ───────────────────────────────────────────
+int gcd(int a, int b) {
+    while (b) {
+        int t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+int main(void) {
+    int m[N][N] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    rotate(m);
+    printf("rotated:");
+    for (int i = 0; i &lt; N; i++) printf(" [%d %d %d]", m[i][0], m[i][1], m[i][2]);
+    printf("\n");
+
+    int s[3][4] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, res[12];
+    int k = spiral_order(3, 4, s, res);
+    printf("spiral:");
+    for (int i = 0; i &lt; k; i++) printf(" %d", res[i]);
+    printf("\n");
+
+    printf("2^10 = %g, 2^-2 = %g\n", my_pow(2, 10), my_pow(2, -2));
+    printf("gcd(48, 18) = %d\n", gcd(48, 18));
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -177,14 +257,25 @@ def gcd(a, b):
           </div>
           <div class="viz-explanation">Press Run to visualize matrix rotation.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def rotate(matrix):            # line 1
+            <pre class="code-trace__code" data-lang="python">def rotate(matrix):
     n = len(matrix)
-    for i in range(n):         # line 3 — transpose
-        for j in range(i+1,n):
-            matrix[i][j], matrix[j][i] = \
-                matrix[j][i], matrix[i][j]  # line 4
-    for row in matrix:         # line 5 — reverse rows
-        row.reverse()          # line 6 — done</pre>
+    for i in range(n):            # transpose
+        for j in range(i + 1, n):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    for row in matrix:            # reverse each row
+        row.reverse()</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:1,3:2,4:3,5:4-5,6:7,7:8-10" hidden>void rotate(int n, int matrix[n][n]) {
+    for (int i = 0; i &lt; n; i++)          // transpose
+        for (int j = i + 1; j &lt; n; j++) {
+            int t = matrix[i][j];
+            matrix[i][j] = matrix[j][i]; matrix[j][i] = t;
+        }
+    for (int i = 0; i &lt; n; i++)          // reverse rows
+        for (int l = 0, r = n - 1; l &lt; r; l++, r--) {
+            int t = matrix[i][l];
+            matrix[i][l] = matrix[i][r]; matrix[i][r] = t;
+        }
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -246,6 +337,7 @@ def gcd(a, b):
     </div>
   </div>
 
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/math-geometry-viz.js"></script>
@@ -256,6 +348,8 @@ def gcd(a, b):
   <script src="../js/progress.js"></script>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
+  <script src="../js/cdn-loader.js"></script>
+  <script src="../js/code-runner.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/problem-progress.js"></script>
 </body>

@@ -14,10 +14,15 @@ var DSA = window.DSA || {};
    *   DSA.codeTrace.showVariables(trace, { i: 0, j: 1, temp: 5 });
    */
 
-  function wrapCodeLines(container) {
-    var codeEl = container.querySelector('.code-trace__code');
-    if (!codeEl) return;
+  // A trace panel holds one <pre class="code-trace__code"> per language
+  // (data-lang="python" | "c"). Step codeLine numbers refer to the Python
+  // listing; the C listing carries data-line-map="1:1,3:4-5,..." translating
+  // each Python line to the C line(s) that do the same work.
+  function listings(container) {
+    return container ? container.querySelectorAll('.code-trace__code') : [];
+  }
 
+  function wrapListing(codeEl) {
     // Already wrapped?
     if (codeEl.querySelector('.code-line')) return;
 
@@ -38,23 +43,55 @@ var DSA = window.DSA || {};
     }
   }
 
+  function wrapCodeLines(container) {
+    var els = listings(container);
+    for (var i = 0; i < els.length; i++) wrapListing(els[i]);
+  }
+
+  // "1:1,3:4-5" -> { 1: [1], 3: [4, 5] }
+  function parseLineMap(codeEl) {
+    if (codeEl._lineMap) return codeEl._lineMap;
+    var map = null;
+    var raw = codeEl.getAttribute('data-line-map');
+    if (raw) {
+      map = {};
+      raw.split(',').forEach(function(pair) {
+        var m = pair.trim().match(/^(\d+):(\d+)(?:-(\d+))?$/);
+        if (!m) return;
+        var from = +m[2], to = m[3] ? +m[3] : from, list = [];
+        for (var k = from; k <= to; k++) list.push(k);
+        map[+m[1]] = list;
+      });
+    }
+    codeEl._lineMap = map;
+    return map;
+  }
+
+  // Which line numbers of this listing correspond to Python line n?
+  function linesFor(codeEl, n) {
+    var map = parseLineMap(codeEl);
+    if (map) return map[n] || [];
+    // Unmapped non-Python listing: don't guess
+    var lang = codeEl.getAttribute('data-lang');
+    return (!lang || lang === 'python') ? [n] : [];
+  }
+
   function highlightLine(container, lineNumber) {
     if (!container) return;
-    var lines = container.querySelectorAll('.code-line');
-    for (var i = 0; i < lines.length; i++) {
-      if (parseInt(lines[i].getAttribute('data-line'), 10) === lineNumber) {
-        lines[i].classList.add('code-line--active');
-      } else {
-        lines[i].classList.remove('code-line--active');
+    var els = listings(container);
+    for (var e = 0; e < els.length; e++) {
+      var codeEl = els[e];
+      var want = linesFor(codeEl, lineNumber);
+      var lines = codeEl.querySelectorAll('.code-line');
+      var first = null;
+      for (var i = 0; i < lines.length; i++) {
+        var on = want.indexOf(parseInt(lines[i].getAttribute('data-line'), 10)) !== -1;
+        lines[i].classList.toggle('code-line--active', on);
+        if (on && !first) first = lines[i];
       }
-    }
-
-    // Scroll active line into view
-    var active = container.querySelector('.code-line--active');
-    if (active) {
-      var codeEl = container.querySelector('.code-trace__code');
-      if (codeEl) {
-        var top = active.offsetTop - codeEl.offsetTop - codeEl.clientHeight / 2 + active.offsetHeight / 2;
+      // Scroll the active line into view inside its (scrollable) listing
+      if (first && !codeEl.hidden) {
+        var top = first.offsetTop - codeEl.offsetTop - codeEl.clientHeight / 2 + first.offsetHeight / 2;
         codeEl.scrollTop = Math.max(0, top);
       }
     }

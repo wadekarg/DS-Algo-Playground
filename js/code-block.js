@@ -3,7 +3,7 @@ var DSA = window.DSA || {};
 (function() {
   'use strict';
 
-  // Regex-based syntax highlighter for Python, Java, C++
+  // Regex-based syntax highlighter for Python, Java, C++, C
   var rules = {
     python: [
       { pattern: /(#.*$)/gm, cls: 'syn-comment' },
@@ -31,6 +31,16 @@ var DSA = window.DSA || {};
       { pattern: /\b(cout|cin|push_back|pop_back|size|empty|begin|end|sort|find|erase|insert|printf|scanf|malloc|free)\b(?=\s*[\(<])/g, cls: 'syn-function' },
       { pattern: /\b(\d+\.?\d*[fFlL]?)\b/g, cls: 'syn-number' },
       { pattern: /([\+\-\*\/=%<>!&\|:]+|<<|>>)/g, cls: 'syn-operator' }
+    ],
+    c: [
+      { pattern: /(\/\/.*$|\/\*[\s\S]*?\*\/)/gm, cls: 'syn-comment' },
+      { pattern: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g, cls: 'syn-string' },
+      { pattern: /(#\s*(?:include|define|ifndef|ifdef|endif|if|else|undef|pragma)\b(?:\s*&lt;[^&\n]*&gt;)?)/gm, cls: 'syn-keyword' },
+      { pattern: /\b(int|long|short|float|double|char|bool|void|unsigned|signed|const|size_t|uint32_t|uint64_t|int64_t|struct|enum|union|typedef|static|extern|inline|NULL|FILE)\b/g, cls: 'syn-type' },
+      { pattern: /\b(if|else|for|while|do|switch|case|default|break|continue|return|goto|sizeof|true|false)\b/g, cls: 'syn-keyword' },
+      { pattern: /\b([a-zA-Z_]\w*)\s*(?=\()/g, cls: 'syn-function' },
+      { pattern: /\b(\d+\.?\d*[fFlLuU]*)\b/g, cls: 'syn-number' },
+      { pattern: /([\+\-\*\/=%!\|]+|&amp;&amp;|-&gt;)/g, cls: 'syn-operator' }
     ]
   };
 
@@ -97,7 +107,10 @@ var DSA = window.DSA || {};
       copyBtn.addEventListener('click', function() {
         var activePanel = block.querySelector('.code-block__panel--active');
         if (!activePanel) return;
-        var text = activePanel.getAttribute('data-raw') || activePanel.textContent;
+        // code-runner.js replaces the static panels with a live editor and
+        // exposes its current contents here.
+        var text = block.dsaGetCode ? block.dsaGetCode() :
+          (activePanel.getAttribute('data-raw') || activePanel.textContent);
         navigator.clipboard.writeText(text).then(function() {
           copyBtn.textContent = 'Copied!';
           copyBtn.classList.add('code-block__copy--copied');
@@ -110,9 +123,47 @@ var DSA = window.DSA || {};
     }
   }
 
+  // --- Code-trace panels: Python / C switch -----------------------------
+  // A .code-trace may hold one <pre class="code-trace__code"> per language
+  // (data-lang="python" | "c"); show the one matching the site-wide choice.
+  function initTrace(trace) {
+    var pres = trace.querySelectorAll('pre.code-trace__code[data-lang]');
+    if (pres.length < 2 || !DSA.cdnLoader) return;
+    var langs = [];
+    pres.forEach(function(p) { langs.push(p.getAttribute('data-lang')); });
+    var pref = DSA.cdnLoader.lang.get();
+    var current = langs.indexOf(pref) >= 0 ? pref : langs[0];
+
+    var bar = document.createElement('div');
+    bar.className = 'code-trace__bar';
+    var label = document.createElement('span');
+    label.className = 'code-trace__bar-label';
+    label.textContent = 'Algorithm';
+    var sw = DSA.cdnLoader.lang.makeSwitch(langs, current, function(l) { DSA.cdnLoader.lang.set(l); });
+    bar.appendChild(label);
+    bar.appendChild(sw);
+    trace.insertBefore(bar, trace.firstChild);
+
+    function show(l) {
+      if (langs.indexOf(l) < 0) return;
+      pres.forEach(function(p) {
+        var on = p.getAttribute('data-lang') === l;
+        p.hidden = !on;
+        p.classList.toggle('code-trace__code--active', on);
+        // keep the line the visualizer is on in view after switching
+        var active = on && p.querySelector('.code-line--active');
+        if (active) p.scrollTop = Math.max(0, active.offsetTop - p.offsetTop - p.clientHeight / 2);
+      });
+      sw.setActive(l);
+    }
+    show(current);
+    DSA.cdnLoader.lang.onChange(show);
+  }
+
   function init() {
     var blocks = document.querySelectorAll('.code-block');
     blocks.forEach(initBlock);
+    document.querySelectorAll('.code-trace').forEach(initTrace);
   }
 
   DSA.codeBlock = { init: init, highlight: highlight };
