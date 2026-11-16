@@ -92,7 +92,7 @@
 
           <div class="viz-explanation">Click Start to begin DFS traversal from node 0.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def dfs(graph, start):
+            <pre class="code-trace__code" data-lang="python">def dfs(graph, start):
     visited = set()
     stack = [start]
     while stack:
@@ -100,7 +100,24 @@
         if node not in visited:
             visited.add(node)
             for neighbor in graph[node]:
-                stack.append(neighbor)</pre>
+                if neighbor not in visited:
+                    stack.append(neighbor)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3-5,4:6,5:7,6:8,7:9,8:10,9:11,10:12" hidden>void dfs(int** graph, int* deg, int n, int start) {
+    bool* visited = calloc(n, sizeof(bool));
+    int* stack = malloc(n * n * sizeof(int));
+    int top = 0;
+    stack[top++] = start;
+    while (top &gt; 0) {
+        int node = stack[--top];
+        if (!visited[node]) {
+            visited[node] = true;
+            for (int i = 0; i &lt; deg[node]; i++)
+                if (!visited[graph[node][i]])
+                    stack[top++] = graph[node][i];
+        }
+    }
+    free(visited); free(stack);
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -193,6 +210,69 @@ graph = {
 }
 print(dfs_iterative(graph, 0))  # Output: [0, 1, 3, 4, 2, 5, 6]</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define MAX_NODES 16
+
+/* Perform DFS recursively from the given node (prints nodes as visited). */
+void dfs_recursive(int graph[][MAX_NODES], int deg[], int node, bool visited[]) {
+    visited[node] = true;
+    printf("%d ", node);
+
+    for (int i = 0; i &lt; deg[node]; i++) {
+        int neighbor = graph[node][i];
+        if (!visited[neighbor])
+            dfs_recursive(graph, deg, neighbor, visited);
+    }
+}
+
+/* Perform DFS iteratively using an explicit stack. Returns visit count. */
+int dfs_iterative(int graph[][MAX_NODES], int deg[], int start, int order[]) {
+    bool visited[MAX_NODES] = {false};
+    int stack[MAX_NODES * MAX_NODES];
+    int top = 0, count = 0;
+    stack[top++] = start;
+
+    while (top &gt; 0) {
+        int node = stack[--top];          // Pop from top
+        if (visited[node]) continue;
+        visited[node] = true;
+        order[count++] = node;
+
+        // Push neighbors in reverse order so first neighbor is on top
+        for (int i = deg[node] - 1; i &gt;= 0; i--) {
+            int neighbor = graph[node][i];
+            if (!visited[neighbor]) stack[top++] = neighbor;
+        }
+    }
+    return count;
+}
+
+int main(void) {
+    // Example usage: adjacency list
+    int graph[][MAX_NODES] = {
+        {1, 2},      // 0
+        {0, 3, 4},   // 1
+        {0, 5, 6},   // 2
+        {1},         // 3
+        {1},         // 4
+        {2},         // 5
+        {2}          // 6
+    };
+    int deg[] = {2, 3, 3, 1, 1, 1, 1};
+    int order[MAX_NODES];
+    int count = dfs_iterative(graph, deg, 0, order);
+
+    printf("[");
+    for (int i = 0; i &lt; count; i++) printf(i ? ", %d" : "%d", order[i]);
+    printf("]\n");  // Output: [0, 1, 3, 4, 2, 5, 6]
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -278,7 +358,8 @@ print(dfs_iterative(graph, 0))  # Output: [0, 1, 3, 4, 2, 5, 6]</pre>
             data-difficulty="easy"
             data-fn="dfs_order"
             data-starter='def dfs_order(adj, start):\n    """Return DFS traversal order as a list."""\n    pass'
-            data-tests='[{"args": [{0:[1,2],1:[3],2:[3],3:[]}, 0], "expected": "[0, 1, 3, 2]", "label": "DFS from 0 → [0,1,3,2]"}]'>
+            data-tests='[{"args": [[[1,2],[3],[3],[]], 0], "expected": "[0, 1, 3, 2]", "label": "DFS from 0 → [0,1,3,2]"}]'
+            data-c='{"fn": "dfs_order", "params": [{"name": "adj", "type": "int[][]"}, {"name": "start", "type": "int"}], "ret": "int[]", "starter": "/* Return the DFS (preorder) traversal order from start, visiting neighbors\n * in list order (malloc&#39;d; set *returnSize). */\nint* dfs_order(int** adj, int adjSize, int* adjColSize, int start, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Given an adjacency dict and a start node, return the DFS traversal order as a list. Visit neighbors in order (left to right).</div>
           </div>
           <!-- Problem 2 -->
@@ -287,7 +368,8 @@ print(dfs_iterative(graph, 0))  # Output: [0, 1, 3, 4, 2, 5, 6]</pre>
             data-difficulty="medium"
             data-fn="has_cycle"
             data-starter='def has_cycle(adj, n):\n    """Return True if directed graph has a cycle. adj is list of lists."""\n    pass'
-            data-tests='[{"args": [[[1],[2],[0]], 3], "expected": "True", "label": "0→1→2→0 has cycle → True"}, {"args": [[[1],[2],[]], 3], "expected": "False", "label": "0→1→2 no cycle → False"}]'>
+            data-tests='[{"args": [[[1],[2],[0]], 3], "expected": "True", "label": "0→1→2→0 has cycle → True"}, {"args": [[[1],[2],[]], 3], "expected": "False", "label": "0→1→2 no cycle → False"}]'
+            data-c='{"fn": "has_cycle", "params": [{"name": "adj", "type": "int[][]"}, {"name": "n", "type": "int"}], "ret": "bool", "starter": "/* Return true if the directed graph has a cycle.\n * Hint: DFS with 3 colors - white (unvisited), gray (on stack), black (done). */\nbool has_cycle(int** adj, int adjSize, int* adjColSize, int n) {\n    // Your code here\n    return false;\n}\n"}'>
             <div class="practice-problem">Given a directed graph as an adjacency list (list of lists) and node count <code>n</code>, return <code>True</code> if the graph contains a cycle.</div>
           </div>
         </div>
@@ -491,6 +573,7 @@ print(dfs_iterative(graph, 0))  # Output: [0, 1, 3, 4, 2, 5, 6]</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/dfs-viz.js"></script>

@@ -29,10 +29,10 @@ var DSA = window.DSA || {};
       });
     }
 
-    snap(-1, -1, 'Input: [' + arr.join(', ') + ']. We will find the Next Greater Element for each position using a monotonic decreasing stack.', 1);
+    snap(-1, -1, 'Input: [' + arr.join(', ') + ']. We will find the Next Greater Element for each position using a monotonic decreasing stack.', 2);
 
     for (var i = 0; i < n; i++) {
-      snap(i, -1, 'Current element: arr[' + i + '] = ' + arr[i] + '. Check if it is greater than any waiting element on the stack.', 3);
+      snap(i, -1, 'Current element: arr[' + i + '] = ' + arr[i] + '. Check if it is greater than any waiting element on the stack.', 4);
 
       while (stack.length > 0 && arr[stack[stack.length - 1]] < arr[i]) {
         var top = stack[stack.length - 1];
@@ -43,7 +43,7 @@ var DSA = window.DSA || {};
       }
 
       stack.push(i);
-      snap(i, -1, 'Push index ' + i + ' (value ' + arr[i] + ') onto the stack. Stack: [' + stack.map(function(x) { return arr[x]; }).join(', ') + '].', 8);
+      snap(i, -1, 'Push index ' + i + ' (value ' + arr[i] + ') onto the stack. Stack: [' + stack.map(function(x) { return arr[x]; }).join(', ') + '].', 7);
     }
 
     // Remaining stack elements have no greater element
@@ -51,7 +51,7 @@ var DSA = window.DSA || {};
       var rem = stack.pop();
       nge[rem] = -1;
     }
-    snap(-1, -1, 'Done! Remaining indices have no greater element to the right (NGE = -1). Result: [' + nge.join(', ') + '].', 10);
+    snap(-1, -1, 'Done! Remaining indices have no greater element to the right (NGE = -1). Result: [' + nge.join(', ') + '].', 8);
 
     return steps;
   }

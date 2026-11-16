@@ -16,6 +16,8 @@
   font-size: var(--font-size-sm);
   line-height: 1.7;
   counter-reset: line;
+  max-height: 24em;      /* long listings scroll; code-trace.js keeps the active line in view */
+  overflow-y: auto;
 }
 
 .code-line {

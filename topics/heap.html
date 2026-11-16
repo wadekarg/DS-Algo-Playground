@@ -103,12 +103,12 @@
 
           <div class="viz-explanation">Use the controls below to perform heap operations.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def insert(heap, val):
+            <pre class="code-trace__code" data-lang="python">def insert(heap, val):
     heap.append(val)
     i = len(heap) - 1
-    while i > 0:
+    while i &gt; 0:
         p = (i - 1) // 2
-        if heap[i] > heap[p]:
+        if heap[i] &gt; heap[p]:
             heap[i], heap[p] = heap[p], heap[i]
             i = p
         else: break
@@ -122,14 +122,46 @@ def heapify_down(heap, i):
     while True:
         largest = i
         l, r = 2*i+1, 2*i+2
-        if l &lt; n and heap[l] > heap[largest]: largest = l
-        if r &lt; n and heap[r] > heap[largest]: largest = r
+        if l &lt; n and heap[l] &gt; heap[largest]: largest = l
+        if r &lt; n and heap[r] &gt; heap[largest]: largest = r
         if largest == i: break
         heap[i], heap[largest] = heap[largest], heap[i]
         i = largest
 def build_heap(arr):
     for i in range(len(arr)//2 - 1, -1, -1):
         heapify_down(arr, i)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:12,11:13,12:14,13:15,14:16,15:18,16:18,17:19,18:20,19:21,20:22,21:23,22:24,23:25,24:26,25:29,26:30,27:31" hidden>void insert(int heap[], int* n, int val) {
+    heap[(*n)++] = val;
+    int i = *n - 1;
+    while (i &gt; 0) {
+        int p = (i - 1) / 2;
+        if (heap[i] &gt; heap[p]) {
+            int t = heap[i]; heap[i] = heap[p]; heap[p] = t;
+            i = p;
+        } else break;
+    }
+}
+int extract_max(int heap[], int* n) {
+    int max_val = heap[0];
+    heap[0] = heap[--(*n)];
+    heapify_down(heap, *n, 0);
+    return max_val;
+}
+void heapify_down(int heap[], int n, int i) {
+    while (1) {
+        int largest = i;
+        int l = 2 * i + 1, r = 2 * i + 2;
+        if (l &lt; n &amp;&amp; heap[l] &gt; heap[largest]) largest = l;
+        if (r &lt; n &amp;&amp; heap[r] &gt; heap[largest]) largest = r;
+        if (largest == i) break;
+        int t = heap[i]; heap[i] = heap[largest]; heap[largest] = t;
+        i = largest;
+    }
+}
+void build_heap(int arr[], int n) {
+    for (int i = n / 2 - 1; i &gt;= 0; i--)
+        heapify_down(arr, n, i);
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -246,6 +278,95 @@ print("Max:", h.peek())            # Output: Max: 90
 print("Extracted:", h.extract_max()) # Output: Extracted: 90
 print("New max:", h.peek())         # Output: New max: 80</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* Max-heap stored in an array: children of i are 2i+1 and 2i+2. */
+typedef struct {
+    int* heap;
+    int size;
+    int capacity;
+} MaxHeap;
+
+int parent(int i) { return (i - 1) / 2; }
+int left(int i)   { return 2 * i + 1; }
+int right(int i)  { return 2 * i + 2; }
+
+void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }
+
+void heap_init(MaxHeap* h, int capacity) {
+    h-&gt;heap = malloc(capacity * sizeof(int));
+    h-&gt;size = 0;
+    h-&gt;capacity = capacity;
+}
+
+/* Insert a value and bubble up to restore heap property. */
+void insert(MaxHeap* h, int value) {
+    if (h-&gt;size == h-&gt;capacity) {
+        h-&gt;capacity *= 2;
+        h-&gt;heap = realloc(h-&gt;heap, h-&gt;capacity * sizeof(int));
+    }
+    int idx = h-&gt;size++;
+    h-&gt;heap[idx] = value;
+    // Bubble up
+    while (idx &gt; 0 &amp;&amp; h-&gt;heap[idx] &gt; h-&gt;heap[parent(idx)]) {
+        swap(&amp;h-&gt;heap[idx], &amp;h-&gt;heap[parent(idx)]);
+        idx = parent(idx);
+    }
+}
+
+/* Sink a node down to its correct position. */
+void sink_down(MaxHeap* h, int idx) {
+    int n = h-&gt;size;
+    while (1) {
+        int largest = idx;
+        int l = left(idx), r = right(idx);
+        if (l &lt; n &amp;&amp; h-&gt;heap[l] &gt; h-&gt;heap[largest]) largest = l;
+        if (r &lt; n &amp;&amp; h-&gt;heap[r] &gt; h-&gt;heap[largest]) largest = r;
+        if (largest == idx) break;
+        swap(&amp;h-&gt;heap[idx], &amp;h-&gt;heap[largest]);
+        idx = largest;
+    }
+}
+
+/* Remove and return the maximum element (root). */
+int extract_max(MaxHeap* h) {
+    if (h-&gt;size == 0) {
+        fprintf(stderr, "extract_max from empty heap\n");
+        exit(1);
+    }
+    int max_val = h-&gt;heap[0];
+    h-&gt;heap[0] = h-&gt;heap[--h-&gt;size];
+    if (h-&gt;size &gt; 0) sink_down(h, 0);
+    return max_val;
+}
+
+/* Return the maximum element without removing it. */
+int peek(const MaxHeap* h) {
+    if (h-&gt;size == 0) {
+        fprintf(stderr, "peek from empty heap\n");
+        exit(1);
+    }
+    return h-&gt;heap[0];
+}
+
+int main(void) {
+    // Example usage
+    MaxHeap h;
+    heap_init(&amp;h, 4);
+    int values[] = {40, 70, 30, 90, 50, 80, 60};
+    for (int i = 0; i &lt; 7; i++) insert(&amp;h, values[i]);
+
+    printf("Max: %d\n", peek(&amp;h));              // Output: Max: 90
+    printf("Extracted: %d\n", extract_max(&amp;h)); // Output: Extracted: 90
+    printf("New max: %d\n", peek(&amp;h));          // Output: New max: 80
+    free(h.heap);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -352,7 +473,8 @@ print("New max:", h.peek())         # Output: New max: 80</pre>
             data-difficulty="easy"
             data-fn="kth_largest"
             data-starter='def kth_largest(nums, k):\n    """Return the kth largest element in nums."""\n    pass'
-            data-tests='[{"args": [[3,2,1,5,6,4], 2], "expected": "5", "label": "[3,2,1,5,6,4] k=2 → 5"}, {"args": [[3,2,3,1,2,4,5,5,6], 4], "expected": "4", "label": "[3,2,3,1,2,4,5,5,6] k=4 → 4"}]'>
+            data-tests='[{"args": [[3,2,1,5,6,4], 2], "expected": "5", "label": "[3,2,1,5,6,4] k=2 → 5"}, {"args": [[3,2,3,1,2,4,5,5,6], 4], "expected": "4", "label": "[3,2,3,1,2,4,5,5,6] k=4 → 4"}]'
+            data-c='{"fn": "kth_largest", "params": [{"name": "nums", "type": "int[]"}, {"name": "k", "type": "int"}], "ret": "int", "starter": "/* Return the kth largest element in nums.\n * Hint: a min-heap of size k keeps the k largest seen so far. */\nint kth_largest(int* nums, int numsSize, int k) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Find the kth largest element in an unsorted array (1-indexed, so k=1 means the largest).</div>
           </div>
           <!-- Problem 2 -->
@@ -361,7 +483,8 @@ print("New max:", h.peek())         # Output: New max: 80</pre>
             data-difficulty="medium"
             data-fn="merge_k_sorted"
             data-starter='def merge_k_sorted(lists):\n    """Merge k sorted lists into one sorted list."""\n    pass'
-            data-tests='[{"args": [[[1,4,5],[1,3,4],[2,6]]], "expected": "[1, 1, 2, 3, 4, 4, 5, 6]", "label": "merges [[1,4,5],[1,3,4],[2,6]]"}]'>
+            data-tests='[{"args": [[[1,4,5],[1,3,4],[2,6]]], "expected": "[1, 1, 2, 3, 4, 4, 5, 6]", "label": "merges [[1,4,5],[1,3,4],[2,6]]"}]'
+            data-c='{"fn": "merge_k_sorted", "params": [{"name": "lists", "type": "int[][]"}], "ret": "int[]", "starter": "/* Merge k sorted lists into one sorted array (malloc&#39;d; set *returnSize).\n * listsColSize[i] is the length of lists[i]. */\nint* merge_k_sorted(int** lists, int listsSize, int* listsColSize, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Given a list of sorted lists, merge them all into a single sorted list and return it.</div>
           </div>
         </div>
@@ -564,6 +687,7 @@ print("New max:", h.peek())         # Output: New max: 80</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/heap-viz.js"></script>

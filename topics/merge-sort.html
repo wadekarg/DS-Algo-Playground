@@ -89,8 +89,8 @@
           </div>
           <div class="viz-explanation">Press Play or Step to start the visualization.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def merge_sort(arr):
-    if len(arr) <= 1:
+            <pre class="code-trace__code" data-lang="python">def merge_sort(arr):
+    if len(arr) &lt;= 1:
         return arr
     mid = len(arr) // 2
     left = merge_sort(arr[:mid])
@@ -98,14 +98,36 @@
     return merge(left, right)
 
 def merge(left, right):
-    result = []
-    while left and right:
-        if left[0] &lt;= right[0]:
-            result.append(left.pop(0))
+    result, i, j = [], 0, 0
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            result.append(left[i]); i += 1
         else:
-            result.append(right.pop(0))
-    result.extend(left or right)
+            result.append(right[j]); j += 1
+    result.extend(left[i:])    # copy what's left over
+    result.extend(right[j:])
     return result</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,9:10,10:11,11:12,12:13,13:14,14:15,15:16,16:18,17:19,18:20" hidden>void merge_sort(int arr[], int lo, int hi, int tmp[]) {
+    if (hi - lo &lt;= 1)
+        return;
+    int mid = lo + (hi - lo) / 2;
+    merge_sort(arr, lo, mid, tmp);
+    merge_sort(arr, mid, hi, tmp);
+    merge(arr, lo, mid, hi, tmp);
+}
+
+void merge(int arr[], int lo, int mid, int hi, int tmp[]) {
+    int i = lo, j = mid, k = lo;
+    while (i &lt; mid &amp;&amp; j &lt; hi) {
+        if (arr[i] &lt;= arr[j])
+            tmp[k++] = arr[i++];
+        else
+            tmp[k++] = arr[j++];
+    }
+    while (i &lt; mid) tmp[k++] = arr[i++];   // copy what's left over
+    while (j &lt; hi) tmp[k++] = arr[j++];
+    for (k = lo; k &lt; hi; k++) arr[k] = tmp[k];
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -142,7 +164,7 @@ def merge(left, right):
       <section class="topic-section">
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="topic-section__content">
-          <p>Below is a standard top-down merge sort implementation in three languages. The algorithm recursively splits the array, then uses a merge function to combine sorted halves.</p>
+          <p>Below is a standard top-down merge sort implementation in Python and C. The algorithm recursively splits the array, then uses a merge function to combine sorted halves.</p>
         </div>
         <div class="code-block">
           <div class="code-block__header">
@@ -187,6 +209,63 @@ numbers = [38, 27, 43, 3, 9, 82, 10]
 print("Unsorted:", numbers)
 print("Sorted:  ", merge_sort(numbers))</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+/* Merge two sorted halves arr[lo..mid) and arr[mid..hi) using tmp. */
+void merge(int arr[], int lo, int mid, int hi, int tmp[]) {
+    int i = lo, j = mid, k = lo;
+
+    while (i &lt; mid &amp;&amp; j &lt; hi) {
+        if (arr[i] &lt;= arr[j])
+            tmp[k++] = arr[i++];
+        else
+            tmp[k++] = arr[j++];
+    }
+
+    // Append remaining elements
+    while (i &lt; mid) tmp[k++] = arr[i++];
+    while (j &lt; hi) tmp[k++] = arr[j++];
+    memcpy(arr + lo, tmp + lo, (hi - lo) * sizeof(int));
+}
+
+/* Top-down merge sort of arr[lo..hi). */
+void merge_sort_range(int arr[], int lo, int hi, int tmp[]) {
+    if (hi - lo &lt;= 1) return;
+
+    int mid = lo + (hi - lo) / 2;
+    merge_sort_range(arr, lo, mid, tmp);
+    merge_sort_range(arr, mid, hi, tmp);
+
+    merge(arr, lo, mid, hi, tmp);
+}
+
+void merge_sort(int arr[], int n) {
+    int* tmp = malloc(n * sizeof(int));  // one scratch buffer, O(n) space
+    merge_sort_range(arr, 0, n, tmp);
+    free(tmp);
+}
+
+void print_array(const char* label, int arr[], int n) {
+    printf("%s [", label);
+    for (int i = 0; i &lt; n; i++) printf(i ? ", %d" : "%d", arr[i]);
+    printf("]\n");
+}
+
+int main(void) {
+    // Example usage
+    int numbers[] = {38, 27, 43, 3, 9, 82, 10};
+    int n = sizeof(numbers) / sizeof(numbers[0]);
+    print_array("Unsorted:", numbers, n);
+    merge_sort(numbers, n);
+    print_array("Sorted:  ", numbers, n);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -284,7 +363,8 @@ print("Sorted:  ", merge_sort(numbers))</pre>
             data-difficulty="easy"
             data-fn="merge_sorted"
             data-starter='def merge_sorted(a, b):\n    """Merge two sorted lists into one sorted list."""\n    pass'
-            data-tests='[{"args": [[1,3,5],[2,4,6]], "expected": "[1, 2, 3, 4, 5, 6]", "label": "[1,3,5] + [2,4,6] → [1,2,3,4,5,6]"}, {"args": [[1],[2,3]], "expected": "[1, 2, 3]", "label": "[1] + [2,3] → [1,2,3]"}]'>
+            data-tests='[{"args": [[1,3,5],[2,4,6]], "expected": "[1, 2, 3, 4, 5, 6]", "label": "[1,3,5] + [2,4,6] → [1,2,3,4,5,6]"}, {"args": [[1],[2,3]], "expected": "[1, 2, 3]", "label": "[1] + [2,3] → [1,2,3]"}]'
+            data-c='{"fn": "merge_sorted", "params": [{"name": "a", "type": "int[]"}, {"name": "b", "type": "int[]"}], "ret": "int[]", "starter": "/* Merge two sorted arrays into one sorted array (malloc&#39;d; set *returnSize). */\nint* merge_sorted(int* a, int aSize, int* b, int bSize, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Given two sorted lists, merge them into a single sorted list without using built-in sort.</div>
           </div>
           <!-- Problem 2 -->
@@ -293,7 +373,8 @@ print("Sorted:  ", merge_sort(numbers))</pre>
             data-difficulty="medium"
             data-fn="merge_sort"
             data-starter='def merge_sort(arr):\n    """Return a sorted list using merge sort algorithm."""\n    pass'
-            data-tests='[{"args": [[38,27,43,3,9,82,10]], "expected": "[3, 9, 10, 27, 38, 43, 82]", "label": "[38,27,43,3,9,82,10] → sorted"}]'>
+            data-tests='[{"args": [[38,27,43,3,9,82,10]], "expected": "[3, 9, 10, 27, 38, 43, 82]", "label": "[38,27,43,3,9,82,10] → sorted"}]'
+            data-c='{"fn": "merge_sort", "params": [{"name": "arr", "type": "int[]"}], "ret": "int[]", "starter": "/* Return a sorted array using merge sort (malloc&#39;d; set *returnSize). */\nint* merge_sort(int* arr, int arrSize, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Implement merge sort and return the sorted array as a new list.</div>
           </div>
         </div>
@@ -490,6 +571,7 @@ print("Sorted:  ", merge_sort(numbers))</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/merge-sort-viz.js"></script>

@@ -31,7 +31,7 @@ var DSA = window.DSA || {};
 
     steps.push({
       heap: h.slice(), highlighted: [], swapping: [], completed: [],
-      codeLine: 2, variables: { val: value },
+      codeLine: 1, variables: { val: value },
       description: 'Current max-heap: [' + h.join(', ') + ']. We will insert ' + value + '.'
     });
 
@@ -39,7 +39,7 @@ var DSA = window.DSA || {};
     var idx = h.length - 1;
     steps.push({
       heap: h.slice(), highlighted: [idx], swapping: [], completed: [],
-      codeLine: 3, variables: { val: value, idx: idx },
+      codeLine: 2, variables: { val: value, idx: idx },
       description: 'Insert ' + value + ' at the end of the array (index ' + idx + '). Now we bubble up to restore the heap property.'
     });
 
@@ -47,7 +47,7 @@ var DSA = window.DSA || {};
       var pIdx = parentIndex(idx);
       steps.push({
         heap: h.slice(), highlighted: [idx], swapping: [], completed: [], parent: pIdx,
-        codeLine: 5, variables: { val: h[idx], parent: h[pIdx], idx: idx, pIdx: pIdx },
+        codeLine: 6, variables: { val: h[idx], parent: h[pIdx], idx: idx, pIdx: pIdx },
         description: 'Compare ' + h[idx] + ' (index ' + idx + ') with parent ' + h[pIdx] + ' (index ' + pIdx + ').'
       });
 
@@ -55,14 +55,14 @@ var DSA = window.DSA || {};
         swapArr(h, idx, pIdx);
         steps.push({
           heap: h.slice(), highlighted: [], swapping: [idx, pIdx], completed: [],
-          codeLine: 6, variables: { val: h[pIdx], parent: h[idx] },
+          codeLine: 7, variables: { val: h[pIdx], parent: h[idx] },
           description: 'Swap ' + h[pIdx] + ' and ' + h[idx] + ' because child was larger than parent.'
         });
         idx = pIdx;
       } else {
         steps.push({
           heap: h.slice(), highlighted: [], swapping: [], completed: [idx],
-          codeLine: 7, variables: { val: h[idx] },
+          codeLine: 9, variables: { val: h[idx] },
           description: h[idx] + ' <= parent ' + h[pIdx] + '. Heap property satisfied. Bubble-up complete.'
         });
         break;
@@ -72,14 +72,14 @@ var DSA = window.DSA || {};
     if (idx === 0) {
       steps.push({
         heap: h.slice(), highlighted: [], swapping: [], completed: [0],
-        codeLine: 7, variables: { val: h[0] },
+        codeLine: 4, variables: { val: h[0] },
         description: 'Element ' + h[0] + ' bubbled up to the root. Insert complete.'
       });
     }
 
     steps.push({
       heap: h.slice(), highlighted: [], swapping: [], completed: [],
-      codeLine: 7, variables: { size: h.length },
+      codeLine: 4, variables: { size: h.length },
       description: 'Insert complete. Max-heap: [' + h.join(', ') + '].'
     });
 
@@ -100,7 +100,7 @@ var DSA = window.DSA || {};
 
     steps.push({
       heap: h.slice(), highlighted: [0], swapping: [], completed: [],
-      codeLine: 10, variables: { max: maxVal },
+      codeLine: 11, variables: { max: maxVal },
       description: 'Extract-Max: The root element ' + maxVal + ' is the maximum. We will remove it.'
     });
 
@@ -118,14 +118,14 @@ var DSA = window.DSA || {};
     swapArr(h, 0, lastIdx);
     steps.push({
       heap: h.slice(), highlighted: [], swapping: [0, lastIdx], completed: [],
-      codeLine: 11, variables: { max: h[lastIdx], last: h[0] },
+      codeLine: 12, variables: { max: h[lastIdx], last: h[0] },
       description: 'Swap root ' + h[lastIdx] + ' with last element ' + h[0] + '.'
     });
 
     h.pop();
     steps.push({
       heap: h.slice(), highlighted: [0], swapping: [], completed: [],
-      codeLine: 12, variables: { max: maxVal, root: h[0] },
+      codeLine: 13, variables: { max: maxVal, root: h[0] },
       description: 'Remove ' + maxVal + ' from the end. Now sink down ' + h[0] + ' (index 0) to restore heap property.'
     });
 
@@ -142,7 +142,7 @@ var DSA = window.DSA || {};
       if (largest === idx) {
         steps.push({
           heap: h.slice(), highlighted: [], swapping: [], completed: [idx],
-          codeLine: 14, variables: { val: h[idx] },
+          codeLine: 22, variables: { val: h[idx] },
           description: h[idx] + ' (index ' + idx + ') is larger than both children. Sink-down complete.'
         });
         break;
@@ -153,14 +153,14 @@ var DSA = window.DSA || {};
       if (right < n) compareIndices.push(right);
       steps.push({
         heap: h.slice(), highlighted: compareIndices, swapping: [], completed: [], parent: idx,
-        codeLine: 13, variables: { val: h[idx], largest: h[largest] },
+        codeLine: 21, variables: { val: h[idx], largest: h[largest] },
         description: 'Compare ' + h[idx] + ' (index ' + idx + ') with children. Largest child is ' + h[largest] + ' (index ' + largest + ').'
       });
 
       swapArr(h, idx, largest);
       steps.push({
         heap: h.slice(), highlighted: [], swapping: [idx, largest], completed: [],
-        codeLine: 13, variables: { val: h[idx], largest: h[largest] },
+        codeLine: 23, variables: { val: h[idx], largest: h[largest] },
         description: 'Swap ' + h[idx] + ' and ' + h[largest] + '.'
       });
 
@@ -184,7 +184,7 @@ var DSA = window.DSA || {};
 
     steps.push({
       heap: h.slice(), highlighted: [], swapping: [], completed: [],
-      codeLine: 17, variables: { n: n },
+      codeLine: 26, variables: { n: n },
       description: 'Build max-heap from array: [' + h.join(', ') + ']. We start from the last non-leaf node and sift down each node.'
     });
 
@@ -193,7 +193,7 @@ var DSA = window.DSA || {};
     for (var i = lastNonLeaf; i >= 0; i--) {
       steps.push({
         heap: h.slice(), highlighted: [i], swapping: [], completed: [],
-        codeLine: 18, variables: { i: i, val: h[i] },
+        codeLine: 27, variables: { i: i, val: h[i] },
         description: 'Sift down node ' + h[i] + ' at index ' + i + '.'
       });
 
@@ -209,7 +209,7 @@ var DSA = window.DSA || {};
         if (largest === idx) {
           steps.push({
             heap: h.slice(), highlighted: [], swapping: [], completed: [idx],
-            codeLine: 18, variables: { val: h[idx] },
+            codeLine: 22, variables: { val: h[idx] },
             description: h[idx] + ' at index ' + idx + ' satisfies heap property. No swap needed.'
           });
           break;
@@ -217,14 +217,14 @@ var DSA = window.DSA || {};
 
         steps.push({
           heap: h.slice(), highlighted: [idx, largest], swapping: [], completed: [], parent: idx,
-          codeLine: 13, variables: { val: h[idx], largest: h[largest] },
+          codeLine: 21, variables: { val: h[idx], largest: h[largest] },
           description: 'Compare ' + h[idx] + ' (index ' + idx + ') with largest child ' + h[largest] + ' (index ' + largest + ').'
         });
 
         swapArr(h, idx, largest);
         steps.push({
           heap: h.slice(), highlighted: [], swapping: [idx, largest], completed: [],
-          codeLine: 13, variables: { val: h[idx], largest: h[largest] },
+          codeLine: 23, variables: { val: h[idx], largest: h[largest] },
           description: 'Swap ' + h[idx] + ' and ' + h[largest] + '.'
         });
 
@@ -234,7 +234,7 @@ var DSA = window.DSA || {};
 
     steps.push({
       heap: h.slice(), highlighted: [], swapping: [], completed: [],
-      codeLine: 14, variables: { n: n },
+      codeLine: 26, variables: { n: n },
       description: 'Heapify complete! Max-heap: [' + h.join(', ') + '].'
     });
 

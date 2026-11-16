@@ -7,3 +7,5 @@ Thumbs.db
 .idea/
 .superpowers/
 docs/superpowers/
+__pycache__/
+*.pyc

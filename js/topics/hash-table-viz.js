@@ -88,25 +88,25 @@ var DSA = window.DSA || {};
     // Step 1: Show current state
     steps.push(makeStep(
       'Current hash table. We will insert value ' + value + '.',
-      { codeLine: 7, variables: { key: value } }
+      { codeLine: 4, variables: { key: value } }
     ));
 
     // Step 2: Show hash calculation
     steps.push(makeStep(
       'Computing hash: ' + value + ' % ' + numBuckets + ' = ' + h + '. The value belongs in bucket ' + h + '.',
-      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 4, variables: { key: value, idx: h } }
+      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 5, variables: { key: value, idx: h } }
     ));
 
     // Step 3: Check if bucket already has items (collision info)
     if (buckets[h].length > 0) {
       steps.push(makeStep(
         'Bucket ' + h + ' already contains [' + buckets[h].join(', ') + ']. Collision! We will chain the new value at the end.',
-        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 8, variables: { idx: h } }
+        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 7, variables: { idx: h } }
       ));
     } else {
       steps.push(makeStep(
         'Bucket ' + h + ' is empty. We will place ' + value + ' as the first element.',
-        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 8, variables: { idx: h } }
+        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 7, variables: { idx: h } }
       ));
     }
 
@@ -141,13 +141,13 @@ var DSA = window.DSA || {};
     // Step 1: Show current state
     steps.push(makeStep(
       'Searching for value ' + value + ' in the hash table.',
-      { codeLine: 12, variables: { key: value } }
+      { codeLine: 10, variables: { key: value } }
     ));
 
     // Step 2: Compute hash
     steps.push(makeStep(
       'Computing hash: ' + value + ' % ' + numBuckets + ' = ' + h + '. We look in bucket ' + h + '.',
-      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 13, variables: { key: value, idx: h } }
+      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h, codeLine: 11, variables: { key: value, idx: h } }
     ));
 
     var chain = buckets[h];
@@ -156,7 +156,7 @@ var DSA = window.DSA || {};
       // Empty bucket - not found
       steps.push(makeStep(
         'Bucket ' + h + ' is empty. Value ' + value + ' is not in the table.',
-        { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+        { codeLine: 15, hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
       ));
     } else {
       // Scan through chain
@@ -166,7 +166,7 @@ var DSA = window.DSA || {};
           // Found it
           steps.push(makeStep(
             'Checking chain position ' + i + ': value = ' + chain[i] + ' --- MATCH!',
-            {
+            { codeLine: 13,
               hashCalc: value + ' % ' + numBuckets + ' = ' + h,
               activeBucket: h,
               foundItem: { bucket: h, index: i }
@@ -174,7 +174,7 @@ var DSA = window.DSA || {};
           ));
           steps.push(makeStep(
             'Value ' + value + ' found in bucket ' + h + ' at chain position ' + i + '!',
-            {
+            { codeLine: 14,
               activeBucket: h,
               foundItem: { bucket: h, index: i }
             }
@@ -184,7 +184,7 @@ var DSA = window.DSA || {};
         } else {
           steps.push(makeStep(
             'Checking chain position ' + i + ': value = ' + chain[i] + ' --- not a match. Continue scanning.',
-            {
+            { codeLine: 12,
               hashCalc: value + ' % ' + numBuckets + ' = ' + h,
               activeBucket: h,
               activeItem: { bucket: h, index: i }
@@ -196,7 +196,7 @@ var DSA = window.DSA || {};
       if (!found) {
         steps.push(makeStep(
           'Reached the end of the chain in bucket ' + h + '. Value ' + value + ' is not in the table.',
-          { activeBucket: h }
+          { codeLine: 15, activeBucket: h }
         ));
       }
     }
@@ -214,12 +214,12 @@ var DSA = window.DSA || {};
     // Step 1: Show current state
     steps.push(makeStep(
       'Deleting value ' + value + ' from the hash table.'
-    ));
+    , { codeLine: 17 }));
 
     // Step 2: Compute hash
     steps.push(makeStep(
       'Computing hash: ' + value + ' % ' + numBuckets + ' = ' + h + '. We look in bucket ' + h + '.',
-      { hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
+      { codeLine: 18, hashCalc: value + ' % ' + numBuckets + ' = ' + h, activeBucket: h }
     ));
 
     var chain = buckets[h];
@@ -227,7 +227,7 @@ var DSA = window.DSA || {};
     if (chain.length === 0) {
       steps.push(makeStep(
         'Bucket ' + h + ' is empty. Value ' + value + ' is not in the table. Nothing to delete.',
-        { activeBucket: h }
+        { codeLine: 23, activeBucket: h }
       ));
     } else {
       var foundIdx = -1;
@@ -236,7 +236,7 @@ var DSA = window.DSA || {};
           foundIdx = i;
           steps.push(makeStep(
             'Scanning chain position ' + i + ': value = ' + chain[i] + ' --- MATCH! Will remove this element.',
-            {
+            { codeLine: 20,
               hashCalc: value + ' % ' + numBuckets + ' = ' + h,
               activeBucket: h,
               activeItem: { bucket: h, index: i }
@@ -246,7 +246,7 @@ var DSA = window.DSA || {};
         } else {
           steps.push(makeStep(
             'Scanning chain position ' + i + ': value = ' + chain[i] + ' --- not a match.',
-            {
+            { codeLine: 20,
               hashCalc: value + ' % ' + numBuckets + ' = ' + h,
               activeBucket: h,
               activeItem: { bucket: h, index: i }
@@ -258,7 +258,7 @@ var DSA = window.DSA || {};
       if (foundIdx === -1) {
         steps.push(makeStep(
           'Reached the end of the chain. Value ' + value + ' is not in the table. Nothing to delete.',
-          { activeBucket: h }
+          { codeLine: 23, activeBucket: h }
         ));
       } else {
         // Perform the deletion
@@ -267,12 +267,12 @@ var DSA = window.DSA || {};
         if (buckets[h].length > 0) {
           steps.push(makeStep(
             'Removed ' + value + ' from bucket ' + h + '. Remaining chain: [' + buckets[h].join(', ') + '].',
-            { activeBucket: h }
+            { codeLine: 21, activeBucket: h }
           ));
         } else {
           steps.push(makeStep(
             'Removed ' + value + ' from bucket ' + h + '. Bucket is now empty.',
-            { activeBucket: h }
+            { codeLine: 21, activeBucket: h }
           ));
         }
       }

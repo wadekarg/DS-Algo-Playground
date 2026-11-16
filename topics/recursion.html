@@ -95,10 +95,15 @@
 
           <div class="viz-explanation">Set a value for n and click Visualize to see the recursive call tree for fib(n).</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def factorial(n):
-    if n == 0:
-        return 1
-    return n * factorial(n - 1)</pre>
+            <pre class="code-trace__code" data-lang="python">def fib(n):
+    if n &lt;= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4" hidden>long long fib(int n) {
+    if (n &lt;= 1)
+        return n;
+    return fib(n - 1) + fib(n - 2);
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -180,6 +185,43 @@ print(fibonacci(10))        # Output: 55
 print(factorial(5))         # Output: 120
 print(fibonacci_memo(50))   # Output: 12586269025 (instant with memoization)</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* Naive recursive Fibonacci - O(2^n) time. */
+long long fibonacci(int n) {
+    if (n &lt;= 0) return 0;
+    if (n == 1) return 1;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+/* Recursive factorial - O(n) time. */
+long long factorial(int n) {
+    if (n &lt;= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+/* Memoized Fibonacci - O(n) time, O(n) space. memo[i] == 0 means unknown. */
+long long fibonacci_memo(int n, long long memo[]) {
+    if (n &lt;= 0) return 0;
+    if (n == 1) return 1;
+    if (memo[n] != 0) return memo[n];
+    memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo);
+    return memo[n];
+}
+
+int main(void) {
+    // Example usage
+    printf("%lld\n", fibonacci(10));        // Output: 55
+    printf("%lld\n", factorial(5));         // Output: 120
+    long long memo[51] = {0};
+    printf("%lld\n", fibonacci_memo(50, memo));  // Output: 12586269025 (instant with memoization)
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -275,7 +317,8 @@ print(fibonacci_memo(50))   # Output: 12586269025 (instant with memoization)</pr
             data-difficulty="easy"
             data-fn="power"
             data-starter='def power(base, exp):\n    """Return base^exp using recursion."""\n    pass'
-            data-tests='[{"args": [2, 10], "expected": "1024", "label": "2^10 → 1024"}, {"args": [3, 0], "expected": "1", "label": "3^0 → 1"}]'>
+            data-tests='[{"args": [2, 10], "expected": "1024", "label": "2^10 → 1024"}, {"args": [3, 0], "expected": "1", "label": "3^0 → 1"}]'
+            data-c='{"fn": "power", "params": [{"name": "base", "type": "int"}, {"name": "exp", "type": "int"}], "ret": "long", "starter": "/* Return base^exp using recursion. */\nlong long power(int base, int exp) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Implement <code>base^exp</code> recursively. Assume <code>exp</code> is a non-negative integer.</div>
           </div>
           <!-- Problem 2 -->
@@ -284,7 +327,8 @@ print(fibonacci_memo(50))   # Output: 12586269025 (instant with memoization)</pr
             data-difficulty="medium"
             data-fn="flatten"
             data-starter='def flatten(lst):\n    """Flatten a nested list recursively and return a flat list."""\n    pass'
-            data-tests='[{"args": [[1,[2,[3,4],5]]], "expected": "[1, 2, 3, 4, 5]", "label": "[1,[2,[3,4],5]] → [1,2,3,4,5]"}, {"args": [[1,2,3]], "expected": "[1, 2, 3]", "label": "[1,2,3] → [1,2,3]"}]'>
+            data-tests='[{"args": [[1,[2,[3,4],5]]], "expected": "[1, 2, 3, 4, 5]", "label": "[1,[2,[3,4],5]] → [1,2,3,4,5]"}, {"args": [[1,2,3]], "expected": "[1, 2, 3]", "label": "[1,2,3] → [1,2,3]"}]'
+            data-c='{"fn": "flatten", "params": [{"name": "lst", "type": "json"}], "ret": "int[]", "starter": "/* Flatten a nested list of integers.\n * C has no nested lists, so lst arrives as text, e.g. \"[1,[2,[3,4],5]]\".\n * Walk it recursively: a list is &#39;[&#39; item (&#39;,&#39; item)* &#39;]&#39;, and an item is\n * either a number or another list.\n * Return the integers in order (malloc&#39;d; set *returnSize). */\nint* flatten(char* lst, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Recursively flatten an arbitrarily nested list into a single flat list.</div>
           </div>
         </div>
@@ -486,6 +530,7 @@ print(fibonacci_memo(50))   # Output: 12586269025 (instant with memoization)</pr
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/recursion-viz.js"></script>

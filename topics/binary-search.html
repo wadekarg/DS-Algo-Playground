@@ -97,7 +97,7 @@
 
           <div class="viz-explanation">Set a target and click Search to begin.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def binary_search(arr, target):
+            <pre class="code-trace__code" data-lang="python">def binary_search(arr, target):
     lo, hi = 0, len(arr) - 1
     while lo &lt;= hi:
         mid = (lo + hi) // 2
@@ -108,6 +108,19 @@
         else:
             hi = mid - 1
     return -1</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,11:12" hidden>int binary_search(int arr[], int n, int target) {
+    int lo = 0, hi = n - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target)
+            return mid;
+        else if (arr[mid] &lt; target)
+            lo = mid + 1;
+        else
+            hi = mid - 1;
+    }
+    return -1;
+}</pre><!-- c-trace:end -->
           </div>
 
           <div class="viz-controls">
@@ -147,7 +160,7 @@
       <section class="topic-section">
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="topic-section__content">
-          <p>Below is the iterative implementation of binary search in three languages. The iterative version is preferred in practice because it uses O(1) extra space and avoids the overhead of recursive function calls.</p>
+          <p>Below is the iterative implementation of binary search in Python and C. The iterative version is preferred in practice because it uses O(1) extra space and avoids the overhead of recursive function calls.</p>
         </div>
 
         <div class="code-block">
@@ -181,6 +194,39 @@ nums = [2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91]
 result = binary_search(nums, 23)
 print(f"Found at index: {result}")  # Output: Found at index: 5</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+
+/* Return the index of target in sorted arr, or -1 if not found. */
+int binary_search(int arr[], int n, int target) {
+    int low = 0;
+    int high = n - 1;
+
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;   // avoids int overflow of (low + high)
+
+        if (arr[mid] == target)
+            return mid;          // Target found
+        else if (arr[mid] &lt; target)
+            low = mid + 1;       // Search right half
+        else
+            high = mid - 1;      // Search left half
+    }
+
+    return -1;                   // Target not in array
+}
+
+int main(void) {
+    // Example usage
+    int nums[] = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91};
+    int n = sizeof(nums) / sizeof(nums[0]);
+    int result = binary_search(nums, n, 23);
+    printf("Found at index: %d\n", result);  // Output: Found at index: 5
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -291,7 +337,8 @@ print(f"Found at index: {result}")  # Output: Found at index: 5</pre>
             data-difficulty="easy"
             data-fn="binary_search"
             data-starter='def binary_search(arr, target):\n    """Return index of target in sorted arr, or -1 if not found."""\n    pass'
-            data-tests='[{"args": [[1,3,5,7,9], 5], "expected": "2", "label": "[1,3,5,7,9] target=5 → index 2"}, {"args": [[1,3,5,7,9], 6], "expected": "-1", "label": "[1,3,5,7,9] target=6 → -1"}]'>
+            data-tests='[{"args": [[1,3,5,7,9], 5], "expected": "2", "label": "[1,3,5,7,9] target=5 → index 2"}, {"args": [[1,3,5,7,9], 6], "expected": "-1", "label": "[1,3,5,7,9] target=6 → -1"}]'
+            data-c='{"fn": "binary_search", "params": [{"name": "arr", "type": "int[]"}, {"name": "target", "type": "int"}], "ret": "int", "starter": "/* Return index of target in sorted arr, or -1 if not found. */\nint binary_search(int* arr, int arrSize, int target) {\n    // Your code here\n    return -1;\n}\n"}'>
             <div class="practice-problem">Implement binary search on a sorted array. Return the index of the target, or <code>-1</code> if not found.</div>
           </div>
           <!-- Problem 2 -->
@@ -300,7 +347,8 @@ print(f"Found at index: {result}")  # Output: Found at index: 5</pre>
             data-difficulty="medium"
             data-fn="search_insert"
             data-starter='def search_insert(arr, target):\n    """Return index of target, or insertion position if not found."""\n    pass'
-            data-tests='[{"args": [[1,3,5,6], 5], "expected": "2", "label": "[1,3,5,6] target=5 → 2"}, {"args": [[1,3,5,6], 2], "expected": "1", "label": "[1,3,5,6] target=2 → 1"}, {"args": [[1,3,5,6], 7], "expected": "4", "label": "[1,3,5,6] target=7 → 4"}]'>
+            data-tests='[{"args": [[1,3,5,6], 5], "expected": "2", "label": "[1,3,5,6] target=5 → 2"}, {"args": [[1,3,5,6], 2], "expected": "1", "label": "[1,3,5,6] target=2 → 1"}, {"args": [[1,3,5,6], 7], "expected": "4", "label": "[1,3,5,6] target=7 → 4"}]'
+            data-c='{"fn": "search_insert", "params": [{"name": "arr", "type": "int[]"}, {"name": "target", "type": "int"}], "ret": "int", "starter": "/* Return index of target, or the position where it would be inserted. */\nint search_insert(int* arr, int arrSize, int target) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Given a sorted array and a target, return the index if found. Otherwise, return the index where it would be inserted to keep the array sorted.</div>
           </div>
         </div>
@@ -488,6 +536,7 @@ print(f"Found at index: {result}")  # Output: Found at index: 5</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/binary-search-viz.js"></script>

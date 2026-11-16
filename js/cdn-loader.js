@@ -1,8 +1,12 @@
-/* Shared front-end for the code editor and Python runtime, used by
-   practice.js and code-runner.js:
+/* Shared front-end for the code editor and the Python / C runtimes, used by
+   practice.js, code-runner.js, code-block.js and problem-renderer.js:
      - loadCodeMirror / makeEditor — CodeMirror, self-hosted in /vendor/codemirror/
      - runPython / warmup          — Python via a Web Worker (js/pyodide-worker.js),
                                       so a runaway program can be terminated
+     - runC / loadCHarness         — C compiled + run by GCC on godbolt.org's public
+                                      API (static hosting can't run a C compiler);
+                                      js/c-harness.js wraps solutions in a test main()
+     - lang                        — site-wide Python/C preference (localStorage)
      - normalizeIndent / formatPyError — editor + traceback helpers
    Pyodide itself still loads from cdn.jsdelivr.net (inside the worker) due to size. */
 var DSA = window.DSA || {};
@@ -22,6 +26,8 @@ var DSA = window.DSA || {};
   var CM_CSS    = vendorPath('codemirror.min.css');
   var CM_JS     = vendorPath('codemirror.min.js');
   var CM_PYTHON = vendorPath('python.min.js');
+  var CM_CLIKE  = vendorPath('clike.min.js');
+  var CM_RUNMODE = vendorPath('runmode.min.js'); // static highlighting (approach code)
   var CM_CLOSE  = vendorPath('closebrackets.min.js');
 
   // --- Loader primitives ---
@@ -57,7 +63,12 @@ var DSA = window.DSA || {};
 
   function loadCodeMirror(callback) {
     if (window.CodeMirror && cmLoaded) { callback(); return; }
-    if (window.CodeMirror) { cmLoaded = true; callback(); return; }
+    // CodeMirror core present but this loader didn't finish (or never ran):
+    // only short-circuit when the modes we need are already registered too.
+    if (window.CodeMirror && !cmLoading && window.CodeMirror.runMode &&
+        window.CodeMirror.mimeModes && window.CodeMirror.mimeModes['text/x-csrc']) {
+      cmLoaded = true; callback(); return;
+    }
     cmCallbacks.push(callback);
     if (cmLoading) return;
     cmLoading = true;
@@ -67,8 +78,14 @@ var DSA = window.DSA || {};
       loadScript(CM_PYTHON, function(err2) {
         if (err2) { flushCm(err2); return; }
         loadScript(CM_CLOSE, function(err3) {
-          cmLoaded = !err3;
-          flushCm(err3 || null);
+          if (err3) { flushCm(err3); return; }
+          loadScript(CM_CLIKE, function(err4) {
+            if (err4) { flushCm(err4); return; }
+            loadScript(CM_RUNMODE, function(err5) {
+              cmLoaded = !err5;
+              flushCm(err5 || null);
+            });
+          });
         });
       });
     });
@@ -103,10 +120,11 @@ var DSA = window.DSA || {};
     };
   }
 
-  function makeEditor(parent, value) {
+  // lang: 'python' (default) or 'c'
+  function makeEditor(parent, value, lang) {
     return window.CodeMirror(parent, {
       value: value || '',
-      mode: 'python',
+      mode: cmMode(lang),
       theme: 'dracula',
       lineNumbers: true,
       indentUnit: INDENT,
@@ -117,6 +135,11 @@ var DSA = window.DSA || {};
       extraKeys: softTabKeys()
     });
   }
+
+  function cmMode(lang) { return lang === 'c' ? 'text/x-csrc' : 'python'; }
+
+  // Switch an existing editor between languages (C uses the same soft tabs).
+  function setEditorLang(cm, lang) { cm.setOption('mode', cmMode(lang)); }
 
   // Convert leading tabs to spaces (per line) so drafts saved before the
   // soft-tab fix, or pasted tab-indented code, run without TabError. Only
@@ -240,9 +263,154 @@ var DSA = window.DSA || {};
     runPython({ mode: 'warmup' }, 60000, function() {});
   }
 
+  // --- Language preference (Python / C), shared by every switcher -------
+  // Stored per browser; every code block, trace panel, approach and practice
+  // editor on the page follows it. Fires 'dsa:code-lang' when it changes.
+  var LANG_KEY = 'dsa-code-lang';
+  var LANGS = { python: 'Python', c: 'C' };
+  var lang = {
+    LABELS: LANGS,
+    get: function() {
+      try { var v = localStorage.getItem(LANG_KEY); if (LANGS[v]) return v; } catch (e) {}
+      return 'python';
+    },
+    set: function(v) {
+      if (!LANGS[v]) return;
+      try { localStorage.setItem(LANG_KEY, v); } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('dsa:code-lang', { detail: { lang: v } })); } catch (e) {}
+    },
+    onChange: function(fn) {
+      window.addEventListener('dsa:code-lang', function(e) { fn(e.detail && e.detail.lang); });
+    },
+    /** A small Python | C segmented switch. available: array of langs to offer. */
+    makeSwitch: function(available, current, onPick) {
+      var wrap = document.createElement('div');
+      wrap.className = 'lang-switch';
+      wrap.setAttribute('role', 'group');
+      wrap.setAttribute('aria-label', 'Code language');
+      (available || ['python', 'c']).forEach(function(l) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'lang-switch__btn' + (l === current ? ' lang-switch__btn--active' : '');
+        b.setAttribute('data-lang', l);
+        b.setAttribute('aria-pressed', l === current ? 'true' : 'false');
+        b.textContent = LANGS[l] || l;
+        b.addEventListener('click', function() { onPick(l); });
+        wrap.appendChild(b);
+      });
+      wrap.setActive = function(l) {
+        var btns = wrap.querySelectorAll('.lang-switch__btn');
+        for (var i = 0; i < btns.length; i++) {
+          var on = btns[i].getAttribute('data-lang') === l;
+          btns[i].classList.toggle('lang-switch__btn--active', on);
+          btns[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+      };
+      return wrap;
+    }
+  };
+
+  // --- C via Compiler Explorer (godbolt.org) -----------------------------
+  // GitHub Pages can't host a compiler, and in-browser C interpreters only
+  // cover a subset of the language, so C is compiled with real GCC and run by
+  // Compiler Explorer's public API (CORS-enabled). The code is sent to
+  // godbolt.org; nothing else is.
+  var GODBOLT_URL = 'https://godbolt.org/api/compiler/cg132/compile'; // x86-64 gcc 13.2
+  var C_FLAGS = '-O2 -std=gnu11 -fdiagnostics-color=never -lm';
+
+  function stripAnsi(s) { return String(s || '').replace(/\x1b\[[0-9;]*[A-Za-z]/g, ''); }
+  function joinLines(arr) { return (arr || []).map(function(l) { return l.text; }).join('\n'); }
+
+  /**
+   * Compile + run C source. cb receives:
+   *   { ok: true, stdout, stderr, exitCode, compileOutput }        — it ran
+   *   { compileError: '...' }                                      — didn't compile
+   *   { timeout: true } | { error: '...' }                         — network / service failure
+   */
+  function runC(source, opts, cb) {
+    opts = opts || {};
+    var timeoutMs = opts.timeoutMs || 30000;
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var done = false;
+    var timer = setTimeout(function() {
+      if (done) return; done = true;
+      if (ctrl) ctrl.abort();
+      cb({ timeout: true });
+    }, timeoutMs);
+    function finish(d) { if (done) return; done = true; clearTimeout(timer); cb(d); }
+
+    fetch(GODBOLT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        source: source,
+        lang: 'c',
+        options: {
+          userArguments: C_FLAGS,
+          executeParameters: { args: [], stdin: opts.stdin || '' },
+          compilerOptions: { executorRequest: true },
+          filters: { execute: true },
+          tools: [], libraries: []
+        },
+        allowStoreCodeDebug: false
+      }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(r) {
+      if (!r.ok) throw new Error('Compiler service returned HTTP ' + r.status);
+      return r.json();
+    }).then(function(d) {
+      var build = d.buildResult || {};
+      var buildErr = stripAnsi(joinLines(build.stderr));
+      if (build.code !== undefined && build.code !== 0) {
+        finish({ compileError: buildErr || stripAnsi(joinLines(build.stdout)) || 'Compilation failed.' });
+        return;
+      }
+      if (!d.didExecute) {
+        finish({ compileError: buildErr || stripAnsi(joinLines(d.stderr)) || 'The program could not be run.' });
+        return;
+      }
+      finish({
+        ok: true,
+        stdout: joinLines(d.stdout),
+        stderr: stripAnsi(joinLines(d.stderr)),
+        exitCode: d.code,
+        timedOut: !!d.timedOut,
+        compileOutput: buildErr
+      });
+    }).catch(function(err) {
+      finish({ error: String((err && err.message) || err) });
+    });
+  }
+
+  // Describe a non-zero exit like a terminal would.
+  function describeExit(code) {
+    if (code === 0 || code === undefined || code === null) return '';
+    var sig = { 139: 'Segmentation fault', 136: 'Floating point exception', 134: 'Aborted', 137: 'Killed (time or memory limit)', 135: 'Bus error', 132: 'Illegal instruction (undefined behavior, e.g. division by zero)', 133: 'Trace/breakpoint trap' };
+    if (sig[code]) return sig[code] + ' (exit code ' + code + ')';
+    if (code < 0) return 'Program terminated (exit code ' + code + ')';
+    return 'Exited with code ' + code;
+  }
+
+  // Tidy GCC diagnostics: drop ANSI, the temp-dir prefix and linker noise.
+  function formatCError(raw) {
+    if (DSA.cHarness) return DSA.cHarness.formatCompileErrors(raw);
+    return stripAnsi(raw).replace(/^.*?\/app\//gm, '').trim();
+  }
+
+  function loadCHarness(cb) {
+    if (DSA.cHarness) { cb(); return; }
+    loadScript(scriptPath('c-harness.js'), function(err) { cb(err || (DSA.cHarness ? null : new Error('c-harness missing'))); });
+  }
+
   DSA.cdnLoader = {
     loadCodeMirror: loadCodeMirror,
     makeEditor: makeEditor,
+    setEditorLang: setEditorLang,
+    lang: lang,
+    runC: runC,
+    describeExit: describeExit,
+    formatCError: formatCError,
+    loadCHarness: loadCHarness,
     softTabKeys: softTabKeys,
     normalizeIndent: normalizeIndent,
     formatPyError: formatPyError,

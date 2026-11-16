@@ -318,27 +318,27 @@ var DSA = window.DSA || {};
     var newNode = new LLNode(value);
 
     // Step 1: Show current list
-    steps.push(makeStep('Current list. We will insert ' + value + ' at the head.', {}, 2, { val: value }));
+    steps.push(makeStep('Current list. We will insert ' + value + ' at the head.', {}, 5, { val: value }));
 
     // Step 2: Create new node (shown above)
     newNode.next = head;
     head = newNode;
     var overrides1 = { 0: { highlight: 'active', offsetY: -60 } };
-    steps.push(makeStep('Created new node with value ' + value + '. It appears above the list.', overrides1, 2, { val: value }));
+    steps.push(makeStep('Created new node with value ' + value + '. It appears above the list.', overrides1, 6, { val: value }));
 
     // Step 3: Point new node's next to old head
     var overrides2 = { 0: { highlight: 'active', offsetY: -30 } };
     if (toArray().length > 1) {
       overrides2[1] = { highlight: 'active' };
     }
-    steps.push(makeStep('New node\'s next pointer now points to the old head.', overrides2, 3, { val: value }));
+    steps.push(makeStep('New node\'s next pointer now points to the old head.', overrides2, 7, { val: value }));
 
     // Step 4: Update head pointer, node slides into position
     var overrides3 = { 0: { highlight: 'found' } };
-    steps.push(makeStep('Head pointer updated. Node ' + value + ' is now the new head of the list.', overrides3, 6, { val: value }));
+    steps.push(makeStep('Head pointer updated. Node ' + value + ' is now the new head of the list.', overrides3, 8, { val: value }));
 
     // Step 5: Final clean state
-    steps.push(makeStep('Insert at head complete. The list now has ' + listLength() + ' nodes.', {}, 6, {}));
+    steps.push(makeStep('Insert at head complete. The list now has ' + listLength() + ' nodes.', {}, 8, {}));
 
     return steps;
   }
@@ -356,7 +356,7 @@ var DSA = window.DSA || {};
     var steps = [];
 
     // Step 1: Initial state
-    steps.push(makeStep('Current list. We will insert ' + value + ' at index ' + index + '.'));
+    steps.push(makeStep('Current list. We will insert ' + value + ' at index ' + index + '.', {}, 10));
 
     // Step 2-N: Traverse to index-1
     var cur = head;
@@ -365,14 +365,14 @@ var DSA = window.DSA || {};
       for (var j = 0; j <= i; j++) {
         overrides[j] = { highlight: 'active' };
       }
-      steps.push(makeStep('Traversing... Visiting node at index ' + i + ' (value: ' + cur.data + ').', overrides));
+      steps.push(makeStep('Traversing... Visiting node at index ' + i + ' (value: ' + cur.data + ').', overrides, 13));
       cur = cur.next;
     }
 
     // Highlight the node before insertion point
     var ovBefore = {};
     ovBefore[index - 1] = { highlight: 'found' };
-    steps.push(makeStep('Found insertion point. Node at index ' + (index - 1) + ' (value: ' + cur.data + ') will link to the new node.', ovBefore));
+    steps.push(makeStep('Found insertion point. Node at index ' + (index - 1) + ' (value: ' + cur.data + ') will link to the new node.', ovBefore, 14));
 
     // Perform the insertion
     var newNode = new LLNode(value);
@@ -382,12 +382,12 @@ var DSA = window.DSA || {};
     // Show new node highlighted
     var ovInserted = {};
     ovInserted[index] = { highlight: 'active', offsetY: -40 };
-    steps.push(makeStep('New node with value ' + value + ' created and linked into the list.', ovInserted));
+    steps.push(makeStep('New node with value ' + value + ' created and linked into the list.', ovInserted, 15));
 
     // Final state
     var ovFinal = {};
     ovFinal[index] = { highlight: 'found' };
-    steps.push(makeStep('Insert complete. Value ' + value + ' is now at index ' + index + '. List has ' + listLength() + ' nodes.', ovFinal));
+    steps.push(makeStep('Insert complete. Value ' + value + ' is now at index ' + index + '. List has ' + listLength() + ' nodes.', ovFinal, 15));
 
     steps.push(makeStep('Operation complete.'));
 
@@ -407,26 +407,26 @@ var DSA = window.DSA || {};
 
     // Step 1: Initial state
     var deletedValue;
-    steps.push(makeStep('Current list. We will delete the node at index ' + index + '.'));
+    steps.push(makeStep('Current list. We will delete the node at index ' + index + '.', {}, 17));
 
     if (index === 0) {
       deletedValue = head.data;
       // Highlight head
       var ovH = { 0: { highlight: 'active' } };
-      steps.push(makeStep('Target node is the head (value: ' + deletedValue + '). Will relink head to the next node.', ovH));
+      steps.push(makeStep('Target node is the head (value: ' + deletedValue + '). Will relink head to the next node.', ovH, 18));
 
       // Fade out
       var ovFade = { 0: { highlight: 'active', opacity: 0.4 } };
-      steps.push(makeStep('Removing node ' + deletedValue + ' from the list.', ovFade));
+      steps.push(makeStep('Removing node ' + deletedValue + ' from the list.', ovFade, 19));
 
       // Perform deletion
       head = head.next;
 
       // Final
       if (head) {
-        steps.push(makeStep('Head now points to ' + head.data + '. Deletion complete.', { 0: { highlight: 'found' } }));
+        steps.push(makeStep('Head now points to ' + head.data + '. Deletion complete.', { 0: { highlight: 'found' } }, 19));
       } else {
-        steps.push(makeStep('The list is now empty.'));
+        steps.push(makeStep('The list is now empty.', {}, 19));
       }
     } else {
       // Traverse to node before target
@@ -436,7 +436,7 @@ var DSA = window.DSA || {};
         for (var j = 0; j <= i; j++) {
           overrides[j] = { highlight: 'active' };
         }
-        steps.push(makeStep('Traversing to find the node before index ' + index + '. At index ' + i + '.', overrides));
+        steps.push(makeStep('Traversing to find the node before index ' + index + '. At index ' + i + '.', overrides, 22));
         cur = cur.next;
       }
 
@@ -445,19 +445,19 @@ var DSA = window.DSA || {};
       var ovTarget = {};
       ovTarget[index - 1] = { highlight: 'found' };
       ovTarget[index] = { highlight: 'active' };
-      steps.push(makeStep('Found predecessor at index ' + (index - 1) + ' (value: ' + cur.data + '). Target node: ' + deletedValue + '.', ovTarget));
+      steps.push(makeStep('Found predecessor at index ' + (index - 1) + ' (value: ' + cur.data + '). Target node: ' + deletedValue + '.', ovTarget, 22));
 
       // Fade out target
       var ovFade2 = {};
       ovFade2[index - 1] = { highlight: 'found' };
       ovFade2[index] = { highlight: 'active', opacity: 0.3 };
-      steps.push(makeStep('Relinking predecessor\'s next pointer to skip over node ' + deletedValue + '.', ovFade2));
+      steps.push(makeStep('Relinking predecessor\'s next pointer to skip over node ' + deletedValue + '.', ovFade2, 23));
 
       // Perform deletion
       cur.next = cur.next.next;
 
       // Final
-      steps.push(makeStep('Node ' + deletedValue + ' deleted. List now has ' + listLength() + ' nodes.'));
+      steps.push(makeStep('Node ' + deletedValue + ' deleted. List now has ' + listLength() + ' nodes.', {}, 24));
     }
 
     steps.push(makeStep('Delete operation complete.'));
@@ -467,11 +467,11 @@ var DSA = window.DSA || {};
   function generateSearchSteps(value) {
     var len = listLength();
     if (len === 0) {
-      return [makeStep('Cannot search: the list is empty.')];
+      return [makeStep('Cannot search: the list is empty.', {}, 31)];
     }
 
     var steps = [];
-    steps.push(makeStep('Searching for value ' + value + ' in the list. Starting from head.', {}, 7, { curr: 'head' }));
+    steps.push(makeStep('Searching for value ' + value + ' in the list. Starting from head.', {}, 27, { curr: 'head' }));
 
     var cur = head;
     var idx = 0;
@@ -484,13 +484,13 @@ var DSA = window.DSA || {};
         overrides[j] = { highlight: 'default' };
       }
       overrides[idx] = { highlight: 'active' };
-      steps.push(makeStep('Checking node at index ' + idx + ': value = ' + cur.data + (cur.data === value ? ' --- MATCH!' : ' --- not a match.'), overrides, 9, { curr: cur.data }));
+      steps.push(makeStep('Checking node at index ' + idx + ': value = ' + cur.data + (cur.data === value ? ' --- MATCH!' : ' --- not a match.'), overrides, 29, { curr: cur.data }));
 
       if (cur.data === value) {
         // Found
         var ovFound = {};
         ovFound[idx] = { highlight: 'found' };
-        steps.push(makeStep('Value ' + value + ' found at index ' + idx + '!', ovFound, 9, { curr: cur.data }));
+        steps.push(makeStep('Value ' + value + ' found at index ' + idx + '!', ovFound, 29, { curr: cur.data }));
         found = true;
         break;
       }
@@ -500,10 +500,10 @@ var DSA = window.DSA || {};
     }
 
     if (!found) {
-      steps.push(makeStep('Value ' + value + ' was not found in the list. Reached the end (null).', {}, 10, { curr: 'null' }));
+      steps.push(makeStep('Value ' + value + ' was not found in the list. Reached the end (null).', {}, 31, { curr: 'null' }));
     }
 
-    steps.push(makeStep('Search complete.', {}, 10, {}));
+    steps.push(makeStep('Search complete.', {}, null, {}));
     return steps;
   }
 

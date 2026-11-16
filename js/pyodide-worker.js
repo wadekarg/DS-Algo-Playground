@@ -5,7 +5,10 @@
    Messages in:
      { id, mode: 'warmup' }                        → pre-load Pyodide
      { id, mode: 'free',  code }                    → run code, capture stdout
-     { id, mode: 'tests', code, fnName, tests }     → run code, call fnName per test
+     { id, mode: 'tests', code, fnName, tests,      → run code, call fnName per test
+       normalize? }                                   ("len_lex" | "lex", optional "inner_"
+                                                       prefix: sort list-of-lists results
+                                                       first, for any-order answers)
    Messages out (echo id):
      warmup → { id, ready: true }
      free   → { id, mode: 'free', stdout, error }
@@ -48,6 +51,16 @@ var TESTS_HARNESS = [
   'import sys, json, traceback',
   'from io import StringIO',
   '_tests = json.loads(_tests_json)',
+  '_norm = _normalize or ""',
+  'def _normalized(v):',
+  '    if not _norm or not isinstance(v, list) or not all(isinstance(r, list) for r in v):',
+  '        return v',
+  '    rows = [sorted(r) if _norm.startswith("inner_") else list(r) for r in v]',
+  '    if _norm.endswith("len_lex"):',
+  '        rows.sort(key=lambda r: (len(r), r))',
+  '    else:',
+  '        rows.sort()',
+  '    return rows',
   '_results = []',
   '_ns = {}',
   '_code_err = None',
@@ -65,7 +78,7 @@ var TESTS_HARNESS = [
   '        _o = StringIO(); _old = (sys.stdout, sys.stderr); sys.stdout = sys.stderr = _o',
   '        try:',
   '            _val = _fn(*_t["args"])',
-  '            _results.append({"ok": True, "result": repr(_val), "stdout": _o.getvalue()})',
+  '            _results.append({"ok": True, "result": repr(_normalized(_val)), "stdout": _o.getvalue()})',
   '        except BaseException:',
   '            _results.append({"ok": False, "error": traceback.format_exc(), "stdout": _o.getvalue()})',
   '        finally:',
@@ -81,6 +94,7 @@ self.onmessage = function(e) {
       py.globals.set('_user_code', msg.code || '');
       py.globals.set('_fn_name', msg.fnName || 'solution');
       py.globals.set('_tests_json', JSON.stringify(msg.tests || []));
+      py.globals.set('_normalize', msg.normalize || '');
       py.runPython(TESTS_HARNESS);
       var payload = py.globals.get('_payload');
       self.postMessage({ id: id, mode: 'tests', payload: JSON.parse(payload) });

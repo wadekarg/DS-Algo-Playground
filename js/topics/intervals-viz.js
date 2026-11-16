@@ -20,7 +20,7 @@ var DSA = window.DSA || {};
       compareA: -1,
       compareB: -1,
       phase: 'init',
-      codeLine: 1,
+      codeLine: 2,
       description: 'Merge Intervals: Sort intervals by start time, then merge overlapping pairs. Input: ' + JSON.stringify(sorted) + '.'
     });
 
@@ -46,7 +46,7 @@ var DSA = window.DSA || {};
         compareA: merged.length - 1,
         compareB: i,
         phase: 'compare',
-        codeLine: 5,
+        codeLine: 6,
         description: 'Compare last merged [' + last + '] with current [' + curr + ']. Do they overlap? ' + (curr[0] <= last[1] ? 'Yes (' + curr[0] + ' ≤ ' + last[1] + ').' : 'No (' + curr[0] + ' > ' + last[1] + ').')
       });
 
@@ -59,7 +59,7 @@ var DSA = window.DSA || {};
           compareA: merged.length - 1,
           compareB: i,
           phase: 'merge',
-          codeLine: 6,
+          codeLine: 7,
           description: 'Overlap! Extend last merged interval end from ' + oldEnd + ' to ' + last[1] + '. Result now: ' + JSON.stringify(merged) + '.'
         });
       } else {
@@ -70,7 +70,7 @@ var DSA = window.DSA || {};
           compareA: merged.length - 2,
           compareB: -1,
           phase: 'add',
-          codeLine: 8,
+          codeLine: 9,
           description: 'No overlap. Add [' + curr + '] to result. Merged so far: ' + JSON.stringify(merged) + '.'
         });
       }

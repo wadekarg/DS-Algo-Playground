@@ -22,7 +22,7 @@ var DSA = window.DSA || {};
       currentIdx: -1,
       maxReach: 0,
       phase: 'init',
-      codeLine: 1,
+      codeLine: 2,
       description: 'Jump Game: Can you reach the last index? Track maxReach — the farthest index reachable. Input: [' + nums.join(', ') + '].'
     });
 
@@ -33,7 +33,7 @@ var DSA = window.DSA || {};
           currentIdx: i,
           maxReach: maxReach,
           phase: 'stuck',
-          codeLine: 4,
+          codeLine: 5,
           description: 'Index ' + i + ' is beyond maxReach (' + maxReach + '). Cannot reach this position — return false.'
         });
         canJump = false;
@@ -49,7 +49,7 @@ var DSA = window.DSA || {};
         maxReach: maxReach,
         prevReach: prevReach,
         phase: 'step',
-        codeLine: 5,
+        codeLine: 6,
         description: 'At index ' + i + ' (jump power = ' + nums[i] + '). maxReach = max(' + prevReach + ', ' + i + ' + ' + nums[i] + ') = ' + maxReach + '.' + (maxReach >= n - 1 ? ' Can reach the end!' : '')
       });
 

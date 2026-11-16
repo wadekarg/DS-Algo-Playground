@@ -95,13 +95,24 @@
           </div>
           <div class="viz-explanation">Stack initialized with [10, 25, 8, 42]. Top element: 42. Use the buttons below to perform operations.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">stack = []
-# Push
+            <pre class="code-trace__code" data-lang="python">stack = []
+# Push: add on top
 stack.append(val)
-# Pop
+# Pop: remove from the top
 val = stack.pop()
-# Peek
-val = stack[-1]</pre>
+# Peek: read the top
+val = stack[-1]
+# Is empty?
+empty = len(stack) == 0</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9" hidden>int stack[100]; int top = 0;
+// Push: add on top
+stack[top++] = val;
+// Pop: remove from the top
+val = stack[--top];
+// Peek: read the top
+val = stack[top - 1];
+// Is empty?
+bool empty = top == 0;</pre><!-- c-trace:end -->
           </div>
 
           <!-- Playback controls -->
@@ -141,7 +152,7 @@ val = stack[-1]</pre>
       <section class="topic-section">
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="topic-section__content">
-          <p>Below is a complete stack implementation using an array (or list) in three languages. The implementation includes push, pop, peek, isEmpty, and size operations with proper error handling for underflow conditions.</p>
+          <p>Below is a complete stack implementation using an array (or list) in Python and C. The implementation includes push, pop, peek, isEmpty, and size operations with proper error handling for underflow conditions.</p>
         </div>
 
         <div class="code-block">
@@ -201,6 +212,83 @@ print(s)            # Stack: [10, 25]
 print(s.is_empty()) # False
 print(s.size())     # 2</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Array-backed stack that grows as needed. */
+typedef struct {
+    int* items;
+    int size;
+    int capacity;
+} Stack;
+
+/* Initialize an empty stack. */
+void stack_init(Stack* s) {
+    s-&gt;capacity = 4;
+    s-&gt;size = 0;
+    s-&gt;items = malloc(s-&gt;capacity * sizeof(int));
+}
+
+/* Push a value onto the top of the stack. O(1) amortized */
+void push(Stack* s, int value) {
+    if (s-&gt;size == s-&gt;capacity) {
+        s-&gt;capacity *= 2;
+        s-&gt;items = realloc(s-&gt;items, s-&gt;capacity * sizeof(int));
+    }
+    s-&gt;items[s-&gt;size++] = value;
+}
+
+/* Check if the stack is empty. O(1) */
+bool is_empty(const Stack* s) { return s-&gt;size == 0; }
+
+/* Remove and return the top element. O(1) */
+int pop(Stack* s) {
+    if (is_empty(s)) {
+        fprintf(stderr, "Stack underflow: cannot pop from empty stack\n");
+        exit(1);
+    }
+    return s-&gt;items[--s-&gt;size];
+}
+
+/* Return the top element without removing it. O(1) */
+int peek(const Stack* s) {
+    if (is_empty(s)) {
+        fprintf(stderr, "Stack underflow: cannot peek empty stack\n");
+        exit(1);
+    }
+    return s-&gt;items[s-&gt;size - 1];
+}
+
+/* Print the stack (top is rightmost). */
+void print_stack(const Stack* s) {
+    printf("Stack: [");
+    for (int i = 0; i &lt; s-&gt;size; i++) printf(i ? ", %d" : "%d", s-&gt;items[i]);
+    printf("]\n");
+}
+
+int main(void) {
+    // Example usage
+    Stack s;
+    stack_init(&amp;s);
+    push(&amp;s, 10);
+    push(&amp;s, 25);
+    push(&amp;s, 8);
+    push(&amp;s, 42);
+    print_stack(&amp;s);                                   // Stack: [10, 25, 8, 42]
+    printf("%d\n", peek(&amp;s));                          // 42
+    printf("%d\n", pop(&amp;s));                           // 42
+    printf("%d\n", pop(&amp;s));                           // 8
+    print_stack(&amp;s);                                   // Stack: [10, 25]
+    printf("%s\n", is_empty(&amp;s) ? "true" : "false");   // false
+    printf("%d\n", s.size);                            // 2
+    free(s.items);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -298,7 +386,8 @@ print(s.size())     # 2</pre>
             data-difficulty="easy"
             data-fn="is_valid"
             data-starter='def is_valid(s):\n    """Return True if parentheses/brackets/braces are balanced."""\n    pass'
-            data-tests='[{"args": ["()"], "expected": "True", "label": "\"()\" → True"}, {"args": ["()[]{}" ], "expected": "True", "label": "\"()[]{}\" → True"}, {"args": ["(]"], "expected": "False", "label": "\"(]\" → False"}, {"args": ["{[()]}"], "expected": "True", "label": "\"{[()]}\" → True"}]'>
+            data-tests='[{"args": ["()"], "expected": "True", "label": "\"()\" → True"}, {"args": ["()[]{}" ], "expected": "True", "label": "\"()[]{}\" → True"}, {"args": ["(]"], "expected": "False", "label": "\"(]\" → False"}, {"args": ["{[()]}"], "expected": "True", "label": "\"{[()]}\" → True"}]'
+            data-c='{"fn": "is_valid", "params": [{"name": "s", "type": "string"}], "ret": "bool", "starter": "/* Return true if parentheses/brackets/braces are balanced. */\nbool is_valid(char* s) {\n    // Your code here\n    return false;\n}\n"}'>
             <div class="practice-problem">Given a string containing only <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>[</code>, <code>]</code>, return <code>True</code> if the brackets are valid and properly nested.</div>
           </div>
           <!-- Problem 2 -->
@@ -307,7 +396,8 @@ print(s.size())     # 2</pre>
             data-difficulty="medium"
             data-fn="eval_postfix"
             data-starter='def eval_postfix(tokens):\n    """Evaluate a Reverse Polish Notation expression and return the integer result."""\n    pass'
-            data-tests='[{"args": [["2","1","+","3","*"]], "expected": "9", "label": "[\"2\",\"1\",\"+\",\"3\",\"*\"] → 9"}, {"args": [["4","13","5","/","+"]], "expected": "6", "label": "[\"4\",\"13\",\"5\",\"/\",\"+\"] → 6"}]'>
+            data-tests='[{"args": [["2","1","+","3","*"]], "expected": "9", "label": "[\"2\",\"1\",\"+\",\"3\",\"*\"] → 9"}, {"args": [["4","13","5","/","+"]], "expected": "6", "label": "[\"4\",\"13\",\"5\",\"/\",\"+\"] → 6"}]'
+            data-c='{"fn": "eval_postfix", "params": [{"name": "tokens", "type": "string[]"}], "ret": "int", "starter": "/* Evaluate a Reverse Polish Notation expression and return the integer result.\n * Division truncates toward zero. */\nint eval_postfix(char** tokens, int tokensSize) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Evaluate a Reverse Polish Notation (postfix) expression given as a list of string tokens. Supported operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> (truncate toward zero).</div>
           </div>
         </div>
@@ -513,6 +603,7 @@ print(s.size())     # 2</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/stack-viz.js"></script>

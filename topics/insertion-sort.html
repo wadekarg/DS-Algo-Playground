@@ -92,15 +92,26 @@
           </div>
           <div class="viz-explanation">Press Play or Step to start the visualization.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">def insertion_sort(arr):
+            <pre class="code-trace__code" data-lang="python">def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
-        while j >= 0 and arr[j] > key:
+        while j &gt;= 0 and arr[j] &gt; key:
             arr[j + 1] = arr[j]
             j -= 1
         arr[j + 1] = key
     return arr</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:9,9:11" hidden>void insertion_sort(int arr[], int n) {
+    for (int i = 1; i &lt; n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}</pre><!-- c-trace:end -->
           </div>
           <div class="viz-controls">
             <div class="viz-controls__group">
@@ -137,7 +148,7 @@
       <section class="topic-section">
         <h2 class="topic-section__title">Code Implementation</h2>
         <div class="topic-section__content">
-          <p>Below is an insertion sort implementation in three languages. The algorithm picks each element from the unsorted portion and shifts larger elements to the right until the correct insertion position is found.</p>
+          <p>Below is an insertion sort implementation in Python and C. The algorithm picks each element from the unsorted portion and shifts larger elements to the right until the correct insertion position is found.</p>
         </div>
         <div class="code-block">
           <div class="code-block__header">
@@ -166,6 +177,42 @@ numbers = [64, 34, 25, 12, 22, 11, 90, 45]
 print("Unsorted:", numbers)
 print("Sorted:  ", insertion_sort(numbers))</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+
+/* Sort array using insertion sort. */
+void insertion_sort(int arr[], int n) {
+    for (int i = 1; i &lt; n; i++) {
+        int key = arr[i];
+        // Shift elements greater than key to the right
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        // Insert the key at its correct position
+        arr[j + 1] = key;
+    }
+}
+
+void print_array(const char* label, int arr[], int n) {
+    printf("%s [", label);
+    for (int i = 0; i &lt; n; i++) printf(i ? ", %d" : "%d", arr[i]);
+    printf("]\n");
+}
+
+int main(void) {
+    // Example usage
+    int numbers[] = {64, 34, 25, 12, 22, 11, 90, 45};
+    int n = sizeof(numbers) / sizeof(numbers[0]);
+    print_array("Unsorted:", numbers, n);
+    insertion_sort(numbers, n);
+    print_array("Sorted:  ", numbers, n);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -256,7 +303,8 @@ print("Sorted:  ", insertion_sort(numbers))</pre>
             data-difficulty="easy"
             data-fn="insertion_sort"
             data-starter='def insertion_sort(arr):\n    """Return a new sorted list using insertion sort."""\n    pass'
-            data-tests='[{"args": [[5,3,8,1,9]], "expected": "[1, 3, 5, 8, 9]", "label": "[5,3,8,1,9] → [1,3,5,8,9]"}, {"args": [[1]], "expected": "[1]", "label": "single element [1] → [1]"}]'>
+            data-tests='[{"args": [[5,3,8,1,9]], "expected": "[1, 3, 5, 8, 9]", "label": "[5,3,8,1,9] → [1,3,5,8,9]"}, {"args": [[1]], "expected": "[1]", "label": "single element [1] → [1]"}]'
+            data-c='{"fn": "insertion_sort", "params": [{"name": "arr", "type": "int[]"}], "ret": "int[]", "starter": "/* Return a new sorted array using insertion sort (malloc&#39;d; set *returnSize). */\nint* insertion_sort(int* arr, int arrSize, int* returnSize) {\n    // Your code here\n    *returnSize = 0;\n    return NULL;\n}\n"}'>
             <div class="practice-problem">Implement insertion sort and return the sorted array as a new list.</div>
           </div>
           <!-- Problem 2 -->
@@ -265,7 +313,8 @@ print("Sorted:  ", insertion_sort(numbers))</pre>
             data-difficulty="medium"
             data-fn="count_inversions"
             data-starter='def count_inversions(arr):\n    """Count pairs (i,j) where i<j and arr[i]>arr[j]."""\n    pass'
-            data-tests='[{"args": [[2,4,1,3,5]], "expected": "3", "label": "[2,4,1,3,5] → 3 inversions"}, {"args": [[5,4,3,2,1]], "expected": "10", "label": "[5,4,3,2,1] → 10 inversions"}]'>
+            data-tests='[{"args": [[2,4,1,3,5]], "expected": "3", "label": "[2,4,1,3,5] → 3 inversions"}, {"args": [[5,4,3,2,1]], "expected": "10", "label": "[5,4,3,2,1] → 10 inversions"}]'
+            data-c='{"fn": "count_inversions", "params": [{"name": "arr", "type": "int[]"}], "ret": "int", "starter": "/* Count pairs (i, j) where i < j and arr[i] > arr[j]. */\nint count_inversions(int* arr, int arrSize) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Count the number of inversions in an array — pairs <code>(i, j)</code> where <code>i &lt; j</code> but <code>arr[i] &gt; arr[j]</code>.</div>
           </div>
         </div>
@@ -464,6 +513,7 @@ print("Sorted:  ", insertion_sort(numbers))</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/insertion-sort-viz.js"></script>

@@ -32,20 +32,20 @@ var DSA = window.DSA || {};
     var swaps = [[0,1],[0,2],[1,2]];
     for (var s = 0; s < swaps.length; s++) {
       var r = swaps[s][0], c = swaps[s][1];
-      snap(mat, [[r,c],[c,r]], 'swapping', 'Swap mat[' + r + '][' + c + '] (' + mat[r][c] + ') ↔ mat[' + c + '][' + r + '] (' + mat[c][r] + ').', 4);
+      snap(mat, [[r,c],[c,r]], 'swapping', 'Swap mat[' + r + '][' + c + '] (' + mat[r][c] + ') ↔ mat[' + c + '][' + r + '] (' + mat[c][r] + ').', 5);
       var tmp = mat[r][c];
       mat[r][c] = mat[c][r];
       mat[c][r] = tmp;
-      snap(mat, [[r,c],[c,r]], 'swapped', 'After swap: mat[' + r + '][' + c + ']=' + mat[r][c] + ', mat[' + c + '][' + r + ']=' + mat[c][r] + '.', 4);
+      snap(mat, [[r,c],[c,r]], 'swapped', 'After swap: mat[' + r + '][' + c + ']=' + mat[r][c] + ', mat[' + c + '][' + r + ']=' + mat[c][r] + '.', 5);
     }
 
-    snap(mat, noHL(), 'transposed', 'Transpose complete. Matrix is now: ' + JSON.stringify(mat) + '. Next: reverse each row.', 5);
+    snap(mat, noHL(), 'transposed', 'Transpose complete. Matrix is now: ' + JSON.stringify(mat) + '. Next: reverse each row.', 6);
 
     // Reverse each row
     for (var row = 0; row < 3; row++) {
-      snap(mat, mat[row].map(function(_, ci) { return [row, ci]; }), 'reversing', 'Reversing row ' + row + ': [' + mat[row] + '] → [' + mat[row].slice().reverse() + '].', 6);
+      snap(mat, mat[row].map(function(_, ci) { return [row, ci]; }), 'reversing', 'Reversing row ' + row + ': [' + mat[row] + '] → [' + mat[row].slice().reverse() + '].', 7);
       mat[row].reverse();
-      snap(mat, mat[row].map(function(_, ci) { return [row, ci]; }), 'reversed', 'Row ' + row + ' reversed: [' + mat[row] + '].', 6);
+      snap(mat, mat[row].map(function(_, ci) { return [row, ci]; }), 'reversed', 'Row ' + row + ' reversed: [' + mat[row] + '].', 7);
     }
 
     snap(mat, noHL(), 'done', 'Done! Matrix rotated 90° clockwise. Final result: ' + JSON.stringify(mat) + '.', 7);

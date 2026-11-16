@@ -97,19 +97,68 @@
           </div>
           <div class="viz-explanation">Singly linked list: 10 &rarr; 25 &rarr; 8 &rarr; 42 &rarr; 17. Use the operation buttons below to manipulate the list.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">class Node:
+            <pre class="code-trace__code" data-lang="python">class Node:
     def __init__(self, val):
-        self.val = val; self.next = None
+        self.val, self.next = val, None
+
 def insert_head(head, val):
-    new_node = Node(val)
-    new_node.next = head
-    return new_node
-def search(head, val):
+    node = Node(val)
+    node.next = head
+    return node              # new head
+
+def insert_at(head, index, val):
     cur = head
-    while cur:
-        if cur.val == val: return cur
+    for _ in range(index - 1):
         cur = cur.next
-    return None</pre>
+    node = Node(val)
+    node.next, cur.next = cur.next, node
+
+def delete_at(head, index):
+    if index == 0:
+        return head.next
+    cur = head
+    for _ in range(index - 1):
+        cur = cur.next
+    cur.next = cur.next.next
+    return head
+
+def search(head, val):
+    cur, i = head, 0
+    while cur:
+        if cur.val == val: return i
+        cur, i = cur.next, i + 1
+    return -1</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1-3,2:2,3:2,5:5,6:6,7:7,8:8,10:10,11:11,12:12,13:13,14:14,15:15,17:17,18:18,19:19,20:20,21:21,22:22,23:23,24:24,26:26,27:27,28:28,29:29,30:28,31:30" hidden>typedef struct Node {
+    int val; struct Node* next;
+} Node;
+
+Node* insert_head(Node* head, int val) {
+    Node* node = new_node(val);
+    node-&gt;next = head;
+    return node;              // new head
+}
+void insert_at(Node* head, int index, int val) {
+    Node* cur = head;
+    for (int k = 0; k &lt; index - 1; k++)
+        cur = cur-&gt;next;
+    Node* node = new_node(val);
+    node-&gt;next = cur-&gt;next; cur-&gt;next = node;
+}
+Node* delete_at(Node* head, int index) {
+    if (index == 0)
+        return head-&gt;next;
+    Node* cur = head;
+    for (int k = 0; k &lt; index - 1; k++)
+        cur = cur-&gt;next;
+    cur-&gt;next = cur-&gt;next-&gt;next;
+    return head;
+}
+int search(Node* head, int val) {
+    int i = 0;
+    for (Node* cur = head; cur; cur = cur-&gt;next, i++)
+        if (cur-&gt;val == val) return i;
+    return -1;
+}</pre><!-- c-trace:end -->
           </div>
 
           <!-- Playback controls -->
@@ -153,7 +202,7 @@ def search(head, val):
           Code Implementation
         </h2>
         <div class="topic-section__content">
-          <p>Below is a complete singly linked list implementation with insert, delete, search, and print operations in three languages.</p>
+          <p>Below is a complete singly linked list implementation with insert, delete, search, and print operations in Python and C.</p>
         </div>
 
         <div class="code-block">
@@ -247,6 +296,105 @@ ll.print_list()        # 10 -> 25 -> 99 -> 42 -> 17 -> None
 print(ll.search(42))   # 3
 print(ll.search(100))  # -1</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* new_node(int data) {
+    Node* node = malloc(sizeof(Node));
+    node-&gt;data = data;
+    node-&gt;next = NULL;
+    return node;
+}
+
+/* Insert a new node at the beginning. O(1) */
+void insert_at_head(Node** head, int data) {
+    Node* node = new_node(data);
+    node-&gt;next = *head;
+    *head = node;
+}
+
+/* Insert a new node at the given index. O(n). Returns 0 on success. */
+int insert_at_index(Node** head, int data, int index) {
+    if (index == 0) {
+        insert_at_head(head, data);
+        return 0;
+    }
+    Node* current = *head;
+    for (int i = 0; i &lt; index - 1; i++) {
+        if (current == NULL) return -1;       // index out of bounds
+        current = current-&gt;next;
+    }
+    if (current == NULL) return -1;
+    Node* node = new_node(data);
+    node-&gt;next = current-&gt;next;
+    current-&gt;next = node;
+    return 0;
+}
+
+/* Delete the node at the given index. O(n). Returns 0 on success. */
+int delete_at_index(Node** head, int index) {
+    if (*head == NULL) return -1;             // list is empty
+    if (index == 0) {
+        Node* old = *head;
+        *head = old-&gt;next;
+        free(old);
+        return 0;
+    }
+    Node* current = *head;
+    for (int i = 0; i &lt; index - 1; i++) {
+        if (current-&gt;next == NULL) return -1;
+        current = current-&gt;next;
+    }
+    if (current-&gt;next == NULL) return -1;
+    Node* doomed = current-&gt;next;
+    current-&gt;next = doomed-&gt;next;
+    free(doomed);
+    return 0;
+}
+
+/* Search for a value. Returns index or -1. O(n) */
+int search(Node* head, int value) {
+    int index = 0;
+    for (Node* current = head; current != NULL; current = current-&gt;next) {
+        if (current-&gt;data == value) return index;
+        index++;
+    }
+    return -1;
+}
+
+/* Print the list in a readable format. */
+void print_list(Node* head) {
+    for (Node* current = head; current != NULL; current = current-&gt;next)
+        printf("%d -&gt; ", current-&gt;data);
+    printf("NULL\n");
+}
+
+int main(void) {
+    // Example usage
+    Node* head = NULL;
+    int values[] = {17, 42, 8, 25, 10};
+    for (int i = 0; i &lt; 5; i++) insert_at_head(&amp;head, values[i]);
+
+    print_list(head);              // 10 -&gt; 25 -&gt; 8 -&gt; 42 -&gt; 17 -&gt; NULL
+    insert_at_index(&amp;head, 99, 2);
+    print_list(head);              // 10 -&gt; 25 -&gt; 99 -&gt; 8 -&gt; 42 -&gt; 17 -&gt; NULL
+    delete_at_index(&amp;head, 3);
+    print_list(head);              // 10 -&gt; 25 -&gt; 99 -&gt; 42 -&gt; 17 -&gt; NULL
+    printf("%d\n", search(head, 42));   // 3
+    printf("%d\n", search(head, 100));  // -1
+
+    while (head) { Node* next = head-&gt;next; free(head); head = next; }
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -380,7 +528,8 @@ print(ll.search(100))  # -1</pre>
             data-difficulty="easy"
             data-fn="reverse_list"
             data-starter='def reverse_list(lst):\n    """Return the list reversed."""\n    pass'
-            data-tests='[{"args": [[1,2,3,4,5]], "expected": "[5, 4, 3, 2, 1]", "label": "reverses [1,2,3,4,5]"}, {"args": [[1]], "expected": "[1]", "label": "single element [1]"}]'>
+            data-tests='[{"args": [[1,2,3,4,5]], "expected": "[5, 4, 3, 2, 1]", "label": "reverses [1,2,3,4,5]"}, {"args": [[1]], "expected": "[1]", "label": "single element [1]"}]'
+            data-c='{"fn": "reverse_list", "params": [{"name": "head", "type": "list"}], "ret": "list", "starter": "/**\n * struct ListNode { int val; struct ListNode *next; };  (provided)\n * Reverse the linked list and return the new head.\n */\nstruct ListNode* reverse_list(struct ListNode* head) {\n    // Your code here\n    return head;\n}\n"}'>
             <div class="practice-problem">Given a Python list representing a linked list, return a new list with the elements in reverse order.</div>
           </div>
           <!-- Problem 2 -->
@@ -389,7 +538,8 @@ print(ll.search(100))  # -1</pre>
             data-difficulty="medium"
             data-fn="find_middle"
             data-starter='def find_middle(lst):\n    """Return the middle element (right-middle for even length)."""\n    pass'
-            data-tests='[{"args": [[1,2,3,4,5]], "expected": "3", "label": "middle of [1,2,3,4,5] → 3"}, {"args": [[1,2,3,4]], "expected": "3", "label": "right-middle of [1,2,3,4] → 3"}]'>
+            data-tests='[{"args": [[1,2,3,4,5]], "expected": "3", "label": "middle of [1,2,3,4,5] → 3"}, {"args": [[1,2,3,4]], "expected": "3", "label": "right-middle of [1,2,3,4] → 3"}]'
+            data-c='{"fn": "find_middle", "params": [{"name": "head", "type": "list"}], "ret": "int", "starter": "/**\n * struct ListNode { int val; struct ListNode *next; };  (provided)\n * Return the middle node&#39;s value (right-middle for even length).\n */\nint find_middle(struct ListNode* head) {\n    // Your code here\n    return 0;\n}\n"}'>
             <div class="practice-problem">Return the middle element of the list. For even-length lists, return the right-middle element (index <code>len//2</code>).</div>
           </div>
         </div>
@@ -599,6 +749,7 @@ print(ll.search(100))  # -1</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/linked-lists-viz.js"></script>

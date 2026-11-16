@@ -60,7 +60,7 @@ var DSA = window.DSA || {};
       sorted: allIndices,
       activeLeft: -1,
       activeRight: -1,
-      codeLine: 4,
+      codeLine: 1,
       variables: { n: n },
       description: 'Sorting complete! Final sorted array: [' + a.join(', ') + '].'
     });
@@ -85,7 +85,7 @@ var DSA = window.DSA || {};
         sorted: sorted.slice(),
         activeLeft: low,
         activeRight: high,
-        codeLine: 2,
+        codeLine: 3,
         variables: { lo: low, hi: high },
         description: 'Subarray [' + low + '..' + high + '] has only one element (' + a[low] + '). It is already sorted.'
       });
@@ -105,7 +105,7 @@ var DSA = window.DSA || {};
       sorted: sorted.slice(),
       activeLeft: low,
       activeRight: high,
-      codeLine: 8,
+      codeLine: 4,
       variables: { pivot: pivotVal, lo: low, hi: high },
       description: 'Partitioning [' + low + '..' + high + ']. Pivot = ' + pivotVal + ' (index ' + pivotIdx + '). Elements smaller go left, larger go right.'
     });
@@ -125,7 +125,7 @@ var DSA = window.DSA || {};
         sorted: sorted.slice(),
         activeLeft: low,
         activeRight: high,
-        codeLine: 10,
+        codeLine: 7,
         variables: { i: i, j: j, pivot: pivotVal },
         description: 'Scanning index ' + j + ': value ' + a[j] + '. Comparing with pivot ' + pivotVal + '. Partition boundary (i) at index ' + i + '.'
       });
@@ -146,7 +146,7 @@ var DSA = window.DSA || {};
             sorted: sorted.slice(),
             activeLeft: low,
             activeRight: high,
-            codeLine: 12,
+            codeLine: 8,
             variables: { i: i, j: j, pivot: pivotVal },
             description: 'Swapped ' + a[i] + ' (index ' + i + ') and ' + a[j] + ' (index ' + j + '). Moving partition boundary right.'
           });
@@ -160,7 +160,7 @@ var DSA = window.DSA || {};
             sorted: sorted.slice(),
             activeLeft: low,
             activeRight: high,
-            codeLine: 11,
+            codeLine: 9,
             variables: { i: i, j: j, pivot: pivotVal },
             description: a[i] + ' <= pivot ' + pivotVal + '. Element stays in place. Moving partition boundary right.'
           });
@@ -177,7 +177,7 @@ var DSA = window.DSA || {};
           sorted: sorted.slice(),
           activeLeft: low,
           activeRight: high,
-          codeLine: 10,
+          codeLine: 6,
           variables: { i: i, j: j, pivot: pivotVal },
           description: a[j] + ' > pivot ' + pivotVal + '. Element stays on the right side. Partition boundary unchanged at index ' + i + '.'
         });
@@ -205,7 +205,7 @@ var DSA = window.DSA || {};
       sorted: sorted.slice(),
       activeLeft: low,
       activeRight: high,
-      codeLine: 13,
+      codeLine: 10,
       variables: { i: i, pivot: a[i] },
       description: 'Pivot ' + a[i] + ' placed at index ' + i + ' (its final sorted position). Left partition: [' + low + '..' + (i - 1) + '], Right partition: [' + (i + 1) + '..' + high + '].'
     });

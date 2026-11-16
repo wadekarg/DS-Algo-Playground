@@ -71,7 +71,7 @@ var DSA = window.DSA || {};
     var stack = [start];
     nodeStates[start] = 'active';
     callStack.push(start);
-    steps.push(snapshot(start, 'Push node ' + start + ' onto the stack. Stack: [' + callStack + '].', 3));
+    steps.push(snapshot(start, 'Push node ' + start + ' onto the stack. Stack: [' + callStack + '].', 2));
 
     while (stack.length > 0) {
       var current = stack.pop();
@@ -82,7 +82,7 @@ var DSA = window.DSA || {};
       visited[current] = true;
       nodeStates[current] = 'visited';
       callStack = callStack.filter(function(x) { return x !== current; });
-      steps.push(snapshot(current, 'Pop node ' + current + ' from stack. Mark as visited. Stack: [' + callStack + '].', 5));
+      steps.push(snapshot(current, 'Pop node ' + current + ' from stack. Mark as visited. Stack: [' + callStack + '].', 6));
 
       var neighbors = (adj[current] || []).slice().reverse();
       for (var j = 0; j < neighbors.length; j++) {
@@ -91,7 +91,7 @@ var DSA = window.DSA || {};
           nodeStates[neighbor] = 'active';
           stack.push(neighbor);
           callStack.push(neighbor);
-          steps.push(snapshot(current, 'Push unvisited neighbor ' + neighbor + ' onto stack. Stack: [' + callStack + '].', 8));
+          steps.push(snapshot(current, 'Push unvisited neighbor ' + neighbor + ' onto stack. Stack: [' + callStack + '].', 9));
         }
       }
     }

@@ -107,13 +107,55 @@
           </div>
           <div class="viz-explanation">Hash table with 8 buckets. Initial values: [15, 42, 8, 23, 7, 31, 50, 19]. Hash function: key % 8. Use the operation buttons below.</div>
           <div class="code-trace" style="margin-top:var(--space-md);">
-            <pre class="code-trace__code">table = {}
-# Hash function
-idx = hash(key) % size
-# Insert
-table[key] = value
-# Search
-value = table.get(key)</pre>
+            <pre class="code-trace__code" data-lang="python">size = 8
+buckets = [[] for _ in range(size)]
+
+def insert(key):
+    idx = key % size              # hash function
+    bucket = buckets[idx]
+    if key not in bucket:         # chain on collision
+        bucket.append(key)
+
+def search(key):
+    idx = key % size
+    for item in buckets[idx]:     # walk the chain
+        if item == key:
+            return True
+    return False
+
+def delete(key):
+    idx = key % size
+    bucket = buckets[idx]
+    if key in bucket:
+        bucket.remove(key)
+        return True
+    return False</pre>
+            <!-- c-trace:begin --><pre class="code-trace__code" data-lang="c" data-line-map="1:1,2:2,4:4,5:5,6:6,7:7,8:8,10:11,11:12,12:13,13:14,14:15,15:16,17:19,18:20,19:21,20:22-23,21:24,22:25,23:23" hidden>#define SIZE 8
+Entry* buckets[SIZE];             // each bucket is a chain
+
+void insert(int key) {
+    int idx = key % SIZE;             // hash function
+    Entry** slot = &amp;buckets[idx];
+    while (*slot &amp;&amp; (*slot)-&gt;key != key) slot = &amp;(*slot)-&gt;next;
+    if (!*slot) *slot = new_entry(key);   // chain on collision
+}
+
+bool search(int key) {
+    int idx = key % SIZE;
+    for (Entry* e = buckets[idx]; e; e = e-&gt;next)   // walk the chain
+        if (e-&gt;key == key)
+            return true;
+    return false;
+}
+
+bool delete(int key) {
+    int idx = key % SIZE;
+    Entry** slot = &amp;buckets[idx];
+    while (*slot &amp;&amp; (*slot)-&gt;key != key) slot = &amp;(*slot)-&gt;next;
+    if (!*slot) return false;
+    Entry* gone = *slot; *slot = gone-&gt;next; free(gone);
+    return true;
+}</pre><!-- c-trace:end -->
           </div>
 
           <!-- Playback controls -->
@@ -155,7 +197,7 @@ value = table.get(key)</pre>
           Code Implementation
         </h2>
         <div class="topic-section__content">
-          <p>Below is a hash table implementation using separate chaining for collision resolution, with insert, search, delete, and display operations in three languages.</p>
+          <p>Below is a hash table implementation using separate chaining for collision resolution, with insert, search, delete, and display operations in Python and C.</p>
         </div>
 
         <div class="code-block">
@@ -226,6 +268,98 @@ print(ht.search(99))   # False
 ht.delete(42)
 ht.display()</pre>
             </div>
+            <!-- c-code:begin -->
+            <div class="code-block__panel" data-lang="c">
+              <pre class="code-block__pre">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Hash table with separate chaining: each bucket is a linked list. */
+typedef struct Entry {
+    int key;
+    struct Entry* next;
+} Entry;
+
+typedef struct {
+    int size;
+    Entry** buckets;
+} HashTable;
+
+HashTable* ht_create(int size) {
+    HashTable* ht = malloc(sizeof(HashTable));
+    ht-&gt;size = size;
+    ht-&gt;buckets = calloc(size, sizeof(Entry*));
+    return ht;
+}
+
+/* Compute bucket index from key. */
+int ht_hash(const HashTable* ht, int key) {
+    return ((key % ht-&gt;size) + ht-&gt;size) % ht-&gt;size;  // safe for negatives
+}
+
+/* Insert a key into the hash table. O(1) avg */
+void ht_insert(HashTable* ht, int key) {
+    int index = ht_hash(ht, key);
+    Entry** slot = &amp;ht-&gt;buckets[index];
+    // Avoid duplicates; walk to the end of the chain
+    while (*slot) {
+        if ((*slot)-&gt;key == key) return;  // Already exists
+        slot = &amp;(*slot)-&gt;next;
+    }
+    Entry* e = malloc(sizeof(Entry));
+    e-&gt;key = key;
+    e-&gt;next = NULL;
+    *slot = e;  // append, so chains keep insertion order
+}
+
+/* Search for a key. Returns true/false. O(1) avg */
+bool ht_search(const HashTable* ht, int key) {
+    for (Entry* e = ht-&gt;buckets[ht_hash(ht, key)]; e; e = e-&gt;next)
+        if (e-&gt;key == key) return true;
+    return false;
+}
+
+/* Delete a key from the hash table. O(1) avg */
+bool ht_delete(HashTable* ht, int key) {
+    Entry** slot = &amp;ht-&gt;buckets[ht_hash(ht, key)];
+    while (*slot) {
+        if ((*slot)-&gt;key == key) {
+            Entry* doomed = *slot;
+            *slot = doomed-&gt;next;
+            free(doomed);
+            return true;
+        }
+        slot = &amp;(*slot)-&gt;next;
+    }
+    return false;
+}
+
+/* Print the hash table. */
+void ht_display(const HashTable* ht) {
+    for (int i = 0; i &lt; ht-&gt;size; i++) {
+        printf("Bucket %d: ", i);
+        Entry* e = ht-&gt;buckets[i];
+        if (!e) printf("empty");
+        for (; e; e = e-&gt;next) printf(e-&gt;next ? "%d -&gt; " : "%d", e-&gt;key);
+        printf("\n");
+    }
+}
+
+int main(void) {
+    // Example usage
+    HashTable* ht = ht_create(8);
+    int values[] = {15, 42, 8, 23, 7, 31, 50, 19};
+    for (int i = 0; i &lt; 8; i++) ht_insert(ht, values[i]);
+
+    ht_display(ht);
+    printf("%s\n", ht_search(ht, 23) ? "true" : "false");   // true
+    printf("%s\n", ht_search(ht, 99) ? "true" : "false");   // false
+    ht_delete(ht, 42);
+    ht_display(ht);
+    return 0;
+}</pre>
+            </div>
+            <!-- c-code:end -->
           </div>
         </div>
       </section>
@@ -507,6 +641,7 @@ ht.display()</pre>
   <script src="../js/keyboard.js"></script>
   <script src="../js/code-block.js"></script>
   <script src="../js/quiz.js"></script>
+  <script src="../js/code-trace.js"></script>
   <script src="../js/viz-utils.js"></script>
   <script src="../js/visualization-core.js"></script>
   <script src="../js/topics/hash-table-viz.js"></script>
